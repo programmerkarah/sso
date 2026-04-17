@@ -1,4 +1,82 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name') }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen">
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div class="max-w-4xl w-full">
+            <div class="text-center text-white mb-12">
+                <h1 class="text-5xl font-bold mb-4">{{ config('app.name') }}</h1>
+                <p class="text-xl opacity-90">Sistem Single Sign-On untuk Aplikasi Sawahlunto.io</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Selamat Datang</h2>
+                    <p class="text-gray-600">Login sekali, akses semua aplikasi</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4 mb-8">
+                    <a href="{{ route('login') }}" class="block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-center transition duration-150">
+                        <svg class="w-6 h-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                        </svg>
+                        Masuk
+                    </a>
+                    <a href="{{ route('register') }}" class="block bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg text-center transition duration-150">
+                        <svg class="w-6 h-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                        Daftar Akun Baru
+                    </a>
+                </div>
+
+                <div class="border-t pt-8">
+                    <h3 class="font-semibold text-gray-800 mb-4">Fitur SSO:</h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="text-center p-4">
+                            <div class="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800">Aman</h4>
+                            <p class="text-sm text-gray-600">OAuth2 dengan enkripsi</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="bg-green-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800">Cepat</h4>
+                            <p class="text-sm text-gray-600">Login instan ke semua app</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="bg-purple-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800">Terpusat</h4>
+                            <p class="text-sm text-gray-600">Kelola dari satu akun</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8 text-white text-sm opacity-75">
+                <p>&copy; {{ date('Y') }} BPS Kota Sawahlunto. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
