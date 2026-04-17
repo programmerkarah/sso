@@ -1,4 +1,12 @@
-import { CheckCircle, Edit, Eye, Globe, Plus, Trash2, XCircle } from 'lucide-react';
+import {
+    CheckCircle,
+    Edit,
+    Eye,
+    Globe,
+    Plus,
+    Trash2,
+    XCircle,
+} from 'lucide-react';
 
 import { Head, Link, router } from '@inertiajs/react';
 
@@ -18,9 +26,7 @@ interface ApplicationsIndexProps extends PageProps {
     success?: string;
 }
 
-export default function Index({
-    applications,
-}: ApplicationsIndexProps) {
+export default function Index({ applications }: ApplicationsIndexProps) {
     const handleDelete = (id: number, name: string) => {
         if (confirm(`Apakah Anda yakin ingin menghapus aplikasi "${name}"?`)) {
             router.delete(`/admin/applications/${id}`);
@@ -53,13 +59,22 @@ export default function Index({
 
                 <div className="grid gap-6 md:grid-cols-3">
                     <GlassCard>
-                        <div className="text-sm text-white/70">Total aplikasi</div>
-                        <div className="mt-2 text-4xl font-black text-white">{applications.data.length}</div>
+                        <div className="text-sm text-white/70">
+                            Total aplikasi
+                        </div>
+                        <div className="mt-2 text-4xl font-black text-white">
+                            {applications.data.length}
+                        </div>
                     </GlassCard>
                     <GlassCard>
-                        <div className="text-sm text-white/70">Aplikasi aktif</div>
+                        <div className="text-sm text-white/70">
+                            Aplikasi aktif
+                        </div>
                         <div className="mt-2 text-4xl font-black text-white">
-                            {applications.data.filter((app) => app.is_active).length}
+                            {
+                                applications.data.filter((app) => app.is_active)
+                                    .length
+                            }
                         </div>
                     </GlassCard>
                     <GlassCard>
@@ -68,7 +83,8 @@ export default function Index({
                                 <Globe className="h-5 w-5 text-blue-100" />
                             </div>
                             <p className="text-sm text-white/80">
-                                Pastikan setiap callback URL mengarah ke endpoint OAuth yang benar pada aplikasi tujuan.
+                                Pastikan setiap callback URL mengarah ke
+                                endpoint OAuth yang benar pada aplikasi tujuan.
                             </p>
                         </div>
                     </GlassCard>
@@ -207,10 +223,10 @@ export default function Index({
                                                     disabled={!link.url}
                                                     className={`rounded-md px-3 py-2 text-sm font-medium ${
                                                         link.active
-                                                                                                                        ? 'bg-white text-slate-900'
+                                                            ? 'bg-white text-slate-900'
                                                             : link.url
-                                                                                                                            ? 'bg-white/10 text-white hover:bg-white/20'
-                                                                                                                            : 'cursor-not-allowed bg-white/5 text-white/30'
+                                                              ? 'bg-white/10 text-white hover:bg-white/20'
+                                                              : 'cursor-not-allowed bg-white/5 text-white/30'
                                                     }`}
                                                     dangerouslySetInnerHTML={{
                                                         __html: link.label,

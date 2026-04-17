@@ -1,7 +1,8 @@
+import { ShieldCheck } from 'lucide-react';
+
 import { FormEventHandler } from 'react';
 
 import { Head, useForm } from '@inertiajs/react';
-import { ShieldCheck } from 'lucide-react';
 
 import Button from '@/Components/Button';
 import Input from '@/Components/Input';

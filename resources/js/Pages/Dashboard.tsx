@@ -1,4 +1,13 @@
-import { Calendar, List, Plus, Server, Shield, User, UserCog, Zap } from 'lucide-react';
+import {
+    Calendar,
+    List,
+    Plus,
+    Server,
+    Shield,
+    User,
+    UserCog,
+    Zap,
+} from 'lucide-react';
 
 import { Head, Link } from '@inertiajs/react';
 
@@ -64,7 +73,9 @@ export default function Dashboard({ auth, applicationsCount }: DashboardProps) {
                             </div>
                             <div className="flex items-center gap-2 pt-2 text-white/70">
                                 <Calendar className="h-4 w-4" />
-                                <span>Terdaftar sejak {registeredSinceLabel}</span>
+                                <span>
+                                    Terdaftar sejak {registeredSinceLabel}
+                                </span>
                             </div>
                         </div>
                     </GlassCard>

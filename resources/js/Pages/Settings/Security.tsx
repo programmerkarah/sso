@@ -277,9 +277,9 @@ export default function Security({
 
                                     <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200 backdrop-blur-sm">
                                         <strong>Penting:</strong> Simpan kode
-                                        ini di password manager atau tempat
-                                        aman lainnya. Setiap kode hanya bisa
-                                        dipakai satu kali.
+                                        ini di password manager atau tempat aman
+                                        lainnya. Setiap kode hanya bisa dipakai
+                                        satu kali.
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-3 rounded-xl bg-black/30 p-6 font-mono text-sm">

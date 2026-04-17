@@ -41,7 +41,8 @@ export default function Create() {
                         Tambah Aplikasi Baru
                     </h1>
                     <p className="mt-2 max-w-2xl text-white/80">
-                        Daftarkan aplikasi baru agar bisa memakai Single Sign-On BPS Kota Sawahlunto dengan konfigurasi OAuth yang tepat.
+                        Daftarkan aplikasi baru agar bisa memakai Single Sign-On
+                        BPS Kota Sawahlunto dengan konfigurasi OAuth yang tepat.
                     </p>
                 </div>
 
@@ -158,19 +159,37 @@ export default function Create() {
                     </GlassCard>
 
                     <GlassCard>
-                        <h2 className="text-xl font-bold text-white">Panduan Singkat</h2>
+                        <h2 className="text-xl font-bold text-white">
+                            Panduan Singkat
+                        </h2>
                         <div className="mt-4 space-y-4 text-sm text-white/75">
                             <div>
-                                <div className="font-semibold text-white">Domain</div>
-                                <p className="mt-1">Gunakan domain utama aplikasi tanpa protokol tambahan bila tidak diperlukan.</p>
+                                <div className="font-semibold text-white">
+                                    Domain
+                                </div>
+                                <p className="mt-1">
+                                    Gunakan domain utama aplikasi tanpa protokol
+                                    tambahan bila tidak diperlukan.
+                                </p>
                             </div>
                             <div>
-                                <div className="font-semibold text-white">Callback URL</div>
-                                <p className="mt-1">Harus mengarah ke endpoint callback OAuth aplikasi tujuan dan bisa diakses dari browser.</p>
+                                <div className="font-semibold text-white">
+                                    Callback URL
+                                </div>
+                                <p className="mt-1">
+                                    Harus mengarah ke endpoint callback OAuth
+                                    aplikasi tujuan dan bisa diakses dari
+                                    browser.
+                                </p>
                             </div>
                             <div>
-                                <div className="font-semibold text-white">Logo</div>
-                                <p className="mt-1">Opsional, tetapi disarankan agar daftar aplikasi lebih mudah dikenali pengguna.</p>
+                                <div className="font-semibold text-white">
+                                    Logo
+                                </div>
+                                <p className="mt-1">
+                                    Opsional, tetapi disarankan agar daftar
+                                    aplikasi lebih mudah dikenali pengguna.
+                                </p>
                             </div>
                         </div>
                     </GlassCard>

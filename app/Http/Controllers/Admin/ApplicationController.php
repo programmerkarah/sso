@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\Passport\ClientRepository;
+use Laravel\Passport\Client;
 
 class ApplicationController extends Controller
 {
@@ -37,16 +38,20 @@ class ApplicationController extends Controller
             'logo_url' => ['nullable', 'url', 'max:255'],
         ]);
 
+        $clients = app(ClientRepository::class);
+
         // Create OAuth2 Client
-        $client = $this->clients->create(
-            null, // userId
-            $validated['name'],
-            $validated['callback_url'],
-            null, // provider
-            false, // personalAccessClient
-            false, // passwordClient
-            true // confidential
-        );
+        $client = Client::create([
+            'id' => (string) Str::uuid(), // karena PK UUID
+            'owner_type' => null,
+            'owner_id' => null,
+            'name' => $validated['name'],
+            'secret' => Str::random(40), // atau null kalau public client
+            'provider' => null,
+            'redirect_uris' => [$validated['callback_url']],
+            'grant_types' => ['authorization_code'], // paling umum untuk OAuth login
+            'revoked' => false,
+        ]);
 
         // Create Application
         $application = Application::create([
@@ -96,7 +101,9 @@ class ApplicationController extends Controller
 
         // Update OAuth Client callback URL
         if ($application->oauthClient) {
-            $application->oauthClient->redirect = $validated['callback_url'];
+            $application->oauthClient->update([
+                'redirect_uris' => [$validated['callback_url']], // ✅ array
+            ]);
             $application->oauthClient->save();
         }
 

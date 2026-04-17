@@ -13,6 +13,7 @@ import {
     X,
     XCircle,
 } from 'lucide-react';
+
 import { useState } from 'react';
 
 import { Head, Link, router } from '@inertiajs/react';
@@ -315,9 +316,8 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
                             Daftar Pengguna
                         </h2>
                         <p className="mt-1 text-sm text-white/60">
-                            Halaman {users.current_page} dari{' '}
-                            {users.last_page} &mdash; {users.total}{' '}
-                            pengguna terdaftar
+                            Halaman {users.current_page} dari {users.last_page}{' '}
+                            &mdash; {users.total} pengguna terdaftar
                         </p>
                     </div>
 
@@ -398,7 +398,9 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
 
                                             {/* Terdaftar */}
                                             <td className="px-5 py-4 text-sm text-white/70">
-                                                {formatDateTime(user.created_at)}
+                                                {formatDateTime(
+                                                    user.created_at,
+                                                )}
                                             </td>
 
                                             {/* Login Terakhir */}
@@ -515,9 +517,8 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
                     {users.last_page > 1 && (
                         <div className="flex items-center justify-between border-t border-white/10 bg-black/10 px-6 py-4">
                             <p className="text-sm text-white/60">
-                                Menampilkan {users.from ?? 0}–
-                                {users.to ?? 0} dari {users.total}{' '}
-                                pengguna
+                                Menampilkan {users.from ?? 0}–{users.to ?? 0}{' '}
+                                dari {users.total} pengguna
                             </p>
                             <div className="flex items-center gap-1">
                                 {users.prev_page_url ? (

@@ -1,4 +1,5 @@
 import { ClipboardPaste, KeyRound, LifeBuoy } from 'lucide-react';
+
 import { FormEventHandler, useRef, useState } from 'react';
 
 import { Head, useForm } from '@inertiajs/react';
@@ -96,9 +97,7 @@ export default function TwoFactorChallenge() {
                             Anda.
                         </p>
                     ) : (
-                        <p>
-                            Masukkan salah satu kode pemulihan darurat Anda.
-                        </p>
+                        <p>Masukkan salah satu kode pemulihan darurat Anda.</p>
                     )}
                 </div>
 

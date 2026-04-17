@@ -1,4 +1,13 @@
-import { AppWindow, LayoutDashboard, LogOut, Menu, Shield, User, Users, X } from 'lucide-react';
+import {
+    AppWindow,
+    LayoutDashboard,
+    LogOut,
+    Menu,
+    Shield,
+    User,
+    Users,
+    X,
+} from 'lucide-react';
 
 import { PropsWithChildren, useState } from 'react';
 
@@ -81,8 +90,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                 <span className="text-sm font-medium text-white">
                                                     {user.name}
                                                 </span>
-                                                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${canManageApplications ? 'bg-emerald-400/20 text-emerald-100' : 'bg-white/15 text-white/80'}`}>
-                                                    {canManageApplications ? 'Admin' : 'User'}
+                                                <span
+                                                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${canManageApplications ? 'bg-emerald-400/20 text-emerald-100' : 'bg-white/15 text-white/80'}`}
+                                                >
+                                                    {canManageApplications
+                                                        ? 'Admin'
+                                                        : 'User'}
                                                 </span>
                                             </div>
                                             <Link
@@ -152,8 +165,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                             <span className="text-sm font-medium text-white">
                                                 {user.name}
                                             </span>
-                                            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${canManageApplications ? 'bg-emerald-400/20 text-emerald-100' : 'bg-white/15 text-white/80'}`}>
-                                                {canManageApplications ? 'Admin' : 'User'}
+                                            <span
+                                                className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${canManageApplications ? 'bg-emerald-400/20 text-emerald-100' : 'bg-white/15 text-white/80'}`}
+                                            >
+                                                {canManageApplications
+                                                    ? 'Admin'
+                                                    : 'User'}
                                             </span>
                                         </div>
                                         <Link
@@ -197,13 +214,15 @@ export default function AppLayout({ children }: PropsWithChildren) {
                         {flash.temporaryPassword && (
                             <div className="rounded-2xl border border-amber-300/30 bg-amber-500/15 px-5 py-4 text-sm text-amber-50 shadow-xl backdrop-blur-xl">
                                 <div className="font-semibold">
-                                    Password sementara untuk {flash.temporaryPasswordFor ?? 'pengguna'}
+                                    Password sementara untuk{' '}
+                                    {flash.temporaryPasswordFor ?? 'pengguna'}
                                 </div>
                                 <div className="mt-2 rounded-xl bg-black/20 px-4 py-3 font-mono text-base tracking-wide text-white">
                                     {flash.temporaryPassword}
                                 </div>
                                 <div className="mt-2 text-xs text-amber-100/90">
-                                    Password ini hanya tampil sekali setelah reset password berhasil.
+                                    Password ini hanya tampil sekali setelah
+                                    reset password berhasil.
                                 </div>
                             </div>
                         )}
