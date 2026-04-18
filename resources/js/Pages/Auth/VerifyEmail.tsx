@@ -44,16 +44,22 @@ export default function VerifyEmail({ status }: { status?: string }) {
 
                     {status === 'verification-link-sent' && (
                         <div className="mt-4 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-4 text-emerald-100">
-                            Tautan verifikasi baru sudah kami kirim. Silakan
-                            cek inbox Anda lagi.
+                            Tautan verifikasi baru sudah kami kirim. Silakan cek
+                            inbox Anda lagi.
                         </div>
                     )}
                 </div>
 
                 <form onSubmit={submit}>
-                    <Button type="submit" disabled={processing} className="w-full">
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        className="w-full"
+                    >
                         <RefreshCcw className="h-4 w-4" />
-                        {processing ? 'Mengirim ulang...' : 'Kirim Ulang Tautan Verifikasi'}
+                        {processing
+                            ? 'Mengirim ulang...'
+                            : 'Kirim Ulang Tautan Verifikasi'}
                     </Button>
                 </form>
 

@@ -23,17 +23,19 @@ class RestoreDatabaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'backup_file' => ['required', 'file', 'mimes:sql,txt', 'max:51200'],
+            'backup_file' => ['nullable', 'file', 'mimes:sql,txt', 'max:51200', 'required_without:backup_name'],
+            'backup_name' => ['nullable', 'string', 'max:255', 'required_without:backup_file'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'backup_file.required' => 'File backup wajib dipilih.',
+            'backup_file.required_without' => 'Pilih file upload atau backup tersimpan untuk restore.',
             'backup_file.file' => 'Data backup harus berupa file valid.',
             'backup_file.mimes' => 'Format backup harus berupa file .sql atau .txt.',
             'backup_file.max' => 'Ukuran file backup maksimal 50MB.',
+            'backup_name.required_without' => 'Pilih backup tersimpan atau upload file backup.',
         ];
     }
 }

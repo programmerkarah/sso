@@ -226,7 +226,9 @@ export default function Security({
                                             <Input
                                                 id="password"
                                                 type="password"
-                                                value={passwordForm.data.password}
+                                                value={
+                                                    passwordForm.data.password
+                                                }
                                                 onChange={(e) =>
                                                     passwordForm.setData(
                                                         'password',
@@ -275,7 +277,9 @@ export default function Security({
                                         <div className="md:col-span-2 flex justify-end">
                                             <Button
                                                 type="submit"
-                                                disabled={passwordForm.processing}
+                                                disabled={
+                                                    passwordForm.processing
+                                                }
                                             >
                                                 {passwordForm.processing
                                                     ? 'Memperbarui...'

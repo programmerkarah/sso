@@ -57,7 +57,9 @@ function ToastCard({
 
                 <div className="min-w-0 flex-1">
                     {item.title && (
-                        <div className="text-sm font-semibold">{item.title}</div>
+                        <div className="text-sm font-semibold">
+                            {item.title}
+                        </div>
                     )}
                     <div className="text-sm leading-6 opacity-95">
                         {item.message}

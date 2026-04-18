@@ -11,6 +11,7 @@ class ActivityLog extends Model
         'user_id',
         'event',
         'category',
+        'status',
         'description',
         'ip_address',
         'device_id',

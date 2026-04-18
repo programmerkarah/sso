@@ -1,22 +1,21 @@
 import {
     AppWindow,
-    ChevronDown,
     Database,
     LayoutDashboard,
     LogOut,
     Menu,
     Shield,
     User,
-    Users,
     X,
 } from 'lucide-react';
 
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren, useEffect, useRef, useState } from 'react';
 
 import { Link, usePage } from '@inertiajs/react';
 
 import AnimatedBackground from '@/Components/AnimatedBackground';
 import AppIcon from '@/Components/AppIcon';
+import NavDropdown from '@/Components/NavDropdown';
 import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import { PageProps } from '@/types';
 
@@ -26,7 +25,18 @@ export default function AppLayout({ children }: PropsWithChildren) {
     const canManageApplications = auth?.can.manageApplications ?? false;
     const canManageUsers = auth?.can.manageUsers ?? false;
     const canManageSystem = auth?.can.manageSystem ?? false;
+
+    const navRef = useRef<HTMLElement | null>(null);
+    const dropdownContainerRef = useRef<HTMLDivElement | null>(null);
+
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [desktopDropdown, setDesktopDropdown] = useState<
+        'account' | 'applications' | null
+    >(null);
+    const [mobileDropdown, setMobileDropdown] = useState<
+        'account' | 'applications' | null
+    >(null);
+    const [mainPaddingTop, setMainPaddingTop] = useState(120);
     const [toasts, setToasts] = useState<ToastItem[]>([]);
 
     useEffect(() => {
@@ -71,6 +81,52 @@ export default function AppLayout({ children }: PropsWithChildren) {
         setToasts(nextToasts);
     }, [flash.error, flash.info, flash.status, flash.success]);
 
+    useEffect(() => {
+        const updateMainPadding = () => {
+            const navHeight = navRef.current?.offsetHeight ?? 100;
+            setMainPaddingTop(navHeight + 16);
+        };
+
+        updateMainPadding();
+        window.addEventListener('resize', updateMainPadding);
+
+        return () => {
+            window.removeEventListener('resize', updateMainPadding);
+        };
+    }, [mobileMenuOpen, desktopDropdown, mobileDropdown]);
+
+    useEffect(() => {
+        const handleOutsideClick = (event: MouseEvent) => {
+            const target = event.target as Node;
+
+            if (
+                dropdownContainerRef.current &&
+                !dropdownContainerRef.current.contains(target)
+            ) {
+                setDesktopDropdown(null);
+                setMobileDropdown(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick);
+
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, []);
+
+    const toggleDesktopDropdown = (dropdown: 'account' | 'applications') => {
+        setDesktopDropdown((current) =>
+            current === dropdown ? null : dropdown,
+        );
+    };
+
+    const toggleMobileDropdown = (dropdown: 'account' | 'applications') => {
+        setMobileDropdown((current) =>
+            current === dropdown ? null : dropdown,
+        );
+    };
+
     return (
         <>
             <AnimatedBackground />
@@ -84,9 +140,15 @@ export default function AppLayout({ children }: PropsWithChildren) {
             />
             <div className="relative min-h-screen">
                 {user && (
-                    <nav className="fixed left-0 right-0 top-0 z-50 px-4 pt-4">
+                    <nav
+                        ref={navRef}
+                        className="fixed left-0 right-0 top-0 z-50 px-4 pt-4"
+                    >
                         <div className="mx-auto max-w-7xl">
-                            <div className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 shadow-2xl backdrop-blur-xl">
+                            <div
+                                ref={dropdownContainerRef}
+                                className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 shadow-2xl backdrop-blur-xl"
+                            >
                                 <div className="flex items-center justify-between">
                                     {/* Logo */}
                                     <div className="flex items-center gap-3">
@@ -113,59 +175,62 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                             <LayoutDashboard className="inline h-4 w-4 mr-1.5 align-text-bottom" />
                                             Dashboard
                                         </Link>
-                                        {(canManageUsers || canManageApplications) ? (
+                                        {canManageUsers ||
+                                        canManageApplications ? (
                                             <>
-                                                <details className="group relative">
-                                                    <summary className="list-none cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white">
-                                                        <span className="inline-flex items-center gap-1.5">
-                                                            <Shield className="h-4 w-4" />
-                                                            Akun & Keamanan
-                                                            <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
-                                                        </span>
-                                                    </summary>
-                                                    <div className="absolute left-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-white/20 bg-slate-900/95 p-2 shadow-2xl backdrop-blur-xl">
+                                                <NavDropdown
+                                                    title="Akun & Keamanan"
+                                                    icon={<Shield className="h-4 w-4" />}
+                                                    isOpen={desktopDropdown === 'account'}
+                                                    onToggle={() =>
+                                                        toggleDesktopDropdown(
+                                                            'account',
+                                                        )
+                                                    }
+                                                >
+                                                    <Link
+                                                        href="/settings/security"
+                                                        className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                    >
+                                                        Keamanan
+                                                    </Link>
+                                                    {canManageUsers && (
                                                         <Link
-                                                            href="/settings/security"
+                                                            href="/admin/users"
                                                             className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
                                                         >
-                                                            Keamanan
+                                                            Kelola Pengguna
                                                         </Link>
-                                                        {canManageUsers && (
-                                                            <Link
-                                                                href="/admin/users"
-                                                                className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
-                                                            >
-                                                                Kelola Pengguna
-                                                            </Link>
-                                                        )}
-                                                    </div>
-                                                </details>
+                                                    )}
+                                                </NavDropdown>
 
-                                                <details className="group relative">
-                                                    <summary className="list-none cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white">
-                                                        <span className="inline-flex items-center gap-1.5">
-                                                            <AppWindow className="h-4 w-4" />
-                                                            Aplikasi
-                                                            <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
-                                                        </span>
-                                                    </summary>
-                                                    <div className="absolute left-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-white/20 bg-slate-900/95 p-2 shadow-2xl backdrop-blur-xl">
+                                                <NavDropdown
+                                                    title="Aplikasi"
+                                                    icon={
+                                                        <AppWindow className="h-4 w-4" />
+                                                    }
+                                                    isOpen={desktopDropdown === 'applications'}
+                                                    onToggle={() =>
+                                                        toggleDesktopDropdown(
+                                                            'applications',
+                                                        )
+                                                    }
+                                                >
+                                                    <Link
+                                                        href="/applications"
+                                                        className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                    >
+                                                        Aplikasi SSO
+                                                    </Link>
+                                                    {canManageApplications && (
                                                         <Link
-                                                            href="/applications"
+                                                            href="/admin/applications"
                                                             className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
                                                         >
                                                             Daftar Aplikasi
                                                         </Link>
-                                                        {canManageApplications && (
-                                                            <Link
-                                                                href="/admin/applications"
-                                                                className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
-                                                            >
-                                                                Kelola Aplikasi
-                                                            </Link>
-                                                        )}
-                                                    </div>
-                                                </details>
+                                                    )}
+                                                </NavDropdown>
                                             </>
                                         ) : (
                                             <>
@@ -181,7 +246,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                     className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
                                                 >
                                                     <AppWindow className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                    Aplikasi
+                                                    Aplikasi SSO
                                                 </Link>
                                             </>
                                         )}
@@ -224,7 +289,15 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                     {/* Mobile Menu Button */}
                                     <button
                                         onClick={() =>
-                                            setMobileMenuOpen(!mobileMenuOpen)
+                                            setMobileMenuOpen((current) => {
+                                                const nextState = !current;
+
+                                                if (!nextState) {
+                                                    setMobileDropdown(null);
+                                                }
+
+                                                return nextState;
+                                            })
                                         }
                                         className="rounded-xl bg-white/10 p-2 text-white backdrop-blur-sm transition hover:bg-white/20 md:hidden"
                                     >
@@ -246,57 +319,64 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                             <LayoutDashboard className="inline h-4 w-4 mr-1.5 align-text-bottom" />
                                             Dashboard
                                         </Link>
-                                        {(canManageUsers || canManageApplications) ? (
+                                        {canManageUsers ||
+                                        canManageApplications ? (
                                             <>
-                                                <details className="overflow-hidden rounded-xl border border-white/15 bg-white/5">
-                                                    <summary className="list-none cursor-pointer px-4 py-2 text-sm font-semibold text-white/90">
-                                                        <span className="inline-flex items-center gap-1.5">
-                                                            <Shield className="h-4 w-4" />
-                                                            Akun & Keamanan
-                                                        </span>
-                                                    </summary>
-                                                    <div className="flex flex-col gap-1 border-t border-white/10 px-2 py-2">
+                                                <NavDropdown
+                                                    title="Keamanan"
+                                                    icon={<Shield className="h-4 w-4" />}
+                                                    isOpen={mobileDropdown === 'account'}
+                                                    onToggle={() =>
+                                                        toggleMobileDropdown(
+                                                            'account',
+                                                        )
+                                                    }
+                                                    variant="mobile"
+                                                >
+                                                    <Link
+                                                        href="/settings/security"
+                                                        className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
+                                                    >
+                                                        Keamanan
+                                                    </Link>
+                                                    {canManageUsers && (
                                                         <Link
-                                                            href="/settings/security"
+                                                            href="/admin/users"
                                                             className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
                                                         >
-                                                            Keamanan
+                                                            Kelola Pengguna
                                                         </Link>
-                                                        {canManageUsers && (
-                                                            <Link
-                                                                href="/admin/users"
-                                                                className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
-                                                            >
-                                                                Kelola Pengguna
-                                                            </Link>
-                                                        )}
-                                                    </div>
-                                                </details>
+                                                    )}
+                                                </NavDropdown>
 
-                                                <details className="overflow-hidden rounded-xl border border-white/15 bg-white/5">
-                                                    <summary className="list-none cursor-pointer px-4 py-2 text-sm font-semibold text-white/90">
-                                                        <span className="inline-flex items-center gap-1.5">
-                                                            <AppWindow className="h-4 w-4" />
-                                                            Aplikasi
-                                                        </span>
-                                                    </summary>
-                                                    <div className="flex flex-col gap-1 border-t border-white/10 px-2 py-2">
+                                                <NavDropdown
+                                                    title="Aplikasi SSO"
+                                                    icon={
+                                                        <AppWindow className="h-4 w-4" />
+                                                    }
+                                                    isOpen={mobileDropdown === 'applications'}
+                                                    onToggle={() =>
+                                                        toggleMobileDropdown(
+                                                            'applications',
+                                                        )
+                                                    }
+                                                    variant="mobile"
+                                                >
+                                                    <Link
+                                                        href="/applications"
+                                                        className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
+                                                    >
+                                                        Aplikasi SSO
+                                                    </Link>
+                                                    {canManageApplications && (
                                                         <Link
-                                                            href="/applications"
+                                                            href="/admin/applications"
                                                             className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
                                                         >
-                                                            Daftar Aplikasi
+                                                            Kelola Aplikasi
                                                         </Link>
-                                                        {canManageApplications && (
-                                                            <Link
-                                                                href="/admin/applications"
-                                                                className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
-                                                            >
-                                                                Kelola Aplikasi
-                                                            </Link>
-                                                        )}
-                                                    </div>
-                                                </details>
+                                                    )}
+                                                </NavDropdown>
                                             </>
                                         ) : (
                                             <>
@@ -312,7 +392,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                     className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
                                                 >
                                                     <AppWindow className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                    Aplikasi
+                                                    Aplikasi SSO
                                                 </Link>
                                             </>
                                         )}
@@ -354,7 +434,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
                     </nav>
                 )}
 
-                <main className="px-4 pb-12 pt-28">
+                <main
+                    className="px-4 pb-12"
+                    style={
+                        user ? { paddingTop: `${mainPaddingTop}px` } : undefined
+                    }
+                >
                     {children}
                 </main>
             </div>

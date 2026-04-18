@@ -439,9 +439,7 @@ export default function Index({
                                     onSelect={(option) =>
                                         visitState(option.state_token)
                                     }
-                                    onClear={() =>
-                                        visitState(clearFilterToken)
-                                    }
+                                    onClear={() => visitState(clearFilterToken)}
                                 />
                             </div>
                         </div>

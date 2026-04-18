@@ -29,8 +29,9 @@ export default function Index({ applications }: ApplicationCatalogProps) {
                         Aplikasi SSO
                     </h1>
                     <p className="mt-2 max-w-3xl text-white/80">
-                        Daftar aplikasi yang dapat diakses menggunakan akun Single Sign-On Anda.
-                        Halaman ini hanya menampilkan informasi publik aplikasi.
+                        Daftar aplikasi yang dapat diakses menggunakan akun
+                        Single Sign-On Anda. Halaman ini hanya menampilkan
+                        informasi publik aplikasi.
                     </p>
                 </div>
 
@@ -44,7 +45,11 @@ export default function Index({ applications }: ApplicationCatalogProps) {
                         </GlassCard>
                     ) : (
                         applications.map((application) => (
-                            <GlassCard key={application.id} hover className="flex flex-col gap-5">
+                            <GlassCard
+                                key={application.id}
+                                hover
+                                className="flex flex-col gap-5"
+                            >
                                 <div className="flex items-start gap-4">
                                     <div className="h-14 w-14 overflow-hidden rounded-2xl border border-white/20 bg-white/10 p-2">
                                         {application.logo_url ? (
@@ -64,7 +69,8 @@ export default function Index({ applications }: ApplicationCatalogProps) {
                                             {application.name}
                                         </h2>
                                         <p className="text-sm text-white/70">
-                                            {application.description ?? 'Tidak ada deskripsi aplikasi.'}
+                                            {application.description ??
+                                                'Tidak ada deskripsi aplikasi.'}
                                         </p>
                                     </div>
                                 </div>

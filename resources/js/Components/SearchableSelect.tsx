@@ -40,7 +40,8 @@ export default function SearchableSelect({
 
         document.addEventListener('mousedown', handleClickOutside);
 
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     const filteredOptions = useMemo(() => {
@@ -51,7 +52,8 @@ export default function SearchableSelect({
         }
 
         return options.filter((option) => {
-            const haystack = `${option.label} ${option.description ?? ''}`.toLowerCase();
+            const haystack =
+                `${option.label} ${option.description ?? ''}`.toLowerCase();
 
             return haystack.includes(normalized);
         });

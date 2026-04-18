@@ -1,4 +1,5 @@
 import { AlertTriangle, KeyRound } from 'lucide-react';
+
 import { FormEventHandler } from 'react';
 
 import { Head, useForm } from '@inertiajs/react';
