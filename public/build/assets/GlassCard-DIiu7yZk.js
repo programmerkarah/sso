@@ -1,1 +1,0 @@
-import{j as a}from"./app-BAEYokCH.js";function t({children:r,className:e="",hover:o=!1}){return a.jsx("div",{className:`backdrop-blur-xl rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl transition-all duration-300 ${o?"hover:scale-105 hover:border-white/30 hover:bg-white/20 hover:shadow-2xl":""} ${e}`,children:r})}export{t as G};
