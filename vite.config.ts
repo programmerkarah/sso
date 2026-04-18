@@ -17,4 +17,15 @@ export default defineConfig({
             '@': '/resources/js',
         },
     },
+    server: {
+        hmr: {
+            host: '127.0.0.1',
+            port: 5173,
+            protocol: 'ws',
+        },
+        // Add headers for development
+        headers: {
+            'Cache-Control': 'no-cache',
+        },
+    },
 });

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\SessionConcurrencyManager;
+use App\Services\TrustedDeviceManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +13,11 @@ use Inertia\Inertia;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        protected SessionConcurrencyManager $sessionConcurrencyManager,
+        protected TrustedDeviceManager $trustedDeviceManager,
+    ) {}
+
     public function showLogin()
     {
         return Inertia::render('Auth/Login');
@@ -30,6 +37,13 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        // Update last login and finalize device trust
+        $user = Auth::user();
+        if ($user) {
+            $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $user);
+            $this->sessionConcurrencyManager->activateLatestSession($request, $user->id);
+        }
 
         if ($request->has('redirect_to')) {
             return redirect($request->redirect_to);
