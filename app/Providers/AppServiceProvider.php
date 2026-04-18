@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Http\Responses\LoginResponse;
 use App\Http\Responses\TwoFactorLoginResponse;
 use App\Models\Passport\Client as PassportClient;
+use App\Services\SessionConcurrencyManager;
 use App\Support\ActivityLogger;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -54,6 +55,10 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(Logout::class, function (Logout $event): void {
             if ($event->user) {
+                $sessionConcurrencyManager = app(SessionConcurrencyManager::class);
+                $sessionConcurrencyManager->forgetActiveSession((int) $event->user->id);
+                $sessionConcurrencyManager->clearForceTwoFactorFlag((int) $event->user->id);
+
                 ActivityLogger::log(
                     event: 'auth.logout',
                     category: 'authentication',

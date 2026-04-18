@@ -75,8 +75,6 @@ class TrustedDeviceManager
     {
         return hash('sha256', implode('|', [
             (string) $request->userAgent(),
-            (string) $request->header('sec-ch-ua-platform'),
-            (string) $request->header('sec-ch-ua-mobile'),
             (string) $request->header('accept-language'),
         ]));
     }

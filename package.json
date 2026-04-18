@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite",
+        "dev": "vite --host 127.0.0.1 --strictPort",
         "format": "prettier --write \"resources/js/**/*.{ts,tsx}\"",
         "lint": "tsc --noEmit"
     },

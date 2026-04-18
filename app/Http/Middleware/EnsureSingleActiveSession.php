@@ -25,6 +25,14 @@ class EnsureSingleActiveSession
             return $next($request);
         }
 
+        // Recover from stale cache key: if cached active session no longer exists,
+        // adopt current authenticated session instead of forcing logout.
+        if (! $this->sessionConcurrencyManager->hasActiveSessionRecord($userId)) {
+            $this->sessionConcurrencyManager->activateLatestSession($request, $userId);
+
+            return $next($request);
+        }
+
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -48,6 +48,19 @@ class SessionConcurrencyManager
             && hash_equals($activeSessionId, $request->session()->getId());
     }
 
+    public function hasActiveSessionRecord(int $userId): bool
+    {
+        $activeSessionId = $this->getActiveSessionId($userId);
+
+        if (! is_string($activeSessionId) || $activeSessionId === '') {
+            return false;
+        }
+
+        return DB::table(config('session.table', 'sessions'))
+            ->where('id', $activeSessionId)
+            ->exists();
+    }
+
     public function forgetIfCurrentSession(Request $request, int $userId): void
     {
         $activeSessionId = $this->getActiveSessionId($userId);
@@ -56,6 +69,11 @@ class SessionConcurrencyManager
         if (is_string($activeSessionId) && $activeSessionId !== '' && hash_equals($activeSessionId, $currentSessionId)) {
             Cache::forget($this->cacheKey($userId));
         }
+    }
+
+    public function forgetActiveSession(int $userId): void
+    {
+        Cache::forget($this->cacheKey($userId));
     }
 
     public function consumeForceTwoFactorFlag(int $userId): bool
@@ -67,6 +85,11 @@ class SessionConcurrencyManager
         }
 
         return true;
+    }
+
+    public function clearForceTwoFactorFlag(int $userId): void
+    {
+        Cache::forget(self::FORCE_2FA_CACHE_PREFIX.$userId);
     }
 
     private function getActiveSessionId(int $userId): mixed

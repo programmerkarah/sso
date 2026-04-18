@@ -6,6 +6,7 @@ use App\Services\SessionConcurrencyManager;
 use App\Services\TrustedDeviceManager;
 use App\Support\ActivityLogger;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
 use Laravel\Fortify\Fortify;
 
@@ -29,7 +30,6 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
             $this->sessionConcurrencyManager->activateLatestSession(
                 $request,
                 (int) $request->user()->id,
-                forceTwoFactorOnNextLogin: true,
             );
 
             ActivityLogger::logByRequest(
@@ -47,15 +47,37 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
                 : redirect()->route('settings.change-password');
         }
 
-        // Debug intended URL
-        \Illuminate\Support\Facades\Log::channel('single')->info('=== TwoFactorLoginResponse: Redirecting after 2FA ===', [
-            'intended_url' => $request->session()->get('url.intended'),
-            'default_redirect' => Fortify::redirects('login'),
+        $intendedUrl = $request->session()->get('url.intended');
+        $defaultRedirect = Fortify::redirects('login');
+
+        if ($this->shouldIgnoreIntendedUrl($intendedUrl)) {
+            $request->session()->forget('url.intended');
+            $intendedUrl = null;
+        }
+
+        Log::channel('single')->info('=== TwoFactorLoginResponse: Redirecting after 2FA ===', [
+            'intended_url' => $intendedUrl,
+            'default_redirect' => $defaultRedirect,
             'session_id' => $request->session()->getId(),
         ]);
 
         return $request->wantsJson()
             ? new JsonResponse('', 204)
-            : redirect()->intended(Fortify::redirects('login'));
+            : redirect()->intended($defaultRedirect);
+    }
+
+    private function shouldIgnoreIntendedUrl(mixed $intendedUrl): bool
+    {
+        if (! is_string($intendedUrl) || $intendedUrl === '') {
+            return false;
+        }
+
+        $path = parse_url($intendedUrl, PHP_URL_PATH);
+
+        if (! is_string($path)) {
+            return false;
+        }
+
+        return in_array($path, ['/login', '/logout', '/two-factor-challenge'], true);
     }
 }
