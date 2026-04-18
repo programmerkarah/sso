@@ -1,6 +1,4 @@
-import { FormEventHandler } from 'react';
-
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
 import Input from '@/Components/Input';
@@ -8,16 +6,14 @@ import Label from '@/Components/Label';
 import GuestLayout from '@/Layouts/GuestLayout';
 
 export default function Login({ status }: { status?: string }) {
-    const { data, setData, post, processing, errors } = useForm({
-        username: '',
-        password: '',
-        remember: false,
-    });
+    const { errors } = usePage<{ errors: Record<string, string> }>().props;
 
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-        post('/login');
-    };
+    const csrfToken =
+        typeof document !== 'undefined'
+            ? (document
+                  .querySelector('meta[name="csrf-token"]')
+                  ?.getAttribute('content') ?? '')
+            : '';
 
     return (
         <GuestLayout>
@@ -29,7 +25,8 @@ export default function Login({ status }: { status?: string }) {
                 </div>
             )}
 
-            <form onSubmit={submit} className="space-y-6">
+            <form method="POST" action="/login" className="space-y-6">
+                <input type="hidden" name="_token" value={csrfToken} />
                 <h2 className="text-center text-3xl font-bold text-white drop-shadow-lg">
                     Masuk ke Akun
                 </h2>
@@ -48,10 +45,8 @@ export default function Login({ status }: { status?: string }) {
                         id="username"
                         type="text"
                         name="username"
-                        value={data.username}
                         autoComplete="username"
                         autoFocus
-                        onChange={(e) => setData('username', e.target.value)}
                         placeholder="username"
                         required
                     />
@@ -65,9 +60,7 @@ export default function Login({ status }: { status?: string }) {
                         id="password"
                         type="password"
                         name="password"
-                        value={data.password}
                         autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
                         placeholder="••••••••"
                         required
                     />
@@ -78,10 +71,7 @@ export default function Login({ status }: { status?: string }) {
                         <input
                             type="checkbox"
                             name="remember"
-                            checked={data.remember}
-                            onChange={(e) =>
-                                setData('remember', e.target.checked)
-                            }
+                            value="1"
                             className="h-4 w-4 cursor-pointer rounded border-white/30 bg-white/10 text-blue-500 backdrop-blur-sm focus:ring-2 focus:ring-white/30 focus:ring-offset-0"
                         />
                         <span className="ml-3 text-sm text-white/90">
@@ -93,10 +83,9 @@ export default function Login({ status }: { status?: string }) {
                 <div className="space-y-4">
                     <Button
                         type="submit"
-                        disabled={processing}
                         className="w-full"
                     >
-                        {processing ? 'Memproses...' : 'Masuk'}
+                        Masuk
                     </Button>
 
                     <div className="text-center">
