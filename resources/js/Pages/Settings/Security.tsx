@@ -27,7 +27,6 @@ interface SecurityProps extends PageProps {
 }
 
 export default function Security({
-    twoFactorEnabled,
     twoFactorConfirmed,
     qrCodeSvg,
     recoveryCodes,
@@ -38,7 +37,7 @@ export default function Security({
     );
     const [showingConfirmation, setShowingConfirmation] = useState(false);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, processing, errors, reset } = useForm({
         code: '',
     });
     const passwordForm = useForm({
@@ -508,41 +507,45 @@ export default function Security({
                         )}
 
                         {/* Recovery Codes Card */}
-                        {showingRecoveryCodes && recoveryCodes.length > 0 && (
-                            <GlassCard>
-                                <div className="space-y-4">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white">
-                                            Kode Pemulihan
-                                        </h3>
-                                        <p className="mt-2 text-white/80">
-                                            Berikut adalah kode pemulihan aktif
-                                            milik akun Anda. Gunakan hanya saat
-                                            Anda tidak bisa mengakses aplikasi
-                                            autentikator.
-                                        </p>
-                                    </div>
+                        {showingRecoveryCodes &&
+                            recoveryCodes &&
+                            recoveryCodes.length > 0 && (
+                                <GlassCard>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-white">
+                                                Kode Pemulihan
+                                            </h3>
+                                            <p className="mt-2 text-white/80">
+                                                Berikut adalah kode pemulihan
+                                                aktif milik akun Anda. Gunakan
+                                                hanya saat Anda tidak bisa
+                                                mengakses aplikasi autentikator.
+                                            </p>
+                                        </div>
 
-                                    <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200 backdrop-blur-sm">
-                                        <strong>Penting:</strong> Simpan kode
-                                        ini di password manager atau tempat aman
-                                        lainnya. Setiap kode hanya bisa dipakai
-                                        satu kali.
-                                    </div>
+                                        <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200 backdrop-blur-sm">
+                                            <strong>Penting:</strong> Simpan
+                                            kode ini di password manager atau
+                                            tempat aman lainnya. Setiap kode
+                                            hanya bisa dipakai satu kali.
+                                        </div>
 
-                                    <div className="grid grid-cols-2 gap-3 rounded-xl bg-black/30 p-6 font-mono text-sm">
-                                        {recoveryCodes.map((code, index) => (
-                                            <div
-                                                key={index}
-                                                className="rounded bg-white/10 px-4 py-2 text-center text-white backdrop-blur-sm"
-                                            >
-                                                {code}
-                                            </div>
-                                        ))}
+                                        <div className="grid grid-cols-2 gap-3 rounded-xl bg-black/30 p-6 font-mono text-sm">
+                                            {recoveryCodes!.map(
+                                                (code, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="rounded bg-white/10 px-4 py-2 text-center text-white backdrop-blur-sm"
+                                                    >
+                                                        {code}
+                                                    </div>
+                                                ),
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            </GlassCard>
-                        )}
+                                </GlassCard>
+                            )}
                     </div>
                 </div>
             </div>

@@ -101,8 +101,6 @@ class LoginSecurityTest extends TestCase
         $token = str_repeat('a', 80);
         $fingerprint = hash('sha256', implode('|', [
             $this->deviceHeaders()['User-Agent'],
-            $this->deviceHeaders()['sec-ch-ua-platform'],
-            $this->deviceHeaders()['sec-ch-ua-mobile'],
             $this->deviceHeaders()['accept-language'],
         ]));
 

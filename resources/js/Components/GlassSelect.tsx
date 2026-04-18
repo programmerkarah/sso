@@ -66,7 +66,9 @@ export default function GlassSelect({
                 onClick={() => setOpen((current) => !current)}
                 className={`flex w-full items-center justify-between rounded-xl border bg-slate-900/60 px-3 py-2.5 text-left text-sm text-white outline-none transition focus:border-white/40 ${error ? 'border-rose-300/40' : 'border-white/20'}`}
             >
-                <span className={selectedOption ? 'text-white' : 'text-white/65'}>
+                <span
+                    className={selectedOption ? 'text-white' : 'text-white/65'}
+                >
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
                 <ChevronDown

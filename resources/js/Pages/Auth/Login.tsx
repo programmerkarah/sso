@@ -1,5 +1,6 @@
-import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+
+import { Head, Link, usePage } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
 import Input from '@/Components/Input';
@@ -41,7 +42,9 @@ export default function Login({ status }: { status?: string }) {
             const data = (await response.json()) as { token?: string };
             const freshToken = data.token ?? csrfToken;
 
-            const hiddenToken = form.querySelector<HTMLInputElement>('input[name="_token"]');
+            const hiddenToken = form.querySelector<HTMLInputElement>(
+                'input[name="_token"]',
+            );
             if (hiddenToken) {
                 hiddenToken.value = freshToken;
             }
@@ -62,7 +65,12 @@ export default function Login({ status }: { status?: string }) {
                 </div>
             )}
 
-            <form method="POST" action="/login" onSubmit={handleSubmit} className="space-y-6">
+            <form
+                method="POST"
+                action="/login"
+                onSubmit={handleSubmit}
+                className="space-y-6"
+            >
                 <input type="hidden" name="_token" value={csrfToken} />
                 <h2 className="text-center text-3xl font-bold text-white drop-shadow-lg">
                     Masuk ke Akun

@@ -180,8 +180,13 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                             <>
                                                 <NavDropdown
                                                     title="Akun & Keamanan"
-                                                    icon={<Shield className="h-4 w-4" />}
-                                                    isOpen={desktopDropdown === 'account'}
+                                                    icon={
+                                                        <Shield className="h-4 w-4" />
+                                                    }
+                                                    isOpen={
+                                                        desktopDropdown ===
+                                                        'account'
+                                                    }
                                                     onToggle={() =>
                                                         toggleDesktopDropdown(
                                                             'account',
@@ -209,7 +214,10 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                     icon={
                                                         <AppWindow className="h-4 w-4" />
                                                     }
-                                                    isOpen={desktopDropdown === 'applications'}
+                                                    isOpen={
+                                                        desktopDropdown ===
+                                                        'applications'
+                                                    }
                                                     onToggle={() =>
                                                         toggleDesktopDropdown(
                                                             'applications',
@@ -324,8 +332,13 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                             <>
                                                 <NavDropdown
                                                     title="Keamanan"
-                                                    icon={<Shield className="h-4 w-4" />}
-                                                    isOpen={mobileDropdown === 'account'}
+                                                    icon={
+                                                        <Shield className="h-4 w-4" />
+                                                    }
+                                                    isOpen={
+                                                        mobileDropdown ===
+                                                        'account'
+                                                    }
                                                     onToggle={() =>
                                                         toggleMobileDropdown(
                                                             'account',
@@ -354,7 +367,10 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                     icon={
                                                         <AppWindow className="h-4 w-4" />
                                                     }
-                                                    isOpen={mobileDropdown === 'applications'}
+                                                    isOpen={
+                                                        mobileDropdown ===
+                                                        'applications'
+                                                    }
                                                     onToggle={() =>
                                                         toggleMobileDropdown(
                                                             'applications',

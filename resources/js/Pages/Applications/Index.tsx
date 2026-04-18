@@ -22,7 +22,10 @@ interface ApplicationCatalogProps extends PageProps {
     isAdmin: boolean;
 }
 
-export default function Index({ applications, isAdmin }: ApplicationCatalogProps) {
+export default function Index({
+    applications,
+    isAdmin,
+}: ApplicationCatalogProps) {
     const handleActivate = (url: string) => {
         router.post(url);
     };
@@ -77,11 +80,12 @@ export default function Index({ applications, isAdmin }: ApplicationCatalogProps
                                             <h2 className="text-xl font-bold text-white">
                                                 {application.name}
                                             </h2>
-                                            {isAdmin && !application.is_active && (
-                                                <span className="rounded-full border border-amber-400/30 bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-300">
-                                                    Nonaktif
-                                                </span>
-                                            )}
+                                            {isAdmin &&
+                                                !application.is_active && (
+                                                    <span className="rounded-full border border-amber-400/30 bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-300">
+                                                        Nonaktif
+                                                    </span>
+                                                )}
                                         </div>
                                         <p className="text-sm text-white/70">
                                             {application.description ??
@@ -106,20 +110,27 @@ export default function Index({ applications, isAdmin }: ApplicationCatalogProps
                                             <ExternalLink className="h-4 w-4" />
                                         </a>
                                     )}
-                                    {isAdmin && application.toggle_active_url && (
-                                        <button
-                                            type="button"
-                                            onClick={() => handleActivate(application.toggle_active_url!)}
-                                            className={`inline-flex items-center gap-2 self-start rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                                                application.is_active
-                                                    ? 'border-red-300/30 bg-red-500/15 text-red-100 hover:bg-red-500/25'
-                                                    : 'border-emerald-300/30 bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/25'
-                                            }`}
-                                        >
-                                            <Power className="h-4 w-4" />
-                                            {application.is_active ? 'Nonaktifkan' : 'Aktifkan'}
-                                        </button>
-                                    )}
+                                    {isAdmin &&
+                                        application.toggle_active_url && (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleActivate(
+                                                        application.toggle_active_url!,
+                                                    )
+                                                }
+                                                className={`inline-flex items-center gap-2 self-start rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                                                    application.is_active
+                                                        ? 'border-red-300/30 bg-red-500/15 text-red-100 hover:bg-red-500/25'
+                                                        : 'border-emerald-300/30 bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/25'
+                                                }`}
+                                            >
+                                                <Power className="h-4 w-4" />
+                                                {application.is_active
+                                                    ? 'Nonaktifkan'
+                                                    : 'Aktifkan'}
+                                            </button>
+                                        )}
                                 </div>
                             </GlassCard>
                         ))

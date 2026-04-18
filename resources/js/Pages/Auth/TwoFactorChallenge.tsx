@@ -146,7 +146,11 @@ export default function TwoFactorChallenge() {
             >
                 <input type="hidden" name="_token" value={csrfToken} />
                 {recovery ? (
-                    <input type="hidden" name="recovery_code" value={recoveryCode} />
+                    <input
+                        type="hidden"
+                        name="recovery_code"
+                        value={recoveryCode}
+                    />
                 ) : (
                     <input type="hidden" name="code" value={code} />
                 )}

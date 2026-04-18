@@ -158,8 +158,10 @@ export default function Index({
         value: option.token,
     }));
 
-    const selectedStatusToken = filters.selected_status_token ?? filters.current_token;
-    const selectedCategoryToken = filters.selected_category_token ?? filters.current_token;
+    const selectedStatusToken =
+        filters.selected_status_token ?? filters.current_token;
+    const selectedCategoryToken =
+        filters.selected_category_token ?? filters.current_token;
 
     const restoreForm = useForm<{
         backup_file: File | null;
@@ -605,9 +607,7 @@ export default function Index({
                                 options={statusFilterOptions}
                                 placeholder="Semua status"
                                 onChange={(value) => {
-                                    visitState(
-                                        value || filters.clear_token,
-                                    );
+                                    visitState(value || filters.clear_token);
                                 }}
                             />
 
@@ -618,9 +618,7 @@ export default function Index({
                                 options={categoryFilterOptions}
                                 placeholder="Semua kategori"
                                 onChange={(value) => {
-                                    visitState(
-                                        value || filters.clear_token,
-                                    );
+                                    visitState(value || filters.clear_token);
                                 }}
                             />
 
@@ -629,7 +627,9 @@ export default function Index({
                                     type="button"
                                     variant="secondary"
                                     className="w-full"
-                                    onClick={() => visitState(filters.clear_token)}
+                                    onClick={() =>
+                                        visitState(filters.clear_token)
+                                    }
                                 >
                                     Reset Filter
                                 </Button>
