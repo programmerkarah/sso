@@ -29,7 +29,7 @@ export default function Welcome() {
                                     {/* Title */}
                                     <div className="absolute -inset-4 animate-pulse rounded-full bg-gradient-to-r from-blue-400 to-purple-400 opacity-30 blur-2xl"></div>
                                     <h1 className="relative bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-6xl font-black text-transparent drop-shadow-2xl sm:text-7xl md:text-8xl">
-                                        SSO Sawahlunto
+                                        Single Sign-On
                                     </h1>
                                 </div>
                             </div>

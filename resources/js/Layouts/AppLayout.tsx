@@ -97,7 +97,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                             href="/dashboard"
                                             className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-black text-transparent drop-shadow-lg transition hover:from-blue-100 hover:to-purple-100"
                                         >
-                                            SSO Sawahlunto
+                                            Single Sign-On
                                         </Link>
                                     </div>
 

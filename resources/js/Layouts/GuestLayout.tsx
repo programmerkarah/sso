@@ -81,7 +81,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                                     {/* Title */}
                                     <div className="absolute -inset-2 animate-pulse rounded-full bg-gradient-to-r from-blue-400 to-purple-400 opacity-30 blur-xl"></div>
                                     <h1 className="relative bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-5xl font-black text-transparent drop-shadow-xl">
-                                        SSO Sawahlunto
+                                        Single Sign-On
                                     </h1>
                                 </div>
                             </div>

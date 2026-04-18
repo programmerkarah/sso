@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'SSO Sawahlunto'),
+    'name' => env('APP_NAME', 'Single Sign-On BPS Kota Sawahlunto'),
 
     /*
     |--------------------------------------------------------------------------

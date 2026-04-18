@@ -200,7 +200,7 @@ export default function Dashboard({ auth, applicationsCount }: DashboardProps) {
                 {/* Info Section */}
                 <GlassCard>
                     <h3 className="mb-4 text-2xl font-bold text-white drop-shadow-lg">
-                        Tentang SSO Sawahlunto
+                        Tentang SSO BPS Kota Sawahlunto
                     </h3>
                     <p className="mb-6 text-white/90">
                         Single Sign-On (SSO) memungkinkan Anda menggunakan satu

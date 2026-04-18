@@ -45,7 +45,7 @@ Database `sso_sawahlunto` sudah dibuat dan migrasi sudah dijalankan.
 
 File `.env` sudah dikonfigurasi:
 ```
-APP_NAME="SSO Sawahlunto"
+APP_NAME="Single Sign-On BPS Kota Sawahlunto"
 APP_URL=http://sso.sawahlunto.test
 
 DB_DATABASE=sso_sawahlunto
