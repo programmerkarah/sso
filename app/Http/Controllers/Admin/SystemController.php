@@ -114,11 +114,18 @@ class SystemController extends Controller
             ->filter(fn ($value) => is_string($value) && $value !== '')
             ->values();
 
+        $currentStateToken = $encryptedState->encryptArray([
+            'page' => $currentPage,
+            'status' => $statusFilter,
+            'category' => $categoryFilter,
+        ]);
+
         return Inertia::render('Admin/System/Index', [
             'logs' => $logs,
             'filters' => [
                 'status' => $statusFilter,
                 'category' => $categoryFilter,
+                'current_token' => $currentStateToken,
                 'selected_status_token' => $statusFilter !== null
                     ? $encryptedState->encryptArray([
                         'page' => 1,
@@ -451,13 +458,21 @@ class SystemController extends Controller
 
     private function restoreDatabase(string $sqlContent): void
     {
+        // Filter SQL untuk skip tabel users dan sessions
+        $filteredSql = $this->filterBackupSql($sqlContent, ['users', 'sessions']);
+
         $connection = config('database.connections.'.config('database.default'));
         $binary = $this->resolveDatabaseBinary('mysql');
         $host = $this->normalizeMysqlHost((string) ($connection['host'] ?? '127.0.0.1'));
+
+        // Untuk Windows/XAMPP, gunakan named pipe jika host adalah localhost
+        $isLocalhost = in_array($host, ['127.0.0.1', 'localhost'], true);
+        $protocol = $isLocalhost && PHP_OS_FAMILY === 'Windows' ? 'pipe' : 'tcp';
+
         $command = [
             $binary,
             '--host='.$host,
-            '--protocol=tcp',
+            '--protocol='.$protocol,
             '--port='.(string) ($connection['port'] ?? '3306'),
             '--user='.(string) ($connection['username'] ?? 'root'),
             '--password='.(string) ($connection['password'] ?? ''),
@@ -466,12 +481,63 @@ class SystemController extends Controller
 
         $process = new Process($command);
         $process->setTimeout(300);
-        $process->setInput($sqlContent);
+        $process->setInput($filteredSql);
         $process->run();
 
         if (! $process->isSuccessful()) {
             throw new \RuntimeException($process->getErrorOutput() ?: 'Unknown mysql restore error.');
         }
+    }
+
+    private function filterBackupSql(string $sqlContent, array $skipTables = []): string
+    {
+        if (empty($skipTables)) {
+            return $sqlContent;
+        }
+
+        // Pola untuk mendeteksi blok CREATE TABLE dan INSERT untuk tabel tertentu
+        $lines = explode("\n", $sqlContent);
+        $filtered = [];
+        $currentTable = null;
+        $skipCurrentBlock = false;
+
+        foreach ($lines as $line) {
+            // Deteksi tabel yang sedang diproses
+            if (preg_match('/CREATE TABLE.*?`(\w+)`/i', $line, $matches)) {
+                $currentTable = $matches[1];
+                $skipCurrentBlock = in_array($currentTable, $skipTables, true);
+            } elseif (preg_match('/INSERT INTO.*?`(\w+)`/i', $line, $matches)) {
+                $currentTable = $matches[1];
+                $skipCurrentBlock = in_array($currentTable, $skipTables, true);
+            } elseif (preg_match('/DROP TABLE.*?`(\w+)`/i', $line, $matches)) {
+                $currentTable = $matches[1];
+                $skipCurrentBlock = in_array($currentTable, $skipTables, true);
+            }
+
+            // Reset flag jika menemukan delimiter statement baru
+            if (trim($line) === '' || preg_match('/^--/', $line)) {
+                // Komentar atau baris kosong, lanjutkan
+                if (! $skipCurrentBlock) {
+                    $filtered[] = $line;
+                }
+
+                continue;
+            }
+
+            // Akhir statement (semicolon di akhir baris)
+            if (str_ends_with(trim($line), ';')) {
+                if (! $skipCurrentBlock) {
+                    $filtered[] = $line;
+                }
+
+                $skipCurrentBlock = false;
+                $currentTable = null;
+            } elseif (! $skipCurrentBlock) {
+                $filtered[] = $line;
+            }
+        }
+
+        return implode("\n", $filtered);
     }
 
     private function resolveDatabaseBinary(string $command): string

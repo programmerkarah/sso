@@ -79,6 +79,7 @@ interface AdminSystemPageProps extends PageProps {
     filters: {
         status: string | null;
         category: string | null;
+        current_token: string;
         selected_status_token: string | null;
         selected_category_token: string | null;
         status_options: FilterOption[];
@@ -157,8 +158,8 @@ export default function Index({
         value: option.token,
     }));
 
-    const selectedStatusToken = filters.selected_status_token ?? '';
-    const selectedCategoryToken = filters.selected_category_token ?? '';
+    const selectedStatusToken = filters.selected_status_token ?? filters.current_token;
+    const selectedCategoryToken = filters.selected_category_token ?? filters.current_token;
 
     const restoreForm = useForm<{
         backup_file: File | null;
