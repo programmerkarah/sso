@@ -37,6 +37,13 @@ class LoginResponse implements LoginResponseContract
                 : redirect()->route('settings.change-password');
         }
 
+        // Debug intended URL
+        \Illuminate\Support\Facades\Log::channel('single')->info('=== LoginResponse: Redirecting after login ===', [
+            'intended_url' => $request->session()->get('url.intended'),
+            'default_redirect' => Fortify::redirects('login'),
+            'session_id' => $request->session()->getId(),
+        ]);
+
         return $request->wantsJson()
             ? response()->json(['two_factor' => false])
             : redirect()->intended(Fortify::redirects('login'));

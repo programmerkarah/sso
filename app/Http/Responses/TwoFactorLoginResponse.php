@@ -38,6 +38,13 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
                 : redirect()->route('settings.change-password');
         }
 
+        // Debug intended URL
+        \Illuminate\Support\Facades\Log::channel('single')->info('=== TwoFactorLoginResponse: Redirecting after 2FA ===', [
+            'intended_url' => $request->session()->get('url.intended'),
+            'default_redirect' => Fortify::redirects('login'),
+            'session_id' => $request->session()->getId(),
+        ]);
+
         return $request->wantsJson()
             ? new JsonResponse('', 204)
             : redirect()->intended(Fortify::redirects('login'));
