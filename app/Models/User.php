@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPasswordNotification;
 use App\Services\EncryptedStateService;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -113,5 +114,10 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return $this->newQuery()->where($this->getRouteKeyName(), $decrypted)->firstOrFail();
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification((string) $token));
     }
 }

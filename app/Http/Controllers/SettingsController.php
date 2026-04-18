@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateSecurityEmailRequest;
 use App\Models\User;
+use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -84,6 +86,45 @@ class SettingsController extends Controller
             'password' => $request->input('password'),
         ])->save();
 
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'account.password.updated',
+            category: 'account_security',
+            description: 'Pengguna memperbarui password akun.',
+            user: $user,
+        );
+
         return back()->with('success', 'Password akun berhasil diperbarui.');
+    }
+
+    public function updateEmail(UpdateSecurityEmailRequest $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $newEmail = strtolower((string) $request->string('email'));
+
+        if ($newEmail === strtolower($user->email)) {
+            return back()->with('info', 'Email baru sama dengan email saat ini. Tidak ada perubahan yang disimpan.');
+        }
+
+        $user->forceFill([
+            'email' => $newEmail,
+            'email_verified_at' => null,
+        ])->save();
+
+        $user->sendEmailVerificationNotification();
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'account.email.updated',
+            category: 'account_security',
+            description: 'Pengguna memperbarui email akun dan perlu verifikasi ulang.',
+            user: $user,
+            metadata: [
+                'new_email' => $newEmail,
+            ],
+        );
+
+        return back()->with('success', 'Email berhasil diperbarui. Silakan cek inbox untuk memverifikasi alamat email baru Anda.');
     }
 }

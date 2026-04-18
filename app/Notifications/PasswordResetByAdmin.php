@@ -32,13 +32,21 @@ class PasswordResetByAdmin extends Notification
     {
         return (new MailMessage)
             ->subject('Password Akun Anda Telah Direset')
-            ->greeting('Halo, '.$notifiable->name.'!')
-            ->line('Password akun Anda telah direset oleh administrator.')
-            ->line('Gunakan password sementara berikut untuk masuk:')
-            ->line('**'.$this->temporaryPassword.'**')
-            ->line('Setelah masuk, Anda akan diminta untuk segera mengganti password ini dengan password baru yang aman.')
-            ->line('**Jangan bagikan password sementara ini kepada siapapun.**')
-            ->action('Masuk Sekarang', url(config('app.url').'/login'))
-            ->line('Jika Anda tidak merasa melakukan permintaan ini, segera hubungi administrator.');
+            ->markdown('mail.notifications.standard', [
+                'headline' => 'Password Akun Direset Administrator',
+                'greeting' => 'Yth. '.$notifiable->name.',',
+                'introLines' => [
+                    'Administrator telah melakukan reset password pada akun Anda.',
+                    'Gunakan password sementara berikut untuk proses login:',
+                    $this->temporaryPassword,
+                    'Demi keamanan akun, segera ubah password setelah berhasil masuk.',
+                ],
+                'actionText' => 'Masuk Sekarang',
+                'actionUrl' => url(config('app.url').'/login'),
+                'outroLines' => [
+                    'Jangan bagikan password sementara kepada siapa pun.',
+                    'Apabila Anda tidak merasa melakukan permintaan ini, segera hubungi administrator.',
+                ],
+            ]);
     }
 }

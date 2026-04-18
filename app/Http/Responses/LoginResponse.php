@@ -3,6 +3,7 @@
 namespace App\Http\Responses;
 
 use App\Services\TrustedDeviceManager;
+use App\Support\ActivityLogger;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Laravel\Fortify\Fortify;
 
@@ -20,6 +21,14 @@ class LoginResponse implements LoginResponseContract
     {
         if ($request->user()) {
             $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $request->user());
+
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'auth.login',
+                category: 'authentication',
+                description: 'Login berhasil.',
+                user: $request->user(),
+            );
         }
 
         if ($request->user()?->mustChangePassword()) {

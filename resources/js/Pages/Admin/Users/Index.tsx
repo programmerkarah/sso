@@ -2,7 +2,9 @@ import {
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
+    Download,
     KeyRound,
+    Pencil,
     RotateCcw,
     Shield,
     ShieldCheck,
@@ -14,10 +16,13 @@ import {
 
 import { useState } from 'react';
 
-import { Head, router } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 
+import Button from '@/Components/Button';
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
+import Input from '@/Components/Input';
+import Label from '@/Components/Label';
 import SearchableSelect, {
     SearchableSelectOption,
 } from '@/Components/SearchableSelect';
@@ -62,6 +67,7 @@ interface AdminUsersIndexProps extends PageProps {
     userOptions: SearchableSelectOption[];
     selectedUser?: Omit<SearchableSelectOption, 'state_token'> | null;
     clearFilterToken: string;
+    exportStateToken: string;
 }
 
 interface ConfirmModal {
@@ -71,6 +77,11 @@ interface ConfirmModal {
     confirmLabel: string;
     confirmVariant: 'amber' | 'red' | 'emerald';
     onConfirm: () => void;
+}
+
+interface EditIdentityModalState {
+    isOpen: boolean;
+    user: ManagedUser | null;
 }
 
 const formatDateTime = (value?: string) => {
@@ -93,6 +104,7 @@ export default function Index({
     userOptions,
     selectedUser,
     clearFilterToken,
+    exportStateToken,
 }: AdminUsersIndexProps) {
     const currentUserId = auth?.user?.id;
 
@@ -104,6 +116,15 @@ export default function Index({
         confirmVariant: 'red',
         onConfirm: () => {},
     });
+    const [editIdentityModal, setEditIdentityModal] =
+        useState<EditIdentityModalState>({
+            isOpen: false,
+            user: null,
+        });
+    const identityForm = useForm({
+        username: '',
+        email: '',
+    });
 
     const openModal = (config: Omit<ConfirmModal, 'isOpen'>) => {
         setModal({ isOpen: true, ...config });
@@ -111,6 +132,42 @@ export default function Index({
 
     const closeModal = () => {
         setModal((prev) => ({ ...prev, isOpen: false }));
+    };
+
+    const openEditIdentityModal = (user: ManagedUser) => {
+        identityForm.setData({
+            username: user.username,
+            email: user.email,
+        });
+        identityForm.clearErrors();
+        setEditIdentityModal({
+            isOpen: true,
+            user,
+        });
+    };
+
+    const closeEditIdentityModal = () => {
+        setEditIdentityModal({
+            isOpen: false,
+            user: null,
+        });
+        identityForm.clearErrors();
+    };
+
+    const submitIdentityUpdate = () => {
+        if (!editIdentityModal.user) {
+            return;
+        }
+
+        identityForm.post(
+            `/admin/users/${editIdentityModal.user.route_key}/identity`,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    closeEditIdentityModal();
+                },
+            },
+        );
     };
 
     const visitState = (state: string) => {
@@ -193,6 +250,8 @@ export default function Index({
     const twoFactorCount = users.data.filter(
         (u) => u.two_factor_confirmed_at,
     ).length;
+    const excelExportUrl = `/admin/users/export/excel?state=${encodeURIComponent(exportStateToken)}`;
+    const pdfExportUrl = `/admin/users/export/pdf?state=${encodeURIComponent(exportStateToken)}`;
 
     return (
         <AppLayout>
@@ -206,6 +265,80 @@ export default function Index({
                 onCancel={closeModal}
                 onConfirm={modal.onConfirm}
             />
+            {editIdentityModal.isOpen && (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={closeEditIdentityModal}
+                    />
+                    <div className="relative w-full max-w-lg rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                        <h3 className="text-lg font-bold text-white">
+                            Ubah Email dan Username
+                        </h3>
+                        <p className="mt-1 text-sm text-white/75">
+                            Perbarui identitas akun untuk{' '}
+                            {editIdentityModal.user?.name}.
+                        </p>
+
+                        <div className="mt-5 space-y-4">
+                            <div>
+                                <Label htmlFor="identity_username" required>
+                                    Username
+                                </Label>
+                                <Input
+                                    id="identity_username"
+                                    value={identityForm.data.username}
+                                    onChange={(e) =>
+                                        identityForm.setData(
+                                            'username',
+                                            e.target.value,
+                                        )
+                                    }
+                                    error={identityForm.errors.username}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="identity_email" required>
+                                    Email
+                                </Label>
+                                <Input
+                                    id="identity_email"
+                                    type="email"
+                                    value={identityForm.data.email}
+                                    onChange={(e) =>
+                                        identityForm.setData(
+                                            'email',
+                                            e.target.value,
+                                        )
+                                    }
+                                    error={identityForm.errors.email}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={closeEditIdentityModal}
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={submitIdentityUpdate}
+                                disabled={identityForm.processing}
+                            >
+                                {identityForm.processing
+                                    ? 'Menyimpan...'
+                                    : 'Simpan Perubahan'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="mx-auto max-w-7xl space-y-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -217,6 +350,22 @@ export default function Index({
                             Pantau akun terdaftar, reset password, nonaktifkan
                             2FA, dan kelola peran pengguna.
                         </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <a
+                            href={excelExportUrl}
+                            className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg backdrop-blur-xl transition hover:bg-emerald-500/25"
+                        >
+                            <Download className="h-4 w-4" />
+                            Export Excel
+                        </a>
+                        <a
+                            href={pdfExportUrl}
+                            className="inline-flex items-center gap-2 rounded-2xl border border-blue-300/25 bg-blue-500/15 px-4 py-2 text-sm font-semibold text-blue-50 shadow-lg backdrop-blur-xl transition hover:bg-blue-500/25"
+                        >
+                            <Download className="h-4 w-4" />
+                            Export PDF
+                        </a>
                     </div>
                 </div>
 
@@ -310,6 +459,9 @@ export default function Index({
                                         Email
                                     </th>
                                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                        Role
+                                    </th>
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
                                         Terdaftar
                                     </th>
                                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
@@ -327,7 +479,7 @@ export default function Index({
                                 {users.data.length === 0 ? (
                                     <tr>
                                         <td
-                                            colSpan={6}
+                                            colSpan={7}
                                             className="px-5 py-14 text-center text-white/50"
                                         >
                                             Belum ada pengguna terdaftar.
@@ -348,29 +500,30 @@ export default function Index({
                                                     <span className="text-xs text-white/50">
                                                         @{user.username}
                                                     </span>
-                                                    <div className="mt-0.5 flex flex-wrap gap-1">
-                                                        {user.roles.map(
-                                                            (role) => (
-                                                                <span
-                                                                    key={role}
-                                                                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                                                                        role ===
-                                                                        'admin'
-                                                                            ? 'bg-purple-400/25 text-purple-100'
-                                                                            : 'bg-white/10 text-white/70'
-                                                                    }`}
-                                                                >
-                                                                    {role}
-                                                                </span>
-                                                            ),
-                                                        )}
-                                                    </div>
                                                 </div>
                                             </td>
 
                                             {/* Email */}
                                             <td className="px-5 py-4 text-sm text-white/80">
                                                 {user.email}
+                                            </td>
+
+                                            {/* Role */}
+                                            <td className="px-5 py-4">
+                                                <div className="flex flex-wrap gap-1">
+                                                    {user.roles.map((role) => (
+                                                        <span
+                                                            key={role}
+                                                            className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                                                                role === 'admin'
+                                                                    ? 'bg-purple-400/25 text-purple-100'
+                                                                    : 'bg-white/10 text-white/70'
+                                                            }`}
+                                                        >
+                                                            {role}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </td>
 
                                             {/* Terdaftar */}
@@ -457,6 +610,18 @@ export default function Index({
                                                                 : 'Jadikan Admin'}
                                                         </button>
                                                     )}
+                                                    <button
+                                                        onClick={() =>
+                                                            openEditIdentityModal(
+                                                                user,
+                                                            )
+                                                        }
+                                                        title="Ubah Identitas"
+                                                        className="inline-flex items-center gap-1.5 rounded-lg border border-sky-300/30 bg-sky-500/15 px-3 py-2 text-xs font-semibold text-sky-100 transition hover:bg-sky-500/25"
+                                                    >
+                                                        <Pencil className="h-3.5 w-3.5" />
+                                                        Ubah Identitas
+                                                    </button>
                                                     <button
                                                         onClick={() =>
                                                             handleResetPassword(

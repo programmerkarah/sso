@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Services\EncryptedStateService;
+use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -102,6 +103,18 @@ class ApplicationController extends Controller
             'is_active' => true,
         ]);
 
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.applications.created',
+            category: 'application_management',
+            description: 'Aplikasi baru berhasil didaftarkan.',
+            user: $request->user(),
+            metadata: [
+                'application_id' => $application->id,
+                'application_name' => $application->name,
+            ],
+        );
+
         return redirect()
             ->route('admin.applications.show', $application)
             ->with('success', 'Aplikasi berhasil didaftarkan!');
@@ -147,12 +160,24 @@ class ApplicationController extends Controller
             $application->oauthClient->save();
         }
 
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.applications.updated',
+            category: 'application_management',
+            description: 'Data aplikasi berhasil diperbarui.',
+            user: $request->user(),
+            metadata: [
+                'application_id' => $application->id,
+                'application_name' => $application->name,
+            ],
+        );
+
         return redirect()
             ->route('admin.applications.show', $application)
             ->with('success', 'Aplikasi berhasil diperbarui!');
     }
 
-    public function refreshSecret(Application $application): RedirectResponse
+    public function refreshSecret(Request $request, Application $application): RedirectResponse
     {
         if (! $application->oauthClient) {
             return back()->with('error', 'Client OAuth untuk aplikasi ini tidak ditemukan.');
@@ -168,16 +193,43 @@ class ApplicationController extends Controller
             'oauth_client_secret' => $clientSecret,
         ])->save();
 
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.applications.secret.refreshed',
+            category: 'application_management',
+            description: 'Client secret aplikasi diregenerasi.',
+            user: $request->user(),
+            metadata: [
+                'application_id' => $application->id,
+                'application_name' => $application->name,
+            ],
+        );
+
         return back()->with('success', 'Client secret berhasil diregenerasi. Simpan secret baru ini di tempat yang aman.');
     }
 
-    public function destroy(Application $application): RedirectResponse
+    public function destroy(Request $request, Application $application): RedirectResponse
     {
+        $appId = $application->id;
+        $appName = $application->name;
+
         if ($application->oauthClient) {
             $application->oauthClient->delete();
         }
 
         $application->delete();
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.applications.deleted',
+            category: 'application_management',
+            description: 'Aplikasi berhasil dihapus.',
+            user: $request->user(),
+            metadata: [
+                'application_id' => $appId,
+                'application_name' => $appName,
+            ],
+        );
 
         return redirect()
             ->route('admin.applications.index')

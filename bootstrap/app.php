@@ -7,6 +7,8 @@ use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,5 +29,29 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->respond(function (HttpFoundationResponse $response) {
+            if ($response->getStatusCode() !== 419) {
+                return $response;
+            }
+
+            $request = request();
+
+            if ($request->hasSession()) {
+                $request->session()->regenerateToken();
+            }
+
+            if ($request->header('X-Inertia')) {
+                $redirectUrl = $request->header('referer') ?: url()->current();
+
+                return Inertia::location($redirectUrl);
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'CSRF token mismatch.',
+                ], 419);
+            }
+
+            return back();
+        });
     })->create();

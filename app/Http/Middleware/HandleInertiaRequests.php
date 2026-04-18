@@ -65,6 +65,7 @@ class HandleInertiaRequests extends Middleware
                 'can' => [
                     'manageApplications' => $isAdmin,
                     'manageUsers' => $isAdmin,
+                    'manageSystem' => $isAdmin,
                 ],
             ],
             'flash' => [

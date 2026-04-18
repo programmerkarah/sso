@@ -1,13 +1,23 @@
 <?php
 
 use App\Http\Controllers\Admin\ApplicationController;
+use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\ApplicationCatalogController;
 use App\Http\Controllers\Settings\ChangePasswordController;
 use App\Http\Controllers\SettingsController;
 use App\Models\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::get('/csrf-token', function () {
+    request()->session()->regenerateToken();
+
+    return response()->json([
+        'token' => csrf_token(),
+    ]);
+})->name('csrf.token');
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -33,12 +43,24 @@ Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(functi
 Route::middleware(['auth', 'verified', 'must-change-password'])->prefix('settings')->name('settings.')->group(function () {
     Route::get('/security', [SettingsController::class, 'security'])->name('security');
     Route::post('/security/password', [SettingsController::class, 'updatePassword'])->name('security.password.update');
+    Route::post('/security/email', [SettingsController::class, 'updateEmail'])->name('security.email.update');
     Route::get('/security/recovery-codes', [SettingsController::class, 'showRecoveryCodes'])->name('security.recovery-codes.show');
     Route::post('/security/recovery-codes/regenerate', [SettingsController::class, 'regenerateRecoveryCodes'])->name('security.recovery-codes.regenerate');
 });
 
+Route::middleware(['auth', 'verified', 'two-factor', 'must-change-password'])
+    ->get('/applications', [ApplicationCatalogController::class, 'index'])
+    ->name('applications.index');
+
 // Admin Routes - Only admins can manage applications
 Route::middleware(['auth', 'verified', 'two-factor', 'must-change-password', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/system', [SystemController::class, 'index'])->name('system.index');
+    Route::post('/system/backups', [SystemController::class, 'backup'])->name('system.backups.create');
+    Route::get('/system/backups/{filename}', [SystemController::class, 'downloadBackup'])
+        ->where('filename', '.*')
+        ->name('system.backups.download');
+    Route::post('/system/restore', [SystemController::class, 'restore'])->name('system.restore');
+
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
     Route::post('/applications/navigate', [ApplicationController::class, 'index'])->name('applications.navigate');
     Route::get('/applications/create', [ApplicationController::class, 'create'])->name('applications.create');
@@ -49,7 +71,10 @@ Route::middleware(['auth', 'verified', 'two-factor', 'must-change-password', 'ad
     Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
     Route::post('/applications/{application}/refresh-secret', [ApplicationController::class, 'refreshSecret'])->name('applications.refresh-secret');
     Route::match(['GET', 'POST'], '/users', [UserManagementController::class, 'index'])->name('users.index');
+    Route::get('/users/export/excel', [UserManagementController::class, 'exportExcel'])->name('users.export.excel');
+    Route::get('/users/export/pdf', [UserManagementController::class, 'exportPdf'])->name('users.export.pdf');
     Route::post('/users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
     Route::post('/users/{user}/reset-two-factor', [UserManagementController::class, 'resetTwoFactor'])->name('users.reset-two-factor');
+    Route::post('/users/{user}/identity', [UserManagementController::class, 'updateIdentity'])->name('users.update-identity');
     Route::post('/users/{user}/toggle-admin', [UserManagementController::class, 'toggleAdmin'])->name('users.toggle-admin');
 });

@@ -1,4 +1,12 @@
-import { Key, KeyRound, LockKeyhole, RefreshCw, Shield, X } from 'lucide-react';
+import {
+    Key,
+    KeyRound,
+    LockKeyhole,
+    Mail,
+    RefreshCw,
+    Shield,
+    X,
+} from 'lucide-react';
 
 import { FormEventHandler, useEffect, useState } from 'react';
 
@@ -37,6 +45,10 @@ export default function Security({
         current_password: '',
         password: '',
         password_confirmation: '',
+    });
+    const emailForm = useForm({
+        current_password: '',
+        email: '',
     });
 
     useEffect(() => {
@@ -126,6 +138,16 @@ export default function Security({
                     'password',
                     'password_confirmation',
                 );
+            },
+        });
+    };
+
+    const updateEmail: FormEventHandler = (e) => {
+        e.preventDefault();
+        emailForm.post('/settings/security/email', {
+            preserveScroll: true,
+            onSuccess: () => {
+                emailForm.reset('current_password');
             },
         });
     };
@@ -258,6 +280,91 @@ export default function Security({
                                                 {passwordForm.processing
                                                     ? 'Memperbarui...'
                                                     : 'Simpan Password Baru'}
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard>
+                            <div className="flex items-start gap-4">
+                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 backdrop-blur-sm">
+                                    <Mail className="h-8 w-8 text-blue-300" />
+                                </div>
+                                <div className="flex-1 space-y-5">
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-white">
+                                            Ganti Email
+                                        </h2>
+                                        <p className="mt-2 text-white/80">
+                                            Ubah alamat email akun Anda. Setelah
+                                            perubahan disimpan, email baru wajib
+                                            diverifikasi kembali.
+                                        </p>
+                                    </div>
+
+                                    <form
+                                        onSubmit={updateEmail}
+                                        className="grid gap-4 md:grid-cols-2"
+                                    >
+                                        <div>
+                                            <Label htmlFor="email" required>
+                                                Email Baru
+                                            </Label>
+                                            <Input
+                                                id="email"
+                                                type="email"
+                                                value={emailForm.data.email}
+                                                onChange={(e) =>
+                                                    emailForm.setData(
+                                                        'email',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                error={emailForm.errors.email}
+                                                placeholder="contoh@domain.go.id"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <Label
+                                                htmlFor="email_current_password"
+                                                required
+                                            >
+                                                Password Saat Ini
+                                            </Label>
+                                            <Input
+                                                id="email_current_password"
+                                                type="password"
+                                                value={
+                                                    emailForm.data
+                                                        .current_password
+                                                }
+                                                onChange={(e) =>
+                                                    emailForm.setData(
+                                                        'current_password',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                error={
+                                                    emailForm.errors
+                                                        .current_password
+                                                }
+                                                placeholder="Masukkan password saat ini"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="md:col-span-2 flex justify-end">
+                                            <Button
+                                                type="submit"
+                                                disabled={emailForm.processing}
+                                            >
+                                                {emailForm.processing
+                                                    ? 'Memperbarui...'
+                                                    : 'Simpan Email Baru'}
                                             </Button>
                                         </div>
                                     </form>

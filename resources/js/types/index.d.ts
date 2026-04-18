@@ -41,6 +41,7 @@ export type PageProps<
         can: {
             manageApplications: boolean;
             manageUsers: boolean;
+            manageSystem: boolean;
         };
     };
     flash: {

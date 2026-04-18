@@ -21,6 +21,25 @@ export default function TwoFactorChallenge() {
         recovery_code: '',
     });
 
+    const localizeTwoFactorMessage = (message?: string): string => {
+        if (!message) {
+            return 'Kode verifikasi tidak valid. Silakan coba lagi.';
+        }
+
+        if (
+            message ===
+            'The provided two factor authentication code was invalid.'
+        ) {
+            return 'Kode autentikasi dua faktor yang Anda masukkan tidak valid.';
+        }
+
+        if (message === 'The provided two factor recovery code was invalid.') {
+            return 'Kode pemulihan dua faktor yang Anda masukkan tidak valid.';
+        }
+
+        return message;
+    };
+
     const handleDigitChange = (index: number, value: string) => {
         const digit = value.replace(/\D/g, '').slice(-1);
         const newDigits = [...digits];
@@ -70,10 +89,9 @@ export default function TwoFactorChallenge() {
         e.preventDefault();
         post('/two-factor-challenge', {
             onError: (errors) => {
-                const message =
-                    errors.code ??
-                    errors.recovery_code ??
-                    'Kode verifikasi tidak valid. Silakan coba lagi.';
+                const message = localizeTwoFactorMessage(
+                    errors.code ?? errors.recovery_code,
+                );
 
                 setToasts([
                     {

@@ -1,5 +1,7 @@
 import {
     AppWindow,
+    ChevronDown,
+    Database,
     LayoutDashboard,
     LogOut,
     Menu,
@@ -23,6 +25,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
     const user = auth?.user;
     const canManageApplications = auth?.can.manageApplications ?? false;
     const canManageUsers = auth?.can.manageUsers ?? false;
+    const canManageSystem = auth?.can.manageSystem ?? false;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [toasts, setToasts] = useState<ToastItem[]>([]);
 
@@ -110,29 +113,85 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                             <LayoutDashboard className="inline h-4 w-4 mr-1.5 align-text-bottom" />
                                             Dashboard
                                         </Link>
-                                        <Link
-                                            href="/settings/security"
-                                            className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
-                                        >
-                                            <Shield className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                            Keamanan
-                                        </Link>
-                                        {canManageApplications && (
-                                            <Link
-                                                href="/admin/applications"
-                                                className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
-                                            >
-                                                <AppWindow className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                Aplikasi
-                                            </Link>
+                                        {(canManageUsers || canManageApplications) ? (
+                                            <>
+                                                <details className="group relative">
+                                                    <summary className="list-none cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white">
+                                                        <span className="inline-flex items-center gap-1.5">
+                                                            <Shield className="h-4 w-4" />
+                                                            Akun & Keamanan
+                                                            <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+                                                        </span>
+                                                    </summary>
+                                                    <div className="absolute left-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-white/20 bg-slate-900/95 p-2 shadow-2xl backdrop-blur-xl">
+                                                        <Link
+                                                            href="/settings/security"
+                                                            className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Keamanan
+                                                        </Link>
+                                                        {canManageUsers && (
+                                                            <Link
+                                                                href="/admin/users"
+                                                                className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                            >
+                                                                Kelola Pengguna
+                                                            </Link>
+                                                        )}
+                                                    </div>
+                                                </details>
+
+                                                <details className="group relative">
+                                                    <summary className="list-none cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white">
+                                                        <span className="inline-flex items-center gap-1.5">
+                                                            <AppWindow className="h-4 w-4" />
+                                                            Aplikasi
+                                                            <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+                                                        </span>
+                                                    </summary>
+                                                    <div className="absolute left-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-white/20 bg-slate-900/95 p-2 shadow-2xl backdrop-blur-xl">
+                                                        <Link
+                                                            href="/applications"
+                                                            className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Daftar Aplikasi
+                                                        </Link>
+                                                        {canManageApplications && (
+                                                            <Link
+                                                                href="/admin/applications"
+                                                                className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                            >
+                                                                Kelola Aplikasi
+                                                            </Link>
+                                                        )}
+                                                    </div>
+                                                </details>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Link
+                                                    href="/settings/security"
+                                                    className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                >
+                                                    <Shield className="inline h-4 w-4 mr-1.5 align-text-bottom" />
+                                                    Keamanan
+                                                </Link>
+                                                <Link
+                                                    href="/applications"
+                                                    className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                >
+                                                    <AppWindow className="inline h-4 w-4 mr-1.5 align-text-bottom" />
+                                                    Aplikasi
+                                                </Link>
+                                            </>
                                         )}
-                                        {canManageUsers && (
+                                        {canManageSystem && (
                                             <Link
-                                                href="/admin/users"
+                                                href="/admin/system"
                                                 className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
                                             >
-                                                <Users className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                Pengguna
+                                                <Database className="inline h-4 w-4 mr-1.5 align-text-bottom" />
+                                                Sistem
                                             </Link>
                                         )}
 
@@ -187,29 +246,83 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                             <LayoutDashboard className="inline h-4 w-4 mr-1.5 align-text-bottom" />
                                             Dashboard
                                         </Link>
-                                        <Link
-                                            href="/settings/security"
-                                            className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
-                                        >
-                                            <Shield className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                            Keamanan
-                                        </Link>
-                                        {canManageApplications && (
-                                            <Link
-                                                href="/admin/applications"
-                                                className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
-                                            >
-                                                <AppWindow className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                Aplikasi
-                                            </Link>
+                                        {(canManageUsers || canManageApplications) ? (
+                                            <>
+                                                <details className="overflow-hidden rounded-xl border border-white/15 bg-white/5">
+                                                    <summary className="list-none cursor-pointer px-4 py-2 text-sm font-semibold text-white/90">
+                                                        <span className="inline-flex items-center gap-1.5">
+                                                            <Shield className="h-4 w-4" />
+                                                            Akun & Keamanan
+                                                        </span>
+                                                    </summary>
+                                                    <div className="flex flex-col gap-1 border-t border-white/10 px-2 py-2">
+                                                        <Link
+                                                            href="/settings/security"
+                                                            className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Keamanan
+                                                        </Link>
+                                                        {canManageUsers && (
+                                                            <Link
+                                                                href="/admin/users"
+                                                                className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
+                                                            >
+                                                                Kelola Pengguna
+                                                            </Link>
+                                                        )}
+                                                    </div>
+                                                </details>
+
+                                                <details className="overflow-hidden rounded-xl border border-white/15 bg-white/5">
+                                                    <summary className="list-none cursor-pointer px-4 py-2 text-sm font-semibold text-white/90">
+                                                        <span className="inline-flex items-center gap-1.5">
+                                                            <AppWindow className="h-4 w-4" />
+                                                            Aplikasi
+                                                        </span>
+                                                    </summary>
+                                                    <div className="flex flex-col gap-1 border-t border-white/10 px-2 py-2">
+                                                        <Link
+                                                            href="/applications"
+                                                            className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Daftar Aplikasi
+                                                        </Link>
+                                                        {canManageApplications && (
+                                                            <Link
+                                                                href="/admin/applications"
+                                                                className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
+                                                            >
+                                                                Kelola Aplikasi
+                                                            </Link>
+                                                        )}
+                                                    </div>
+                                                </details>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Link
+                                                    href="/settings/security"
+                                                    className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+                                                >
+                                                    <Shield className="inline h-4 w-4 mr-1.5 align-text-bottom" />
+                                                    Keamanan
+                                                </Link>
+                                                <Link
+                                                    href="/applications"
+                                                    className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+                                                >
+                                                    <AppWindow className="inline h-4 w-4 mr-1.5 align-text-bottom" />
+                                                    Aplikasi
+                                                </Link>
+                                            </>
                                         )}
-                                        {canManageUsers && (
+                                        {canManageSystem && (
                                             <Link
-                                                href="/admin/users"
+                                                href="/admin/system"
                                                 className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
                                             >
-                                                <Users className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                Pengguna
+                                                <Database className="inline h-4 w-4 mr-1.5 align-text-bottom" />
+                                                Sistem
                                             </Link>
                                         )}
                                         <div className="flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2">

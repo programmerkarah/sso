@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Support\ActivityLogger;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -54,6 +55,17 @@ class CreateNewUser implements CreatesNewUsers
         if ($userRole) {
             $user->roles()->attach($userRole->id);
         }
+
+        ActivityLogger::log(
+            event: 'auth.register',
+            category: 'authentication',
+            description: 'Pengguna baru berhasil melakukan pendaftaran akun.',
+            user: $user,
+            metadata: [
+                'username' => $user->username,
+                'email' => $user->email,
+            ],
+        );
 
         return $user;
     }

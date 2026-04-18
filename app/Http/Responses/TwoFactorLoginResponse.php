@@ -3,6 +3,7 @@
 namespace App\Http\Responses;
 
 use App\Services\TrustedDeviceManager;
+use App\Support\ActivityLogger;
 use Illuminate\Http\JsonResponse;
 use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
 use Laravel\Fortify\Fortify;
@@ -21,6 +22,14 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
     {
         if ($request->user()) {
             $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $request->user());
+
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'auth.login.two_factor',
+                category: 'authentication',
+                description: 'Login berhasil setelah verifikasi dua faktor.',
+                user: $request->user(),
+            );
         }
 
         if ($request->user()?->mustChangePassword()) {

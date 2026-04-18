@@ -8,10 +8,12 @@ use App\Models\User;
 use App\Notifications\PasswordResetByAdmin;
 use App\Services\EncryptedStateService;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia as Assert;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Tests\TestCase;
 
 class AdminUserManagementTest extends TestCase
@@ -265,6 +267,65 @@ class AdminUserManagementTest extends TestCase
         $this->assertTrue(Hash::check('BaruSekali123', $user->password));
     }
 
+    public function test_user_can_update_email_from_security_page_and_receive_verification_email(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('settings.security'))
+            ->post(route('settings.security.email.update'), [
+                'current_password' => 'password',
+                'email' => 'email.baru@example.test',
+            ]);
+
+        $user->refresh();
+
+        $response
+            ->assertRedirect(route('settings.security'))
+            ->assertSessionHas('success');
+
+        $this->assertSame('email.baru@example.test', $user->email);
+        $this->assertNull($user->email_verified_at);
+
+        Notification::assertSentTo($user, VerifyEmail::class);
+    }
+
+    public function test_admin_can_update_user_identity_and_trigger_reverification_when_email_changes(): void
+    {
+        Notification::fake();
+
+        [$admin, $targetUser] = $this->createAdminAndTargetUser();
+        $targetUser->forceFill([
+            'email_verified_at' => now(),
+        ])->save();
+
+        $response = $this
+            ->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->post(route('admin.users.update-identity', $targetUser), [
+                'username' => 'user_baru_admin',
+                'email' => 'user.baru.admin@example.test',
+            ]);
+
+        $targetUser->refresh();
+
+        $response
+            ->assertRedirect(route('admin.users.index'))
+            ->assertSessionHas('success');
+
+        $this->assertSame('user_baru_admin', $targetUser->username);
+        $this->assertSame('user.baru.admin@example.test', $targetUser->email);
+        $this->assertNull($targetUser->email_verified_at);
+
+        Notification::assertSentTo($targetUser, VerifyEmail::class);
+    }
+
     /**
      * Ensure the users page can filter with encrypted state sent via POST.
      */
@@ -364,6 +425,89 @@ class AdminUserManagementTest extends TestCase
             ->has('users.total')
             ->has('users.current_page'),
         );
+    }
+
+    public function test_admin_can_export_users_as_excel(): void
+    {
+        [$admin, $targetUser] = $this->createAdminAndTargetUser();
+
+        $response = $this
+            ->actingAs($admin)
+            ->get(route('admin.users.export.excel'));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->assertHeader('content-disposition', 'attachment; filename="pengguna-sso.xlsx"');
+        $this->assertStringStartsWith('PK', $response->getContent());
+        $this->assertNotEmpty($response->getContent());
+    }
+
+    public function test_admin_user_export_is_sorted_alphabetically(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $admin = User::factory()->create([
+            'name' => 'MMM Admin',
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $admin->roles()->attach(Role::where('name', 'admin')->value('id'));
+
+        User::factory()->create([
+            'name' => 'ZZZ User',
+            'username' => 'zzz_user',
+            'email' => 'zzz@example.test',
+        ]);
+
+        User::factory()->create([
+            'name' => 'AAA User',
+            'username' => 'aaa_user',
+            'email' => 'aaa@example.test',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->get(route('admin.users.export.excel'));
+
+        $response->assertOk();
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'users-export-');
+        if ($tempFile === false) {
+            $this->fail('Gagal membuat temporary file untuk validasi XLSX.');
+        }
+
+        file_put_contents($tempFile, $response->getContent());
+
+        $spreadsheet = IOFactory::load($tempFile);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $exportedNames = [
+            (string) $sheet->getCell('B2')->getValue(),
+            (string) $sheet->getCell('B3')->getValue(),
+            (string) $sheet->getCell('B4')->getValue(),
+        ];
+
+        $spreadsheet->disconnectWorksheets();
+        unset($spreadsheet);
+        @unlink($tempFile);
+
+        $this->assertSame(['AAA User', 'MMM Admin', 'ZZZ User'], $exportedNames);
+    }
+
+    public function test_admin_can_export_users_as_pdf(): void
+    {
+        [$admin, $targetUser] = $this->createAdminAndTargetUser();
+
+        $response = $this
+            ->actingAs($admin)
+            ->get(route('admin.users.export.pdf'));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
+        $response->assertHeader('content-disposition', 'attachment; filename="pengguna-sso.pdf"');
+
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+        $this->assertNotEmpty($response->getContent());
     }
 
     /**

@@ -107,10 +107,13 @@ export default function Dashboard({ auth, applicationsCount }: DashboardProps) {
                                 <Plus className="h-4 w-4" />
                             </Link>
                         ) : (
-                            <div className="mt-4 rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white/80 backdrop-blur-sm">
-                                Pengelolaan aplikasi hanya tersedia untuk akun
-                                administrator.
-                            </div>
+                            <Link
+                                href="/applications"
+                                className="mt-4 inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+                            >
+                                Lihat aplikasi tersedia
+                                <List className="h-4 w-4" />
+                            </Link>
                         )}
                     </GlassCard>
 

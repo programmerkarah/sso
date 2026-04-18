@@ -16,7 +16,16 @@ class EnsureUserIsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (! $request->user() || ! $request->user()->isAdmin()) {
-            abort(403, 'Anda tidak memiliki akses ke halaman ini. Hanya administrator yang dapat mengelola aplikasi.');
+            $redirectUrl = route('dashboard');
+            $referer = $request->headers->get('referer');
+
+            if (is_string($referer) && $referer !== '' && $referer !== $request->fullUrl()) {
+                $redirectUrl = $referer;
+            }
+
+            return redirect()
+                ->to($redirectUrl)
+                ->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
 
         return $next($request);
