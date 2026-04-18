@@ -19,6 +19,17 @@ class CustomAuthorizationController extends AuthorizationController
         ResponseInterface $psrResponse,
         AuthorizationViewResponse $viewResponse
     ): Response|AuthorizationViewResponse {
+        // CRITICAL: Save OAuth authorize URL as intended URL if user not logged in
+        // This ensures user returns to OAuth flow after login
+        if ($this->guard->guest()) {
+            $request->session()->put('url.intended', $request->fullUrl());
+            
+            Log::channel('single')->info('=== OAuth: User not authenticated, saving intended URL ===', [
+                'intended_url' => $request->fullUrl(),
+                'session_id' => $request->session()->getId(),
+            ]);
+        }
+        
         $webGuard = Auth::guard('web');
         
         // Debug logging BEFORE
