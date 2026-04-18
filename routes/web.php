@@ -87,6 +87,7 @@ Route::middleware(['auth', 'verified', 'two-factor', 'must-change-password', 'ad
     Route::put('/applications/{application}', [ApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
     Route::post('/applications/{application}/refresh-secret', [ApplicationController::class, 'refreshSecret'])->name('applications.refresh-secret');
+    Route::post('/applications/{application}/toggle-active', [ApplicationController::class, 'toggleActive'])->name('applications.toggle-active');
     Route::match(['GET', 'POST'], '/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::get('/users/export/excel', [UserManagementController::class, 'exportExcel'])->name('users.export.excel');
     Route::get('/users/export/pdf', [UserManagementController::class, 'exportPdf'])->name('users.export.pdf');

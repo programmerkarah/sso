@@ -1,6 +1,6 @@
-import { ExternalLink, Globe, Server } from 'lucide-react';
+import { ExternalLink, Globe, Power, Server } from 'lucide-react';
 
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 
 import GlassCard from '@/Components/GlassCard';
 import AppLayout from '@/Layouts/AppLayout';
@@ -11,14 +11,22 @@ interface PublicApplication {
     name: string;
     description: string | null;
     landing_url: string;
+    launch_url: string;
     logo_url: string | null;
+    is_active: boolean;
+    toggle_active_url: string | null;
 }
 
 interface ApplicationCatalogProps extends PageProps {
     applications: PublicApplication[];
+    isAdmin: boolean;
 }
 
-export default function Index({ applications }: ApplicationCatalogProps) {
+export default function Index({ applications, isAdmin }: ApplicationCatalogProps) {
+    const handleActivate = (url: string) => {
+        router.post(url);
+    };
+
     return (
         <AppLayout>
             <Head title="Aplikasi SSO" />
@@ -48,7 +56,7 @@ export default function Index({ applications }: ApplicationCatalogProps) {
                             <GlassCard
                                 key={application.id}
                                 hover
-                                className="flex flex-col gap-5"
+                                className={`flex flex-col gap-5 ${!application.is_active ? 'opacity-60' : ''}`}
                             >
                                 <div className="flex items-start gap-4">
                                     <div className="h-14 w-14 overflow-hidden rounded-2xl border border-white/20 bg-white/10 p-2">
@@ -65,9 +73,16 @@ export default function Index({ applications }: ApplicationCatalogProps) {
                                         )}
                                     </div>
                                     <div className="space-y-1">
-                                        <h2 className="text-xl font-bold text-white">
-                                            {application.name}
-                                        </h2>
+                                        <div className="flex items-center gap-2">
+                                            <h2 className="text-xl font-bold text-white">
+                                                {application.name}
+                                            </h2>
+                                            {isAdmin && !application.is_active && (
+                                                <span className="rounded-full border border-amber-400/30 bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-300">
+                                                    Nonaktif
+                                                </span>
+                                            )}
+                                        </div>
                                         <p className="text-sm text-white/70">
                                             {application.description ??
                                                 'Tidak ada deskripsi aplikasi.'}
@@ -79,15 +94,33 @@ export default function Index({ applications }: ApplicationCatalogProps) {
                                     {application.landing_url}
                                 </div>
 
-                                <a
-                                    href={application.landing_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 self-start rounded-xl border border-sky-300/30 bg-sky-500/15 px-4 py-2 text-sm font-semibold text-sky-100 transition hover:bg-sky-500/25"
-                                >
-                                    Buka Aplikasi
-                                    <ExternalLink className="h-4 w-4" />
-                                </a>
+                                <div className="flex flex-wrap gap-2">
+                                    {application.is_active && (
+                                        <a
+                                            href={application.launch_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 self-start rounded-xl border border-sky-300/30 bg-sky-500/15 px-4 py-2 text-sm font-semibold text-sky-100 transition hover:bg-sky-500/25"
+                                        >
+                                            Buka Aplikasi
+                                            <ExternalLink className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                    {isAdmin && application.toggle_active_url && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleActivate(application.toggle_active_url!)}
+                                            className={`inline-flex items-center gap-2 self-start rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                                                application.is_active
+                                                    ? 'border-red-300/30 bg-red-500/15 text-red-100 hover:bg-red-500/25'
+                                                    : 'border-emerald-300/30 bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/25'
+                                            }`}
+                                        >
+                                            <Power className="h-4 w-4" />
+                                            {application.is_active ? 'Nonaktifkan' : 'Aktifkan'}
+                                        </button>
+                                    )}
+                                </div>
                             </GlassCard>
                         ))
                     )}

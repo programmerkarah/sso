@@ -177,6 +177,30 @@ class ApplicationController extends Controller
             ->with('success', 'Aplikasi berhasil diperbarui!');
     }
 
+    public function toggleActive(Request $request, Application $application): RedirectResponse
+    {
+        $application->update(['is_active' => ! $application->is_active]);
+
+        $statusLabel = $application->is_active ? 'diaktifkan' : 'dinonaktifkan';
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.applications.toggled',
+            category: 'application_management',
+            description: "Aplikasi berhasil {$statusLabel}.",
+            user: $request->user(),
+            metadata: [
+                'application_id' => $application->id,
+                'application_name' => $application->name,
+                'is_active' => $application->is_active,
+            ],
+        );
+
+        return redirect()
+            ->route('applications.index')
+            ->with('success', "Aplikasi berhasil {$statusLabel}!");
+    }
+
     public function refreshSecret(Request $request, Application $application): RedirectResponse
     {
         if (! $application->oauthClient) {

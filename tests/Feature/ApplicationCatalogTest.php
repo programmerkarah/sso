@@ -59,6 +59,7 @@ class ApplicationCatalogTest extends TestCase
                 ->where('applications.0.name', 'Aplikasi Aktif')
                 ->where('applications.0.description', 'Deskripsi publik aplikasi aktif')
                 ->where('applications.0.landing_url', 'https://aktif.example.test')
+                ->where('applications.0.launch_url', 'https://rahasia.example.test/auth/sso/redirect')
                 ->where('applications.0.logo_url', 'https://aktif.example.test/logo.png')
             );
 
