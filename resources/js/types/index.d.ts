@@ -6,6 +6,7 @@ export interface User {
     password_change_required?: boolean;
     last_login_at?: string;
     email_verified_at?: string;
+    admin_verified_at?: string;
     two_factor_confirmed_at?: string;
     roles: string[];
     isAdmin: boolean;
@@ -23,6 +24,7 @@ export interface Application {
     callback_url: string;
     logo_url: string | null;
     is_active: boolean;
+    allowed_organization_types: string[];
     oauth_client_id: string | null;
     created_at: string;
     updated_at: string;
@@ -31,6 +33,23 @@ export interface Application {
         secret: string | null;
         redirect: string;
     };
+}
+
+export interface Organization {
+    id: number;
+    name: string;
+    slug: string;
+    type: string;
+    description: string | null;
+    is_active: boolean;
+    users_count: number;
+    eligible_applications_count: number;
+    eligible_applications: Array<{
+        id: number;
+        name: string;
+    }>;
+    created_at: string;
+    updated_at: string;
 }
 
 export type PageProps<

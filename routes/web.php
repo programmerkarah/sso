@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\Admin\ApplicationController;
+use App\Http\Controllers\Admin\OrganizationController;
 use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\ApplicationCatalogController;
+use App\Http\Controllers\Auth\CustomAuthorizationController;
 use App\Http\Controllers\Settings\ChangePasswordController;
 use App\Http\Controllers\SettingsController;
 use App\Models\Application;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -31,8 +34,8 @@ Route::get('/debug-auth', function () {
     ]);
 })->middleware(['web']);
 
-// DEBUG: Override OAuth authorize  
-Route::get('/oauth/authorize', [App\Http\Controllers\Auth\CustomAuthorizationController::class, 'authorize'])
+// DEBUG: Override OAuth authorize
+Route::get('/oauth/authorize', [CustomAuthorizationController::class, 'authorize'])
     ->middleware(['web'])
     ->name('passport.authorizations.authorize.debug');
 
@@ -46,10 +49,60 @@ Route::get('/', function () {
 
 // Dashboard - Requires verified email, 2FA, and password not pending change
 Route::get('/dashboard', function () {
+    $user = request()->user();
+    $isAdmin = $user?->isAdmin() ?? false;
+    $organizationType = $user?->organization?->type;
+
+    $applicationsQuery = Application::query()->orderBy('name');
+
+    if ($isAdmin) {
+        $applicationsQuery->where('is_active', true);
+    } else {
+        $applicationsQuery
+            ->where('is_active', true)
+            ->eligibleForOrganizationType($organizationType);
+    }
+
+    $applicationsCount = (clone $applicationsQuery)->count();
+    $availableApplications = $applicationsQuery
+        ->limit(4)
+        ->get(['id', 'name', 'description', 'domain', 'callback_url', 'logo_url', 'is_active'])
+        ->map(fn (Application $application) => [
+            'id' => $application->id,
+            'name' => $application->name,
+            'description' => $application->description,
+            'landing_url' => $application->landingUrl(),
+            'launch_url' => $application->launchUrl(),
+            'logo_url' => $application->logo_url,
+            'is_active' => $application->is_active,
+        ])
+        ->values()
+        ->all();
+
+    $pendingVerificationUsers = $isAdmin
+        ? User::query()
+            ->whereNull('admin_verified_at')
+            ->orderBy('created_at')
+            ->limit(8)
+            ->get(['id', 'name', 'username', 'email', 'created_at'])
+            ->map(fn (User $pendingUser) => [
+                'id' => $pendingUser->id,
+                'name' => $pendingUser->name,
+                'username' => $pendingUser->username,
+                'email' => $pendingUser->email,
+                'created_at' => $pendingUser->created_at,
+            ])
+            ->values()
+            ->all()
+        : [];
+
     return Inertia::render('Dashboard', [
-        'applicationsCount' => Application::where('is_active', true)->count(),
+        'applicationsCount' => $applicationsCount,
+        'availableApplications' => $availableApplications,
+        'organizationType' => $organizationType,
+        'pendingVerificationUsers' => $pendingVerificationUsers,
     ]);
-})->middleware(['auth', 'verified', 'two-factor', 'must-change-password'])->name('dashboard');
+})->middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-change-password'])->name('dashboard');
 
 Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(function () {
     Route::get('/change-password', [ChangePasswordController::class, 'show'])->name('change-password');
@@ -57,7 +110,7 @@ Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(functi
 });
 
 // Settings Routes
-Route::middleware(['auth', 'verified', 'must-change-password'])->prefix('settings')->name('settings.')->group(function () {
+Route::middleware(['auth', 'admin-verified', 'verified', 'must-change-password'])->prefix('settings')->name('settings.')->group(function () {
     Route::get('/security', [SettingsController::class, 'security'])->name('security');
     Route::post('/security/password', [SettingsController::class, 'updatePassword'])->name('security.password.update');
     Route::post('/security/email', [SettingsController::class, 'updateEmail'])->name('security.email.update');
@@ -65,12 +118,12 @@ Route::middleware(['auth', 'verified', 'must-change-password'])->prefix('setting
     Route::post('/security/recovery-codes/regenerate', [SettingsController::class, 'regenerateRecoveryCodes'])->name('security.recovery-codes.regenerate');
 });
 
-Route::middleware(['auth', 'verified', 'two-factor', 'must-change-password'])
+Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-change-password'])
     ->get('/applications', [ApplicationCatalogController::class, 'index'])
     ->name('applications.index');
 
 // Admin Routes - Only admins can manage applications
-Route::middleware(['auth', 'verified', 'two-factor', 'must-change-password', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-change-password', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/system', [SystemController::class, 'index'])->name('system.index');
     Route::post('/system/backups', [SystemController::class, 'backup'])->name('system.backups.create');
     Route::get('/system/backups/{filename}', [SystemController::class, 'downloadBackup'])
@@ -83,6 +136,8 @@ Route::middleware(['auth', 'verified', 'two-factor', 'must-change-password', 'ad
     Route::get('/applications/create', [ApplicationController::class, 'create'])->name('applications.create');
     Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
     Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
+    Route::get('/applications/{application}/guide', [ApplicationController::class, 'guide'])->name('applications.guide');
+    Route::get('/applications/{application}/guide/export-pdf', [ApplicationController::class, 'exportGuidePdf'])->name('applications.guide.export-pdf');
     Route::get('/applications/{application}/edit', [ApplicationController::class, 'edit'])->name('applications.edit');
     Route::put('/applications/{application}', [ApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
@@ -94,5 +149,16 @@ Route::middleware(['auth', 'verified', 'two-factor', 'must-change-password', 'ad
     Route::post('/users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
     Route::post('/users/{user}/reset-two-factor', [UserManagementController::class, 'resetTwoFactor'])->name('users.reset-two-factor');
     Route::post('/users/{user}/identity', [UserManagementController::class, 'updateIdentity'])->name('users.update-identity');
+    Route::post('/users/{user}/access', [UserManagementController::class, 'updateAccess'])->name('users.update-access');
+    Route::post('/users/{user}/toggle-admin-verification', [UserManagementController::class, 'toggleAdminVerification'])->name('users.toggle-admin-verification');
+    Route::post('/users/access/batch', [UserManagementController::class, 'batchUpdateAccess'])->name('users.batch-update-access');
+    Route::post('/users/verify/batch', [UserManagementController::class, 'batchVerify'])->name('users.batch-verify');
     Route::post('/users/{user}/toggle-admin', [UserManagementController::class, 'toggleAdmin'])->name('users.toggle-admin');
+
+    Route::get('/organizations', [OrganizationController::class, 'index'])->name('organizations.index');
+    Route::get('/organizations/create', [OrganizationController::class, 'create'])->name('organizations.create');
+    Route::post('/organizations', [OrganizationController::class, 'store'])->name('organizations.store');
+    Route::get('/organizations/{organization}/edit', [OrganizationController::class, 'edit'])->name('organizations.edit');
+    Route::put('/organizations/{organization}', [OrganizationController::class, 'update'])->name('organizations.update');
+    Route::post('/organizations/{organization}/toggle-active', [OrganizationController::class, 'toggleActive'])->name('organizations.toggle-active');
 });

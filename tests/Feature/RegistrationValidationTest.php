@@ -2,8 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
+use App\Models\User;
+use App\Notifications\NewUserPendingVerificationNotification;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class RegistrationValidationTest extends TestCase
@@ -78,5 +82,36 @@ class RegistrationValidationTest extends TestCase
 
         $this->assertDatabaseHas('users', ['username' => 'johndoe123']);
         $response->assertRedirect();
+    }
+
+    public function test_new_registration_requires_admin_verification_before_access(): void
+    {
+        $this->post('/register', $this->validPayload([
+            'username' => 'pendingverify',
+            'email' => 'pending.verify@example.com',
+        ]));
+
+        $this->assertDatabaseHas('users', [
+            'username' => 'pendingverify',
+            'email' => 'pending.verify@example.com',
+            'admin_verified_at' => null,
+        ]);
+    }
+
+    public function test_admin_receives_email_notification_when_new_user_is_pending_verification(): void
+    {
+        Notification::fake();
+
+        $admin = User::factory()->create([
+            'email' => 'admin.pending@example.test',
+        ]);
+        $admin->roles()->attach(Role::where('name', 'admin')->value('id'));
+
+        $this->post('/register', $this->validPayload([
+            'username' => 'notify_pending',
+            'email' => 'notify.pending@example.com',
+        ]));
+
+        Notification::assertSentTo($admin, NewUserPendingVerificationNotification::class);
     }
 }

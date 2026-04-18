@@ -7,6 +7,7 @@ use App\Actions\Fortify\RedirectIfTwoFactorRequired;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\Organization;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -38,7 +39,16 @@ class FortifyServiceProvider extends ServiceProvider
 
         // Define Inertia views
         Fortify::loginView(fn () => Inertia::render('Auth/Login'));
-        Fortify::registerView(fn () => Inertia::render('Auth/Register'));
+        Fortify::registerView(function () {
+            $organizations = Organization::where('is_active', true)
+                ->get(['id', 'name', 'type'])
+                ->values()
+                ->all();
+
+            return Inertia::render('Auth/Register', [
+                'organizations' => $organizations,
+            ]);
+        });
         Fortify::verifyEmailView(fn () => Inertia::render('Auth/VerifyEmail'));
         Fortify::twoFactorChallengeView(fn () => Inertia::render('Auth/TwoFactorChallenge'));
         Fortify::confirmPasswordView(fn () => Inertia::render('Auth/ConfirmPassword'));

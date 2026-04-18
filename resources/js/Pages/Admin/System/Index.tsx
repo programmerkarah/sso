@@ -85,6 +85,8 @@ interface AdminSystemPageProps extends PageProps {
         status_options: FilterOption[];
         category_options: FilterOption[];
         clear_token: string;
+        clear_status_token: string;
+        clear_category_token: string;
     };
     database: {
         connection: string;
@@ -158,10 +160,8 @@ export default function Index({
         value: option.token,
     }));
 
-    const selectedStatusToken =
-        filters.selected_status_token ?? filters.current_token;
-    const selectedCategoryToken =
-        filters.selected_category_token ?? filters.current_token;
+    const selectedStatusToken = filters.selected_status_token ?? '';
+    const selectedCategoryToken = filters.selected_category_token ?? '';
 
     const restoreForm = useForm<{
         backup_file: File | null;
@@ -607,7 +607,7 @@ export default function Index({
                                 options={statusFilterOptions}
                                 placeholder="Semua status"
                                 onChange={(value) => {
-                                    visitState(value || filters.clear_token);
+                                    visitState(value || filters.clear_status_token);
                                 }}
                             />
 
@@ -618,7 +618,7 @@ export default function Index({
                                 options={categoryFilterOptions}
                                 placeholder="Semua kategori"
                                 onChange={(value) => {
-                                    visitState(value || filters.clear_token);
+                                    visitState(value || filters.clear_category_token);
                                 }}
                             />
 
@@ -661,7 +661,7 @@ export default function Index({
                                             colSpan={8}
                                             className="px-5 py-10 text-center text-white/55"
                                         >
-                                            Belum ada log aktivitas.
+                                            Belum ada log aktivitas atau tidak ada data yang sesuai dengan filter.
                                         </td>
                                     </tr>
                                 ) : (

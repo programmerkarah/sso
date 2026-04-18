@@ -2,8 +2,10 @@
 
 namespace App\Actions\Fortify;
 
+use App\Models\Organization;
 use App\Models\Role;
 use App\Models\User;
+use App\Notifications\NewUserPendingVerificationNotification;
 use App\Support\ActivityLogger;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -24,7 +26,10 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        Validator::make($input, [
+        $activeOrganizations = Organization::where('is_active', true)->get();
+        $hasMultipleOrganizations = $activeOrganizations->count() > 1;
+
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'username' => [
                 'required',
@@ -41,13 +46,30 @@ class CreateNewUser implements CreatesNewUsers
                 Rule::unique(User::class),
             ],
             'password' => $this->passwordRules(),
-        ])->validate();
+        ];
+
+        if ($hasMultipleOrganizations) {
+            $rules['organization_id'] = [
+                'required',
+                Rule::exists('organizations', 'id')->where('is_active', true),
+            ];
+        }
+
+        Validator::make($input, $rules)->validate();
+
+        // If only one active organization, auto-assign it
+        $organizationId = $hasMultipleOrganizations
+            ? $input['organization_id']
+            : $activeOrganizations->first()?->id;
 
         $user = User::create([
             'name' => $input['name'],
             'username' => $input['username'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
+            'organization_id' => $organizationId,
+            'admin_verified_at' => null,
+            'admin_verified_by' => null,
         ]);
 
         // Assign default "user" role to new registrations
@@ -64,8 +86,15 @@ class CreateNewUser implements CreatesNewUsers
             metadata: [
                 'username' => $user->username,
                 'email' => $user->email,
+                'organization_id' => $organizationId,
             ],
         );
+
+        User::query()
+            ->whereHas('roles', fn ($query) => $query->where('name', 'admin'))
+            ->whereNotNull('admin_verified_at')
+            ->get()
+            ->each(fn (User $adminUser) => $adminUser->notify(new NewUserPendingVerificationNotification($user)));
 
         return $user;
     }

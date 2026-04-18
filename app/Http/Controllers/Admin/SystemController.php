@@ -120,46 +120,54 @@ class SystemController extends Controller
             'category' => $categoryFilter,
         ]);
 
+        $statusOptions = $statuses
+            ->map(fn (string $status) => [
+                'label' => ucfirst($status),
+                'token' => $encryptedState->encryptArray([
+                    'page' => 1,
+                    'status' => $status,
+                    'category' => $categoryFilter,
+                ]),
+            ]);
+
+        $categoryOptions = $categories
+            ->map(fn (string $category) => [
+                'label' => self::categoryLabel($category),
+                'token' => $encryptedState->encryptArray([
+                    'page' => 1,
+                    'status' => $statusFilter,
+                    'category' => $category,
+                ]),
+            ]);
+
+        $selectedStatusToken = $statusFilter !== null
+            ? $statusOptions->firstWhere('label', ucfirst($statusFilter))['token'] ?? null
+            : null;
+
+        $selectedCategoryToken = $categoryFilter !== null
+            ? $categoryOptions->firstWhere('label', self::categoryLabel($categoryFilter))['token'] ?? null
+            : null;
+
         return Inertia::render('Admin/System/Index', [
             'logs' => $logs,
             'filters' => [
                 'status' => $statusFilter,
                 'category' => $categoryFilter,
                 'current_token' => $currentStateToken,
-                'selected_status_token' => $statusFilter !== null
-                    ? $encryptedState->encryptArray([
-                        'page' => 1,
-                        'status' => $statusFilter,
-                        'category' => $categoryFilter,
-                    ])
-                    : null,
-                'selected_category_token' => $categoryFilter !== null
-                    ? $encryptedState->encryptArray([
-                        'page' => 1,
-                        'status' => $statusFilter,
-                        'category' => $categoryFilter,
-                    ])
-                    : null,
-                'status_options' => $statuses
-                    ->map(fn (string $status) => [
-                        'label' => ucfirst($status),
-                        'token' => $encryptedState->encryptArray([
-                            'page' => 1,
-                            'status' => $status,
-                            'category' => $categoryFilter,
-                        ]),
-                    ])
-                    ->all(),
-                'category_options' => $categories
-                    ->map(fn (string $category) => [
-                        'label' => self::categoryLabel($category),
-                        'token' => $encryptedState->encryptArray([
-                            'page' => 1,
-                            'status' => $statusFilter,
-                            'category' => $category,
-                        ]),
-                    ])
-                    ->all(),
+                'selected_status_token' => $selectedStatusToken,
+                'selected_category_token' => $selectedCategoryToken,
+                'status_options' => $statusOptions->all(),
+                'category_options' => $categoryOptions->all(),
+                'clear_status_token' => $encryptedState->encryptArray([
+                    'page' => 1,
+                    'status' => null,
+                    'category' => $categoryFilter,
+                ]),
+                'clear_category_token' => $encryptedState->encryptArray([
+                    'page' => 1,
+                    'status' => $statusFilter,
+                    'category' => null,
+                ]),
                 'clear_token' => $encryptedState->encryptArray([
                     'page' => 1,
                     'status' => null,
@@ -347,6 +355,7 @@ class SystemController extends Controller
             'two_factor_authentication' => 'Autentikasi Dua Faktor',
             'password' => 'Password',
             'profile' => 'Profil',
+            'oauth' => 'OAuth',
         ];
 
         return $labels[$category] ?? ucwords(str_replace('_', ' ', $category));

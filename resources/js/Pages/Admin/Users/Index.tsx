@@ -1,11 +1,14 @@
 import {
+    CheckSquare,
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
     Download,
+    EllipsisVertical,
     KeyRound,
     Pencil,
     RotateCcw,
+    Settings2,
     Shield,
     ShieldCheck,
     ShieldOff,
@@ -14,7 +17,7 @@ import {
     XCircle,
 } from 'lucide-react';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Head, router, useForm } from '@inertiajs/react';
 
@@ -35,12 +38,32 @@ interface ManagedUser {
     name: string;
     username: string;
     email: string;
+    organization: {
+        id: number;
+        name: string;
+        type: string;
+    } | null;
     created_at: string;
     last_login_at?: string;
     email_verified_at?: string;
+    admin_verified_at?: string;
+    is_admin_verified: boolean;
     two_factor_confirmed_at?: string;
     roles: string[];
+    role_ids: number[];
     is_admin: boolean;
+}
+
+interface OrganizationOption {
+    id: number;
+    label: string;
+    description?: string;
+}
+
+interface RoleOption {
+    id: number;
+    name: string;
+    description?: string;
 }
 
 interface PaginationLink {
@@ -65,9 +88,14 @@ interface PaginatedUsers {
 interface AdminUsersIndexProps extends PageProps {
     users: PaginatedUsers;
     userOptions: SearchableSelectOption[];
+    organizationOptions: OrganizationOption[];
+    roleOptions: RoleOption[];
     selectedUser?: Omit<SearchableSelectOption, 'state_token'> | null;
     clearFilterToken: string;
     exportStateToken: string;
+    pendingOnlyActive: boolean;
+    pendingOnlyFilterToken: string;
+    allUsersFilterToken: string;
 }
 
 interface ConfirmModal {
@@ -80,6 +108,11 @@ interface ConfirmModal {
 }
 
 interface EditIdentityModalState {
+    isOpen: boolean;
+    user: ManagedUser | null;
+}
+
+interface EditAccessModalState {
     isOpen: boolean;
     user: ManagedUser | null;
 }
@@ -102,9 +135,14 @@ export default function Index({
     users,
     auth,
     userOptions,
+    organizationOptions,
+    roleOptions,
     selectedUser,
     clearFilterToken,
     exportStateToken,
+    pendingOnlyActive,
+    pendingOnlyFilterToken,
+    allUsersFilterToken,
 }: AdminUsersIndexProps) {
     const currentUserId = auth?.user?.id;
 
@@ -121,10 +159,45 @@ export default function Index({
             isOpen: false,
             user: null,
         });
+    const [editAccessModal, setEditAccessModal] = useState<EditAccessModalState>({
+        isOpen: false,
+        user: null,
+    });
+    const [batchAccessModalOpen, setBatchAccessModalOpen] = useState(false);
+    const [batchVerifyModalOpen, setBatchVerifyModalOpen] = useState(false);
+    const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+    const [openActionMenuUserId, setOpenActionMenuUserId] = useState<number | null>(null);
     const identityForm = useForm({
         username: '',
         email: '',
     });
+    const accessForm = useForm({
+        organization_id: '',
+        role_ids: [] as number[],
+    });
+    const batchAccessForm = useForm({
+        user_ids: [] as number[],
+        organization_id: '',
+        role_ids: [] as number[],
+    });
+
+    const organizationSelectOptions: SearchableSelectOption[] = useMemo(
+        () =>
+            organizationOptions.map((option) => ({
+                label: option.label,
+                description: option.description,
+                state_token: String(option.id),
+            })),
+        [organizationOptions],
+    );
+
+    useEffect(() => {
+        const visibleIds = new Set(users.data.map((user) => user.id));
+        setSelectedUserIds((prev) => prev.filter((id) => visibleIds.has(id)));
+        setOpenActionMenuUserId((prev) =>
+            prev !== null && visibleIds.has(prev) ? prev : null,
+        );
+    }, [users.data]);
 
     const openModal = (config: Omit<ConfirmModal, 'isOpen'>) => {
         setModal({ isOpen: true, ...config });
@@ -154,6 +227,44 @@ export default function Index({
         identityForm.clearErrors();
     };
 
+    const openEditAccessModal = (user: ManagedUser) => {
+        accessForm.setData({
+            organization_id: user.organization ? String(user.organization.id) : '',
+            role_ids: user.role_ids,
+        });
+        accessForm.clearErrors();
+        setEditAccessModal({
+            isOpen: true,
+            user,
+        });
+    };
+
+    const closeEditAccessModal = () => {
+        setEditAccessModal({
+            isOpen: false,
+            user: null,
+        });
+        accessForm.clearErrors();
+    };
+
+    const toggleAccessRole = (roleId: number) => {
+        accessForm.setData(
+            'role_ids',
+            accessForm.data.role_ids.includes(roleId)
+                ? accessForm.data.role_ids.filter((id) => id !== roleId)
+                : [...accessForm.data.role_ids, roleId],
+        );
+    };
+
+    const toggleBatchRole = (roleId: number) => {
+        batchAccessForm.setData(
+            'role_ids',
+            batchAccessForm.data.role_ids.includes(roleId)
+                ? batchAccessForm.data.role_ids.filter((id) => id !== roleId)
+                : [...batchAccessForm.data.role_ids, roleId],
+        );
+    };
+
     const submitIdentityUpdate = () => {
         if (!editIdentityModal.user) {
             return;
@@ -168,6 +279,72 @@ export default function Index({
                 },
             },
         );
+    };
+
+    const submitAccessUpdate = () => {
+        if (!editAccessModal.user) {
+            return;
+        }
+
+        accessForm.post(`/admin/users/${editAccessModal.user.route_key}/access`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                closeEditAccessModal();
+            },
+        });
+    };
+
+    const submitBatchAccessUpdate = () => {
+        batchAccessForm.transform((data) => ({
+            ...data,
+            user_ids: selectedUserIds,
+        }));
+
+        batchAccessForm.post('/admin/users/access/batch', {
+            preserveScroll: true,
+            onSuccess: () => {
+                setBatchAccessModalOpen(false);
+                setSelectedUserIds([]);
+                batchAccessForm.setData({
+                    user_ids: [],
+                    organization_id: '',
+                    role_ids: [],
+                });
+            },
+        });
+    };
+
+    const submitBatchVerify = () => {
+        router.post(
+            '/admin/users/verify/batch',
+            { user_ids: selectedUserIds },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setBatchVerifyModalOpen(false);
+                    setSelectedUserIds([]);
+                },
+            },
+        );
+    };
+
+    const toggleUserSelection = (userId: number) => {
+        setSelectedUserIds((prev) =>
+            prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId],
+        );
+    };
+
+    const toggleSelectAllCurrentPage = () => {
+        const currentPageUserIds = users.data.map((user) => user.id);
+        const allSelected = currentPageUserIds.every((id) => selectedUserIds.includes(id));
+
+        setSelectedUserIds((prev) => {
+            if (allSelected) {
+                return prev.filter((id) => !currentPageUserIds.includes(id));
+            }
+
+            return [...new Set([...prev, ...currentPageUserIds])];
+        });
     };
 
     const visitState = (state: string) => {
@@ -246,12 +423,63 @@ export default function Index({
         }
     };
 
+    const handleToggleAdminVerification = (user: ManagedUser) => {
+        if (user.is_admin_verified) {
+            openModal({
+                title: 'Cabut Verifikasi Admin',
+                description: `Cabut verifikasi admin untuk ${user.name}? Pengguna akan langsung kehilangan akses ke fitur SSO sampai diverifikasi kembali.`,
+                confirmLabel: 'Ya, Cabut Verifikasi',
+                confirmVariant: 'red',
+                onConfirm: () => {
+                    router.post(
+                        `/admin/users/${user.route_key}/toggle-admin-verification`,
+                        {},
+                        { preserveScroll: true },
+                    );
+                    closeModal();
+                },
+            });
+
+            return;
+        }
+
+        openModal({
+            title: 'Verifikasi User oleh Admin SSO',
+            description: `Verifikasi ${user.name} sebagai user valid? Setelah diverifikasi, pengguna dapat mengakses fitur SSO sesuai role dan kebijakan organisasi.`,
+            confirmLabel: 'Ya, Verifikasi User',
+            confirmVariant: 'emerald',
+            onConfirm: () => {
+                router.post(
+                    `/admin/users/${user.route_key}/toggle-admin-verification`,
+                    {},
+                    { preserveScroll: true },
+                );
+                closeModal();
+            },
+        });
+    };
+
     const adminCount = users.data.filter((u) => u.is_admin).length;
     const twoFactorCount = users.data.filter(
         (u) => u.two_factor_confirmed_at,
     ).length;
     const excelExportUrl = `/admin/users/export/excel?state=${encodeURIComponent(exportStateToken)}`;
     const pdfExportUrl = `/admin/users/export/pdf?state=${encodeURIComponent(exportStateToken)}`;
+    const allSelectedOnCurrentPage =
+        users.data.length > 0 &&
+        users.data.every((user) => selectedUserIds.includes(user.id));
+
+    const selectedAccessOrganization = accessForm.data.organization_id
+        ? organizationSelectOptions.find(
+              (option) => option.state_token === accessForm.data.organization_id,
+          )
+        : null;
+
+    const selectedBatchOrganization = batchAccessForm.data.organization_id
+        ? organizationSelectOptions.find(
+              (option) => option.state_token === batchAccessForm.data.organization_id,
+          )
+        : null;
 
     return (
         <AppLayout>
@@ -339,6 +567,238 @@ export default function Index({
                     </div>
                 </div>
             )}
+            {editAccessModal.isOpen && (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={closeEditAccessModal}
+                    />
+                    <div className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                        <h3 className="text-lg font-bold text-white">
+                            Atur Organisasi & Role
+                        </h3>
+                        <p className="mt-1 text-sm text-white/75">
+                            Perbarui akses untuk {editAccessModal.user?.name}.
+                        </p>
+
+                        <div className="mt-5 space-y-5">
+                            <div>
+                                <Label>Organisasi (opsional)</Label>
+                                <SearchableSelect
+                                    options={organizationSelectOptions}
+                                    selectedOption={
+                                        selectedAccessOrganization
+                                            ? {
+                                                  label: selectedAccessOrganization.label,
+                                                  description: selectedAccessOrganization.description,
+                                              }
+                                            : null
+                                    }
+                                    placeholder="Pilih organisasi"
+                                    onSelect={(option) =>
+                                        accessForm.setData('organization_id', option.state_token)
+                                    }
+                                    onClear={() =>
+                                        accessForm.setData('organization_id', '')
+                                    }
+                                />
+                                {accessForm.errors.organization_id && (
+                                    <p className="mt-1 text-sm text-red-300">
+                                        {accessForm.errors.organization_id}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div>
+                                <Label required>Role</Label>
+                                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                                    {roleOptions.map((role) => {
+                                        const checked = accessForm.data.role_ids.includes(role.id);
+
+                                        return (
+                                            <label
+                                                key={role.id}
+                                                className={`flex cursor-pointer items-start gap-2 rounded-xl border px-3 py-2 text-sm transition ${
+                                                    checked
+                                                        ? 'border-blue-300/50 bg-blue-500/20 text-white'
+                                                        : 'border-white/20 bg-white/5 text-white/80 hover:bg-white/10'
+                                                }`}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checked}
+                                                    onChange={() => toggleAccessRole(role.id)}
+                                                    className="mt-1 rounded border-white/30 bg-transparent text-blue-400 focus:ring-blue-300/40"
+                                                />
+                                                <span>
+                                                    <span className="font-semibold">{role.name}</span>
+                                                    {role.description && (
+                                                        <span className="block text-xs text-white/55">
+                                                            {role.description}
+                                                        </span>
+                                                    )}
+                                                </span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                                {accessForm.errors.role_ids && (
+                                    <p className="mt-1 text-sm text-red-300">
+                                        {accessForm.errors.role_ids}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={closeEditAccessModal}
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={submitAccessUpdate}
+                                disabled={accessForm.processing}
+                            >
+                                {accessForm.processing ? 'Menyimpan...' : 'Simpan Akses'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {batchAccessModalOpen && (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setBatchAccessModalOpen(false)}
+                    />
+                    <div className="relative w-full max-w-2xl rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                        <h3 className="text-lg font-bold text-white">
+                            Atur Organisasi & Role (Batch)
+                        </h3>
+                        <p className="mt-1 text-sm text-white/75">
+                            Terapkan perubahan ke {selectedUserIds.length} pengguna terpilih.
+                        </p>
+
+                        <div className="mt-5 space-y-5">
+                            <div>
+                                <Label>Organisasi (opsional)</Label>
+                                <SearchableSelect
+                                    options={organizationSelectOptions}
+                                    selectedOption={
+                                        selectedBatchOrganization
+                                            ? {
+                                                  label: selectedBatchOrganization.label,
+                                                  description: selectedBatchOrganization.description,
+                                              }
+                                            : null
+                                    }
+                                    placeholder="Pilih organisasi untuk batch"
+                                    onSelect={(option) =>
+                                        batchAccessForm.setData('organization_id', option.state_token)
+                                    }
+                                    onClear={() =>
+                                        batchAccessForm.setData('organization_id', '')
+                                    }
+                                />
+                                {batchAccessForm.errors.organization_id && (
+                                    <p className="mt-1 text-sm text-red-300">
+                                        {batchAccessForm.errors.organization_id}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div>
+                                <Label>Role (opsional)</Label>
+                                <p className="mb-2 text-xs text-white/55">
+                                    Pilih role jika ingin menimpa role pengguna terpilih.
+                                </p>
+                                <div className="grid gap-2 sm:grid-cols-2">
+                                    {roleOptions.map((role) => {
+                                        const checked = batchAccessForm.data.role_ids.includes(role.id);
+
+                                        return (
+                                            <label
+                                                key={role.id}
+                                                className={`flex cursor-pointer items-start gap-2 rounded-xl border px-3 py-2 text-sm transition ${
+                                                    checked
+                                                        ? 'border-blue-300/50 bg-blue-500/20 text-white'
+                                                        : 'border-white/20 bg-white/5 text-white/80 hover:bg-white/10'
+                                                }`}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checked}
+                                                    onChange={() => toggleBatchRole(role.id)}
+                                                    className="mt-1 rounded border-white/30 bg-transparent text-blue-400 focus:ring-blue-300/40"
+                                                />
+                                                <span className="font-semibold">{role.name}</span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                                {batchAccessForm.errors.role_ids && (
+                                    <p className="mt-1 text-sm text-red-300">
+                                        {batchAccessForm.errors.role_ids}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={() => setBatchAccessModalOpen(false)}
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={submitBatchAccessUpdate}
+                                disabled={batchAccessForm.processing}
+                            >
+                                {batchAccessForm.processing ? 'Memproses...' : 'Terapkan Batch'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {batchVerifyModalOpen && (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setBatchVerifyModalOpen(false)}
+                    />
+                    <div className="relative w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                        <h3 className="text-lg font-bold text-white">
+                            Verifikasi Pengguna (Batch)
+                        </h3>
+                        <p className="mt-2 text-sm text-white/75">
+                            Verifikasi <span className="font-semibold text-white">{selectedUserIds.length}</span> pengguna terpilih? Hanya pengguna yang belum diverifikasi yang akan diproses.
+                        </p>
+                        <div className="mt-6 flex justify-end gap-3">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={() => setBatchVerifyModalOpen(false)}
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={submitBatchVerify}
+                            >
+                                Verifikasi Sekarang
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="mx-auto max-w-7xl space-y-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -352,6 +812,24 @@ export default function Index({
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setBatchVerifyModalOpen(true)}
+                            disabled={selectedUserIds.length === 0}
+                            className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg backdrop-blur-xl transition hover:bg-emerald-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <CheckSquare className="h-4 w-4" />
+                            Verifikasi Batch ({selectedUserIds.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setBatchAccessModalOpen(true)}
+                            disabled={selectedUserIds.length === 0}
+                            className="inline-flex items-center gap-2 rounded-2xl border border-fuchsia-300/25 bg-fuchsia-500/15 px-4 py-2 text-sm font-semibold text-fuchsia-50 shadow-lg backdrop-blur-xl transition hover:bg-fuchsia-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <CheckSquare className="h-4 w-4" />
+                            Atur Akses Batch ({selectedUserIds.length})
+                        </button>
                         <a
                             href={excelExportUrl}
                             className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg backdrop-blur-xl transition hover:bg-emerald-500/25"
@@ -443,6 +921,30 @@ export default function Index({
                                 />
                             </div>
                         </div>
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => visitState(pendingOnlyFilterToken)}
+                                className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
+                                    pendingOnlyActive
+                                        ? 'border-amber-300/40 bg-amber-500/20 text-amber-100'
+                                        : 'border-white/20 bg-white/10 text-white/75 hover:bg-white/20'
+                                }`}
+                            >
+                                Pending verification only
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => visitState(allUsersFilterToken)}
+                                className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
+                                    !pendingOnlyActive
+                                        ? 'border-blue-300/40 bg-blue-500/20 text-blue-100'
+                                        : 'border-white/20 bg-white/10 text-white/75 hover:bg-white/20'
+                                }`}
+                            >
+                                Semua user
+                            </button>
+                        </div>
                     </div>
 
                     {/* Table */}
@@ -451,6 +953,14 @@ export default function Index({
                             <thead>
                                 <tr className="border-b border-white/10 bg-black/20">
                                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                        <input
+                                            type="checkbox"
+                                            checked={allSelectedOnCurrentPage}
+                                            onChange={toggleSelectAllCurrentPage}
+                                            className="rounded border-white/30 bg-transparent text-blue-400 focus:ring-blue-300/40"
+                                        />
+                                    </th>
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
                                         Pengguna
                                     </th>
                                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
@@ -458,6 +968,9 @@ export default function Index({
                                     </th>
                                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
                                         Role
+                                    </th>
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                        Organisasi
                                     </th>
                                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
                                         Terdaftar
@@ -477,10 +990,10 @@ export default function Index({
                                 {users.data.length === 0 ? (
                                     <tr>
                                         <td
-                                            colSpan={7}
+                                            colSpan={9}
                                             className="px-5 py-14 text-center text-white/50"
                                         >
-                                            Belum ada pengguna terdaftar.
+                                            Tidak ada data yang dapat ditampilkan atau belum ada pengguna terdaftar.
                                         </td>
                                     </tr>
                                 ) : (
@@ -489,6 +1002,14 @@ export default function Index({
                                             key={user.id}
                                             className="transition-colors hover:bg-white/5"
                                         >
+                                            <td className="px-5 py-4">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedUserIds.includes(user.id)}
+                                                    onChange={() => toggleUserSelection(user.id)}
+                                                    className="rounded border-white/30 bg-transparent text-blue-400 focus:ring-blue-300/40"
+                                                />
+                                            </td>
                                             {/* Pengguna */}
                                             <td className="px-5 py-4">
                                                 <div className="flex flex-col gap-1">
@@ -524,6 +1045,22 @@ export default function Index({
                                                 </div>
                                             </td>
 
+                                            {/* Organisasi */}
+                                            <td className="px-5 py-4">
+                                                {user.organization ? (
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className="text-sm font-semibold text-white">
+                                                            {user.organization.name}
+                                                        </span>
+                                                        <span className="text-xs text-white/55">
+                                                            {user.organization.type}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-sm text-white/45">Belum diatur</span>
+                                                )}
+                                            </td>
+
                                             {/* Terdaftar */}
                                             <td className="px-5 py-4 text-sm text-white/70">
                                                 {formatDateTime(
@@ -541,6 +1078,22 @@ export default function Index({
                                             {/* Status */}
                                             <td className="px-5 py-4">
                                                 <div className="flex flex-col gap-1.5">
+                                                    <span
+                                                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                                            user.is_admin_verified
+                                                                ? 'bg-emerald-400/20 text-emerald-100'
+                                                                : 'bg-red-400/20 text-red-100'
+                                                        }`}
+                                                    >
+                                                        {user.is_admin_verified ? (
+                                                            <ShieldCheck className="h-3 w-3" />
+                                                        ) : (
+                                                            <ShieldOff className="h-3 w-3" />
+                                                        )}
+                                                        {user.is_admin_verified
+                                                            ? 'Terverifikasi admin'
+                                                            : 'Menunggu verifikasi admin'}
+                                                    </span>
                                                     <span
                                                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
                                                             user.email_verified_at
@@ -578,72 +1131,107 @@ export default function Index({
 
                                             {/* Aksi */}
                                             <td className="px-5 py-4">
-                                                <div className="flex flex-wrap justify-end gap-2">
-                                                    {user.id !==
-                                                        currentUserId && (
-                                                        <button
-                                                            onClick={() =>
-                                                                handleToggleAdmin(
-                                                                    user,
-                                                                )
-                                                            }
-                                                            title={
-                                                                user.is_admin
-                                                                    ? 'Cabut Admin'
-                                                                    : 'Jadikan Admin'
-                                                            }
-                                                            className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition ${
-                                                                user.is_admin
-                                                                    ? 'border-red-300/30 bg-red-500/15 text-red-100 hover:bg-red-500/25'
-                                                                    : 'border-purple-300/30 bg-purple-500/15 text-purple-100 hover:bg-purple-500/25'
-                                                            }`}
-                                                        >
-                                                            {user.is_admin ? (
-                                                                <ShieldOff className="h-3.5 w-3.5" />
-                                                            ) : (
-                                                                <ShieldPlus className="h-3.5 w-3.5" />
+                                                <div className="relative flex justify-end">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setOpenActionMenuUserId((current) =>
+                                                                current === user.id ? null : user.id,
+                                                            )
+                                                        }
+                                                        className="inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 p-2 text-white/80 transition hover:bg-white/20 hover:text-white"
+                                                        title="Buka menu aksi"
+                                                    >
+                                                        <EllipsisVertical className="h-4 w-4" />
+                                                    </button>
+
+                                                    {openActionMenuUserId === user.id && (
+                                                        <div className="absolute right-0 top-11 z-20 w-56 rounded-xl border border-white/20 bg-slate-950/90 p-2 shadow-2xl backdrop-blur">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    handleToggleAdminVerification(user);
+                                                                    setOpenActionMenuUserId(null);
+                                                                }}
+                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                                            >
+                                                                {user.is_admin_verified ? (
+                                                                    <ShieldOff className="h-3.5 w-3.5 text-red-200" />
+                                                                ) : (
+                                                                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-200" />
+                                                                )}
+                                                                {user.is_admin_verified
+                                                                    ? 'Cabut Verifikasi Admin'
+                                                                    : 'Verifikasi User'}
+                                                            </button>
+
+                                                            {user.id !== currentUserId && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        handleToggleAdmin(user);
+                                                                        setOpenActionMenuUserId(null);
+                                                                    }}
+                                                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                                                >
+                                                                    {user.is_admin ? (
+                                                                        <ShieldOff className="h-3.5 w-3.5 text-red-200" />
+                                                                    ) : (
+                                                                        <ShieldPlus className="h-3.5 w-3.5 text-purple-200" />
+                                                                    )}
+                                                                    {user.is_admin ? 'Cabut Admin' : 'Jadikan Admin'}
+                                                                </button>
                                                             )}
-                                                            {user.is_admin
-                                                                ? 'Cabut Admin'
-                                                                : 'Jadikan Admin'}
-                                                        </button>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    openEditAccessModal(user);
+                                                                    setOpenActionMenuUserId(null);
+                                                                }}
+                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                                            >
+                                                                <Settings2 className="h-3.5 w-3.5 text-indigo-200" />
+                                                                Atur Akses
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    openEditIdentityModal(user);
+                                                                    setOpenActionMenuUserId(null);
+                                                                }}
+                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                                            >
+                                                                <Pencil className="h-3.5 w-3.5 text-sky-200" />
+                                                                Ubah Identitas
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    handleResetPassword(user);
+                                                                    setOpenActionMenuUserId(null);
+                                                                }}
+                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                                            >
+                                                                <KeyRound className="h-3.5 w-3.5 text-amber-200" />
+                                                                Reset Password
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    handleResetTwoFactor(user);
+                                                                    setOpenActionMenuUserId(null);
+                                                                }}
+                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                                            >
+                                                                <RotateCcw className="h-3.5 w-3.5 text-red-200" />
+                                                                Reset 2FA
+                                                            </button>
+                                                        </div>
                                                     )}
-                                                    <button
-                                                        onClick={() =>
-                                                            openEditIdentityModal(
-                                                                user,
-                                                            )
-                                                        }
-                                                        title="Ubah Identitas"
-                                                        className="inline-flex items-center gap-1.5 rounded-lg border border-sky-300/30 bg-sky-500/15 px-3 py-2 text-xs font-semibold text-sky-100 transition hover:bg-sky-500/25"
-                                                    >
-                                                        <Pencil className="h-3.5 w-3.5" />
-                                                        Ubah Identitas
-                                                    </button>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleResetPassword(
-                                                                user,
-                                                            )
-                                                        }
-                                                        title="Reset Password"
-                                                        className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300/30 bg-amber-500/15 px-3 py-2 text-xs font-semibold text-amber-100 transition hover:bg-amber-500/25"
-                                                    >
-                                                        <KeyRound className="h-3.5 w-3.5" />
-                                                        Reset Password
-                                                    </button>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleResetTwoFactor(
-                                                                user,
-                                                            )
-                                                        }
-                                                        title="Reset 2FA"
-                                                        className="inline-flex items-center gap-1.5 rounded-lg border border-red-300/30 bg-red-500/15 px-3 py-2 text-xs font-semibold text-red-100 transition hover:bg-red-500/25"
-                                                    >
-                                                        <RotateCcw className="h-3.5 w-3.5" />
-                                                        Reset 2FA
-                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>

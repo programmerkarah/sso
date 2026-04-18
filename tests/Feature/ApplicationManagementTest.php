@@ -88,6 +88,43 @@ class ApplicationManagementTest extends TestCase
         $this->assertNotSame('initial-secret', $application->oauth_client_secret);
     }
 
+    public function test_application_guide_route_renders_inertia_page(): void
+    {
+        $admin = $this->createAdmin();
+        $application = $this->createManagedApplication('secret-for-guide');
+
+        $response = $this
+            ->actingAs($admin)
+            ->get(route('admin.applications.guide', $application));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Applications/Guide')
+                ->where('application.name', $application->name)
+            );
+    }
+
+    public function test_application_guide_can_be_exported_as_pdf(): void
+    {
+        $admin = $this->createAdmin();
+        $application = $this->createManagedApplication('secret-for-guide-pdf');
+
+        $response = $this
+            ->actingAs($admin)
+            ->get(route('admin.applications.guide.export-pdf', $application));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
+        $response->assertHeader(
+            'content-disposition',
+            'attachment; filename="panduan-integrasi-'.$application->slug.'.pdf"',
+        );
+
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+        $this->assertNotEmpty($response->getContent());
+    }
+
     private function createAdmin(): User
     {
         $this->seed(RoleSeeder::class);

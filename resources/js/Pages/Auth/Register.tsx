@@ -1,20 +1,57 @@
 import { FormEventHandler } from 'react';
 
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
+import SearchableSelect, {
+    SearchableSelectOption,
+} from '@/Components/SearchableSelect';
 import GuestLayout from '@/Layouts/GuestLayout';
+import { PageProps } from '@/types';
+
+interface Organization {
+    id: number;
+    name: string;
+    type: string;
+}
+
+interface RegisterProps extends PageProps {
+    organizations: Organization[];
+}
 
 export default function Register() {
-    const { data, setData, post, processing, errors } = useForm({
+    const { organizations } = usePage<RegisterProps>().props;
+    const hasMultipleOrganizations = organizations.length > 1;
+    const organizationSelectOptions: SearchableSelectOption[] = organizations.map(
+        (organization) => ({
+            label: organization.name,
+            description: organization.type,
+            state_token: String(organization.id),
+        }),
+    );
+
+    const { data, setData, post, processing, errors } = useForm<{
+        name: string;
+        username: string;
+        email: string;
+        password: string;
+        password_confirmation: string;
+        organization_id: string;
+    }>({
         name: '',
         username: '',
         email: '',
         password: '',
         password_confirmation: '',
+        organization_id: hasMultipleOrganizations ? '' : String(organizations[0]?.id ?? ''),
     });
+    const selectedOrganizationOption = data.organization_id
+        ? organizationSelectOptions.find(
+              (option) => option.state_token === data.organization_id,
+          )
+        : null;
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -79,6 +116,33 @@ export default function Register() {
                         required
                     />
                 </div>
+
+                {hasMultipleOrganizations && (
+                    <div>
+                        <Label required>
+                            Jenis User
+                        </Label>
+                        <SearchableSelect
+                            options={organizationSelectOptions}
+                            selectedOption={
+                                selectedOrganizationOption
+                                    ? {
+                                          label: selectedOrganizationOption.label,
+                                          description: selectedOrganizationOption.description,
+                                      }
+                                    : null
+                            }
+                            placeholder="Cari atau pilih jenis user"
+                            onSelect={(option) =>
+                                setData('organization_id', option.state_token)
+                            }
+                            onClear={() => setData('organization_id', '')}
+                        />
+                        {errors.organization_id && (
+                            <p className="mt-1 text-sm text-red-400">{errors.organization_id}</p>
+                        )}
+                    </div>
+                )}
 
                 <div>
                     <Label htmlFor="password" required>

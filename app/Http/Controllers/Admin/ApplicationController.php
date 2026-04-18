@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use App\Models\Organization;
 use App\Services\EncryptedStateService;
 use App\Support\ActivityLogger;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -64,7 +67,9 @@ class ApplicationController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Admin/Applications/Create');
+        return Inertia::render('Admin/Applications/Create', [
+            'availableOrganizationTypes' => Organization::query()->where('is_active', true)->pluck('type')->unique()->values()->all(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -130,10 +135,49 @@ class ApplicationController extends Controller
         ]);
     }
 
+    public function guide(Application $application): Response
+    {
+        $application->load('oauthClient');
+
+        return Inertia::render('Admin/Applications/Guide', [
+            'application' => $this->transformApplicationDetail($application),
+            'appUrl' => config('app.url'),
+        ]);
+    }
+
+    public function exportGuidePdf(Request $request, Application $application): HttpResponse
+    {
+        $application->load('oauthClient');
+
+        $pdf = Pdf::loadView('admin.applications.guide-pdf', [
+            'application' => $application,
+            'appUrl' => config('app.url'),
+            'generatedAt' => now(),
+        ])->setPaper('a4', 'portrait');
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.applications.guide.pdf.exported',
+            category: 'application_management',
+            description: 'Panduan integrasi aplikasi diekspor sebagai PDF.',
+            user: $request->user(),
+            metadata: [
+                'application_id' => $application->id,
+                'application_name' => $application->name,
+            ],
+        );
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="panduan-integrasi-'.$application->slug.'.pdf"',
+        ]);
+    }
+
     public function edit(Application $application): Response
     {
         return Inertia::render('Admin/Applications/Edit', [
             'application' => $this->transformApplicationDetail($application),
+            'availableOrganizationTypes' => Organization::query()->where('is_active', true)->pluck('type')->unique()->values()->all(),
         ]);
     }
 
@@ -146,6 +190,8 @@ class ApplicationController extends Controller
             'callback_url' => ['required', 'url', 'max:255'],
             'logo_url' => ['nullable', 'url', 'max:255'],
             'is_active' => ['boolean'],
+            'allowed_organization_types' => ['nullable', 'array'],
+            'allowed_organization_types.*' => ['string'],
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -275,6 +321,7 @@ class ApplicationController extends Controller
             'callback_url' => $application->callback_url,
             'logo_url' => $application->logo_url,
             'is_active' => $application->is_active,
+            'allowed_organization_types' => $application->allowed_organization_types ?? [],
             'oauth_client_id' => $application->oauth_client_id,
             'created_at' => $application->created_at,
             'updated_at' => $application->updated_at,

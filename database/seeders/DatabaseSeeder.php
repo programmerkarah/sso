@@ -15,15 +15,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed roles first
+        // Seed organizations first (required before users backfill)
+        $this->call(OrganizationSeeder::class);
+
+        // Seed roles
         $this->call(RoleSeeder::class);
 
         // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-        ]);
     }
 }

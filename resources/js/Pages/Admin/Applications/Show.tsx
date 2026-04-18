@@ -1,6 +1,7 @@
 import {
     AlertTriangle,
     ArrowLeft,
+    BookOpen,
     CheckCircle,
     Copy,
     Edit,
@@ -365,12 +366,27 @@ export default function Show({ application, appUrl }: ShowProps) {
                                             Panduan Penggunaan Singkat
                                         </h2>
                                         <p className="mt-2 text-sm leading-7 text-white/70">
-                                            Gunakan halaman ini untuk mengecek
-                                            apakah callback URL sudah benar,
-                                            menyalin client ID, dan bila perlu
-                                            menerbitkan secret baru tanpa harus
-                                            membuat ulang aplikasi.
+                                            Gunakan halaman ini untuk validasi
+                                            callback URL, menyalin kredensial,
+                                            dan mengecek pembatasan tipe
+                                            organisasi aplikasi.
                                         </p>
+                                        <p className="mt-2 text-xs text-white/60">
+                                            Tipe organisasi diizinkan:{' '}
+                                            {application.allowed_organization_types
+                                                ?.length
+                                                ? application.allowed_organization_types.join(
+                                                      ', ',
+                                                  )
+                                                : 'Semua tipe'}
+                                        </p>
+                                        <Link
+                                            href={`/admin/applications/${application.route_key}/guide`}
+                                            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/20"
+                                        >
+                                            <BookOpen className="h-4 w-4" />
+                                            Lihat Panduan Integrasi Lengkap
+                                        </Link>
                                     </div>
                                 </div>
                             </GlassCard>

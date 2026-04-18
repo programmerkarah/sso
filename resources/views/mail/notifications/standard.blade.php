@@ -19,6 +19,10 @@
 <x-mail::button :url="$actionUrl">
 {{ $actionText }}
 </x-mail::button>
+
+Jika tombol **{{ $actionText }}** tidak dapat diklik, salin dan buka tautan berikut di browser Anda:
+
+{{ $actionUrl }}
 @endif
 
 @foreach ($outroLines as $line)

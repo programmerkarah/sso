@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Organization;
 use App\Models\Role;
 use App\Models\TrustedDevice;
 use App\Models\User;
@@ -33,6 +34,45 @@ class AdminUserManagementTest extends TestCase
         $response = $this->actingAs($user)->get('/');
 
         $response->assertRedirect(route('dashboard'));
+    }
+
+    public function test_api_user_profile_returns_portable_two_factor_data_and_organization(): void
+    {
+        $organization = Organization::query()->create([
+            'name' => 'Internal',
+            'slug' => 'internal',
+            'type' => 'internal',
+            'is_active' => true,
+        ]);
+
+        $user = User::factory()->create([
+            'organization_id' => $organization->id,
+            'two_factor_secret' => encrypt('shared-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['code-1', 'code-2'])),
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        $response = $this
+            ->actingAs($user, 'api')
+            ->getJson('/api/user');
+
+        $response
+            ->assertOk()
+            ->assertJson([
+                'id' => $user->id,
+                'organization_type' => 'internal',
+                'two_factor_enabled' => true,
+                'two_factor' => [
+                    'secret' => 'shared-secret',
+                    'recovery_codes' => ['code-1', 'code-2'],
+                ],
+                'organization' => [
+                    'id' => $organization->id,
+                    'name' => 'Internal',
+                    'slug' => 'internal',
+                    'type' => 'internal',
+                ],
+            ]);
     }
 
     /**
@@ -406,6 +446,176 @@ class AdminUserManagementTest extends TestCase
             ->assertSessionHas('error');
 
         $this->assertTrue($admin->fresh()->isAdmin());
+    }
+
+    public function test_admin_can_update_user_access_individually(): void
+    {
+        [$admin, $targetUser] = $this->createAdminAndTargetUser();
+
+        $organization = Organization::create([
+            'name' => 'Internal',
+            'slug' => 'internal',
+            'type' => 'internal',
+            'is_active' => true,
+        ]);
+
+        $adminRoleId = (int) Role::where('name', 'admin')->value('id');
+        $userRoleId = (int) Role::where('name', 'user')->value('id');
+
+        $response = $this
+            ->actingAs($admin)
+            ->from('/admin/users')
+            ->post(route('admin.users.update-access', $targetUser), [
+                'organization_id' => $organization->id,
+                'role_ids' => [$userRoleId, $adminRoleId],
+            ]);
+
+        $response
+            ->assertRedirect('/admin/users')
+            ->assertSessionHas('success');
+
+        $targetUser->refresh();
+
+        $this->assertSame($organization->id, $targetUser->organization_id);
+        $this->assertEqualsCanonicalizing(
+            [$userRoleId, $adminRoleId],
+            $targetUser->roles()->pluck('roles.id')->all(),
+        );
+    }
+
+    public function test_admin_can_update_user_access_in_batch(): void
+    {
+        [$admin, $firstTargetUser] = $this->createAdminAndTargetUser();
+        $secondTargetUser = User::factory()->create();
+        $secondTargetUser->roles()->attach(Role::where('name', 'user')->value('id'));
+
+        $organization = Organization::create([
+            'name' => 'Internal',
+            'slug' => 'internal',
+            'type' => 'internal',
+            'is_active' => true,
+        ]);
+
+        $userRoleId = (int) Role::where('name', 'user')->value('id');
+
+        $response = $this
+            ->actingAs($admin)
+            ->from('/admin/users')
+            ->post(route('admin.users.batch-update-access'), [
+                'user_ids' => [$firstTargetUser->id, $secondTargetUser->id],
+                'organization_id' => $organization->id,
+                'role_ids' => [$userRoleId],
+            ]);
+
+        $response
+            ->assertRedirect('/admin/users')
+            ->assertSessionHas('success');
+
+        $this->assertSame($organization->id, $firstTargetUser->fresh()->organization_id);
+        $this->assertSame($organization->id, $secondTargetUser->fresh()->organization_id);
+        $this->assertSame([$userRoleId], $firstTargetUser->fresh()->roles()->pluck('roles.id')->all());
+        $this->assertSame([$userRoleId], $secondTargetUser->fresh()->roles()->pluck('roles.id')->all());
+    }
+
+    public function test_admin_can_filter_only_pending_verification_users_with_encrypted_state(): void
+    {
+        [$admin] = $this->createAdminAndTargetUser();
+
+        User::factory()->create([
+            'name' => 'Pending User',
+            'username' => 'pending_user',
+            'email' => 'pending@example.test',
+            'admin_verified_at' => null,
+            'admin_verified_by' => null,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Verified User',
+            'username' => 'verified_user',
+            'email' => 'verified@example.test',
+            'admin_verified_at' => now(),
+            'admin_verified_by' => $admin->id,
+        ]);
+
+        $state = app(EncryptedStateService::class)->encryptArray([
+            'page' => 1,
+            'user_id' => null,
+            'pending_only' => true,
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->post(route('admin.users.index'), [
+                'state' => $state,
+            ]);
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Users/Index')
+                ->where('pendingOnlyActive', true)
+                ->where('users.data.0.username', 'pending_user')
+                ->missing('users.data.1')
+            );
+    }
+
+    public function test_admin_can_toggle_user_admin_verification_status(): void
+    {
+        [$admin, $targetUser] = $this->createAdminAndTargetUser();
+
+        $targetUser->forceFill([
+            'admin_verified_at' => null,
+            'admin_verified_by' => null,
+        ])->save();
+
+        $response = $this
+            ->actingAs($admin)
+            ->from('/admin/users')
+            ->post(route('admin.users.toggle-admin-verification', $targetUser));
+
+        $response
+            ->assertRedirect('/admin/users')
+            ->assertSessionHas('success');
+
+        $targetUser->refresh();
+
+        $this->assertNotNull($targetUser->admin_verified_at);
+        $this->assertSame($admin->id, $targetUser->admin_verified_by);
+
+        $response = $this
+            ->actingAs($admin)
+            ->from('/admin/users')
+            ->post(route('admin.users.toggle-admin-verification', $targetUser));
+
+        $response
+            ->assertRedirect('/admin/users')
+            ->assertSessionHas('success');
+
+        $targetUser->refresh();
+
+        $this->assertNull($targetUser->admin_verified_at);
+        $this->assertNull($targetUser->admin_verified_by);
+    }
+
+    public function test_unverified_user_is_logged_out_when_accessing_protected_dashboard(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+            'admin_verified_at' => null,
+            'admin_verified_by' => null,
+        ]);
+        $user->roles()->attach(Role::where('name', 'user')->value('id'));
+
+        $response = $this->actingAs($user)->get(route('dashboard'));
+
+        $response
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('username');
+
+        $this->assertGuest();
     }
 
     /**

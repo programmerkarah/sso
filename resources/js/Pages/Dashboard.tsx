@@ -1,5 +1,7 @@
 import {
     Calendar,
+    ExternalLink,
+    Globe,
     List,
     Plus,
     Server,
@@ -17,9 +19,32 @@ import { PageProps } from '@/types';
 
 interface DashboardProps extends PageProps {
     applicationsCount: number;
+    organizationType: string | null;
+    availableApplications: Array<{
+        id: number;
+        name: string;
+        description: string | null;
+        landing_url: string;
+        launch_url: string;
+        logo_url: string | null;
+        is_active: boolean;
+    }>;
+    pendingVerificationUsers: Array<{
+        id: number;
+        name: string;
+        username: string;
+        email: string;
+        created_at: string;
+    }>;
 }
 
-export default function Dashboard({ auth, applicationsCount }: DashboardProps) {
+export default function Dashboard({
+    auth,
+    applicationsCount,
+    organizationType,
+    availableApplications,
+    pendingVerificationUsers,
+}: DashboardProps) {
     const canManageApplications = auth.can.manageApplications;
     const canManageUsers = auth.can.manageUsers;
     const user = auth.user!;
@@ -30,6 +55,19 @@ export default function Dashboard({ auth, applicationsCount }: DashboardProps) {
               year: 'numeric',
           })
         : 'data belum tersedia';
+    const formatDateTime = (value?: string) => {
+        if (!value) {
+            return 'waktu tidak tersedia';
+        }
+
+        return new Date(value).toLocaleString('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
 
     return (
         <AppLayout>
@@ -98,6 +136,53 @@ export default function Dashboard({ auth, applicationsCount }: DashboardProps) {
                                 ? 'Aplikasi aktif terdaftar'
                                 : 'Aplikasi SSO aktif yang tersedia'}
                         </p>
+                        {!canManageApplications && (
+                            <p className="mt-1 text-xs text-white/55">
+                                {organizationType
+                                    ? `Difilter untuk organisasi ${organizationType}`
+                                    : 'Difilter berdasarkan organisasi user'}
+                            </p>
+                        )}
+                        <div className="mt-4 space-y-2">
+                            {availableApplications.length > 0 ? (
+                                availableApplications.slice(0, 3).map((application) => (
+                                    <a
+                                        key={application.id}
+                                        href={application.launch_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group flex items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-left backdrop-blur-sm transition hover:bg-white/20"
+                                    >
+                                        <div className="flex min-w-0 items-center gap-3">
+                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-white/10">
+                                                {application.logo_url ? (
+                                                    <img
+                                                        src={application.logo_url}
+                                                        alt={`Logo ${application.name}`}
+                                                        className="h-full w-full object-contain"
+                                                    />
+                                                ) : (
+                                                    <Globe className="h-4 w-4 text-white/70" />
+                                                )}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm font-semibold text-white">
+                                                    {application.name}
+                                                </p>
+                                                <p className="truncate text-xs text-white/60">
+                                                    {application.description ?? application.landing_url}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <ExternalLink className="h-4 w-4 shrink-0 text-white/60 transition group-hover:text-white" />
+                                    </a>
+                                ))
+                            ) : (
+                                <div className="rounded-xl border border-dashed border-white/20 bg-white/5 px-3 py-3 text-sm text-white/60">
+                                    Belum ada aplikasi yang tersedia untuk organisasi Anda.
+                                </div>
+                            )}
+                        </div>
                         {canManageApplications ? (
                             <Link
                                 href="/admin/applications"
@@ -199,6 +284,115 @@ export default function Dashboard({ auth, applicationsCount }: DashboardProps) {
                         )}
                     </GlassCard>
                 </div>
+
+                {canManageUsers && (
+                    <GlassCard className="mb-8">
+                        <div className="mb-4 flex items-center justify-between gap-3">
+                            <div>
+                                <h3 className="text-2xl font-bold text-white drop-shadow-lg">
+                                    User Menunggu Verifikasi
+                                </h3>
+                                <p className="text-sm text-white/70">
+                                    Verifikasi manual oleh admin SSO dibutuhkan sebelum user bisa mengakses fitur.
+                                </p>
+                            </div>
+                            <Link
+                                href="/admin/users"
+                                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+                            >
+                                Kelola pengguna
+                                <UserCog className="h-4 w-4" />
+                            </Link>
+                        </div>
+
+                        {pendingVerificationUsers.length === 0 ? (
+                            <div className="rounded-xl border border-dashed border-emerald-300/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-100">
+                                Tidak ada user pending verification saat ini.
+                            </div>
+                        ) : (
+                            <div className="grid gap-3 md:grid-cols-2">
+                                {pendingVerificationUsers.map((pendingUser) => (
+                                    <div
+                                        key={pendingUser.id}
+                                        className="rounded-xl border border-amber-300/30 bg-amber-500/10 p-4"
+                                    >
+                                        <p className="text-sm font-semibold text-white">{pendingUser.name}</p>
+                                        <p className="text-xs text-white/70">@{pendingUser.username}</p>
+                                        <p className="mt-1 text-xs text-white/75">{pendingUser.email}</p>
+                                        <p className="mt-2 text-[11px] text-white/55">
+                                            Terdaftar {formatDateTime(pendingUser.created_at)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </GlassCard>
+                )}
+
+                {!canManageApplications && availableApplications.length > 0 && (
+                    <GlassCard className="mb-8">
+                        <div className="mb-5 flex items-center justify-between gap-3">
+                            <div>
+                                <h3 className="text-2xl font-bold text-white drop-shadow-lg">
+                                    Aplikasi Tersedia
+                                </h3>
+                                <p className="text-sm text-white/70">
+                                    Hanya aplikasi yang cocok dengan organisasi Anda yang ditampilkan di sini.
+                                </p>
+                            </div>
+                            <Link
+                                href="/applications"
+                                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+                            >
+                                Lihat semua
+                                <List className="h-4 w-4" />
+                            </Link>
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                            {availableApplications.map((application) => (
+                                <a
+                                    key={application.id}
+                                    href={application.launch_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex h-full flex-col gap-4 rounded-2xl border border-white/20 bg-white/8 p-4 backdrop-blur-sm transition hover:border-sky-300/30 hover:bg-white/14"
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/15 bg-white/10">
+                                            {application.logo_url ? (
+                                                <img
+                                                    src={application.logo_url}
+                                                    alt={`Logo ${application.name}`}
+                                                    className="h-full w-full object-contain"
+                                                />
+                                            ) : (
+                                                <Globe className="h-5 w-5 text-white/70" />
+                                            )}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <h4 className="truncate text-base font-bold text-white">
+                                                {application.name}
+                                            </h4>
+                                            <p className="mt-1 line-clamp-2 text-sm text-white/65">
+                                                {application.description ?? 'Aplikasi tersedia melalui SSO.'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-auto flex items-center justify-between gap-3 text-sm text-sky-100">
+                                        <span className="rounded-full border border-sky-300/25 bg-sky-500/10 px-3 py-1 text-xs font-semibold">
+                                            Tersedia
+                                        </span>
+                                        <span className="inline-flex items-center gap-2 font-semibold">
+                                            Buka
+                                            <ExternalLink className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                                        </span>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    </GlassCard>
+                )}
 
                 {/* Info Section */}
                 <GlassCard>

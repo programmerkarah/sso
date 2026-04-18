@@ -5,9 +5,7 @@
         </x-mail::header>
     </x-slot:header>
 
-    <div style="padding: 8px 0 4px;">
-        {{ Illuminate\Mail\Markdown::parse($slot) }}
-    </div>
+    {{ Illuminate\Mail\Markdown::parse($slot) }}
 
     @isset($subcopy)
         <x-slot:subcopy>

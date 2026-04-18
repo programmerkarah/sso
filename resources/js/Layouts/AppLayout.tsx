@@ -231,12 +231,20 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                         Aplikasi SSO
                                                     </Link>
                                                     {canManageApplications && (
+                                                        <>
                                                         <Link
                                                             href="/admin/applications"
                                                             className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
                                                         >
                                                             Daftar Aplikasi
                                                         </Link>
+                                                        <Link
+                                                            href="/admin/organizations"
+                                                            className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Kelola Organisasi
+                                                        </Link>
+                                                        </>
                                                     )}
                                                 </NavDropdown>
                                             </>
@@ -385,14 +393,21 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                         Aplikasi SSO
                                                     </Link>
                                                     {canManageApplications && (
+                                                        <>
                                                         <Link
                                                             href="/admin/applications"
                                                             className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
                                                         >
                                                             Kelola Aplikasi
                                                         </Link>
-                                                    )}
-                                                </NavDropdown>
+                                                        <Link
+                                                            href="/admin/organizations"
+                                                            className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Kelola Organisasi
+                                                        </Link>
+                                                        </>
+                                                    )}\n                                                </NavDropdown>
                                             </>
                                         ) : (
                                             <>

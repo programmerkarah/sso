@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -32,6 +33,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'password_change_required',
         'previous_password',
+        'organization_id',
+        'admin_verified_at',
+        'admin_verified_by',
     ];
 
     /**
@@ -54,10 +58,19 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'admin_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
             'password' => 'hashed',
             'password_change_required' => 'boolean',
         ];
+    }
+
+    /**
+     * Check whether user access has been verified by an SSO admin.
+     */
+    public function isAdminVerified(): bool
+    {
+        return ! is_null($this->admin_verified_at);
     }
 
     /**
@@ -74,6 +87,22 @@ class User extends Authenticatable implements MustVerifyEmail
     public function trustedDevices(): HasMany
     {
         return $this->hasMany(TrustedDevice::class);
+    }
+
+    /**
+     * Get the organization that the user belongs to.
+     */
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    /**
+     * Get the admin user that verified this account.
+     */
+    public function verifiedByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'admin_verified_by');
     }
 
     /**

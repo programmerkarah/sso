@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -11,12 +13,17 @@ class ApplicationCatalogController extends Controller
 {
     public function index(Request $request): Response
     {
-        $isAdmin = $request->user()?->isAdmin() ?? false;
+        /** @var User|null $user */
+        $user = Auth::user();
+        $isAdmin = $user?->isAdmin() ?? false;
+        $organizationType = $user?->organization?->type;
 
         $query = Application::query()->orderBy('name');
 
         if (! $isAdmin) {
-            $query->where('is_active', true);
+            $query
+                ->where('is_active', true)
+                ->eligibleForOrganizationType($organizationType);
         }
 
         $applications = $query
@@ -25,11 +32,8 @@ class ApplicationCatalogController extends Controller
                 'id' => $application->id,
                 'name' => $application->name,
                 'description' => $application->description,
-                'landing_url' => $this->resolveLandingUrl($application->domain),
-                'launch_url' => $this->resolveLaunchUrl(
-                    callbackUrl: $application->callback_url,
-                    landingUrl: $this->resolveLandingUrl($application->domain),
-                ),
+                'landing_url' => $application->landingUrl(),
+                'launch_url' => $application->launchUrl(),
                 'logo_url' => $application->logo_url,
                 'is_active' => $application->is_active,
                 'toggle_active_url' => $isAdmin
@@ -43,31 +47,5 @@ class ApplicationCatalogController extends Controller
             'applications' => $applications,
             'isAdmin' => $isAdmin,
         ]);
-    }
-
-    private function resolveLandingUrl(string $domain): string
-    {
-        if (str_starts_with($domain, 'http://') || str_starts_with($domain, 'https://')) {
-            return $domain;
-        }
-
-        return 'https://'.$domain;
-    }
-
-    private function resolveLaunchUrl(string $callbackUrl, string $landingUrl): string
-    {
-        $parsedCallbackUrl = parse_url($callbackUrl);
-
-        if (! is_array($parsedCallbackUrl) || ! isset($parsedCallbackUrl['scheme'], $parsedCallbackUrl['host'])) {
-            return $landingUrl;
-        }
-
-        $origin = $parsedCallbackUrl['scheme'].'://'.$parsedCallbackUrl['host'];
-
-        if (isset($parsedCallbackUrl['port'])) {
-            $origin .= ':'.$parsedCallbackUrl['port'];
-        }
-
-        return $origin.'/auth/sso/redirect';
     }
 }

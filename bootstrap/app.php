@@ -4,7 +4,9 @@ use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\EnsureSingleActiveSession;
 use App\Http\Middleware\EnsureTwoFactorEnabled;
 use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsAdminVerified;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\LogFinalResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -23,10 +25,10 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureSingleActiveSession::class,
             HandleInertiaRequests::class,
         ]);
-        
+
         // Log final response for debugging
-        $middleware->append(\App\Http\Middleware\LogFinalResponse::class);
-        
+        $middleware->append(LogFinalResponse::class);
+
         // Exclude OAuth token endpoint from CSRF verification
         $middleware->validateCsrfTokens(except: [
             'oauth/token',
@@ -37,6 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'two-factor' => EnsureTwoFactorEnabled::class,
             'admin' => EnsureUserIsAdmin::class,
             'must-change-password' => EnsurePasswordChanged::class,
+            'admin-verified' => EnsureUserIsAdminVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

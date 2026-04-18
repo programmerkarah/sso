@@ -93,7 +93,7 @@ export default function SearchableSelect({
                 <div className="absolute z-[75] mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-white/15 bg-slate-950/90 p-2 shadow-2xl backdrop-blur-2xl">
                     {filteredOptions.length === 0 ? (
                         <div className="px-3 py-4 text-sm text-white/55">
-                            Tidak ada pengguna yang cocok.
+                            Tidak ada hasil yang cocok.
                         </div>
                     ) : (
                         filteredOptions.map((option) => (

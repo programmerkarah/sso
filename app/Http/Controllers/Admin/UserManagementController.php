@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BatchUpdateUserAccessRequest;
+use App\Http\Requests\Admin\UpdateUserAccessRequest;
 use App\Http\Requests\Admin\UpdateUserIdentityRequest;
+use App\Models\Organization;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\PasswordResetByAdmin;
 use App\Services\EncryptedStateService;
 use App\Support\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,9 +31,10 @@ class UserManagementController extends Controller
         $state = $this->resolveState($request, $encryptedState);
 
         $selectedUserId = isset($state['user_id']) ? (int) $state['user_id'] : null;
+        $pendingOnly = (bool) ($state['pending_only'] ?? false);
         $currentPage = max(1, (int) ($state['page'] ?? 1));
 
-        $usersQuery = $this->buildUsersQuery($selectedUserId)
+        $usersQuery = $this->buildUsersQuery($selectedUserId, $pendingOnly)
             ->orderBy('name');
 
         $users = $usersQuery
@@ -44,11 +50,19 @@ class UserManagementController extends Controller
                     'name' => $user->name,
                     'username' => $user->username,
                     'email' => $user->email,
+                    'organization' => $user->organization ? [
+                        'id' => $user->organization->id,
+                        'name' => $user->organization->name,
+                        'type' => $user->organization->type,
+                    ] : null,
                     'created_at' => $user->created_at,
                     'last_login_at' => $user->last_login_at,
                     'email_verified_at' => $user->email_verified_at,
+                    'admin_verified_at' => $user->admin_verified_at,
+                    'is_admin_verified' => $user->isAdminVerified(),
                     'two_factor_confirmed_at' => $user->two_factor_confirmed_at,
                     'roles' => $user->roles->pluck('name')->values()->all(),
+                    'role_ids' => $user->roles->pluck('id')->values()->all(),
                     'is_admin' => $user->isAdmin(),
                 ])->values()->all(),
                 'current_page' => $users->currentPage(),
@@ -61,12 +75,14 @@ class UserManagementController extends Controller
                     ? $encryptedState->encryptArray([
                         'page' => $users->currentPage() - 1,
                         'user_id' => $selectedUserId,
+                        'pending_only' => $pendingOnly,
                     ])
                     : null,
                 'next_page_token' => $users->hasMorePages()
                     ? $encryptedState->encryptArray([
                         'page' => $users->currentPage() + 1,
                         'user_id' => $selectedUserId,
+                        'pending_only' => $pendingOnly,
                     ])
                     : null,
                 'pages' => collect(range(1, $users->lastPage()))
@@ -75,6 +91,7 @@ class UserManagementController extends Controller
                         'token' => $encryptedState->encryptArray([
                             'page' => $page,
                             'user_id' => $selectedUserId,
+                            'pending_only' => $pendingOnly,
                         ]),
                         'active' => $page === $users->currentPage(),
                     ])
@@ -90,6 +107,7 @@ class UserManagementController extends Controller
                     'state_token' => $encryptedState->encryptArray([
                         'page' => 1,
                         'user_id' => $user->id,
+                        'pending_only' => $pendingOnly,
                     ]),
                 ])
                 ->values()
@@ -101,11 +119,45 @@ class UserManagementController extends Controller
             'clearFilterToken' => $encryptedState->encryptArray([
                 'page' => 1,
                 'user_id' => null,
+                'pending_only' => false,
             ]),
             'exportStateToken' => $encryptedState->encryptArray([
                 'page' => 1,
                 'user_id' => $selectedUserId,
+                'pending_only' => $pendingOnly,
             ]),
+            'pendingOnlyActive' => $pendingOnly,
+            'pendingOnlyFilterToken' => $encryptedState->encryptArray([
+                'page' => 1,
+                'user_id' => null,
+                'pending_only' => true,
+            ]),
+            'allUsersFilterToken' => $encryptedState->encryptArray([
+                'page' => 1,
+                'user_id' => $selectedUserId,
+                'pending_only' => false,
+            ]),
+            'organizationOptions' => Organization::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'name', 'type'])
+                ->map(fn (Organization $organization) => [
+                    'id' => $organization->id,
+                    'label' => $organization->name,
+                    'description' => $organization->type,
+                ])
+                ->values()
+                ->all(),
+            'roleOptions' => Role::query()
+                ->orderBy('name')
+                ->get(['id', 'name', 'description'])
+                ->map(fn (Role $role) => [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                    'description' => $role->description,
+                ])
+                ->values()
+                ->all(),
         ]);
     }
 
@@ -113,7 +165,8 @@ class UserManagementController extends Controller
     {
         $state = $this->resolveState($request, $encryptedState);
         $selectedUserId = isset($state['user_id']) ? (int) ($state['user_id']) : null;
-        $users = $this->buildUsersQuery($selectedUserId)
+        $pendingOnly = (bool) ($state['pending_only'] ?? false);
+        $users = $this->buildUsersQuery($selectedUserId, $pendingOnly)
             ->orderBy('name')
             ->get(['id', 'name', 'username', 'email']);
 
@@ -170,7 +223,8 @@ class UserManagementController extends Controller
     {
         $state = $this->resolveState($request, $encryptedState);
         $selectedUserId = isset($state['user_id']) ? (int) ($state['user_id']) : null;
-        $users = $this->buildUsersQuery($selectedUserId)
+        $pendingOnly = (bool) ($state['pending_only'] ?? false);
+        $users = $this->buildUsersQuery($selectedUserId, $pendingOnly)
             ->orderBy('name')
             ->get(['id', 'name', 'username', 'email']);
 
@@ -342,18 +396,210 @@ class UserManagementController extends Controller
         return back()->with('success', "Identitas akun {$user->name} berhasil diperbarui.");
     }
 
+    public function updateAccess(UpdateUserAccessRequest $request, User $user): RedirectResponse
+    {
+        $organizationId = $request->filled('organization_id') ? (int) $request->integer('organization_id') : null;
+        $roleIds = collect($request->input('role_ids', []))
+            ->map(fn (mixed $id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $adminRoleId = Role::query()->where('name', 'admin')->value('id');
+        if (
+            $user->id === $request->user()->id
+            && $adminRoleId
+            && ! $roleIds->contains((int) $adminRoleId)
+        ) {
+            return back()->with('error', 'Anda tidak dapat menghapus peran admin dari akun sendiri.');
+        }
+
+        $user->forceFill([
+            'organization_id' => $organizationId,
+        ])->save();
+
+        $user->roles()->sync($roleIds->all());
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.users.access.updated',
+            category: 'user_management',
+            description: 'Admin memperbarui organisasi dan peran pengguna.',
+            user: $request->user(),
+            metadata: [
+                'target_user_id' => $user->id,
+                'organization_id' => $organizationId,
+                'role_ids' => $roleIds->all(),
+            ],
+        );
+
+        return back()->with('success', "Akses organisasi dan role untuk {$user->name} berhasil diperbarui.");
+    }
+
+    public function toggleAdminVerification(Request $request, User $user): RedirectResponse
+    {
+        if ($user->id === $request->user()?->id && $user->isAdminVerified()) {
+            return back()->with('error', 'Anda tidak dapat mencabut verifikasi admin untuk akun Anda sendiri.');
+        }
+
+        if ($user->isAdminVerified()) {
+            $user->forceFill([
+                'admin_verified_at' => null,
+                'admin_verified_by' => null,
+            ])->save();
+
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'admin.users.verification.revoked',
+                category: 'user_management',
+                description: 'Admin mencabut verifikasi akses pengguna.',
+                user: $request->user(),
+                metadata: [
+                    'target_user_id' => $user->id,
+                    'target_email' => $user->email,
+                ],
+            );
+
+            return back()->with('success', "Verifikasi admin untuk {$user->name} berhasil dicabut.");
+        }
+
+        $user->forceFill([
+            'admin_verified_at' => now(),
+            'admin_verified_by' => $request->user()?->id,
+        ])->save();
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.users.verification.granted',
+            category: 'user_management',
+            description: 'Admin memverifikasi akses pengguna.',
+            user: $request->user(),
+            metadata: [
+                'target_user_id' => $user->id,
+                'target_email' => $user->email,
+            ],
+        );
+
+        return back()->with('success', "Verifikasi admin untuk {$user->name} berhasil diberikan.");
+    }
+
+    public function batchVerify(Request $request): RedirectResponse
+    {
+        $userIds = collect($request->input('user_ids', []))
+            ->map(fn (mixed $id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($userIds->isEmpty()) {
+            return back()->with('error', 'Tidak ada pengguna yang dipilih.');
+        }
+
+        $targetUsers = User::query()
+            ->whereIn('id', $userIds)
+            ->whereNull('admin_verified_at')
+            ->get();
+
+        $now = now();
+        $adminId = $request->user()->id;
+
+        DB::transaction(function () use ($targetUsers, $now, $adminId): void {
+            foreach ($targetUsers as $targetUser) {
+                $targetUser->forceFill([
+                    'admin_verified_at' => $now,
+                    'admin_verified_by' => $adminId,
+                ])->save();
+            }
+        });
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.users.verification.batch-verified',
+            category: 'user_management',
+            description: 'Admin memverifikasi beberapa pengguna secara batch.',
+            user: $request->user(),
+            metadata: [
+                'user_ids' => $targetUsers->pluck('id')->all(),
+            ],
+        );
+
+        return back()->with('success', "Verifikasi berhasil diterapkan ke {$targetUsers->count()} pengguna.");
+    }
+
+    public function batchUpdateAccess(BatchUpdateUserAccessRequest $request): RedirectResponse
+    {
+        $userIds = collect($request->input('user_ids', []))
+            ->map(fn (mixed $id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $hasOrganization = $request->filled('organization_id');
+        $organizationId = $hasOrganization ? (int) $request->integer('organization_id') : null;
+
+        $hasRoles = $request->has('role_ids');
+        $roleIds = collect($request->input('role_ids', []))
+            ->map(fn (mixed $id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $adminRoleId = (int) (Role::query()->where('name', 'admin')->value('id') ?? 0);
+        if ($hasRoles && $adminRoleId > 0) {
+            $containsSelf = $userIds->contains((int) $request->user()->id);
+            $adminRemoved = ! $roleIds->contains($adminRoleId);
+
+            if ($containsSelf && $adminRemoved) {
+                return back()->with('error', 'Aksi batch tidak boleh mencabut peran admin dari akun Anda sendiri.');
+            }
+        }
+
+        $targetUsers = User::query()->whereIn('id', $userIds)->get();
+
+        DB::transaction(function () use ($targetUsers, $hasOrganization, $organizationId, $hasRoles, $roleIds): void {
+            foreach ($targetUsers as $targetUser) {
+                if ($hasOrganization) {
+                    $targetUser->forceFill([
+                        'organization_id' => $organizationId,
+                    ])->save();
+                }
+
+                if ($hasRoles) {
+                    $targetUser->roles()->sync($roleIds->all());
+                }
+            }
+        });
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.users.access.batch-updated',
+            category: 'user_management',
+            description: 'Admin menjalankan pembaruan organisasi/peran secara batch.',
+            user: $request->user(),
+            metadata: [
+                'user_ids' => $userIds->all(),
+                'organization_id' => $organizationId,
+                'role_ids' => $hasRoles ? $roleIds->all() : null,
+            ],
+        );
+
+        return back()->with('success', "Pembaruan batch berhasil diterapkan ke {$targetUsers->count()} pengguna.");
+    }
+
     private function resolveState(Request $request, EncryptedStateService $encryptedState): array
     {
         return $encryptedState->decryptArray($request->string('state')->toString(), [
             'page' => 1,
             'user_id' => null,
+            'pending_only' => false,
         ]);
     }
 
-    private function buildUsersQuery(?int $selectedUserId)
+    private function buildUsersQuery(?int $selectedUserId, bool $pendingOnly): Builder
     {
         return User::query()
-            ->with('roles')
+            ->with(['roles', 'organization'])
+            ->when($pendingOnly, fn ($query) => $query->whereNull('admin_verified_at'))
             ->when($selectedUserId, fn ($query) => $query->whereKey($selectedUserId));
     }
 }
