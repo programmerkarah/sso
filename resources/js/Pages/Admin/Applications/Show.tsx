@@ -27,9 +27,9 @@ interface ShowProps {
 
 export default function Show({ application, appUrl }: ShowProps) {
     const [showSecret, setShowSecret] = useState(false);
-    const [copied, setCopied] = useState<'id' | 'secret' | null>(null);
+    const [copied, setCopied] = useState<'id' | 'secret' | 'env' | null>(null);
 
-    const copyToClipboard = (text: string, type: 'id' | 'secret') => {
+    const copyToClipboard = (text: string, type: 'id' | 'secret' | 'env') => {
         navigator.clipboard.writeText(text);
         setCopied(type);
         setTimeout(() => setCopied(null), 2000);
@@ -319,15 +319,26 @@ export default function Show({ application, appUrl }: ShowProps) {
                                     Panduan Integrasi
                                 </h2>
                                 <div className="rounded-xl bg-black/40 p-4">
-                                    <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
-                                        ENV EXAMPLE
-                                    </p>
+                                    <div className="mb-2 flex items-center justify-between">
+                                        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
+                                            ENV EXAMPLE
+                                        </p>
+                                        <button
+                                            onClick={() =>
+                                                copyToClipboard(
+                                                    `SSO_CLIENT_ID=${application.oauth_client?.id || 'your-client-id'}\nSSO_CLIENT_SECRET=${application.oauth_client?.secret || 'regenerate-secret-first'}\nSSO_REDIRECT_URI=${application.callback_url}\nSSO_REGISTER_URL=${appUrl}/register\nSSO_BASE_URL=${appUrl}\nSSO_USER_ENDPOINT=/api/user`,
+                                                    'env',
+                                                )
+                                            }
+                                            className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white/70 transition hover:bg-white/20 hover:text-white"
+                                        >
+                                            <Copy className="h-3.5 w-3.5" />
+                                            {copied === 'env' ? 'Tersalin!' : 'Salin'}
+                                        </button>
+                                    </div>
                                     <pre className="overflow-x-auto text-xs leading-6 text-white/90">
                                         <code>
-                                            {`SSO_CLIENT_ID=${application.oauth_client?.id || 'your-client-id'}
-SSO_CLIENT_SECRET=${application.oauth_client?.secret || 'regenerate-secret-first'}
-SSO_REDIRECT_URI=${application.callback_url}
-SSO_BASE_URL=${appUrl}`}
+                                            {`SSO_CLIENT_ID=${application.oauth_client?.id || 'your-client-id'}\nSSO_CLIENT_SECRET=${application.oauth_client?.secret || 'regenerate-secret-first'}\nSSO_REDIRECT_URI=${application.callback_url}\nSSO_REGISTER_URL=${appUrl}/register\nSSO_BASE_URL=${appUrl}\nSSO_USER_ENDPOINT=/api/user`}
                                         </code>
                                     </pre>
                                 </div>
