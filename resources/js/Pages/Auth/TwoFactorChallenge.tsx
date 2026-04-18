@@ -1,8 +1,8 @@
 import { ClipboardPaste, KeyRound, LifeBuoy } from 'lucide-react';
 
-import { FormEventHandler, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { Head, useForm } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
 import Input from '@/Components/Input';
@@ -15,11 +15,11 @@ export default function TwoFactorChallenge() {
     const [digits, setDigits] = useState(['', '', '', '', '', '']);
     const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
     const [toasts, setToasts] = useState<ToastItem[]>([]);
+    const [processing, setProcessing] = useState(false);
+    const [code, setCode] = useState('');
+    const [recoveryCode, setRecoveryCode] = useState('');
 
-    const { data, setData, post, processing } = useForm({
-        code: '',
-        recovery_code: '',
-    });
+    const { errors } = usePage<{ errors: Record<string, string> }>().props;
 
     const localizeTwoFactorMessage = (message?: string): string => {
         if (!message) {
@@ -40,12 +40,29 @@ export default function TwoFactorChallenge() {
         return message;
     };
 
+    useEffect(() => {
+        const message = localizeTwoFactorMessage(
+            errors.code ?? errors.recovery_code,
+        );
+        if (errors.code || errors.recovery_code) {
+            setToasts([
+                {
+                    id: `two-factor-${Date.now()}`,
+                    tone: 'error',
+                    title: 'Verifikasi 2FA Gagal',
+                    message,
+                },
+            ]);
+        }
+    }, [errors.code, errors.recovery_code]);
+
     const handleDigitChange = (index: number, value: string) => {
         const digit = value.replace(/\D/g, '').slice(-1);
         const newDigits = [...digits];
         newDigits[index] = digit;
         setDigits(newDigits);
-        setData('code', newDigits.join(''));
+        const combined = newDigits.join('');
+        setCode(combined);
 
         if (digit && index < 5) {
             digitRefs.current[index + 1]?.focus();
@@ -79,36 +96,33 @@ export default function TwoFactorChallenge() {
                 (_, i) => pasted[i] ?? '',
             );
             setDigits(newDigits);
-            setData('code', newDigits.join(''));
+            setCode(newDigits.join(''));
             const lastIndex = Math.min(pasted.length - 1, 5);
             digitRefs.current[lastIndex]?.focus();
         }
     };
 
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-        post('/two-factor-challenge', {
-            onError: (errors) => {
-                const message = localizeTwoFactorMessage(
-                    errors.code ?? errors.recovery_code,
-                );
+    const csrfToken =
+        document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content') ?? '';
 
-                setToasts([
-                    {
-                        id: `two-factor-${Date.now()}`,
-                        tone: 'error',
-                        title: 'Verifikasi 2FA Gagal',
-                        message,
-                    },
-                ]);
-            },
-        });
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        setProcessing(true);
+        const form = e.currentTarget;
+        const hiddenToken = form.querySelector<HTMLInputElement>(
+            'input[name="_token"]',
+        );
+        if (hiddenToken) {
+            hiddenToken.value = csrfToken;
+        }
     };
 
     const switchMode = () => {
         setRecovery(!recovery);
         setDigits(['', '', '', '', '', '']);
-        setData({ code: '', recovery_code: '' });
+        setCode('');
+        setRecoveryCode('');
     };
 
     return (
@@ -124,7 +138,18 @@ export default function TwoFactorChallenge() {
                 topClassName="top-4"
             />
 
-            <form onSubmit={submit} className="space-y-6">
+            <form
+                method="POST"
+                action="/two-factor-challenge"
+                onSubmit={handleSubmit}
+                className="space-y-6"
+            >
+                <input type="hidden" name="_token" value={csrfToken} />
+                {recovery ? (
+                    <input type="hidden" name="recovery_code" value={recoveryCode} />
+                ) : (
+                    <input type="hidden" name="code" value={code} />
+                )}
                 <h2 className="text-center text-3xl font-bold text-white drop-shadow-lg">
                     Autentikasi Dua Faktor
                 </h2>
@@ -184,13 +209,11 @@ export default function TwoFactorChallenge() {
                         <Input
                             id="recovery_code"
                             type="text"
-                            name="recovery_code"
-                            value={data.recovery_code}
+                            name="recovery_code_display"
+                            value={recoveryCode}
                             autoComplete="one-time-code"
                             autoFocus
-                            onChange={(e) =>
-                                setData('recovery_code', e.target.value)
-                            }
+                            onChange={(e) => setRecoveryCode(e.target.value)}
                             placeholder="abcd-efgh"
                             required
                         />
