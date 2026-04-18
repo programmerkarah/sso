@@ -21,6 +21,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleInertiaRequests::class,
         ]);
+        
+        // Log final response for debugging
+        $middleware->append(\App\Http\Middleware\LogFinalResponse::class);
+        
+        // Exclude OAuth token endpoint from CSRF verification
+        $middleware->validateCsrfTokens(except: [
+            'oauth/token',
+            'oauth/token/*',
+        ]);
 
         $middleware->alias([
             'two-factor' => EnsureTwoFactorEnabled::class,

@@ -321,7 +321,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                 <div className="rounded-xl bg-black/40 p-4">
                                     <div className="mb-2 flex items-center justify-between">
                                         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
-                                            ENV EXAMPLE
+                                            .ENV EXAMPLE
                                         </p>
                                         <button
                                             onClick={() =>

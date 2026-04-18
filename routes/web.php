@@ -19,6 +19,23 @@ Route::get('/csrf-token', function () {
     ]);
 })->name('csrf.token');
 
+// DEBUG: Test session & auth
+Route::get('/debug-auth', function () {
+    return response()->json([
+        'authenticated' => Auth::check(),
+        'user_id' => Auth::id(),
+        'session_id' => request()->session()->getId(),
+        'guard' => config('auth.defaults.guard'),
+        'session_driver' => config('session.driver'),
+        'passport_middleware' => config('passport.middleware'),
+    ]);
+})->middleware(['web']);
+
+// DEBUG: Override OAuth authorize  
+Route::get('/oauth/authorize', [App\Http\Controllers\Auth\CustomAuthorizationController::class, 'authorize'])
+    ->middleware(['web'])
+    ->name('passport.authorizations.authorize.debug');
+
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
