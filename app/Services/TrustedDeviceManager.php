@@ -13,11 +13,17 @@ class TrustedDeviceManager
 
     public const TRUST_DAYS = 7;
 
+    public function __construct(protected SessionConcurrencyManager $sessionConcurrencyManager) {}
+
     /**
      * Determine if the user should be challenged for 2FA.
      */
     public function shouldChallenge(Request $request, User $user): bool
     {
+        if ($this->sessionConcurrencyManager->consumeForceTwoFactorFlag($user->id)) {
+            return true;
+        }
+
         return ! $this->hasValidTrustedDevice($request, $user)
             || $this->requiresFreshTwoFactorConfirmation($user);
     }

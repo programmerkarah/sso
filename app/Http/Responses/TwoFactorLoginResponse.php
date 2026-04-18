@@ -2,6 +2,7 @@
 
 namespace App\Http\Responses;
 
+use App\Services\SessionConcurrencyManager;
 use App\Services\TrustedDeviceManager;
 use App\Support\ActivityLogger;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +14,10 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
     /**
      * Create a new response instance.
      */
-    public function __construct(protected TrustedDeviceManager $trustedDeviceManager) {}
+    public function __construct(
+        protected TrustedDeviceManager $trustedDeviceManager,
+        protected SessionConcurrencyManager $sessionConcurrencyManager,
+    ) {}
 
     /**
      * Create an HTTP response for a successful two-factor login.
@@ -22,6 +26,11 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
     {
         if ($request->user()) {
             $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $request->user());
+            $this->sessionConcurrencyManager->activateLatestSession(
+                $request,
+                (int) $request->user()->id,
+                forceTwoFactorOnNextLogin: true,
+            );
 
             ActivityLogger::logByRequest(
                 request: $request,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Responses;
 
+use App\Services\SessionConcurrencyManager;
 use App\Services\TrustedDeviceManager;
 use App\Support\ActivityLogger;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
@@ -12,7 +13,10 @@ class LoginResponse implements LoginResponseContract
     /**
      * Create a new response instance.
      */
-    public function __construct(protected TrustedDeviceManager $trustedDeviceManager) {}
+    public function __construct(
+        protected TrustedDeviceManager $trustedDeviceManager,
+        protected SessionConcurrencyManager $sessionConcurrencyManager,
+    ) {}
 
     /**
      * Create an HTTP response for a successful login.
@@ -21,6 +25,11 @@ class LoginResponse implements LoginResponseContract
     {
         if ($request->user()) {
             $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $request->user());
+            $this->sessionConcurrencyManager->activateLatestSession(
+                $request,
+                (int) $request->user()->id,
+                forceTwoFactorOnNextLogin: true,
+            );
 
             ActivityLogger::logByRequest(
                 request: $request,
