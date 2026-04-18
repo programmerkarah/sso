@@ -2,37 +2,53 @@
 
 use App\Http\Controllers\Admin\ApplicationController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Settings\ChangePasswordController;
 use App\Http\Controllers\SettingsController;
 use App\Models\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    if (auth()->check()) {
+    if (Auth::check()) {
         return redirect()->route('dashboard');
     }
 
     return Inertia::render('Welcome');
 });
 
-// Dashboard - Requires verified email and 2FA
+// Dashboard - Requires verified email, 2FA, and password not pending change
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
         'applicationsCount' => Application::where('is_active', true)->count(),
     ]);
-})->middleware(['auth', 'verified', 'two-factor'])->name('dashboard');
+})->middleware(['auth', 'verified', 'two-factor', 'must-change-password'])->name('dashboard');
+
+Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(function () {
+    Route::get('/change-password', [ChangePasswordController::class, 'show'])->name('change-password');
+    Route::post('/change-password', [ChangePasswordController::class, 'update'])->name('change-password.update');
+});
 
 // Settings Routes
-Route::middleware(['auth', 'verified'])->prefix('settings')->name('settings.')->group(function () {
+Route::middleware(['auth', 'verified', 'must-change-password'])->prefix('settings')->name('settings.')->group(function () {
     Route::get('/security', [SettingsController::class, 'security'])->name('security');
+    Route::post('/security/password', [SettingsController::class, 'updatePassword'])->name('security.password.update');
     Route::get('/security/recovery-codes', [SettingsController::class, 'showRecoveryCodes'])->name('security.recovery-codes.show');
     Route::post('/security/recovery-codes/regenerate', [SettingsController::class, 'regenerateRecoveryCodes'])->name('security.recovery-codes.regenerate');
 });
 
 // Admin Routes - Only admins can manage applications
-Route::middleware(['auth', 'verified', 'two-factor', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('applications', ApplicationController::class);
-    Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+Route::middleware(['auth', 'verified', 'two-factor', 'must-change-password', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
+    Route::post('/applications/navigate', [ApplicationController::class, 'index'])->name('applications.navigate');
+    Route::get('/applications/create', [ApplicationController::class, 'create'])->name('applications.create');
+    Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
+    Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
+    Route::get('/applications/{application}/edit', [ApplicationController::class, 'edit'])->name('applications.edit');
+    Route::put('/applications/{application}', [ApplicationController::class, 'update'])->name('applications.update');
+    Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
+    Route::post('/applications/{application}/refresh-secret', [ApplicationController::class, 'refreshSecret'])->name('applications.refresh-secret');
+    Route::match(['GET', 'POST'], '/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
     Route::post('/users/{user}/reset-two-factor', [UserManagementController::class, 'resetTwoFactor'])->name('users.reset-two-factor');
     Route::post('/users/{user}/toggle-admin', [UserManagementController::class, 'toggleAdmin'])->name('users.toggle-admin');

@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->boolean('password_change_required')->default(false)->after('password');
+            $table->string('previous_password')->nullable()->after('password_change_required');
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn(['password_change_required', 'previous_password']);
         });
     }
 };

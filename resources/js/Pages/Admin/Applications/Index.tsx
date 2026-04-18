@@ -8,8 +8,11 @@ import {
     XCircle,
 } from 'lucide-react';
 
+import { useState } from 'react';
+
 import { Head, Link, router } from '@inertiajs/react';
 
+import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application, PageProps } from '@/types';
@@ -17,25 +20,67 @@ import { Application, PageProps } from '@/types';
 interface ApplicationsIndexProps extends PageProps {
     applications: {
         data: Application[];
-        links: Array<{
-            url: string | null;
+        current_page: number;
+        from: number | null;
+        last_page: number;
+        per_page: number;
+        to: number | null;
+        total: number;
+        prev_page_token: string | null;
+        next_page_token: string | null;
+        pages: Array<{
             label: string;
+            token: string;
             active: boolean;
         }>;
     };
-    success?: string;
+    stats: {
+        total: number;
+        active: number;
+    };
 }
 
-export default function Index({ applications }: ApplicationsIndexProps) {
-    const handleDelete = (id: number, name: string) => {
-        if (confirm(`Apakah Anda yakin ingin menghapus aplikasi "${name}"?`)) {
-            router.delete(`/admin/applications/${id}`);
+export default function Index({ applications, stats }: ApplicationsIndexProps) {
+    const [deleteModal, setDeleteModal] = useState<{
+        routeKey: string;
+        name: string;
+    } | null>(null);
+
+    const visitPage = (token: string) => {
+        router.post(
+            '/admin/applications/navigate',
+            { state: token },
+            { preserveScroll: true, preserveState: true },
+        );
+    };
+
+    const confirmDelete = () => {
+        if (!deleteModal) {
+            return;
         }
+
+        router.delete(`/admin/applications/${deleteModal.routeKey}`, {
+            preserveScroll: true,
+            onFinish: () => setDeleteModal(null),
+        });
     };
 
     return (
         <AppLayout>
             <Head title="Daftar Aplikasi" />
+            <ConfirmationModal
+                isOpen={deleteModal !== null}
+                title="Hapus Aplikasi"
+                description={
+                    deleteModal
+                        ? `Aplikasi "${deleteModal.name}" akan dihapus beserta kredensial OAuth yang terhubung. Tindakan ini tidak bisa dibatalkan.`
+                        : ''
+                }
+                confirmLabel="Ya, Hapus Aplikasi"
+                confirmVariant="red"
+                onCancel={() => setDeleteModal(null)}
+                onConfirm={confirmDelete}
+            />
 
             <div className="mx-auto max-w-7xl space-y-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -63,7 +108,7 @@ export default function Index({ applications }: ApplicationsIndexProps) {
                             Total aplikasi
                         </div>
                         <div className="mt-2 text-4xl font-black text-white">
-                            {applications.data.length}
+                            {stats.total}
                         </div>
                     </GlassCard>
                     <GlassCard>
@@ -71,10 +116,7 @@ export default function Index({ applications }: ApplicationsIndexProps) {
                             Aplikasi aktif
                         </div>
                         <div className="mt-2 text-4xl font-black text-white">
-                            {
-                                applications.data.filter((app) => app.is_active)
-                                    .length
-                            }
+                            {stats.active}
                         </div>
                     </GlassCard>
                     <GlassCard>
@@ -177,23 +219,25 @@ export default function Index({ applications }: ApplicationsIndexProps) {
                                             <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                                                 <div className="flex justify-end gap-2">
                                                     <Link
-                                                        href={`/admin/applications/${app.id}`}
+                                                        href={`/admin/applications/${app.route_key}`}
                                                         className="rounded-xl bg-white/10 p-2 text-blue-100 transition hover:bg-white/20"
                                                     >
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                     <Link
-                                                        href={`/admin/applications/${app.id}/edit`}
+                                                        href={`/admin/applications/${app.route_key}/edit`}
                                                         className="rounded-xl bg-white/10 p-2 text-amber-100 transition hover:bg-white/20"
                                                     >
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                     <button
+                                                        type="button"
                                                         onClick={() =>
-                                                            handleDelete(
-                                                                app.id,
-                                                                app.name,
-                                                            )
+                                                            setDeleteModal({
+                                                                routeKey:
+                                                                    app.route_key,
+                                                                name: app.name,
+                                                            })
                                                         }
                                                         className="rounded-xl bg-red-500/15 p-2 text-red-100 transition hover:bg-red-500/25"
                                                     >
@@ -208,31 +252,58 @@ export default function Index({ applications }: ApplicationsIndexProps) {
                         </table>
 
                         {/* Pagination */}
-                        {applications.links.length > 3 && (
+                        {applications.last_page > 1 && (
                             <div className="border-t border-white/10 px-4 py-4 sm:px-6">
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between gap-3">
+                                    <p className="text-sm text-white/60">
+                                        Menampilkan {applications.from ?? 0}–
+                                        {applications.to ?? 0} dari{' '}
+                                        {applications.total} aplikasi
+                                    </p>
                                     <div className="flex gap-2">
-                                        {applications.links.map(
-                                            (link, index) => (
+                                        {applications.prev_page_token && (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    visitPage(
+                                                        applications.prev_page_token!,
+                                                    )
+                                                }
+                                                className="rounded-md bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20"
+                                            >
+                                                Sebelumnya
+                                            </button>
+                                        )}
+                                        {applications.pages.map(
+                                            (page, index) => (
                                                 <button
                                                     key={index}
+                                                    type="button"
                                                     onClick={() =>
-                                                        link.url &&
-                                                        router.visit(link.url)
+                                                        visitPage(page.token)
                                                     }
-                                                    disabled={!link.url}
                                                     className={`rounded-md px-3 py-2 text-sm font-medium ${
-                                                        link.active
+                                                        page.active
                                                             ? 'bg-white text-slate-900'
-                                                            : link.url
-                                                              ? 'bg-white/10 text-white hover:bg-white/20'
-                                                              : 'cursor-not-allowed bg-white/5 text-white/30'
+                                                            : 'bg-white/10 text-white hover:bg-white/20'
                                                     }`}
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: link.label,
-                                                    }}
-                                                />
+                                                >
+                                                    {page.label}
+                                                </button>
                                             ),
+                                        )}
+                                        {applications.next_page_token && (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    visitPage(
+                                                        applications.next_page_token!,
+                                                    )
+                                                }
+                                                className="rounded-md bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20"
+                                            >
+                                                Berikutnya
+                                            </button>
                                         )}
                                     </div>
                                 </div>

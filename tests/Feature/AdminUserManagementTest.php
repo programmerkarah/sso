@@ -5,9 +5,13 @@ namespace Tests\Feature;
 use App\Models\Role;
 use App\Models\TrustedDevice;
 use App\Models\User;
+use App\Notifications\PasswordResetByAdmin;
+use App\Services\EncryptedStateService;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class AdminUserManagementTest extends TestCase
@@ -30,11 +34,15 @@ class AdminUserManagementTest extends TestCase
     }
 
     /**
-     * Ensure admin can reset a user's password and receive a temporary password flash.
+     * Ensure admin can reset a user's password and the user receives an email notification.
      */
     public function test_admin_can_reset_user_password(): void
     {
+        Notification::fake();
+
         [$admin, $targetUser] = $this->createAdminAndTargetUser();
+
+        $previousPassword = $targetUser->password;
 
         $response = $this
             ->actingAs($admin)
@@ -45,12 +53,110 @@ class AdminUserManagementTest extends TestCase
 
         $response
             ->assertRedirect('/admin/users')
-            ->assertSessionHas('success')
-            ->assertSessionHas('temporaryPassword');
+            ->assertSessionHas('success');
 
-        $temporaryPassword = session('temporaryPassword');
+        // Password must have changed
+        $this->assertNotSame($previousPassword, $targetUser->password);
 
-        $this->assertTrue(Hash::check($temporaryPassword, $targetUser->password));
+        // Flag must be set
+        $this->assertTrue($targetUser->password_change_required);
+        $this->assertNotNull($targetUser->previous_password);
+
+        // Email must be sent to the target user
+        Notification::assertSentTo($targetUser, PasswordResetByAdmin::class);
+    }
+
+    /**
+     * Ensure user with password_change_required is redirected to change-password page from dashboard.
+     */
+    public function test_user_with_password_change_required_is_redirected_from_dashboard(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $user = User::factory()->create([
+            'password_change_required' => true,
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->get(route('dashboard'));
+
+        $response->assertRedirect(route('settings.change-password'));
+    }
+
+    /**
+     * Ensure user with password_change_required cannot access other protected settings pages.
+     */
+    public function test_user_with_password_change_required_is_redirected_from_security_page(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $user = User::factory()->create([
+            'password_change_required' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('settings.security'));
+
+        $response->assertRedirect(route('settings.change-password'));
+    }
+
+    /**
+     * Ensure user can change password successfully with a new (different) password.
+     */
+    public function test_user_can_change_forced_password_successfully(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $oldPassword = 'OldPassword1';
+        $user = User::factory()->create([
+            'password_change_required' => true,
+            'previous_password' => Hash::make($oldPassword),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from('/settings/change-password')
+            ->post(route('settings.change-password.update'), [
+                'password' => 'NewSecurePass2',
+                'password_confirmation' => 'NewSecurePass2',
+            ]);
+
+        $user->refresh();
+
+        $response->assertRedirect(route('dashboard'));
+        $this->assertFalse($user->password_change_required);
+        $this->assertNull($user->previous_password);
+        $this->assertTrue(Hash::check('NewSecurePass2', $user->password));
+    }
+
+    /**
+     * Ensure user cannot reuse the password they had before the reset.
+     */
+    public function test_user_cannot_reuse_previous_password_when_changing(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $oldPassword = 'OldPassword1';
+        $user = User::factory()->create([
+            'password_change_required' => true,
+            'previous_password' => Hash::make($oldPassword),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from('/settings/change-password')
+            ->post(route('settings.change-password.update'), [
+                'password' => $oldPassword,
+                'password_confirmation' => $oldPassword,
+            ]);
+
+        $user->refresh();
+
+        $response
+            ->assertRedirect('/settings/change-password')
+            ->assertSessionHasErrors(['password']);
+
+        // Flag must still be set
+        $this->assertTrue($user->password_change_required);
     }
 
     /**
@@ -130,6 +236,64 @@ class AdminUserManagementTest extends TestCase
             ->assertSessionHas('two-factor-recovery-codes');
 
         $this->assertNotSame(['code-1', 'code-2'], session('two-factor-recovery-codes'));
+    }
+
+    /**
+     * Ensure authenticated users can update their password from the security page.
+     */
+    public function test_user_can_update_password_from_security_page(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('settings.security'))
+            ->post(route('settings.security.password.update'), [
+                'current_password' => 'password',
+                'password' => 'BaruSekali123',
+                'password_confirmation' => 'BaruSekali123',
+            ]);
+
+        $user->refresh();
+
+        $response
+            ->assertRedirect(route('settings.security'))
+            ->assertSessionHas('success');
+
+        $this->assertTrue(Hash::check('BaruSekali123', $user->password));
+    }
+
+    /**
+     * Ensure the users page can filter with encrypted state sent via POST.
+     */
+    public function test_admin_can_filter_users_with_encrypted_post_state(): void
+    {
+        [$admin, $targetUser] = $this->createAdminAndTargetUser();
+        $anotherUser = User::factory()->create();
+
+        $state = app(EncryptedStateService::class)->encryptArray([
+            'page' => 1,
+            'user_id' => $targetUser->id,
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->post(route('admin.users.index'), [
+                'state' => $state,
+            ]);
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Users/Index')
+                ->where('users.total', 1)
+                ->where('users.data.0.email', $targetUser->email)
+                ->missing('users.data.1')
+            );
+
+        $this->assertNotSame($targetUser->id, $anotherUser->id);
     }
 
     /**

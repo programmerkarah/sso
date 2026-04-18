@@ -58,6 +58,7 @@ class HandleInertiaRequests extends Middleware
                     'last_login_at' => $user->last_login_at,
                     'email_verified_at' => $user->email_verified_at,
                     'two_factor_confirmed_at' => $user->two_factor_confirmed_at,
+                    'password_change_required' => $user->password_change_required,
                     'roles' => $user->roles->pluck('name')->values()->all(),
                     'isAdmin' => $isAdmin,
                 ] : null,
@@ -71,8 +72,6 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
                 'info' => $request->session()->get('info'),
                 'status' => $status,
-                'temporaryPassword' => $request->session()->get('temporaryPassword'),
-                'temporaryPasswordFor' => $request->session()->get('temporaryPasswordFor'),
             ],
         ];
     }

@@ -1,14 +1,70 @@
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 import AnimatedBackground from '@/Components/AnimatedBackground';
 import AppIcon from '@/Components/AppIcon';
+import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
+import { PageProps } from '@/types';
 
 export default function GuestLayout({ children }: PropsWithChildren) {
+    const { flash } = usePage<PageProps>().props;
+    const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+    useEffect(() => {
+        const nextToasts: ToastItem[] = [];
+
+        if (flash.success) {
+            nextToasts.push({
+                id: `guest-success-${flash.success}`,
+                tone: 'success',
+                title: 'Berhasil',
+                message: flash.success,
+            });
+        }
+
+        if (flash.info) {
+            nextToasts.push({
+                id: `guest-info-${flash.info}`,
+                tone: 'info',
+                title: 'Informasi',
+                message: flash.info,
+            });
+        }
+
+        if (flash.error) {
+            nextToasts.push({
+                id: `guest-error-${flash.error}`,
+                tone: 'error',
+                title: 'Terjadi Kendala',
+                message: flash.error,
+            });
+        }
+
+        if (flash.status) {
+            nextToasts.push({
+                id: `guest-status-${flash.status}`,
+                tone: 'status',
+                title: 'Pembaruan Status',
+                message: flash.status,
+            });
+        }
+
+        setToasts(nextToasts);
+    }, [flash.error, flash.info, flash.status, flash.success]);
+
     return (
         <>
             <AnimatedBackground />
+            <ToastViewport
+                items={toasts}
+                onDismiss={(id) =>
+                    setToasts((current) =>
+                        current.filter((item) => item.id !== id),
+                    )
+                }
+                topClassName="top-4"
+            />
             <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
                 <div className="w-full max-w-md">
                     {/* Logo Section */}

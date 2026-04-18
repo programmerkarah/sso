@@ -1,4 +1,4 @@
-import { Key, KeyRound, RefreshCw, Shield, X } from 'lucide-react';
+import { Key, KeyRound, LockKeyhole, RefreshCw, Shield, X } from 'lucide-react';
 
 import { FormEventHandler, useEffect, useState } from 'react';
 
@@ -19,7 +19,6 @@ interface SecurityProps extends PageProps {
 }
 
 export default function Security({
-    auth,
     twoFactorEnabled,
     twoFactorConfirmed,
     qrCodeSvg,
@@ -33,6 +32,11 @@ export default function Security({
 
     const { data, setData, post, processing, errors, reset } = useForm({
         code: '',
+    });
+    const passwordForm = useForm({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
     });
 
     useEffect(() => {
@@ -112,6 +116,20 @@ export default function Security({
         });
     };
 
+    const updatePassword: FormEventHandler = (e) => {
+        e.preventDefault();
+        passwordForm.post('/settings/security/password', {
+            preserveScroll: true,
+            onSuccess: () => {
+                passwordForm.reset(
+                    'current_password',
+                    'password',
+                    'password_confirmation',
+                );
+            },
+        });
+    };
+
     return (
         <AppLayout>
             <Head title="Keamanan" />
@@ -128,6 +146,125 @@ export default function Security({
                     </div>
 
                     <div className="space-y-6">
+                        <GlassCard>
+                            <div className="flex items-start gap-4">
+                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 backdrop-blur-sm">
+                                    <LockKeyhole className="h-8 w-8 text-sky-300" />
+                                </div>
+                                <div className="flex-1 space-y-5">
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-white">
+                                            Ganti Password
+                                        </h2>
+                                        <p className="mt-2 text-white/80">
+                                            Perbarui password akun Anda secara
+                                            berkala agar akses tetap aman dan
+                                            mudah dikelola.
+                                        </p>
+                                    </div>
+
+                                    <form
+                                        onSubmit={updatePassword}
+                                        className="grid gap-4 md:grid-cols-2"
+                                    >
+                                        <div className="md:col-span-2">
+                                            <Label
+                                                htmlFor="current_password"
+                                                required
+                                            >
+                                                Password Saat Ini
+                                            </Label>
+                                            <Input
+                                                id="current_password"
+                                                type="password"
+                                                value={
+                                                    passwordForm.data
+                                                        .current_password
+                                                }
+                                                onChange={(e) =>
+                                                    passwordForm.setData(
+                                                        'current_password',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                error={
+                                                    passwordForm.errors
+                                                        .current_password
+                                                }
+                                                autoComplete="current-password"
+                                                placeholder="Masukkan password Anda saat ini"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <Label htmlFor="password" required>
+                                                Password Baru
+                                            </Label>
+                                            <Input
+                                                id="password"
+                                                type="password"
+                                                value={passwordForm.data.password}
+                                                onChange={(e) =>
+                                                    passwordForm.setData(
+                                                        'password',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                error={
+                                                    passwordForm.errors.password
+                                                }
+                                                autoComplete="new-password"
+                                                placeholder="Minimal 8 karakter"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <Label
+                                                htmlFor="password_confirmation"
+                                                required
+                                            >
+                                                Konfirmasi Password Baru
+                                            </Label>
+                                            <Input
+                                                id="password_confirmation"
+                                                type="password"
+                                                value={
+                                                    passwordForm.data
+                                                        .password_confirmation
+                                                }
+                                                onChange={(e) =>
+                                                    passwordForm.setData(
+                                                        'password_confirmation',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                error={
+                                                    passwordForm.errors
+                                                        .password_confirmation
+                                                }
+                                                autoComplete="new-password"
+                                                placeholder="Ketik ulang password baru"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="md:col-span-2 flex justify-end">
+                                            <Button
+                                                type="submit"
+                                                disabled={passwordForm.processing}
+                                            >
+                                                {passwordForm.processing
+                                                    ? 'Memperbarui...'
+                                                    : 'Simpan Password Baru'}
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </GlassCard>
+
                         {/* 2FA Status Card */}
                         <GlassCard>
                             <div className="flex items-start gap-4">

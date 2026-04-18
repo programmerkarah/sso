@@ -5,6 +5,7 @@ import { FormEventHandler } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
+import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
 import AppLayout from '@/Layouts/AppLayout';
@@ -26,7 +27,7 @@ export default function Edit({ application }: EditProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        put(`/admin/applications/${application.id}`);
+        put(`/admin/applications/${application.route_key}`);
     };
 
     return (
@@ -37,21 +38,21 @@ export default function Edit({ application }: EditProps) {
                 <div className="mx-auto max-w-3xl sm:px-6 lg:px-8">
                     <div className="mb-6">
                         <Link
-                            href={`/admin/applications/${application.id}`}
-                            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+                            href={`/admin/applications/${application.route_key}`}
+                            className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-xl transition hover:bg-white/20"
                         >
                             <ArrowLeft className="h-4 w-4" />
                             Kembali ke detail
                         </Link>
-                        <h1 className="mt-4 text-3xl font-bold text-gray-900">
+                        <h1 className="mt-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">
                             Edit Aplikasi
                         </h1>
-                        <p className="mt-2 text-gray-600">
+                        <p className="mt-2 text-white/75">
                             Perbarui informasi aplikasi {application.name}
                         </p>
                     </div>
 
-                    <div className="rounded-lg bg-white p-6 shadow">
+                    <GlassCard>
                         <form onSubmit={submit} className="space-y-6">
                             <div>
                                 <Label htmlFor="name" required>
@@ -79,14 +80,14 @@ export default function Edit({ application }: EditProps) {
                                         setData('description', e.target.value)
                                     }
                                     rows={3}
-                                    className={`w-full rounded-md border px-3 py-2 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
+                                    className={`w-full rounded-xl border bg-white/10 px-4 py-3 text-sm text-white shadow-sm backdrop-blur-sm transition focus:outline-none focus:ring-2 ${
                                         errors.description
-                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                                            : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                                            ? 'border-red-400 focus:border-red-400 focus:ring-red-400/30'
+                                            : 'border-white/25 focus:border-white/40 focus:ring-white/20'
                                     }`}
                                 />
                                 {errors.description && (
-                                    <p className="mt-1 text-sm text-red-600">
+                                    <p className="mt-1 text-sm text-red-300">
                                         {errors.description}
                                     </p>
                                 )}
@@ -149,13 +150,13 @@ export default function Edit({ application }: EditProps) {
                                                 e.target.checked,
                                             )
                                         }
-                                        className="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"
+                                        className="rounded border-white/30 bg-white/10 text-blue-500 shadow-sm focus:ring-white/30"
                                     />
-                                    <span className="ml-2 text-sm text-gray-700">
+                                    <span className="ml-2 text-sm text-white/85">
                                         Aplikasi Aktif
                                     </span>
                                 </label>
-                                <p className="mt-1 text-sm text-gray-500">
+                                <p className="mt-1 text-sm text-white/55">
                                     Nonaktifkan untuk mencegah aplikasi ini
                                     menggunakan SSO
                                 </p>
@@ -163,7 +164,7 @@ export default function Edit({ application }: EditProps) {
 
                             <div className="flex items-center justify-end gap-3 border-t pt-6">
                                 <Link
-                                    href={`/admin/applications/${application.id}`}
+                                    href={`/admin/applications/${application.route_key}`}
                                 >
                                     <Button type="button" variant="secondary">
                                         Batal
@@ -176,7 +177,7 @@ export default function Edit({ application }: EditProps) {
                                 </Button>
                             </div>
                         </form>
-                    </div>
+                    </GlassCard>
                 </div>
             </div>
         </AppLayout>

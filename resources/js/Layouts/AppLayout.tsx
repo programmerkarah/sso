@@ -9,12 +9,13 @@ import {
     X,
 } from 'lucide-react';
 
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 
 import { Link, usePage } from '@inertiajs/react';
 
 import AnimatedBackground from '@/Components/AnimatedBackground';
 import AppIcon from '@/Components/AppIcon';
+import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import { PageProps } from '@/types';
 
 export default function AppLayout({ children }: PropsWithChildren) {
@@ -23,10 +24,61 @@ export default function AppLayout({ children }: PropsWithChildren) {
     const canManageApplications = auth?.can.manageApplications ?? false;
     const canManageUsers = auth?.can.manageUsers ?? false;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+    useEffect(() => {
+        const nextToasts: ToastItem[] = [];
+
+        if (flash.success) {
+            nextToasts.push({
+                id: `success-${flash.success}`,
+                tone: 'success',
+                title: 'Berhasil',
+                message: flash.success,
+            });
+        }
+
+        if (flash.info) {
+            nextToasts.push({
+                id: `info-${flash.info}`,
+                tone: 'info',
+                title: 'Informasi',
+                message: flash.info,
+            });
+        }
+
+        if (flash.error) {
+            nextToasts.push({
+                id: `error-${flash.error}`,
+                tone: 'error',
+                title: 'Terjadi Kendala',
+                message: flash.error,
+            });
+        }
+
+        if (flash.status) {
+            nextToasts.push({
+                id: `status-${flash.status}`,
+                tone: 'status',
+                title: 'Pembaruan Status',
+                message: flash.status,
+            });
+        }
+
+        setToasts(nextToasts);
+    }, [flash.error, flash.info, flash.status, flash.success]);
 
     return (
         <>
             <AnimatedBackground />
+            <ToastViewport
+                items={toasts}
+                onDismiss={(id) =>
+                    setToasts((current) =>
+                        current.filter((item) => item.id !== id),
+                    )
+                }
+            />
             <div className="relative min-h-screen">
                 {user && (
                     <nav className="fixed left-0 right-0 top-0 z-50 px-4 pt-4">
@@ -190,44 +242,6 @@ export default function AppLayout({ children }: PropsWithChildren) {
                 )}
 
                 <main className="px-4 pb-12 pt-28">
-                    <div className="mx-auto mb-6 max-w-7xl space-y-3">
-                        {flash.success && (
-                            <div className="rounded-2xl border border-emerald-300/30 bg-emerald-500/15 px-5 py-4 text-sm text-emerald-50 shadow-xl backdrop-blur-xl">
-                                {flash.success}
-                            </div>
-                        )}
-                        {flash.info && (
-                            <div className="rounded-2xl border border-blue-300/30 bg-blue-500/15 px-5 py-4 text-sm text-blue-50 shadow-xl backdrop-blur-xl">
-                                {flash.info}
-                            </div>
-                        )}
-                        {flash.error && (
-                            <div className="rounded-2xl border border-red-300/30 bg-red-500/15 px-5 py-4 text-sm text-red-50 shadow-xl backdrop-blur-xl">
-                                {flash.error}
-                            </div>
-                        )}
-                        {flash.status && (
-                            <div className="rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-sm text-white shadow-xl backdrop-blur-xl">
-                                {flash.status}
-                            </div>
-                        )}
-                        {flash.temporaryPassword && (
-                            <div className="rounded-2xl border border-amber-300/30 bg-amber-500/15 px-5 py-4 text-sm text-amber-50 shadow-xl backdrop-blur-xl">
-                                <div className="font-semibold">
-                                    Password sementara untuk{' '}
-                                    {flash.temporaryPasswordFor ?? 'pengguna'}
-                                </div>
-                                <div className="mt-2 rounded-xl bg-black/20 px-4 py-3 font-mono text-base tracking-wide text-white">
-                                    {flash.temporaryPassword}
-                                </div>
-                                <div className="mt-2 text-xs text-amber-100/90">
-                                    Password ini hanya tampil sekali setelah
-                                    reset password berhasil.
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
                     {children}
                 </main>
             </div>

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
@@ -51,5 +54,36 @@ class SettingsController extends Controller
         $request->session()->flash('two-factor-recovery-codes', $user->fresh()->recoveryCodes());
 
         return back()->with('success', 'Kode pemulihan berhasil diregenerasi. Gunakan kode terbaru yang tampil di halaman ini.');
+    }
+
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $request->validate([
+            'current_password' => ['required', 'string', 'current_password:web'],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::defaults(),
+                function (string $attribute, mixed $value, \Closure $fail) use ($user): void {
+                    if (Hash::check((string) $value, $user->password)) {
+                        $fail('Password baru tidak boleh sama dengan password Anda saat ini.');
+                    }
+                },
+            ],
+        ], [
+            'current_password.required' => 'Password saat ini wajib diisi.',
+            'current_password.current_password' => 'Password saat ini tidak sesuai.',
+            'password.required' => 'Password baru wajib diisi.',
+            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+        ]);
+
+        $user->forceFill([
+            'password' => $request->input('password'),
+        ])->save();
+
+        return back()->with('success', 'Password akun berhasil diperbarui.');
     }
 }

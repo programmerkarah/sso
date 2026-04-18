@@ -64,6 +64,46 @@ return [
             ]) : [],
         ],
 
+        'mysql_mitra_import' => [
+            'driver' => 'mysql',
+            'url' => env('MITRA_DB_URL', env('DB_URL')),
+            'host' => env('MITRA_DB_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('MITRA_DB_PORT', env('DB_PORT', '3306')),
+            'database' => env('MITRA_DB_DATABASE', env('DB_DATABASE', 'manajemenmitra')),
+            'username' => env('MITRA_DB_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('MITRA_DB_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('MITRA_DB_SOCKET', env('DB_SOCKET', '')),
+            'charset' => env('MITRA_DB_CHARSET', env('DB_CHARSET', 'utf8mb4')),
+            'collation' => env('MITRA_DB_COLLATION', env('DB_COLLATION', 'utf8mb4_unicode_ci')),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MITRA_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
+            ]) : [],
+        ],
+
+        'mysql_persediaan_import' => [
+            'driver' => 'mysql',
+            'url' => env('PERSEDIAAN_DB_URL', env('DB_URL')),
+            'host' => env('PERSEDIAAN_DB_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('PERSEDIAAN_DB_PORT', env('DB_PORT', '3306')),
+            'database' => env('PERSEDIAAN_DB_DATABASE', env('DB_DATABASE', 'manajemenpersediaan')),
+            'username' => env('PERSEDIAAN_DB_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('PERSEDIAAN_DB_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('PERSEDIAAN_DB_SOCKET', env('DB_SOCKET', '')),
+            'charset' => env('PERSEDIAAN_DB_CHARSET', env('DB_CHARSET', 'utf8mb4')),
+            'collation' => env('PERSEDIAAN_DB_COLLATION', env('DB_COLLATION', 'utf8mb4_unicode_ci')),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('PERSEDIAAN_MYSQL_ATTR_SSL_CA', env('MYSQL_ATTR_SSL_CA')),
+            ]) : [],
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),

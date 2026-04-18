@@ -3,6 +3,7 @@ export interface User {
     name: string;
     username: string;
     email: string;
+    password_change_required?: boolean;
     last_login_at?: string;
     email_verified_at?: string;
     two_factor_confirmed_at?: string;
@@ -14,6 +15,7 @@ export interface User {
 
 export interface Application {
     id: number;
+    route_key: string;
     name: string;
     slug: string;
     description: string | null;
@@ -26,7 +28,7 @@ export interface Application {
     updated_at: string;
     oauth_client?: {
         id: string;
-        secret: string;
+        secret: string | null;
         redirect: string;
     };
 }
@@ -46,7 +48,5 @@ export type PageProps<
         error?: string;
         info?: string;
         status?: string;
-        temporaryPassword?: string;
-        temporaryPasswordFor?: string;
     };
 };

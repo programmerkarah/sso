@@ -7,14 +7,16 @@ import { Head, useForm } from '@inertiajs/react';
 import Button from '@/Components/Button';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
+import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import GuestLayout from '@/Layouts/GuestLayout';
 
 export default function TwoFactorChallenge() {
     const [recovery, setRecovery] = useState(false);
     const [digits, setDigits] = useState(['', '', '', '', '', '']);
     const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
+    const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing } = useForm({
         code: '',
         recovery_code: '',
     });
@@ -66,7 +68,23 @@ export default function TwoFactorChallenge() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post('/two-factor-challenge');
+        post('/two-factor-challenge', {
+            onError: (errors) => {
+                const message =
+                    errors.code ??
+                    errors.recovery_code ??
+                    'Kode verifikasi tidak valid. Silakan coba lagi.';
+
+                setToasts([
+                    {
+                        id: `two-factor-${Date.now()}`,
+                        tone: 'error',
+                        title: 'Verifikasi 2FA Gagal',
+                        message,
+                    },
+                ]);
+            },
+        });
     };
 
     const switchMode = () => {
@@ -78,17 +96,20 @@ export default function TwoFactorChallenge() {
     return (
         <GuestLayout>
             <Head title="Autentikasi Dua Faktor" />
+            <ToastViewport
+                items={toasts}
+                onDismiss={(id) =>
+                    setToasts((current) =>
+                        current.filter((item) => item.id !== id),
+                    )
+                }
+                topClassName="top-4"
+            />
 
             <form onSubmit={submit} className="space-y-6">
                 <h2 className="text-center text-3xl font-bold text-white drop-shadow-lg">
                     Autentikasi Dua Faktor
                 </h2>
-
-                {(errors.code || errors.recovery_code) && (
-                    <div className="rounded-xl border border-red-400/30 bg-red-500/20 px-4 py-3 text-sm font-medium text-red-100 backdrop-blur-sm">
-                        {errors.code || errors.recovery_code}
-                    </div>
-                )}
 
                 <div className="rounded-xl border border-blue-400/30 bg-blue-400/10 p-4 text-sm text-blue-200 backdrop-blur-sm">
                     {!recovery ? (

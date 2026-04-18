@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Services\EncryptedStateService;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -27,6 +29,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'username',
         'email',
         'password',
+        'password_change_required',
+        'previous_password',
     ];
 
     /**
@@ -36,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $hidden = [
         'password',
+        'previous_password',
         'remember_token',
     ];
 
@@ -50,7 +55,16 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
             'password' => 'hashed',
+            'password_change_required' => 'boolean',
         ];
+    }
+
+    /**
+     * Check if the user must change their password before proceeding.
+     */
+    public function mustChangePassword(): bool
+    {
+        return (bool) $this->password_change_required;
     }
 
     /**
@@ -83,5 +97,21 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');
+    }
+
+    public function getRouteKey(): mixed
+    {
+        return app(EncryptedStateService::class)->encryptString((string) $this->getKey());
+    }
+
+    public function resolveRouteBinding($value, $field = null): ?self
+    {
+        $decrypted = app(EncryptedStateService::class)->decryptString((string) $value);
+
+        if (! is_string($decrypted) || $decrypted === '') {
+            throw (new ModelNotFoundException)->setModel(self::class, [$value]);
+        }
+
+        return $this->newQuery()->where($this->getRouteKeyName(), $decrypted)->firstOrFail();
     }
 }

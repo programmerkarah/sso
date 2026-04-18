@@ -4,31 +4,69 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use App\Services\EncryptedStateService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Laravel\Passport\ClientRepository;
+use Inertia\Response;
 use Laravel\Passport\Client;
+use Laravel\Passport\ClientRepository;
 
 class ApplicationController extends Controller
 {
     public function __construct(public ClientRepository $clients) {}
 
-    public function index()
+    public function index(Request $request, EncryptedStateService $encryptedState): Response
     {
-        $applications = Application::with('oauthClient')->latest()->paginate(10);
+        $state = $encryptedState->decryptArray($request->string('state')->toString(), [
+            'page' => 1,
+        ]);
+
+        $currentPage = max(1, (int) ($state['page'] ?? 1));
+        $applications = Application::query()
+            ->latest()
+            ->paginate(10, ['*'], 'page', $currentPage);
 
         return Inertia::render('Admin/Applications/Index', [
-            'applications' => $applications,
+            'applications' => [
+                'data' => $applications->getCollection()
+                    ->map(fn (Application $application) => $this->transformApplicationSummary($application))
+                    ->values()
+                    ->all(),
+                'current_page' => $applications->currentPage(),
+                'from' => $applications->firstItem(),
+                'last_page' => $applications->lastPage(),
+                'per_page' => $applications->perPage(),
+                'to' => $applications->lastItem(),
+                'total' => $applications->total(),
+                'prev_page_token' => $applications->currentPage() > 1
+                    ? $encryptedState->encryptArray(['page' => $applications->currentPage() - 1])
+                    : null,
+                'next_page_token' => $applications->hasMorePages()
+                    ? $encryptedState->encryptArray(['page' => $applications->currentPage() + 1])
+                    : null,
+                'pages' => collect(range(1, $applications->lastPage()))
+                    ->map(fn (int $page) => [
+                        'label' => (string) $page,
+                        'token' => $encryptedState->encryptArray(['page' => $page]),
+                        'active' => $page === $applications->currentPage(),
+                    ])
+                    ->all(),
+            ],
+            'stats' => [
+                'total' => Application::query()->count(),
+                'active' => Application::query()->where('is_active', true)->count(),
+            ],
         ]);
     }
 
-    public function create()
+    public function create(): Response
     {
         return Inertia::render('Admin/Applications/Create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -38,22 +76,20 @@ class ApplicationController extends Controller
             'logo_url' => ['nullable', 'url', 'max:255'],
         ]);
 
-        $clients = app(ClientRepository::class);
+        $clientSecret = Str::random(40);
 
-        // Create OAuth2 Client
         $client = Client::create([
-            'id' => (string) Str::uuid(), // karena PK UUID
+            'id' => (string) Str::uuid(),
             'owner_type' => null,
             'owner_id' => null,
             'name' => $validated['name'],
-            'secret' => Str::random(40), // atau null kalau public client
+            'secret' => $clientSecret,
             'provider' => null,
             'redirect_uris' => [$validated['callback_url']],
-            'grant_types' => ['authorization_code'], // paling umum untuk OAuth login
+            'grant_types' => ['authorization_code'],
             'revoked' => false,
         ]);
 
-        // Create Application
         $application = Application::create([
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
@@ -62,6 +98,7 @@ class ApplicationController extends Controller
             'callback_url' => $validated['callback_url'],
             'logo_url' => $validated['logo_url'],
             'oauth_client_id' => $client->getKey(),
+            'oauth_client_secret' => $clientSecret,
             'is_active' => true,
         ]);
 
@@ -70,23 +107,24 @@ class ApplicationController extends Controller
             ->with('success', 'Aplikasi berhasil didaftarkan!');
     }
 
-    public function show(Application $application)
+    public function show(Application $application): Response
     {
         $application->load('oauthClient');
 
         return Inertia::render('Admin/Applications/Show', [
-            'application' => $application,
+            'application' => $this->transformApplicationDetail($application),
+            'appUrl' => config('app.url'),
         ]);
     }
 
-    public function edit(Application $application)
+    public function edit(Application $application): Response
     {
         return Inertia::render('Admin/Applications/Edit', [
-            'application' => $application,
+            'application' => $this->transformApplicationDetail($application),
         ]);
     }
 
-    public function update(Request $request, Application $application)
+    public function update(Request $request, Application $application): RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -97,12 +135,14 @@ class ApplicationController extends Controller
             'is_active' => ['boolean'],
         ]);
 
+        $validated['slug'] = Str::slug($validated['name']);
+
         $application->update($validated);
 
-        // Update OAuth Client callback URL
         if ($application->oauthClient) {
             $application->oauthClient->update([
-                'redirect_uris' => [$validated['callback_url']], // ✅ array
+                'name' => $validated['name'],
+                'redirect_uris' => [$validated['callback_url']],
             ]);
             $application->oauthClient->save();
         }
@@ -112,9 +152,27 @@ class ApplicationController extends Controller
             ->with('success', 'Aplikasi berhasil diperbarui!');
     }
 
-    public function destroy(Application $application)
+    public function refreshSecret(Application $application): RedirectResponse
     {
-        // Delete OAuth Client (will cascade to tokens)
+        if (! $application->oauthClient) {
+            return back()->with('error', 'Client OAuth untuk aplikasi ini tidak ditemukan.');
+        }
+
+        $clientSecret = Str::random(40);
+
+        $application->oauthClient->forceFill([
+            'secret' => $clientSecret,
+        ])->save();
+
+        $application->forceFill([
+            'oauth_client_secret' => $clientSecret,
+        ])->save();
+
+        return back()->with('success', 'Client secret berhasil diregenerasi. Simpan secret baru ini di tempat yang aman.');
+    }
+
+    public function destroy(Application $application): RedirectResponse
+    {
         if ($application->oauthClient) {
             $application->oauthClient->delete();
         }
@@ -124,5 +182,41 @@ class ApplicationController extends Controller
         return redirect()
             ->route('admin.applications.index')
             ->with('success', 'Aplikasi berhasil dihapus!');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformApplicationSummary(Application $application): array
+    {
+        return [
+            'id' => $application->id,
+            'route_key' => $application->getRouteKey(),
+            'name' => $application->name,
+            'slug' => $application->slug,
+            'description' => $application->description,
+            'domain' => $application->domain,
+            'callback_url' => $application->callback_url,
+            'logo_url' => $application->logo_url,
+            'is_active' => $application->is_active,
+            'oauth_client_id' => $application->oauth_client_id,
+            'created_at' => $application->created_at,
+            'updated_at' => $application->updated_at,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function transformApplicationDetail(Application $application): array
+    {
+        return [
+            ...$this->transformApplicationSummary($application),
+            'oauth_client' => $application->oauthClient ? [
+                'id' => $application->oauthClient->getKey(),
+                'secret' => $application->oauth_client_secret,
+                'redirect' => $application->callback_url,
+            ] : null,
+        ];
     }
 }

@@ -1,5 +1,4 @@
 import {
-    AlertTriangle,
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
@@ -10,20 +9,24 @@ import {
     ShieldOff,
     ShieldPlus,
     UserCog,
-    X,
     XCircle,
 } from 'lucide-react';
 
 import { useState } from 'react';
 
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 
+import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
+import SearchableSelect, {
+    SearchableSelectOption,
+} from '@/Components/SearchableSelect';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
 interface ManagedUser {
     id: number;
+    route_key: string;
     name: string;
     username: string;
     email: string;
@@ -36,8 +39,8 @@ interface ManagedUser {
 }
 
 interface PaginationLink {
-    url: string | null;
     label: string;
+    token: string;
     active: boolean;
 }
 
@@ -49,15 +52,16 @@ interface PaginatedUsers {
     per_page: number;
     to: number | null;
     total: number;
-    first_page_url: string;
-    last_page_url: string;
-    next_page_url: string | null;
-    prev_page_url: string | null;
-    links: PaginationLink[];
+    next_page_token: string | null;
+    prev_page_token: string | null;
+    pages: PaginationLink[];
 }
 
 interface AdminUsersIndexProps extends PageProps {
     users: PaginatedUsers;
+    userOptions: SearchableSelectOption[];
+    selectedUser?: Omit<SearchableSelectOption, 'state_token'> | null;
+    clearFilterToken: string;
 }
 
 interface ConfirmModal {
@@ -83,28 +87,13 @@ const formatDateTime = (value?: string) => {
     });
 };
 
-const variantClasses = {
-    amber: {
-        button: 'bg-amber-500 hover:bg-amber-600 text-white',
-        icon: 'text-amber-400',
-        border: 'border-amber-400/40',
-        bg: 'bg-amber-500/10',
-    },
-    red: {
-        button: 'bg-red-500 hover:bg-red-600 text-white',
-        icon: 'text-red-400',
-        border: 'border-red-400/40',
-        bg: 'bg-red-500/10',
-    },
-    emerald: {
-        button: 'bg-emerald-500 hover:bg-emerald-600 text-white',
-        icon: 'text-emerald-400',
-        border: 'border-emerald-400/40',
-        bg: 'bg-emerald-500/10',
-    },
-};
-
-export default function Index({ users, auth }: AdminUsersIndexProps) {
+export default function Index({
+    users,
+    auth,
+    userOptions,
+    selectedUser,
+    clearFilterToken,
+}: AdminUsersIndexProps) {
     const currentUserId = auth?.user?.id;
 
     const [modal, setModal] = useState<ConfirmModal>({
@@ -124,6 +113,14 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
         setModal((prev) => ({ ...prev, isOpen: false }));
     };
 
+    const visitState = (state: string) => {
+        router.post(
+            '/admin/users',
+            { state },
+            { preserveScroll: true, preserveState: true },
+        );
+    };
+
     const handleResetPassword = (user: ManagedUser) => {
         openModal({
             title: 'Reset Password',
@@ -132,7 +129,7 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
             confirmVariant: 'amber',
             onConfirm: () => {
                 router.post(
-                    `/admin/users/${user.id}/reset-password`,
+                    `/admin/users/${user.route_key}/reset-password`,
                     {},
                     { preserveScroll: true },
                 );
@@ -149,7 +146,7 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
             confirmVariant: 'red',
             onConfirm: () => {
                 router.post(
-                    `/admin/users/${user.id}/reset-two-factor`,
+                    `/admin/users/${user.route_key}/reset-two-factor`,
                     {},
                     { preserveScroll: true },
                 );
@@ -167,7 +164,7 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
                 confirmVariant: 'red',
                 onConfirm: () => {
                     router.post(
-                        `/admin/users/${user.id}/toggle-admin`,
+                        `/admin/users/${user.route_key}/toggle-admin`,
                         {},
                         { preserveScroll: true },
                     );
@@ -182,7 +179,7 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
                 confirmVariant: 'emerald',
                 onConfirm: () => {
                     router.post(
-                        `/admin/users/${user.id}/toggle-admin`,
+                        `/admin/users/${user.route_key}/toggle-admin`,
                         {},
                         { preserveScroll: true },
                     );
@@ -200,54 +197,15 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
     return (
         <AppLayout>
             <Head title="Kelola Pengguna" />
-
-            {/* Confirm Modal */}
-            {modal.isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                        onClick={closeModal}
-                    />
-                    <div className="relative w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
-                        <button
-                            onClick={closeModal}
-                            className="absolute right-4 top-4 rounded-lg p-1 text-white/60 transition hover:bg-white/10 hover:text-white"
-                        >
-                            <X className="h-5 w-5" />
-                        </button>
-
-                        <div
-                            className={`mb-4 flex h-12 w-12 items-center justify-center rounded-full border ${variantClasses[modal.confirmVariant].border} ${variantClasses[modal.confirmVariant].bg}`}
-                        >
-                            <AlertTriangle
-                                className={`h-6 w-6 ${variantClasses[modal.confirmVariant].icon}`}
-                            />
-                        </div>
-
-                        <h3 className="mb-2 text-lg font-bold text-white">
-                            {modal.title}
-                        </h3>
-                        <p className="mb-6 text-sm text-white/75">
-                            {modal.description}
-                        </p>
-
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={closeModal}
-                                className="rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={modal.onConfirm}
-                                className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${variantClasses[modal.confirmVariant].button}`}
-                            >
-                                {modal.confirmLabel}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmationModal
+                isOpen={modal.isOpen}
+                title={modal.title}
+                description={modal.description}
+                confirmLabel={modal.confirmLabel}
+                confirmVariant={modal.confirmVariant}
+                onCancel={closeModal}
+                onConfirm={modal.onConfirm}
+            />
 
             <div className="mx-auto max-w-7xl space-y-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -312,13 +270,32 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
 
                 <GlassCard className="overflow-hidden p-0">
                     <div className="border-b border-white/10 px-6 py-5">
-                        <h2 className="text-xl font-bold text-white">
-                            Daftar Pengguna
-                        </h2>
-                        <p className="mt-1 text-sm text-white/60">
-                            Halaman {users.current_page} dari {users.last_page}{' '}
-                            &mdash; {users.total} pengguna terdaftar
-                        </p>
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                            <div>
+                                <h2 className="text-xl font-bold text-white">
+                                    Daftar Pengguna
+                                </h2>
+                                <p className="mt-1 text-sm text-white/60">
+                                    Halaman {users.current_page} dari{' '}
+                                    {users.last_page} — {users.total} pengguna
+                                    {selectedUser ? ' cocok dengan filter' : ''}
+                                </p>
+                            </div>
+
+                            <div className="w-full max-w-md">
+                                <SearchableSelect
+                                    options={userOptions}
+                                    selectedOption={selectedUser ?? null}
+                                    placeholder="Cari nama, username, atau email pengguna"
+                                    onSelect={(option) =>
+                                        visitState(option.state_token)
+                                    }
+                                    onClear={() =>
+                                        visitState(clearFilterToken)
+                                    }
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Table */}
@@ -521,57 +498,47 @@ export default function Index({ users, auth }: AdminUsersIndexProps) {
                                 dari {users.total} pengguna
                             </p>
                             <div className="flex items-center gap-1">
-                                {users.prev_page_url ? (
-                                    <Link
-                                        href={users.prev_page_url}
+                                {users.prev_page_token ? (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            visitState(users.prev_page_token!)
+                                        }
                                         className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 text-white/70 transition hover:bg-white/10 hover:text-white"
                                     >
                                         <ChevronLeft className="h-4 w-4" />
-                                    </Link>
+                                    </button>
                                 ) : (
                                     <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/30">
                                         <ChevronLeft className="h-4 w-4" />
                                     </span>
                                 )}
 
-                                {users.links
-                                    .filter(
-                                        (link) =>
-                                            !link.label.includes('Previous') &&
-                                            !link.label.includes('Next'),
-                                    )
-                                    .map((link, i) =>
-                                        link.url ? (
-                                            <Link
-                                                key={i}
-                                                href={link.url}
-                                                className={`flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium transition ${
-                                                    link.active
-                                                        ? 'border-white/40 bg-white/20 text-white'
-                                                        : 'border-white/20 text-white/70 hover:bg-white/10 hover:text-white'
-                                                }`}
-                                                dangerouslySetInnerHTML={{
-                                                    __html: link.label,
-                                                }}
-                                            />
-                                        ) : (
-                                            <span
-                                                key={i}
-                                                className="flex h-8 min-w-8 items-center justify-center px-1 text-sm text-white/40"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: link.label,
-                                                }}
-                                            />
-                                        ),
-                                    )}
+                                {users.pages.map((page, i) => (
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        onClick={() => visitState(page.token)}
+                                        className={`flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium transition ${
+                                            page.active
+                                                ? 'border-white/40 bg-white/20 text-white'
+                                                : 'border-white/20 text-white/70 hover:bg-white/10 hover:text-white'
+                                        }`}
+                                    >
+                                        {page.label}
+                                    </button>
+                                ))}
 
-                                {users.next_page_url ? (
-                                    <Link
-                                        href={users.next_page_url}
+                                {users.next_page_token ? (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            visitState(users.next_page_token!)
+                                        }
                                         className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 text-white/70 transition hover:bg-white/10 hover:text-white"
                                     >
                                         <ChevronRight className="h-4 w-4" />
-                                    </Link>
+                                    </button>
                                 ) : (
                                     <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/30">
                                         <ChevronRight className="h-4 w-4" />

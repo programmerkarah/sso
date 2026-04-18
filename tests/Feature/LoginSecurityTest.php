@@ -66,6 +66,23 @@ class LoginSecurityTest extends TestCase
         $response->assertRedirect(route('two-factor.login'));
     }
 
+    /**
+     * Ensure a user flagged for forced password change is redirected immediately after login.
+     */
+    public function test_user_with_forced_password_change_is_redirected_after_login(): void
+    {
+        $user = User::factory()->create([
+            'password_change_required' => true,
+        ]);
+
+        $response = $this->post('/login', [
+            'username' => $user->username,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect(route('settings.change-password'));
+    }
+
     private function createTwoFactorUser(?CarbonInterface $lastLoginAt): User
     {
         return User::factory()->create([

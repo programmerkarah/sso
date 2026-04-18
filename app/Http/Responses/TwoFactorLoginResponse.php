@@ -23,6 +23,12 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
             $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $request->user());
         }
 
+        if ($request->user()?->mustChangePassword()) {
+            return $request->wantsJson()
+                ? new JsonResponse('', 204)
+                : redirect()->route('settings.change-password');
+        }
+
         return $request->wantsJson()
             ? new JsonResponse('', 204)
             : redirect()->intended(Fortify::redirects('login'));
