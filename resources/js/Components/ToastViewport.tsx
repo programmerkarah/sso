@@ -41,7 +41,7 @@ function ToastCard({
     const Icon = toneIcons[item.tone];
 
     useEffect(() => {
-        const timer = window.setTimeout(() => onDismiss(item.id), 1500);
+        const timer = window.setTimeout(() => onDismiss(item.id), 2500);
 
         return () => window.clearTimeout(timer);
     }, [item.id, onDismiss]);

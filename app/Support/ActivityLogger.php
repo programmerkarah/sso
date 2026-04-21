@@ -161,12 +161,40 @@ class ActivityLogger
         $headerDevice = $request->header('X-Device-Id') ?: $request->header('X-Requested-Device');
 
         if (is_string($headerDevice) && $headerDevice !== '') {
-            return $headerDevice;
+            return self::sanitizeDeviceId($headerDevice);
         }
 
         $cookieDevice = $request->cookie('trusted_device');
 
-        return is_string($cookieDevice) && $cookieDevice !== '' ? $cookieDevice : null;
+        return is_string($cookieDevice) && $cookieDevice !== ''
+            ? self::sanitizeDeviceId($cookieDevice)
+            : null;
+    }
+
+    private static function sanitizeDeviceId(string $rawDeviceId): string
+    {
+        $normalizedDeviceId = trim($rawDeviceId);
+
+        if ($normalizedDeviceId === '') {
+            return '';
+        }
+
+        $decoded = json_decode($normalizedDeviceId, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            $fingerprint = substr(hash('sha256', json_encode(self::sanitizePayload($decoded))), 0, 16);
+
+            if (isset($decoded['user_id'])) {
+                return 'user:'.$decoded['user_id'].'|fingerprint:'.$fingerprint;
+            }
+
+            return 'fingerprint:'.$fingerprint;
+        }
+
+        if (strlen($normalizedDeviceId) > 80) {
+            return 'fingerprint:'.substr(hash('sha256', $normalizedDeviceId), 0, 16);
+        }
+
+        return $normalizedDeviceId;
     }
 
     private static function resolveUserAgent(?Request $request): ?string

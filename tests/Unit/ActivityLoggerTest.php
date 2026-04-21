@@ -45,4 +45,26 @@ class ActivityLoggerTest extends TestCase
         $this->assertSame('***', $log->metadata['request_payload']['password']);
         $this->assertSame('custom_value', $log->metadata['custom_key']);
     }
+
+    public function test_log_by_request_masks_sensitive_device_identifier_token(): void
+    {
+        $rawDeviceId = '{"user_id":2,"token":"super-sensitive-device-token"}';
+
+        $request = Request::create('/admin/users/any/reset-password', 'POST');
+        $request->headers->set('X-Device-Id', $rawDeviceId);
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'test.activity.device-id',
+            category: 'testing',
+            description: 'Pengujian sanitasi device id',
+            status: 'error',
+        );
+
+        $log = ActivityLog::query()->where('event', 'test.activity.device-id')->firstOrFail();
+
+        $this->assertNotSame($rawDeviceId, $log->device_id);
+        $this->assertStringContainsString('user:2|fingerprint:', (string) $log->device_id);
+        $this->assertStringNotContainsString('super-sensitive-device-token', (string) $log->device_id);
+    }
 }
