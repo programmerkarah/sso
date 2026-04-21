@@ -34,13 +34,17 @@ class ActivityLogger
         string $status = 'success'
     ): void {
         $request = request();
-        $enrichedMetadata = self::appendRequestContext($metadata, $request);
+        $normalizedStatus = self::normalizeStatus($status);
+        $enrichedMetadata = self::appendRequestContext(
+            self::enrichMetadata($metadata, $description, $normalizedStatus),
+            $request,
+        );
 
         ActivityLog::query()->create([
             'user_id' => $user?->id,
             'event' => $event,
             'category' => $category,
-            'status' => self::normalizeStatus($status),
+            'status' => $normalizedStatus,
             'description' => $description,
             'ip_address' => self::resolveIpAddress($request),
             'device_id' => self::resolveDeviceId($request),
@@ -62,13 +66,17 @@ class ActivityLogger
         array $metadata = [],
         string $status = 'success'
     ): void {
-        $enrichedMetadata = self::appendRequestContext($metadata, $request);
+        $normalizedStatus = self::normalizeStatus($status);
+        $enrichedMetadata = self::appendRequestContext(
+            self::enrichMetadata($metadata, $description, $normalizedStatus),
+            $request,
+        );
 
         ActivityLog::query()->create([
             'user_id' => $user?->id,
             'event' => $event,
             'category' => $category,
-            'status' => self::normalizeStatus($status),
+            'status' => $normalizedStatus,
             'description' => $description,
             'ip_address' => self::resolveIpAddress($request),
             'device_id' => self::resolveDeviceId($request),
@@ -76,6 +84,31 @@ class ActivityLogger
             'metadata' => $enrichedMetadata,
             'occurred_at' => now(),
         ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $metadata
+     * @return array<string, mixed>
+     */
+    private static function enrichMetadata(array $metadata, ?string $description, string $status): array
+    {
+        $enriched = $metadata;
+
+        if (is_string($description) && trim($description) !== '' && ! array_key_exists('msg', $enriched)) {
+            $enriched['msg'] = $description;
+        }
+
+        if ($status === 'error' && ! array_key_exists('errors', $enriched)) {
+            $detail = $enriched['error'] ?? 'Terjadi kesalahan saat memproses aksi.';
+
+            $enriched['errors'] = [
+                'detail' => is_scalar($detail)
+                    ? (string) $detail
+                    : (json_encode($detail) ?: 'Terjadi kesalahan saat memproses aksi.'),
+            ];
+        }
+
+        return $enriched;
     }
 
     /**

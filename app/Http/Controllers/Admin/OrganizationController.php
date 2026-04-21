@@ -53,7 +53,7 @@ class OrganizationController extends Controller
             request: $request,
             event: 'admin.organizations.created',
             category: 'organization_management',
-            description: 'Organisasi baru berhasil ditambahkan.',
+            description: "Berhasil menambahkan organisasi {$organization->name}.",
             user: $request->user(),
             metadata: ['organization_id' => $organization->id, 'organization_name' => $organization->name],
         );
@@ -85,7 +85,7 @@ class OrganizationController extends Controller
             request: $request,
             event: 'admin.organizations.updated',
             category: 'organization_management',
-            description: 'Data organisasi berhasil diperbarui.',
+            description: "Berhasil memperbarui data organisasi {$organization->name}.",
             user: $request->user(),
             metadata: ['organization_id' => $organization->id, 'organization_name' => $organization->name],
         );
@@ -105,7 +105,7 @@ class OrganizationController extends Controller
             request: $request,
             event: 'admin.organizations.toggled',
             category: 'organization_management',
-            description: "Organisasi berhasil {$statusLabel}.",
+            description: "Berhasil {$statusLabel} organisasi {$organization->name}.",
             user: $request->user(),
             metadata: ['organization_id' => $organization->id, 'is_active' => $organization->is_active],
         );

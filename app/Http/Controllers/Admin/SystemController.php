@@ -203,7 +203,7 @@ class SystemController extends Controller
                 ActivityLogger::log(
                     event: 'database.backup.fallback',
                     category: 'system',
-                    description: 'Backup database menggunakan fallback SQL karena utilitas mysqldump gagal.',
+                    description: 'Berhasil membuat backup database menggunakan mode fallback SQL karena mysqldump gagal.',
                     user: request()->user(),
                     metadata: ['error' => $primaryException->getMessage()],
                     status: 'warning',
@@ -212,7 +212,7 @@ class SystemController extends Controller
                 ActivityLogger::log(
                     event: 'database.backup.failed',
                     category: 'system',
-                    description: 'Backup database gagal pada mysqldump dan fallback SQL.',
+                    description: 'Gagal membuat backup database pada mysqldump dan fallback SQL.',
                     user: request()->user(),
                     metadata: [
                         'mysqldump_error' => $primaryException->getMessage(),
@@ -234,7 +234,7 @@ class SystemController extends Controller
             ActivityLogger::log(
                 event: 'database.backup.created',
                 category: 'system',
-                description: 'Backup database berhasil dibuat.',
+                description: "Berhasil membuat backup database {$filename}.",
                 user: request()->user(),
                 metadata: [
                     'file' => $filename,
@@ -307,7 +307,7 @@ class SystemController extends Controller
             ActivityLogger::log(
                 event: 'database.restore.completed',
                 category: 'system',
-                description: 'Restore database berhasil dijalankan.',
+                description: "Berhasil menjalankan restore database dari {$sourceName}.",
                 user: $request->user(),
                 metadata: [
                     'file_name' => $sourceName,
@@ -320,7 +320,7 @@ class SystemController extends Controller
             ActivityLogger::log(
                 event: 'database.restore.failed',
                 category: 'system',
-                description: 'Restore database gagal dijalankan.',
+                description: 'Gagal menjalankan restore database.',
                 user: $request->user(),
                 metadata: [
                     'file_name' => $selectedBackupName !== '' ? $selectedBackupName : ($uploaded?->getClientOriginalName() ?? 'unknown'),

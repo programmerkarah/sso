@@ -81,7 +81,7 @@ class CreateNewUser implements CreatesNewUsers
         ActivityLogger::log(
             event: 'auth.register',
             category: 'authentication',
-            description: 'Pengguna baru berhasil melakukan pendaftaran akun.',
+            description: "Berhasil melakukan pendaftaran akun untuk pengguna {$user->name}.",
             user: $user,
             metadata: [
                 'username' => $user->username,

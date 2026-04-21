@@ -36,7 +36,7 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
                 request: $request,
                 event: 'auth.login.two_factor',
                 category: 'authentication',
-                description: 'Login berhasil setelah verifikasi dua faktor.',
+                description: "Berhasil login pengguna {$request->user()->name} setelah verifikasi dua faktor.",
                 user: $request->user(),
             );
         }

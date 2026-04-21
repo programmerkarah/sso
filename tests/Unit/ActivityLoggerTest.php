@@ -44,6 +44,7 @@ class ActivityLoggerTest extends TestCase
         $this->assertSame('manual restore', $log->metadata['request_payload']['note']);
         $this->assertSame('***', $log->metadata['request_payload']['password']);
         $this->assertSame('custom_value', $log->metadata['custom_key']);
+        $this->assertSame('Pengujian metadata request', $log->metadata['msg']);
     }
 
     public function test_log_by_request_masks_sensitive_device_identifier_token(): void
@@ -66,5 +67,24 @@ class ActivityLoggerTest extends TestCase
         $this->assertNotSame($rawDeviceId, $log->device_id);
         $this->assertStringContainsString('user:2|fingerprint:', (string) $log->device_id);
         $this->assertStringNotContainsString('super-sensitive-device-token', (string) $log->device_id);
+    }
+
+    public function test_error_status_log_contains_default_errors_detail(): void
+    {
+        $request = Request::create('/admin/users/example/reset-password', 'POST');
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'test.activity.error',
+            category: 'testing',
+            description: 'Gagal melakukan pengiriman email reset password pengguna B',
+            status: 'error',
+        );
+
+        $log = ActivityLog::query()->where('event', 'test.activity.error')->firstOrFail();
+
+        $this->assertSame('Gagal melakukan pengiriman email reset password pengguna B', $log->metadata['msg']);
+        $this->assertArrayHasKey('errors', $log->metadata);
+        $this->assertArrayHasKey('detail', $log->metadata['errors']);
     }
 }

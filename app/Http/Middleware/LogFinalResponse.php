@@ -22,6 +22,11 @@ class LogFinalResponse
             $status = $response->getStatusCode() >= 500
                 ? 'error'
                 : ($response->getStatusCode() >= 400 ? 'warning' : 'success');
+            $description = match ($status) {
+                'error' => 'Gagal memproses permintaan OAuth2 dari aplikasi/client.',
+                'warning' => 'Permintaan OAuth2 diproses dengan peringatan atau penolakan.',
+                default => 'Berhasil memproses permintaan OAuth2 dari aplikasi/client.',
+            };
 
             /** @var User|null $user */
             $user = $request->user();
@@ -30,7 +35,7 @@ class LogFinalResponse
                 request: $request,
                 event: 'oauth.request',
                 category: 'oauth',
-                description: 'Permintaan OAuth2 diterima dari aplikasi/client.',
+                description: $description,
                 user: $user,
                 metadata: [
                     'oauth_client_id' => $clientId,
@@ -61,7 +66,10 @@ class LogFinalResponse
 
     private function shouldTrackOAuthRequest(Request $request): bool
     {
-        return $request->is('oauth/*') || $request->is('api/application/status') || $request->is('api/user');
+        return $request->is('oauth/authorize')
+            || $request->is('oauth/token')
+            || $request->is('api/user')
+            || $request->is('api/users');
     }
 
     private function resolveClientId(Request $request): ?string

@@ -291,7 +291,7 @@ class UserManagementController extends Controller
                 request: request(),
                 event: 'admin.users.password.reset.failed',
                 category: 'user_management',
-                description: 'Reset password pengguna gagal karena notifikasi tidak terkirim.',
+                description: "Gagal melakukan pengiriman email reset password pengguna {$user->name}.",
                 user: request()->user(),
                 metadata: [
                     'target_user_id' => $user->id,
@@ -299,6 +299,11 @@ class UserManagementController extends Controller
                     'exception_class' => $exception::class,
                     'exception_code' => $exception->getCode(),
                     'error' => $exception->getMessage(),
+                    'errors' => [
+                        'detail' => $exception->getMessage(),
+                        'exception_class' => $exception::class,
+                        'exception_code' => (string) $exception->getCode(),
+                    ],
                 ],
                 status: 'error',
             );
@@ -310,7 +315,7 @@ class UserManagementController extends Controller
             request: request(),
             event: 'admin.users.password.reset',
             category: 'user_management',
-            description: 'Admin mereset password pengguna.',
+            description: "Berhasil melakukan reset password pengguna {$user->name}.",
             user: request()->user(),
             metadata: [
                 'target_user_id' => $user->id,
@@ -446,11 +451,18 @@ class UserManagementController extends Controller
             $user->sendEmailVerificationNotification();
         }
 
+        $updatedFields = collect([
+            $emailChanged ? 'email' : null,
+            $usernameChanged ? 'username' : null,
+        ])->filter()->values()->all();
+
+        $updatedFieldsMessage = implode(' dan ', $updatedFields);
+
         ActivityLogger::logByRequest(
             request: $request,
             event: 'admin.users.identity.updated',
             category: 'user_management',
-            description: 'Admin memperbarui username/email pengguna.',
+            description: "Berhasil melakukan update data {$updatedFieldsMessage} pengguna {$user->name}.",
             user: $request->user(),
             metadata: [
                 'target_user_id' => $user->id,

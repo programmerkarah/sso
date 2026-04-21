@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\DebugOAuthMiddleware;
+
 return [
 
     /*
@@ -15,7 +17,7 @@ return [
 
     'guard' => 'web',
 
-    'middleware' => ['web', \App\Http\Middleware\DebugOAuthMiddleware::class, \App\Http\Middleware\LogFinalResponse::class],
+    'middleware' => ['web', DebugOAuthMiddleware::class],
 
     /*
     |--------------------------------------------------------------------------

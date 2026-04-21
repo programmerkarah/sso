@@ -130,7 +130,7 @@ class ApplicationController extends Controller
             request: $request,
             event: 'admin.applications.created',
             category: 'application_management',
-            description: 'Aplikasi baru berhasil didaftarkan.',
+            description: "Berhasil mendaftarkan aplikasi {$application->name}.",
             user: $request->user(),
             metadata: [
                 'application_id' => $application->id,
@@ -178,7 +178,7 @@ class ApplicationController extends Controller
             request: $request,
             event: 'admin.applications.guide.pdf.exported',
             category: 'application_management',
-            description: 'Panduan integrasi aplikasi diekspor sebagai PDF.',
+            description: "Berhasil mengekspor panduan integrasi aplikasi {$application->name} ke PDF.",
             user: $request->user(),
             metadata: [
                 'application_id' => $application->id,
@@ -243,7 +243,7 @@ class ApplicationController extends Controller
             request: $request,
             event: 'admin.applications.updated',
             category: 'application_management',
-            description: 'Data aplikasi berhasil diperbarui.',
+            description: "Berhasil memperbarui data aplikasi {$application->name}.",
             user: $request->user(),
             metadata: [
                 'application_id' => $application->id,
@@ -267,7 +267,7 @@ class ApplicationController extends Controller
             request: $request,
             event: 'admin.applications.toggled',
             category: 'application_management',
-            description: "Aplikasi berhasil {$statusLabel}.",
+            description: "Berhasil {$statusLabel} aplikasi {$application->name}.",
             user: $request->user(),
             metadata: [
                 'application_id' => $application->id,
@@ -284,6 +284,19 @@ class ApplicationController extends Controller
     public function refreshSecret(Request $request, Application $application): RedirectResponse
     {
         if (! $application->oauthClient) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'admin.applications.secret.refresh.failed',
+                category: 'application_management',
+                description: "Gagal meregenerasi client secret aplikasi {$application->name} karena client OAuth tidak ditemukan.",
+                user: $request->user(),
+                metadata: [
+                    'application_id' => $application->id,
+                    'application_name' => $application->name,
+                ],
+                status: 'error',
+            );
+
             return back()->with('error', 'Client OAuth untuk aplikasi ini tidak ditemukan.');
         }
 
@@ -301,7 +314,7 @@ class ApplicationController extends Controller
             request: $request,
             event: 'admin.applications.secret.refreshed',
             category: 'application_management',
-            description: 'Client secret aplikasi diregenerasi.',
+            description: "Berhasil meregenerasi client secret aplikasi {$application->name}.",
             user: $request->user(),
             metadata: [
                 'application_id' => $application->id,
@@ -327,7 +340,7 @@ class ApplicationController extends Controller
             request: $request,
             event: 'admin.applications.deleted',
             category: 'application_management',
-            description: 'Aplikasi berhasil dihapus.',
+            description: "Berhasil menghapus aplikasi {$appName}.",
             user: $request->user(),
             metadata: [
                 'application_id' => $appId,

@@ -36,10 +36,27 @@ class SettingsController extends Controller
         $user = $request->user();
 
         if (is_null($user->two_factor_confirmed_at)) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'account.recovery_codes.view.blocked',
+                category: 'account_security',
+                description: "Gagal menampilkan kode pemulihan karena 2FA pengguna {$user->name} belum aktif.",
+                user: $user,
+                status: 'warning',
+            );
+
             return back()->with('error', 'Aktifkan dan konfirmasi 2FA terlebih dahulu sebelum melihat kode pemulihan.');
         }
 
         $request->session()->flash('two-factor-recovery-codes', $user->recoveryCodes());
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'account.recovery_codes.viewed',
+            category: 'account_security',
+            description: "Berhasil menampilkan kode pemulihan untuk pengguna {$user->name}.",
+            user: $user,
+        );
 
         return back()->with('info', 'Kode pemulihan berhasil ditampilkan. Simpan kode ini di tempat yang aman.');
     }
@@ -49,11 +66,28 @@ class SettingsController extends Controller
         $user = $request->user();
 
         if (is_null($user->two_factor_confirmed_at)) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'account.recovery_codes.regenerate.blocked',
+                category: 'account_security',
+                description: "Gagal meregenerasi kode pemulihan karena 2FA pengguna {$user->name} belum aktif.",
+                user: $user,
+                status: 'warning',
+            );
+
             return back()->with('error', '2FA belum aktif, sehingga kode pemulihan belum bisa diregenerasi.');
         }
 
         $generate($user);
         $request->session()->flash('two-factor-recovery-codes', $user->fresh()->recoveryCodes());
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'account.recovery_codes.regenerated',
+            category: 'account_security',
+            description: "Berhasil meregenerasi kode pemulihan untuk pengguna {$user->name}.",
+            user: $user,
+        );
 
         return back()->with('success', 'Kode pemulihan berhasil diregenerasi. Gunakan kode terbaru yang tampil di halaman ini.');
     }
@@ -90,7 +124,7 @@ class SettingsController extends Controller
             request: $request,
             event: 'account.password.updated',
             category: 'account_security',
-            description: 'Pengguna memperbarui password akun.',
+            description: "Berhasil memperbarui password akun pengguna {$user->name}.",
             user: $user,
         );
 
@@ -104,6 +138,18 @@ class SettingsController extends Controller
         $newEmail = strtolower((string) $request->string('email'));
 
         if ($newEmail === strtolower($user->email)) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'account.email.no-change',
+                category: 'account_security',
+                description: "Permintaan update email pengguna {$user->name} tidak mengubah data.",
+                user: $user,
+                metadata: [
+                    'email' => $newEmail,
+                ],
+                status: 'warning',
+            );
+
             return back()->with('info', 'Email baru sama dengan email saat ini. Tidak ada perubahan yang disimpan.');
         }
 
@@ -118,7 +164,7 @@ class SettingsController extends Controller
             request: $request,
             event: 'account.email.updated',
             category: 'account_security',
-            description: 'Pengguna memperbarui email akun dan perlu verifikasi ulang.',
+            description: "Berhasil memperbarui email akun pengguna {$user->name}; verifikasi ulang diperlukan.",
             user: $user,
             metadata: [
                 'new_email' => $newEmail,

@@ -74,7 +74,7 @@ class CustomAuthorizationController extends AuthorizationController
                             request: $request,
                             event: 'oauth.authorize.denied.organization',
                             category: 'authentication',
-                            description: "OAuth authorize ditolak: organisasi pengguna tidak diizinkan untuk aplikasi {$application->name}.",
+                            description: "Gagal melakukan OAuth authorize: organisasi pengguna tidak diizinkan untuk aplikasi {$application->name}.",
                             user: $user,
                             metadata: [
                                 'application_id' => $application->id,

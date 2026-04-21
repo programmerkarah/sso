@@ -62,7 +62,7 @@ class AppServiceProvider extends ServiceProvider
                 ActivityLogger::log(
                     event: 'auth.logout',
                     category: 'authentication',
-                    description: 'Logout pengguna berhasil.',
+                    description: "Berhasil logout pengguna {$event->user->name}.",
                     user: $event->user,
                 );
             }

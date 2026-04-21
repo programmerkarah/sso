@@ -35,7 +35,7 @@ class LoginResponse implements LoginResponseContract
                 request: $request,
                 event: 'auth.login',
                 category: 'authentication',
-                description: 'Login berhasil.',
+                description: "Berhasil login pengguna {$request->user()->name}.",
                 user: $request->user(),
             );
         }
