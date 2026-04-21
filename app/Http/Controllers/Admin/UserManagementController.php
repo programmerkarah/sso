@@ -274,7 +274,17 @@ class UserManagementController extends Controller
             Log::error('Gagal mengirim email reset password oleh admin.', [
                 'target_user_id' => $user->id,
                 'target_email' => $user->email,
+                'exception_class' => $exception::class,
+                'exception_code' => $exception->getCode(),
                 'error' => $exception->getMessage(),
+                'mail_debug' => [
+                    'default_mailer' => config('mail.default'),
+                    'smtp_host' => config('mail.mailers.smtp.host'),
+                    'smtp_port' => config('mail.mailers.smtp.port'),
+                    'smtp_scheme' => config('mail.mailers.smtp.scheme'),
+                    'mail_from' => config('mail.from.address'),
+                    'app_env' => config('app.env'),
+                ],
             ]);
 
             ActivityLogger::logByRequest(
@@ -286,6 +296,9 @@ class UserManagementController extends Controller
                 metadata: [
                     'target_user_id' => $user->id,
                     'target_email' => $user->email,
+                    'exception_class' => $exception::class,
+                    'exception_code' => $exception->getCode(),
+                    'error' => $exception->getMessage(),
                 ],
                 status: 'error',
             );
