@@ -12,7 +12,11 @@ interface OrganizationsIndexProps extends PageProps {
 
 export default function Index({ organizations }: OrganizationsIndexProps) {
     const toggleActive = (org: Organization) => {
-        router.post(`/admin/organizations/${org.id}/toggle-active`, {}, { preserveScroll: true });
+        router.post(
+            `/admin/organizations/${org.id}/toggle-active`,
+            {},
+            { preserveScroll: true },
+        );
     };
 
     return (
@@ -26,7 +30,8 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                             Organisasi
                         </h1>
                         <p className="mt-2 text-white/70">
-                            Kelola daftar organisasi yang dapat digunakan saat mendaftar
+                            Kelola daftar organisasi yang dapat digunakan saat
+                            mendaftar
                         </p>
                     </div>
                     <Link
@@ -49,21 +54,37 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                             <table className="w-full text-sm text-white/80">
                                 <thead>
                                     <tr className="border-b border-white/10 text-left text-white/50">
-                                        <th className="pb-3 pr-4 font-medium">Nama</th>
-                                        <th className="pb-3 pr-4 font-medium">Tipe</th>
-                                        <th className="pb-3 pr-4 font-medium">Aplikasi Diizinkan</th>
-                                        <th className="pb-3 pr-4 font-medium">Pengguna</th>
-                                        <th className="pb-3 pr-4 font-medium">Status</th>
-                                        <th className="pb-3 font-medium">Aksi</th>
+                                        <th className="pb-3 pr-4 font-medium">
+                                            Nama
+                                        </th>
+                                        <th className="pb-3 pr-4 font-medium">
+                                            Tipe
+                                        </th>
+                                        <th className="pb-3 pr-4 font-medium">
+                                            Aplikasi Diizinkan
+                                        </th>
+                                        <th className="pb-3 pr-4 font-medium">
+                                            Pengguna
+                                        </th>
+                                        <th className="pb-3 pr-4 font-medium">
+                                            Status
+                                        </th>
+                                        <th className="pb-3 font-medium">
+                                            Aksi
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
                                     {organizations.map((org) => (
                                         <tr key={org.id}>
                                             <td className="py-3 pr-4">
-                                                <div className="font-semibold text-white">{org.name}</div>
+                                                <div className="font-semibold text-white">
+                                                    {org.name}
+                                                </div>
                                                 {org.description && (
-                                                    <div className="text-xs text-white/50">{org.description}</div>
+                                                    <div className="text-xs text-white/50">
+                                                        {org.description}
+                                                    </div>
                                                 )}
                                             </td>
                                             <td className="py-3 pr-4">
@@ -74,35 +95,52 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                                             <td className="py-3 pr-4">
                                                 <div className="space-y-2">
                                                     <div className="text-xs text-white/60">
-                                                        {org.eligible_applications_count} aplikasi aktif
+                                                        {
+                                                            org.eligible_applications_count
+                                                        }{' '}
+                                                        aplikasi aktif
                                                     </div>
-                                                    {org.eligible_applications.length > 0 ? (
+                                                    {org.eligible_applications
+                                                        .length > 0 ? (
                                                         <div className="flex flex-wrap gap-2">
-                                                            {org.eligible_applications.map((application) => (
-                                                                <span
-                                                                    key={application.id}
-                                                                    className="rounded-full border border-sky-300/20 bg-sky-400/10 px-2.5 py-1 text-xs font-medium text-sky-100"
-                                                                >
-                                                                    {application.name}
-                                                                </span>
-                                                            ))}
+                                                            {org.eligible_applications.map(
+                                                                (
+                                                                    application,
+                                                                ) => (
+                                                                    <span
+                                                                        key={
+                                                                            application.id
+                                                                        }
+                                                                        className="rounded-full border border-sky-300/20 bg-sky-400/10 px-2.5 py-1 text-xs font-medium text-sky-100"
+                                                                    >
+                                                                        {
+                                                                            application.name
+                                                                        }
+                                                                    </span>
+                                                                ),
+                                                            )}
                                                         </div>
                                                     ) : (
                                                         <div className="text-xs text-white/40">
-                                                            Belum ada aplikasi aktif yang cocok.
+                                                            Belum ada aplikasi
+                                                            aktif yang cocok.
                                                         </div>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="py-3 pr-4 text-white/60">{org.users_count} pengguna</td>
+                                            <td className="py-3 pr-4 text-white/60">
+                                                {org.users_count} pengguna
+                                            </td>
                                             <td className="py-3 pr-4">
                                                 {org.is_active ? (
                                                     <span className="flex items-center gap-1 text-green-400">
-                                                        <CheckCircle className="h-4 w-4" /> Aktif
+                                                        <CheckCircle className="h-4 w-4" />{' '}
+                                                        Aktif
                                                     </span>
                                                 ) : (
                                                     <span className="flex items-center gap-1 text-red-400">
-                                                        <XCircle className="h-4 w-4" /> Nonaktif
+                                                        <XCircle className="h-4 w-4" />{' '}
+                                                        Nonaktif
                                                     </span>
                                                 )}
                                             </td>
@@ -117,14 +155,18 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                                                     </Link>
                                                     <button
                                                         type="button"
-                                                        onClick={() => toggleActive(org)}
+                                                        onClick={() =>
+                                                            toggleActive(org)
+                                                        }
                                                         className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                                                             org.is_active
                                                                 ? 'border-red-400/30 bg-red-400/10 text-red-300 hover:bg-red-400/20'
                                                                 : 'border-green-400/30 bg-green-400/10 text-green-300 hover:bg-green-400/20'
                                                         }`}
                                                     >
-                                                        {org.is_active ? 'Nonaktifkan' : 'Aktifkan'}
+                                                        {org.is_active
+                                                            ? 'Nonaktifkan'
+                                                            : 'Aktifkan'}
                                                     </button>
                                                 </div>
                                             </td>

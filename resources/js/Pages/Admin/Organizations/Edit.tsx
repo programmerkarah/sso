@@ -56,7 +56,9 @@ export default function Edit({ organization }: EditProps) {
                                 id="name"
                                 name="name"
                                 value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('name', e.target.value)
+                                }
                                 error={errors.name}
                                 required
                             />
@@ -70,11 +72,14 @@ export default function Edit({ organization }: EditProps) {
                                 id="type"
                                 name="type"
                                 value={data.type}
-                                onChange={(e) => setData('type', e.target.value)}
+                                onChange={(e) =>
+                                    setData('type', e.target.value)
+                                }
                                 error={errors.type}
                             />
                             <p className="mt-1 text-xs text-white/50">
-                                Gunakan huruf kecil dan underscore. Ubah dengan hati-hati — ini berdampak pada akses aplikasi.
+                                Gunakan huruf kecil dan underscore. Ubah dengan
+                                hati-hati — ini berdampak pada akses aplikasi.
                             </p>
                         </div>
 
@@ -84,12 +89,16 @@ export default function Edit({ organization }: EditProps) {
                                 id="description"
                                 name="description"
                                 value={data.description}
-                                onChange={(e) => setData('description', e.target.value)}
+                                onChange={(e) =>
+                                    setData('description', e.target.value)
+                                }
                                 rows={3}
                                 className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white shadow-sm backdrop-blur-sm transition focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
                             />
                             {errors.description && (
-                                <p className="mt-1 text-sm text-red-300">{errors.description}</p>
+                                <p className="mt-1 text-sm text-red-300">
+                                    {errors.description}
+                                </p>
                             )}
                         </div>
 
@@ -98,13 +107,18 @@ export default function Edit({ organization }: EditProps) {
                                 <input
                                     type="checkbox"
                                     checked={data.is_active}
-                                    onChange={(e) => setData('is_active', e.target.checked)}
+                                    onChange={(e) =>
+                                        setData('is_active', e.target.checked)
+                                    }
                                     className="rounded border-white/30 bg-white/10 text-blue-500 focus:ring-white/30"
                                 />
-                                <span className="text-sm text-white/85">Aktif</span>
+                                <span className="text-sm text-white/85">
+                                    Aktif
+                                </span>
                             </label>
                             <p className="mt-1 text-xs text-white/50">
-                                Menonaktifkan organisasi menyembunyikannya dari form pendaftaran.
+                                Menonaktifkan organisasi menyembunyikannya dari
+                                form pendaftaran.
                             </p>
                         </div>
 
@@ -115,7 +129,9 @@ export default function Edit({ organization }: EditProps) {
                                 </Button>
                             </Link>
                             <Button type="submit" disabled={processing}>
-                                {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                {processing
+                                    ? 'Menyimpan...'
+                                    : 'Simpan Perubahan'}
                             </Button>
                         </div>
                     </form>

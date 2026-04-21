@@ -373,7 +373,8 @@ export default function Show({ application, appUrl }: ShowProps) {
                                         </p>
                                         <p className="mt-2 text-xs text-white/60">
                                             Tipe organisasi diizinkan:{' '}
-                                            {application.allowed_organization_types
+                                            {application
+                                                .allowed_organization_types
                                                 ?.length
                                                 ? application.allowed_organization_types.join(
                                                       ', ',

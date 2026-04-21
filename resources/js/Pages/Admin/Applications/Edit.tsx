@@ -16,7 +16,10 @@ interface EditProps {
     availableOrganizationTypes: string[];
 }
 
-export default function Edit({ application, availableOrganizationTypes }: EditProps) {
+export default function Edit({
+    application,
+    availableOrganizationTypes,
+}: EditProps) {
     const { data, setData, put, processing, errors } = useForm({
         name: application.name,
         description: application.description || '',
@@ -24,14 +27,17 @@ export default function Edit({ application, availableOrganizationTypes }: EditPr
         callback_url: application.callback_url,
         logo_url: application.logo_url || '',
         is_active: application.is_active,
-        allowed_organization_types: application.allowed_organization_types ?? [],
+        allowed_organization_types:
+            application.allowed_organization_types ?? [],
     });
 
     const toggleOrgType = (type: string) => {
         const current = data.allowed_organization_types;
         setData(
             'allowed_organization_types',
-            current.includes(type) ? current.filter((t) => t !== type) : [...current, type],
+            current.includes(type)
+                ? current.filter((t) => t !== type)
+                : [...current, type],
         );
     };
 
@@ -174,28 +180,39 @@ export default function Edit({ application, availableOrganizationTypes }: EditPr
 
                             {availableOrganizationTypes.length > 0 && (
                                 <div>
-                                    <Label>Tipe Organisasi yang Diizinkan</Label>
+                                    <Label>
+                                        Tipe Organisasi yang Diizinkan
+                                    </Label>
                                     <p className="mb-2 text-sm text-white/55">
-                                        Hanya pengguna dari tipe organisasi yang dipilih yang dapat mengakses aplikasi ini. Kosongkan untuk izinkan semua.
+                                        Hanya pengguna dari tipe organisasi yang
+                                        dipilih yang dapat mengakses aplikasi
+                                        ini. Kosongkan untuk izinkan semua.
                                     </p>
                                     <div className="flex flex-wrap gap-2">
-                                        {availableOrganizationTypes.map((type) => {
-                                            const isSelected = data.allowed_organization_types.includes(type);
-                                            return (
-                                                <button
-                                                    key={type}
-                                                    type="button"
-                                                    onClick={() => toggleOrgType(type)}
-                                                    className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-                                                        isSelected
-                                                            ? 'bg-blue-500 text-white shadow'
-                                                            : 'border border-white/20 bg-white/10 text-white/70 hover:bg-white/20'
-                                                    }`}
-                                                >
-                                                    {type}
-                                                </button>
-                                            );
-                                        })}
+                                        {availableOrganizationTypes.map(
+                                            (type) => {
+                                                const isSelected =
+                                                    data.allowed_organization_types.includes(
+                                                        type,
+                                                    );
+                                                return (
+                                                    <button
+                                                        key={type}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            toggleOrgType(type)
+                                                        }
+                                                        className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                                                            isSelected
+                                                                ? 'bg-blue-500 text-white shadow'
+                                                                : 'border border-white/20 bg-white/10 text-white/70 hover:bg-white/20'
+                                                        }`}
+                                                    >
+                                                        {type}
+                                                    </button>
+                                                );
+                                            },
+                                        )}
                                     </div>
                                 </div>
                             )}

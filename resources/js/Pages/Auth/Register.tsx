@@ -24,13 +24,12 @@ interface RegisterProps extends PageProps {
 export default function Register() {
     const { organizations } = usePage<RegisterProps>().props;
     const hasMultipleOrganizations = organizations.length > 1;
-    const organizationSelectOptions: SearchableSelectOption[] = organizations.map(
-        (organization) => ({
+    const organizationSelectOptions: SearchableSelectOption[] =
+        organizations.map((organization) => ({
             label: organization.name,
             description: organization.type,
             state_token: String(organization.id),
-        }),
-    );
+        }));
 
     const { data, setData, post, processing, errors } = useForm<{
         name: string;
@@ -45,7 +44,9 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
-        organization_id: hasMultipleOrganizations ? '' : String(organizations[0]?.id ?? ''),
+        organization_id: hasMultipleOrganizations
+            ? ''
+            : String(organizations[0]?.id ?? ''),
     });
     const selectedOrganizationOption = data.organization_id
         ? organizationSelectOptions.find(
@@ -119,16 +120,15 @@ export default function Register() {
 
                 {hasMultipleOrganizations && (
                     <div>
-                        <Label required>
-                            Jenis User
-                        </Label>
+                        <Label required>Jenis User</Label>
                         <SearchableSelect
                             options={organizationSelectOptions}
                             selectedOption={
                                 selectedOrganizationOption
                                     ? {
                                           label: selectedOrganizationOption.label,
-                                          description: selectedOrganizationOption.description,
+                                          description:
+                                              selectedOrganizationOption.description,
                                       }
                                     : null
                             }
@@ -139,7 +139,9 @@ export default function Register() {
                             onClear={() => setData('organization_id', '')}
                         />
                         {errors.organization_id && (
-                            <p className="mt-1 text-sm text-red-400">{errors.organization_id}</p>
+                            <p className="mt-1 text-sm text-red-400">
+                                {errors.organization_id}
+                            </p>
                         )}
                     </div>
                 )}

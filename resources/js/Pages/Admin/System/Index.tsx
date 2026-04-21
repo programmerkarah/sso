@@ -607,7 +607,9 @@ export default function Index({
                                 options={statusFilterOptions}
                                 placeholder="Semua status"
                                 onChange={(value) => {
-                                    visitState(value || filters.clear_status_token);
+                                    visitState(
+                                        value || filters.clear_status_token,
+                                    );
                                 }}
                             />
 
@@ -618,7 +620,9 @@ export default function Index({
                                 options={categoryFilterOptions}
                                 placeholder="Semua kategori"
                                 onChange={(value) => {
-                                    visitState(value || filters.clear_category_token);
+                                    visitState(
+                                        value || filters.clear_category_token,
+                                    );
                                 }}
                             />
 
@@ -661,7 +665,8 @@ export default function Index({
                                             colSpan={8}
                                             className="px-5 py-10 text-center text-white/55"
                                         >
-                                            Belum ada log aktivitas atau tidak ada data yang sesuai dengan filter.
+                                            Belum ada log aktivitas atau tidak
+                                            ada data yang sesuai dengan filter.
                                         </td>
                                     </tr>
                                 ) : (

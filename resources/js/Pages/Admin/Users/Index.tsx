@@ -1,6 +1,6 @@
 import {
-    CheckSquare,
     CheckCircle2,
+    CheckSquare,
     ChevronLeft,
     ChevronRight,
     Download,
@@ -159,14 +159,17 @@ export default function Index({
             isOpen: false,
             user: null,
         });
-    const [editAccessModal, setEditAccessModal] = useState<EditAccessModalState>({
-        isOpen: false,
-        user: null,
-    });
+    const [editAccessModal, setEditAccessModal] =
+        useState<EditAccessModalState>({
+            isOpen: false,
+            user: null,
+        });
     const [batchAccessModalOpen, setBatchAccessModalOpen] = useState(false);
     const [batchVerifyModalOpen, setBatchVerifyModalOpen] = useState(false);
     const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
-    const [openActionMenuUserId, setOpenActionMenuUserId] = useState<number | null>(null);
+    const [openActionMenuUserId, setOpenActionMenuUserId] = useState<
+        number | null
+    >(null);
     const identityForm = useForm({
         username: '',
         email: '',
@@ -229,7 +232,9 @@ export default function Index({
 
     const openEditAccessModal = (user: ManagedUser) => {
         accessForm.setData({
-            organization_id: user.organization ? String(user.organization.id) : '',
+            organization_id: user.organization
+                ? String(user.organization.id)
+                : '',
             role_ids: user.role_ids,
         });
         accessForm.clearErrors();
@@ -286,12 +291,15 @@ export default function Index({
             return;
         }
 
-        accessForm.post(`/admin/users/${editAccessModal.user.route_key}/access`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                closeEditAccessModal();
+        accessForm.post(
+            `/admin/users/${editAccessModal.user.route_key}/access`,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    closeEditAccessModal();
+                },
             },
-        });
+        );
     };
 
     const submitBatchAccessUpdate = () => {
@@ -330,13 +338,17 @@ export default function Index({
 
     const toggleUserSelection = (userId: number) => {
         setSelectedUserIds((prev) =>
-            prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId],
+            prev.includes(userId)
+                ? prev.filter((id) => id !== userId)
+                : [...prev, userId],
         );
     };
 
     const toggleSelectAllCurrentPage = () => {
         const currentPageUserIds = users.data.map((user) => user.id);
-        const allSelected = currentPageUserIds.every((id) => selectedUserIds.includes(id));
+        const allSelected = currentPageUserIds.every((id) =>
+            selectedUserIds.includes(id),
+        );
 
         setSelectedUserIds((prev) => {
             if (allSelected) {
@@ -471,13 +483,15 @@ export default function Index({
 
     const selectedAccessOrganization = accessForm.data.organization_id
         ? organizationSelectOptions.find(
-              (option) => option.state_token === accessForm.data.organization_id,
+              (option) =>
+                  option.state_token === accessForm.data.organization_id,
           )
         : null;
 
     const selectedBatchOrganization = batchAccessForm.data.organization_id
         ? organizationSelectOptions.find(
-              (option) => option.state_token === batchAccessForm.data.organization_id,
+              (option) =>
+                  option.state_token === batchAccessForm.data.organization_id,
           )
         : null;
 
@@ -590,16 +604,23 @@ export default function Index({
                                         selectedAccessOrganization
                                             ? {
                                                   label: selectedAccessOrganization.label,
-                                                  description: selectedAccessOrganization.description,
+                                                  description:
+                                                      selectedAccessOrganization.description,
                                               }
                                             : null
                                     }
                                     placeholder="Pilih organisasi"
                                     onSelect={(option) =>
-                                        accessForm.setData('organization_id', option.state_token)
+                                        accessForm.setData(
+                                            'organization_id',
+                                            option.state_token,
+                                        )
                                     }
                                     onClear={() =>
-                                        accessForm.setData('organization_id', '')
+                                        accessForm.setData(
+                                            'organization_id',
+                                            '',
+                                        )
                                     }
                                 />
                                 {accessForm.errors.organization_id && (
@@ -613,7 +634,10 @@ export default function Index({
                                 <Label required>Role</Label>
                                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
                                     {roleOptions.map((role) => {
-                                        const checked = accessForm.data.role_ids.includes(role.id);
+                                        const checked =
+                                            accessForm.data.role_ids.includes(
+                                                role.id,
+                                            );
 
                                         return (
                                             <label
@@ -627,11 +651,17 @@ export default function Index({
                                                 <input
                                                     type="checkbox"
                                                     checked={checked}
-                                                    onChange={() => toggleAccessRole(role.id)}
+                                                    onChange={() =>
+                                                        toggleAccessRole(
+                                                            role.id,
+                                                        )
+                                                    }
                                                     className="mt-1 rounded border-white/30 bg-transparent text-blue-400 focus:ring-blue-300/40"
                                                 />
                                                 <span>
-                                                    <span className="font-semibold">{role.name}</span>
+                                                    <span className="font-semibold">
+                                                        {role.name}
+                                                    </span>
                                                     {role.description && (
                                                         <span className="block text-xs text-white/55">
                                                             {role.description}
@@ -663,7 +693,9 @@ export default function Index({
                                 onClick={submitAccessUpdate}
                                 disabled={accessForm.processing}
                             >
-                                {accessForm.processing ? 'Menyimpan...' : 'Simpan Akses'}
+                                {accessForm.processing
+                                    ? 'Menyimpan...'
+                                    : 'Simpan Akses'}
                             </Button>
                         </div>
                     </div>
@@ -680,7 +712,8 @@ export default function Index({
                             Atur Organisasi & Role (Batch)
                         </h3>
                         <p className="mt-1 text-sm text-white/75">
-                            Terapkan perubahan ke {selectedUserIds.length} pengguna terpilih.
+                            Terapkan perubahan ke {selectedUserIds.length}{' '}
+                            pengguna terpilih.
                         </p>
 
                         <div className="mt-5 space-y-5">
@@ -692,16 +725,23 @@ export default function Index({
                                         selectedBatchOrganization
                                             ? {
                                                   label: selectedBatchOrganization.label,
-                                                  description: selectedBatchOrganization.description,
+                                                  description:
+                                                      selectedBatchOrganization.description,
                                               }
                                             : null
                                     }
                                     placeholder="Pilih organisasi untuk batch"
                                     onSelect={(option) =>
-                                        batchAccessForm.setData('organization_id', option.state_token)
+                                        batchAccessForm.setData(
+                                            'organization_id',
+                                            option.state_token,
+                                        )
                                     }
                                     onClear={() =>
-                                        batchAccessForm.setData('organization_id', '')
+                                        batchAccessForm.setData(
+                                            'organization_id',
+                                            '',
+                                        )
                                     }
                                 />
                                 {batchAccessForm.errors.organization_id && (
@@ -714,11 +754,15 @@ export default function Index({
                             <div>
                                 <Label>Role (opsional)</Label>
                                 <p className="mb-2 text-xs text-white/55">
-                                    Pilih role jika ingin menimpa role pengguna terpilih.
+                                    Pilih role jika ingin menimpa role pengguna
+                                    terpilih.
                                 </p>
                                 <div className="grid gap-2 sm:grid-cols-2">
                                     {roleOptions.map((role) => {
-                                        const checked = batchAccessForm.data.role_ids.includes(role.id);
+                                        const checked =
+                                            batchAccessForm.data.role_ids.includes(
+                                                role.id,
+                                            );
 
                                         return (
                                             <label
@@ -732,10 +776,14 @@ export default function Index({
                                                 <input
                                                     type="checkbox"
                                                     checked={checked}
-                                                    onChange={() => toggleBatchRole(role.id)}
+                                                    onChange={() =>
+                                                        toggleBatchRole(role.id)
+                                                    }
                                                     className="mt-1 rounded border-white/30 bg-transparent text-blue-400 focus:ring-blue-300/40"
                                                 />
-                                                <span className="font-semibold">{role.name}</span>
+                                                <span className="font-semibold">
+                                                    {role.name}
+                                                </span>
                                             </label>
                                         );
                                     })}
@@ -761,7 +809,9 @@ export default function Index({
                                 onClick={submitBatchAccessUpdate}
                                 disabled={batchAccessForm.processing}
                             >
-                                {batchAccessForm.processing ? 'Memproses...' : 'Terapkan Batch'}
+                                {batchAccessForm.processing
+                                    ? 'Memproses...'
+                                    : 'Terapkan Batch'}
                             </Button>
                         </div>
                     </div>
@@ -779,7 +829,12 @@ export default function Index({
                             Verifikasi Pengguna (Batch)
                         </h3>
                         <p className="mt-2 text-sm text-white/75">
-                            Verifikasi <span className="font-semibold text-white">{selectedUserIds.length}</span> pengguna terpilih? Hanya pengguna yang belum diverifikasi yang akan diproses.
+                            Verifikasi{' '}
+                            <span className="font-semibold text-white">
+                                {selectedUserIds.length}
+                            </span>{' '}
+                            pengguna terpilih? Hanya pengguna yang belum
+                            diverifikasi yang akan diproses.
                         </p>
                         <div className="mt-6 flex justify-end gap-3">
                             <Button
@@ -789,10 +844,7 @@ export default function Index({
                             >
                                 Batal
                             </Button>
-                            <Button
-                                type="button"
-                                onClick={submitBatchVerify}
-                            >
+                            <Button type="button" onClick={submitBatchVerify}>
                                 Verifikasi Sekarang
                             </Button>
                         </div>
@@ -924,7 +976,9 @@ export default function Index({
                         <div className="mt-4 flex flex-wrap items-center gap-2">
                             <button
                                 type="button"
-                                onClick={() => visitState(pendingOnlyFilterToken)}
+                                onClick={() =>
+                                    visitState(pendingOnlyFilterToken)
+                                }
                                 className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
                                     pendingOnlyActive
                                         ? 'border-amber-300/40 bg-amber-500/20 text-amber-100'
@@ -956,7 +1010,9 @@ export default function Index({
                                         <input
                                             type="checkbox"
                                             checked={allSelectedOnCurrentPage}
-                                            onChange={toggleSelectAllCurrentPage}
+                                            onChange={
+                                                toggleSelectAllCurrentPage
+                                            }
                                             className="rounded border-white/30 bg-transparent text-blue-400 focus:ring-blue-300/40"
                                         />
                                     </th>
@@ -993,7 +1049,9 @@ export default function Index({
                                             colSpan={9}
                                             className="px-5 py-14 text-center text-white/50"
                                         >
-                                            Tidak ada data yang dapat ditampilkan atau belum ada pengguna terdaftar.
+                                            Tidak ada data yang dapat
+                                            ditampilkan atau belum ada pengguna
+                                            terdaftar.
                                         </td>
                                     </tr>
                                 ) : (
@@ -1005,8 +1063,14 @@ export default function Index({
                                             <td className="px-5 py-4">
                                                 <input
                                                     type="checkbox"
-                                                    checked={selectedUserIds.includes(user.id)}
-                                                    onChange={() => toggleUserSelection(user.id)}
+                                                    checked={selectedUserIds.includes(
+                                                        user.id,
+                                                    )}
+                                                    onChange={() =>
+                                                        toggleUserSelection(
+                                                            user.id,
+                                                        )
+                                                    }
                                                     className="rounded border-white/30 bg-transparent text-blue-400 focus:ring-blue-300/40"
                                                 />
                                             </td>
@@ -1050,14 +1114,24 @@ export default function Index({
                                                 {user.organization ? (
                                                     <div className="flex flex-col gap-1">
                                                         <span className="text-sm font-semibold text-white">
-                                                            {user.organization.name}
+                                                            {
+                                                                user
+                                                                    .organization
+                                                                    .name
+                                                            }
                                                         </span>
                                                         <span className="text-xs text-white/55">
-                                                            {user.organization.type}
+                                                            {
+                                                                user
+                                                                    .organization
+                                                                    .type
+                                                            }
                                                         </span>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-sm text-white/45">Belum diatur</span>
+                                                    <span className="text-sm text-white/45">
+                                                        Belum diatur
+                                                    </span>
                                                 )}
                                             </td>
 
@@ -1135,8 +1209,12 @@ export default function Index({
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            setOpenActionMenuUserId((current) =>
-                                                                current === user.id ? null : user.id,
+                                                            setOpenActionMenuUserId(
+                                                                (current) =>
+                                                                    current ===
+                                                                    user.id
+                                                                        ? null
+                                                                        : user.id,
                                                             )
                                                         }
                                                         className="inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 p-2 text-white/80 transition hover:bg-white/20 hover:text-white"
@@ -1145,13 +1223,18 @@ export default function Index({
                                                         <EllipsisVertical className="h-4 w-4" />
                                                     </button>
 
-                                                    {openActionMenuUserId === user.id && (
+                                                    {openActionMenuUserId ===
+                                                        user.id && (
                                                         <div className="absolute right-0 top-11 z-20 w-56 rounded-xl border border-white/20 bg-slate-950/90 p-2 shadow-2xl backdrop-blur">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => {
-                                                                    handleToggleAdminVerification(user);
-                                                                    setOpenActionMenuUserId(null);
+                                                                    handleToggleAdminVerification(
+                                                                        user,
+                                                                    );
+                                                                    setOpenActionMenuUserId(
+                                                                        null,
+                                                                    );
                                                                 }}
                                                                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
                                                             >
@@ -1165,12 +1248,17 @@ export default function Index({
                                                                     : 'Verifikasi User'}
                                                             </button>
 
-                                                            {user.id !== currentUserId && (
+                                                            {user.id !==
+                                                                currentUserId && (
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => {
-                                                                        handleToggleAdmin(user);
-                                                                        setOpenActionMenuUserId(null);
+                                                                        handleToggleAdmin(
+                                                                            user,
+                                                                        );
+                                                                        setOpenActionMenuUserId(
+                                                                            null,
+                                                                        );
                                                                     }}
                                                                     className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
                                                                 >
@@ -1179,15 +1267,21 @@ export default function Index({
                                                                     ) : (
                                                                         <ShieldPlus className="h-3.5 w-3.5 text-purple-200" />
                                                                     )}
-                                                                    {user.is_admin ? 'Cabut Admin' : 'Jadikan Admin'}
+                                                                    {user.is_admin
+                                                                        ? 'Cabut Admin'
+                                                                        : 'Jadikan Admin'}
                                                                 </button>
                                                             )}
 
                                                             <button
                                                                 type="button"
                                                                 onClick={() => {
-                                                                    openEditAccessModal(user);
-                                                                    setOpenActionMenuUserId(null);
+                                                                    openEditAccessModal(
+                                                                        user,
+                                                                    );
+                                                                    setOpenActionMenuUserId(
+                                                                        null,
+                                                                    );
                                                                 }}
                                                                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
                                                             >
@@ -1198,8 +1292,12 @@ export default function Index({
                                                             <button
                                                                 type="button"
                                                                 onClick={() => {
-                                                                    openEditIdentityModal(user);
-                                                                    setOpenActionMenuUserId(null);
+                                                                    openEditIdentityModal(
+                                                                        user,
+                                                                    );
+                                                                    setOpenActionMenuUserId(
+                                                                        null,
+                                                                    );
                                                                 }}
                                                                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
                                                             >
@@ -1210,8 +1308,12 @@ export default function Index({
                                                             <button
                                                                 type="button"
                                                                 onClick={() => {
-                                                                    handleResetPassword(user);
-                                                                    setOpenActionMenuUserId(null);
+                                                                    handleResetPassword(
+                                                                        user,
+                                                                    );
+                                                                    setOpenActionMenuUserId(
+                                                                        null,
+                                                                    );
                                                                 }}
                                                                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
                                                             >
@@ -1222,8 +1324,12 @@ export default function Index({
                                                             <button
                                                                 type="button"
                                                                 onClick={() => {
-                                                                    handleResetTwoFactor(user);
-                                                                    setOpenActionMenuUserId(null);
+                                                                    handleResetTwoFactor(
+                                                                        user,
+                                                                    );
+                                                                    setOpenActionMenuUserId(
+                                                                        null,
+                                                                    );
                                                                 }}
                                                                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
                                                             >

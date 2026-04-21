@@ -145,41 +145,47 @@ export default function Dashboard({
                         )}
                         <div className="mt-4 space-y-2">
                             {availableApplications.length > 0 ? (
-                                availableApplications.slice(0, 3).map((application) => (
-                                    <a
-                                        key={application.id}
-                                        href={application.launch_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="group flex items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-left backdrop-blur-sm transition hover:bg-white/20"
-                                    >
-                                        <div className="flex min-w-0 items-center gap-3">
-                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-white/10">
-                                                {application.logo_url ? (
-                                                    <img
-                                                        src={application.logo_url}
-                                                        alt={`Logo ${application.name}`}
-                                                        className="h-full w-full object-contain"
-                                                    />
-                                                ) : (
-                                                    <Globe className="h-4 w-4 text-white/70" />
-                                                )}
+                                availableApplications
+                                    .slice(0, 3)
+                                    .map((application) => (
+                                        <a
+                                            key={application.id}
+                                            href={application.launch_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group flex items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-left backdrop-blur-sm transition hover:bg-white/20"
+                                        >
+                                            <div className="flex min-w-0 items-center gap-3">
+                                                <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-white/10">
+                                                    {application.logo_url ? (
+                                                        <img
+                                                            src={
+                                                                application.logo_url
+                                                            }
+                                                            alt={`Logo ${application.name}`}
+                                                            className="h-full w-full object-contain"
+                                                        />
+                                                    ) : (
+                                                        <Globe className="h-4 w-4 text-white/70" />
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-sm font-semibold text-white">
+                                                        {application.name}
+                                                    </p>
+                                                    <p className="truncate text-xs text-white/60">
+                                                        {application.description ??
+                                                            application.landing_url}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="min-w-0">
-                                                <p className="truncate text-sm font-semibold text-white">
-                                                    {application.name}
-                                                </p>
-                                                <p className="truncate text-xs text-white/60">
-                                                    {application.description ?? application.landing_url}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <ExternalLink className="h-4 w-4 shrink-0 text-white/60 transition group-hover:text-white" />
-                                    </a>
-                                ))
+                                            <ExternalLink className="h-4 w-4 shrink-0 text-white/60 transition group-hover:text-white" />
+                                        </a>
+                                    ))
                             ) : (
                                 <div className="rounded-xl border border-dashed border-white/20 bg-white/5 px-3 py-3 text-sm text-white/60">
-                                    Belum ada aplikasi yang tersedia untuk organisasi Anda.
+                                    Belum ada aplikasi yang tersedia untuk
+                                    organisasi Anda.
                                 </div>
                             )}
                         </div>
@@ -293,7 +299,8 @@ export default function Dashboard({
                                     User Menunggu Verifikasi
                                 </h3>
                                 <p className="text-sm text-white/70">
-                                    Verifikasi manual oleh admin SSO dibutuhkan sebelum user bisa mengakses fitur.
+                                    Verifikasi manual oleh admin SSO dibutuhkan
+                                    sebelum user bisa mengakses fitur.
                                 </p>
                             </div>
                             <Link
@@ -316,11 +323,20 @@ export default function Dashboard({
                                         key={pendingUser.id}
                                         className="rounded-xl border border-amber-300/30 bg-amber-500/10 p-4"
                                     >
-                                        <p className="text-sm font-semibold text-white">{pendingUser.name}</p>
-                                        <p className="text-xs text-white/70">@{pendingUser.username}</p>
-                                        <p className="mt-1 text-xs text-white/75">{pendingUser.email}</p>
+                                        <p className="text-sm font-semibold text-white">
+                                            {pendingUser.name}
+                                        </p>
+                                        <p className="text-xs text-white/70">
+                                            @{pendingUser.username}
+                                        </p>
+                                        <p className="mt-1 text-xs text-white/75">
+                                            {pendingUser.email}
+                                        </p>
                                         <p className="mt-2 text-[11px] text-white/55">
-                                            Terdaftar {formatDateTime(pendingUser.created_at)}
+                                            Terdaftar{' '}
+                                            {formatDateTime(
+                                                pendingUser.created_at,
+                                            )}
                                         </p>
                                     </div>
                                 ))}
@@ -337,7 +353,8 @@ export default function Dashboard({
                                     Aplikasi Tersedia
                                 </h3>
                                 <p className="text-sm text-white/70">
-                                    Hanya aplikasi yang cocok dengan organisasi Anda yang ditampilkan di sini.
+                                    Hanya aplikasi yang cocok dengan organisasi
+                                    Anda yang ditampilkan di sini.
                                 </p>
                             </div>
                             <Link
@@ -375,7 +392,8 @@ export default function Dashboard({
                                                 {application.name}
                                             </h4>
                                             <p className="mt-1 line-clamp-2 text-sm text-white/65">
-                                                {application.description ?? 'Aplikasi tersedia melalui SSO.'}
+                                                {application.description ??
+                                                    'Aplikasi tersedia melalui SSO.'}
                                             </p>
                                         </div>
                                     </div>

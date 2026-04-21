@@ -65,12 +65,14 @@ export default function Guide({ application, appUrl }: GuideProps) {
     const tokenEndpoint = `${appUrl}/oauth/token`;
     const profileEndpoint = `${appUrl}/api/user`;
     const bulkUsersEndpoint = `${appUrl}/api/users`;
-    const allowedOrganizationTypes = application.allowed_organization_types.length > 0
-        ? application.allowed_organization_types.join(', ')
-        : 'semua organisasi aktif';
-    const allowedOrganizationTypesEnv = application.allowed_organization_types.length > 0
-        ? application.allowed_organization_types.join(',')
-        : 'internal';
+    const allowedOrganizationTypes =
+        application.allowed_organization_types.length > 0
+            ? application.allowed_organization_types.join(', ')
+            : 'semua organisasi aktif';
+    const allowedOrganizationTypesEnv =
+        application.allowed_organization_types.length > 0
+            ? application.allowed_organization_types.join(',')
+            : 'internal';
 
     const snippets = useMemo(
         () => ({
@@ -144,7 +146,9 @@ export default function Guide({ application, appUrl }: GuideProps) {
                             <Download className="h-4 w-4" />
                             Export PDF
                         </a>
-                        <Link href={`/admin/applications/${application.route_key}/edit`}>
+                        <Link
+                            href={`/admin/applications/${application.route_key}/edit`}
+                        >
                             <Button>Edit Konfigurasi</Button>
                         </Link>
                     </div>
@@ -155,147 +159,398 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         Panduan Integrasi OAuth2 + Sinkronisasi User
                     </h1>
                     <p className="mt-2 max-w-4xl text-white/80">
-                        Panduan implementasi {application.name} ke SSO, termasuk guard organisasi,
-                        alur callback, sinkronisasi user lokal di setiap login, dan opsi sinkronisasi
-                        lanjutan sesuai kebutuhan aplikasi.
+                        Panduan implementasi {application.name} ke SSO, termasuk
+                        guard organisasi, alur callback, sinkronisasi user lokal
+                        di setiap login, dan opsi sinkronisasi lanjutan sesuai
+                        kebutuhan aplikasi.
                     </p>
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
                     <GlassCard className="space-y-6">
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">1. Ringkasan Kontrak Integrasi</h2>
+                            <h2 className="text-xl font-bold text-white">
+                                1. Ringkasan Kontrak Integrasi
+                            </h2>
                             <div className="rounded-xl border border-white/15 bg-white/5 p-4 text-sm leading-7 text-white/80">
-                                <p><span className="font-semibold text-white">Authorize endpoint:</span> {authorizeEndpoint}</p>
-                                <p><span className="font-semibold text-white">Token endpoint:</span> {tokenEndpoint}</p>
-                                <p><span className="font-semibold text-white">Profile endpoint:</span> {profileEndpoint}</p>
-                                <p><span className="font-semibold text-white">Allowed organization types:</span> {allowedOrganizationTypes}</p>
+                                <p>
+                                    <span className="font-semibold text-white">
+                                        Authorize endpoint:
+                                    </span>{' '}
+                                    {authorizeEndpoint}
+                                </p>
+                                <p>
+                                    <span className="font-semibold text-white">
+                                        Token endpoint:
+                                    </span>{' '}
+                                    {tokenEndpoint}
+                                </p>
+                                <p>
+                                    <span className="font-semibold text-white">
+                                        Profile endpoint:
+                                    </span>{' '}
+                                    {profileEndpoint}
+                                </p>
+                                <p>
+                                    <span className="font-semibold text-white">
+                                        Allowed organization types:
+                                    </span>{' '}
+                                    {allowedOrganizationTypes}
+                                </p>
                                 <p className="mt-2 text-white/65">
-                                    Aplikasi client harus memvalidasi organisasi user saat callback dan menyinkronkan data lokal
-                                    setiap kali user login via SSO.
+                                    Aplikasi client harus memvalidasi organisasi
+                                    user saat callback dan menyinkronkan data
+                                    lokal setiap kali user login via SSO.
                                 </p>
                             </div>
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">2. Konfigurasi Environment</h2>
+                            <h2 className="text-xl font-bold text-white">
+                                2. Konfigurasi Environment
+                            </h2>
                             <p className="text-sm text-white/70">
-                                Simpan kredensial SSO di server aplikasi client. Sertakan allow-list organisasi di aplikasi
-                                agar guard di client konsisten dengan kebijakan akses di SSO.
+                                Simpan kredensial SSO di server aplikasi client.
+                                Sertakan allow-list organisasi di aplikasi agar
+                                guard di client konsisten dengan kebijakan akses
+                                di SSO.
                             </p>
-                            <CodeBlock label=".env" value={snippets.env} copyKey="env" copied={copied} onCopy={copyText} />
+                            <CodeBlock
+                                label=".env"
+                                value={snippets.env}
+                                copyKey="env"
+                                copied={copied}
+                                onCopy={copyText}
+                            />
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">3. Tahap 1: Daftarkan Route Client</h2>
+                            <h2 className="text-xl font-bold text-white">
+                                3. Tahap 1: Daftarkan Route Client
+                            </h2>
                             <p className="text-sm text-white/70">
-                                Minimal ada endpoint redirect, callback, dan logout lokal. Endpoint redirect adalah pintu masuk resmi untuk login SSO.
+                                Minimal ada endpoint redirect, callback, dan
+                                logout lokal. Endpoint redirect adalah pintu
+                                masuk resmi untuk login SSO.
                             </p>
-                            <CodeBlock label="routes/web.php" value={snippets.routes} copyKey="routes" copied={copied} onCopy={copyText} />
+                            <CodeBlock
+                                label="routes/web.php"
+                                value={snippets.routes}
+                                copyKey="routes"
+                                copied={copied}
+                                onCopy={copyText}
+                            />
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">4. Tahap 2: Buat Redirect ke SSO</h2>
+                            <h2 className="text-xl font-bold text-white">
+                                4. Tahap 2: Buat Redirect ke SSO
+                            </h2>
                             <p className="text-sm text-white/70">
-                                Simpan state acak di session, lalu bangun query OAuth lengkap. Jangan arahkan user ke authorize URL kosong.
+                                Simpan state acak di session, lalu bangun query
+                                OAuth lengkap. Jangan arahkan user ke authorize
+                                URL kosong.
                             </p>
-                            <CodeBlock label="SsoOAuthController::redirect()" value={snippets.redirect} copyKey="redirect" copied={copied} onCopy={copyText} />
+                            <CodeBlock
+                                label="SsoOAuthController::redirect()"
+                                value={snippets.redirect}
+                                copyKey="redirect"
+                                copied={copied}
+                                onCopy={copyText}
+                            />
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">5. Tahap 3: Callback, Token Exchange, dan Fetch Profile</h2>
+                            <h2 className="text-xl font-bold text-white">
+                                5. Tahap 3: Callback, Token Exchange, dan Fetch
+                                Profile
+                            </h2>
                             <p className="text-sm text-white/70">
-                                Verifikasi state, tukar authorization code menjadi access token, lalu ambil profil user dari endpoint profile.
+                                Verifikasi state, tukar authorization code
+                                menjadi access token, lalu ambil profil user
+                                dari endpoint profile.
                             </p>
-                            <CodeBlock label="SsoOAuthController::callback()" value={snippets.callback} copyKey="callback" copied={copied} onCopy={copyText} />
+                            <CodeBlock
+                                label="SsoOAuthController::callback()"
+                                value={snippets.callback}
+                                copyKey="callback"
+                                copied={copied}
+                                onCopy={copyText}
+                            />
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">6. Tahap 4: Guard Organisasi</h2>
+                            <h2 className="text-xl font-bold text-white">
+                                6. Tahap 4: Guard Organisasi
+                            </h2>
                             <p className="text-sm text-white/70">
-                                SSO sudah memblokir authorize untuk organisasi yang tidak cocok. Client tetap perlu memvalidasi ulang agar user tidak bisa masuk jika konfigurasi lokal lebih ketat.
+                                SSO sudah memblokir authorize untuk organisasi
+                                yang tidak cocok. Client tetap perlu memvalidasi
+                                ulang agar user tidak bisa masuk jika
+                                konfigurasi lokal lebih ketat.
                             </p>
-                            <CodeBlock label="Guard organization type" value={snippets.organization} copyKey="organization" copied={copied} onCopy={copyText} />
+                            <CodeBlock
+                                label="Guard organization type"
+                                value={snippets.organization}
+                                copyKey="organization"
+                                copied={copied}
+                                onCopy={copyText}
+                            />
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">7. Tahap 5: Sinkronisasi User Lokal di Setiap Login</h2>
+                            <h2 className="text-xl font-bold text-white">
+                                7. Tahap 5: Sinkronisasi User Lokal di Setiap
+                                Login
+                            </h2>
                             <p className="text-sm text-white/70">
-                                Setelah profil diterima, sinkronkan field lokal yang dibutuhkan aplikasi. Minimal: nama, username, email, email verified, dan password hash. Jika aplikasi mendukung 2FA lokal, salin data 2FA dari payload profile dan enkripsi ulang dengan key aplikasi client.
+                                Setelah profil diterima, sinkronkan field lokal
+                                yang dibutuhkan aplikasi. Minimal: nama,
+                                username, email, email verified, dan password
+                                hash. Jika aplikasi mendukung 2FA lokal, salin
+                                data 2FA dari payload profile dan enkripsi ulang
+                                dengan key aplikasi client.
                             </p>
                             <div className="rounded-xl border border-amber-300/35 bg-amber-500/10 p-4 text-sm leading-7 text-amber-50/90">
-                                <p className="font-semibold text-amber-100">Warning keamanan role</p>
+                                <p className="font-semibold text-amber-100">
+                                    Warning keamanan role
+                                </p>
                                 <p>
-                                    Jangan jadikan data organisasi atau payload SSO sebagai alasan untuk langsung memberi role CRUD.
-                                    Untuk user baru, pakai role lokal paling minim risiko seperti Guest atau role read-only serupa,
-                                    lalu minta approval admin aplikasi sebelum role dinaikkan.
+                                    Jangan jadikan data organisasi atau payload
+                                    SSO sebagai alasan untuk langsung memberi
+                                    role CRUD. Untuk user baru, pakai role lokal
+                                    paling minim risiko seperti Guest atau role
+                                    read-only serupa, lalu minta approval admin
+                                    aplikasi sebelum role dinaikkan.
                                 </p>
                             </div>
-                            <CodeBlock label="Helper sinkronisasi user" value={snippets.sync} copyKey="sync" copied={copied} onCopy={copyText} />
+                            <CodeBlock
+                                label="Helper sinkronisasi user"
+                                value={snippets.sync}
+                                copyKey="sync"
+                                copied={copied}
+                                onCopy={copyText}
+                            />
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">8. Payload Profil dari SSO</h2>
+                            <h2 className="text-xl font-bold text-white">
+                                8. Payload Profil dari SSO
+                            </h2>
                             <p className="text-sm text-white/70">
-                                Kontrak profile saat ini mendukung sinkronisasi identity, password hash, organization, dan two-factor. Gunakan ini sebagai acuan implementasi di aplikasi client.
+                                Kontrak profile saat ini mendukung sinkronisasi
+                                identity, password hash, organization, dan
+                                two-factor. Gunakan ini sebagai acuan
+                                implementasi di aplikasi client.
                             </p>
-                            <CodeBlock label="GET /api/user" value={snippets.profile} copyKey="profile" copied={copied} onCopy={copyText} />
+                            <CodeBlock
+                                label="GET /api/user"
+                                value={snippets.profile}
+                                copyKey="profile"
+                                copied={copied}
+                                onCopy={copyText}
+                            />
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">9. Panduan Sinkronisasi Data Sesuai Kebutuhan</h2>
+                            <h2 className="text-xl font-bold text-white">
+                                9. Panduan Sinkronisasi Data Sesuai Kebutuhan
+                            </h2>
                             <div className="space-y-3 rounded-xl border border-white/15 bg-white/5 p-4 text-sm leading-7 text-white/80">
-                                <p><span className="font-semibold text-white">Minimal sync:</span> lakukan sinkronisasi saat login untuk nama, username, email, password hash, email verified, dan organization type.</p>
-                                <p><span className="font-semibold text-white">Extended sync:</span> tambahkan sinkronisasi 2FA lokal jika aplikasi client juga memakai Fortify atau mekanisme 2FA serupa.</p>
-                                <p><span className="font-semibold text-white">Periodic sync:</span> jika aplikasi perlu mirror user SSO secara berkala, buat command/job terjadwal dan gunakan endpoint daftar user atau endpoint admin khusus.</p>
+                                <p>
+                                    <span className="font-semibold text-white">
+                                        Minimal sync:
+                                    </span>{' '}
+                                    lakukan sinkronisasi saat login untuk nama,
+                                    username, email, password hash, email
+                                    verified, dan organization type.
+                                </p>
+                                <p>
+                                    <span className="font-semibold text-white">
+                                        Extended sync:
+                                    </span>{' '}
+                                    tambahkan sinkronisasi 2FA lokal jika
+                                    aplikasi client juga memakai Fortify atau
+                                    mekanisme 2FA serupa.
+                                </p>
+                                <p>
+                                    <span className="font-semibold text-white">
+                                        Periodic sync:
+                                    </span>{' '}
+                                    jika aplikasi perlu mirror user SSO secara
+                                    berkala, buat command/job terjadwal dan
+                                    gunakan endpoint daftar user atau endpoint
+                                    admin khusus.
+                                </p>
                             </div>
-                            <CodeBlock label="Contoh periodic sync" value={snippets.periodic} copyKey="periodic" copied={copied} onCopy={copyText} />
+                            <CodeBlock
+                                label="Contoh periodic sync"
+                                value={snippets.periodic}
+                                copyKey="periodic"
+                                copied={copied}
+                                onCopy={copyText}
+                            />
                         </section>
                     </GlassCard>
 
                     <div className="space-y-6">
                         <GlassCard>
-                            <h2 className="text-lg font-bold text-white">Checklist Implementasi</h2>
+                            <h2 className="text-lg font-bold text-white">
+                                Checklist Implementasi
+                            </h2>
                             <ul className="mt-3 space-y-2 text-sm text-white/80">
-                                <li className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" /> Callback URL di client sama persis dengan yang didaftarkan di SSO.</li>
-                                <li className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" /> Client ID dan secret disimpan di environment server.</li>
-                                <li className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" /> Client memvalidasi organization type saat callback.</li>
-                                <li className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" /> Sinkronisasi user lokal dijalankan di setiap login SSO.</li>
-                                <li className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" /> User baru tidak langsung diberi role tinggi; mulai dari Guest/read-only lalu elevasi manual.</li>
-                                <li className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" /> Jika 2FA lokal dipakai, secret dan recovery codes dienkripsi ulang dengan key aplikasi client.</li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    Callback URL di client sama persis dengan
+                                    yang didaftarkan di SSO.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    Client ID dan secret disimpan di environment
+                                    server.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    Client memvalidasi organization type saat
+                                    callback.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    Sinkronisasi user lokal dijalankan di setiap
+                                    login SSO.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    User baru tidak langsung diberi role tinggi;
+                                    mulai dari Guest/read-only lalu elevasi
+                                    manual.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    Jika 2FA lokal dipakai, secret dan recovery
+                                    codes dienkripsi ulang dengan key aplikasi
+                                    client.
+                                </li>
                             </ul>
                         </GlassCard>
 
                         <GlassCard>
-                            <h2 className="text-lg font-bold text-white">Aturan Organization</h2>
+                            <h2 className="text-lg font-bold text-white">
+                                Aturan Organization
+                            </h2>
                             <div className="mt-3 space-y-3 text-sm leading-7 text-white/75">
-                                <p>1. SSO admin mengatur allowed organization types di konfigurasi aplikasi.</p>
-                                <p>2. Halaman katalog `/applications` hanya menampilkan aplikasi yang eligible untuk organisasi user.</p>
-                                <p>3. Endpoint authorize juga memblokir user jika organization type tidak diizinkan.</p>
-                                <p>4. Aplikasi client tetap harus menerapkan allow-list sendiri karena tiap aplikasi bisa punya aturan lokal tambahan.</p>
+                                <p>
+                                    1. SSO admin mengatur allowed organization
+                                    types di konfigurasi aplikasi.
+                                </p>
+                                <p>
+                                    2. Halaman katalog `/applications` hanya
+                                    menampilkan aplikasi yang eligible untuk
+                                    organisasi user.
+                                </p>
+                                <p>
+                                    3. Endpoint authorize juga memblokir user
+                                    jika organization type tidak diizinkan.
+                                </p>
+                                <p>
+                                    4. Aplikasi client tetap harus menerapkan
+                                    allow-list sendiri karena tiap aplikasi bisa
+                                    punya aturan lokal tambahan.
+                                </p>
                             </div>
                         </GlassCard>
 
                         <GlassCard>
-                            <h2 className="text-lg font-bold text-white">Troubleshooting Cepat</h2>
+                            <h2 className="text-lg font-bold text-white">
+                                Troubleshooting Cepat
+                            </h2>
                             <div className="mt-3 space-y-3 text-sm leading-7 text-white/75">
-                                <p>Jika mendapat <span className="font-mono text-white">invalid_client</span>, sinkronkan ulang client ID/secret setelah secret diregenerasi di SSO.</p>
-                                <p>Jika mendapat <span className="font-mono text-white">redirect_uri_mismatch</span>, cocokkan callback URL di aplikasi client dengan konfigurasi admin SSO.</p>
-                                <p>Jika user berhasil login di SSO tapi ditolak di client, cek nilai <span className="font-mono text-white">SSO_ALLOWED_ORGANIZATION_TYPES</span> dan organization type pada profile.</p>
-                                <p>Jika 2FA lokal tidak ikut aktif, pastikan aplikasi client membaca payload <span className="font-mono text-white">two_factor.secret</span> dan menyimpannya ulang dengan enkripsi lokal, bukan menyalin ciphertext dari SSO.</p>
-                                <p>Jika muncul <span className="font-mono text-white">unsupported_grant_type</span>, user membuka authorize endpoint tanpa parameter OAuth lengkap. Selalu masuk melalui <span className="font-mono text-white">/auth/sso/redirect</span>.</p>
+                                <p>
+                                    Jika mendapat{' '}
+                                    <span className="font-mono text-white">
+                                        invalid_client
+                                    </span>
+                                    , sinkronkan ulang client ID/secret setelah
+                                    secret diregenerasi di SSO.
+                                </p>
+                                <p>
+                                    Jika mendapat{' '}
+                                    <span className="font-mono text-white">
+                                        redirect_uri_mismatch
+                                    </span>
+                                    , cocokkan callback URL di aplikasi client
+                                    dengan konfigurasi admin SSO.
+                                </p>
+                                <p>
+                                    Jika user berhasil login di SSO tapi ditolak
+                                    di client, cek nilai{' '}
+                                    <span className="font-mono text-white">
+                                        SSO_ALLOWED_ORGANIZATION_TYPES
+                                    </span>{' '}
+                                    dan organization type pada profile.
+                                </p>
+                                <p>
+                                    Jika 2FA lokal tidak ikut aktif, pastikan
+                                    aplikasi client membaca payload{' '}
+                                    <span className="font-mono text-white">
+                                        two_factor.secret
+                                    </span>{' '}
+                                    dan menyimpannya ulang dengan enkripsi
+                                    lokal, bukan menyalin ciphertext dari SSO.
+                                </p>
+                                <p>
+                                    Jika muncul{' '}
+                                    <span className="font-mono text-white">
+                                        unsupported_grant_type
+                                    </span>
+                                    , user membuka authorize endpoint tanpa
+                                    parameter OAuth lengkap. Selalu masuk
+                                    melalui{' '}
+                                    <span className="font-mono text-white">
+                                        /auth/sso/redirect
+                                    </span>
+                                    .
+                                </p>
                             </div>
                         </GlassCard>
 
                         <GlassCard>
-                            <h2 className="text-lg font-bold text-white">Catatan Operasional</h2>
+                            <h2 className="text-lg font-bold text-white">
+                                Catatan Operasional
+                            </h2>
                             <ul className="mt-3 space-y-2 text-sm leading-7 text-white/80">
-                                <li>1. Profile sync on-login adalah opsi paling sederhana dan cukup untuk sebagian besar aplikasi.</li>
-                                <li>2. Periodic sync cocok untuk aplikasi yang perlu mirror user walaupun user belum login.</li>
-                                <li>3. Password yang disinkronkan adalah <span className="font-mono text-white">hash</span>, bukan plaintext.</li>
-                                <li>4. Role lokal sebaiknya tidak diambil mentah dari payload SSO; gunakan default role minim risiko seperti Guest sampai ada approval lokal.</li>
-                                <li>5. Untuk aplikasi tanpa kolom 2FA lokal, cukup sync field identity/security yang tersedia.</li>
-                                <li>6. Setelah deploy perubahan payload profile, restart server app/client dan bersihkan cache konfigurasi bila perlu.</li>
+                                <li>
+                                    1. Profile sync on-login adalah opsi paling
+                                    sederhana dan cukup untuk sebagian besar
+                                    aplikasi.
+                                </li>
+                                <li>
+                                    2. Periodic sync cocok untuk aplikasi yang
+                                    perlu mirror user walaupun user belum login.
+                                </li>
+                                <li>
+                                    3. Password yang disinkronkan adalah{' '}
+                                    <span className="font-mono text-white">
+                                        hash
+                                    </span>
+                                    , bukan plaintext.
+                                </li>
+                                <li>
+                                    4. Role lokal sebaiknya tidak diambil mentah
+                                    dari payload SSO; gunakan default role minim
+                                    risiko seperti Guest sampai ada approval
+                                    lokal.
+                                </li>
+                                <li>
+                                    5. Untuk aplikasi tanpa kolom 2FA lokal,
+                                    cukup sync field identity/security yang
+                                    tersedia.
+                                </li>
+                                <li>
+                                    6. Setelah deploy perubahan payload profile,
+                                    restart server app/client dan bersihkan
+                                    cache konfigurasi bila perlu.
+                                </li>
                             </ul>
                         </GlassCard>
                     </div>
