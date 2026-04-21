@@ -17,7 +17,8 @@ import {
     XCircle,
 } from 'lucide-react';
 
-import { useEffect, useMemo, useState } from 'react';
+import type { MouseEvent as ReactMouseEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Head, router, useForm } from '@inertiajs/react';
 
@@ -117,6 +118,14 @@ interface EditAccessModalState {
     user: ManagedUser | null;
 }
 
+interface ActionMenuState {
+    userId: number;
+    top: number;
+    left: number;
+    maxHeight: number;
+    placement: 'top' | 'bottom';
+}
+
 const formatDateTime = (value?: string) => {
     if (!value) {
         return '—';
@@ -167,9 +176,11 @@ export default function Index({
     const [batchAccessModalOpen, setBatchAccessModalOpen] = useState(false);
     const [batchVerifyModalOpen, setBatchVerifyModalOpen] = useState(false);
     const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
-    const [openActionMenuUserId, setOpenActionMenuUserId] = useState<
-        number | null
-    >(null);
+    const [actionMenu, setActionMenu] = useState<ActionMenuState | null>(null);
+    const actionButtonRefs = useRef<Record<number, HTMLButtonElement | null>>(
+        {},
+    );
+    const actionMenuRef = useRef<HTMLDivElement | null>(null);
     const identityForm = useForm({
         username: '',
         email: '',
@@ -197,10 +208,124 @@ export default function Index({
     useEffect(() => {
         const visibleIds = new Set(users.data.map((user) => user.id));
         setSelectedUserIds((prev) => prev.filter((id) => visibleIds.has(id)));
-        setOpenActionMenuUserId((prev) =>
-            prev !== null && visibleIds.has(prev) ? prev : null,
+        setActionMenu((prev) =>
+            prev !== null && visibleIds.has(prev.userId) ? prev : null,
         );
     }, [users.data]);
+
+    const actionMenuUser = useMemo(
+        () => users.data.find((user) => user.id === actionMenu?.userId) ?? null,
+        [actionMenu, users.data],
+    );
+
+    const updateActionMenuPosition = useCallback(
+        (userId: number, buttonElement?: HTMLButtonElement | null) => {
+            const button = buttonElement ?? actionButtonRefs.current[userId];
+
+            if (!button) {
+                setActionMenu(null);
+
+                return;
+            }
+
+            const rect = button.getBoundingClientRect();
+            const menuWidth = 224;
+            const estimatedMenuHeight = 288;
+            const viewportPadding = 12;
+            const menuGap = 6;
+
+            const left = Math.max(
+                viewportPadding,
+                Math.min(
+                    rect.right - menuWidth,
+                    window.innerWidth - menuWidth - viewportPadding,
+                ),
+            );
+
+            const spaceBelow =
+                window.innerHeight - rect.bottom - viewportPadding - menuGap;
+            const spaceAbove = rect.top - viewportPadding - menuGap;
+            const openAbove =
+                spaceBelow < estimatedMenuHeight && spaceAbove > spaceBelow;
+
+            const maxHeight = Math.max(
+                140,
+                Math.min(
+                    estimatedMenuHeight,
+                    openAbove ? spaceAbove : spaceBelow,
+                ),
+            );
+
+            const top = openAbove ? rect.top - menuGap : rect.bottom + menuGap;
+
+            setActionMenu({
+                userId,
+                top,
+                left,
+                maxHeight,
+                placement: openAbove ? 'top' : 'bottom',
+            });
+        },
+        [],
+    );
+
+    useEffect(() => {
+        if (!actionMenu) {
+            return;
+        }
+
+        const reposition = () => {
+            updateActionMenuPosition(actionMenu.userId);
+        };
+
+        window.addEventListener('resize', reposition);
+        window.addEventListener('scroll', reposition, true);
+
+        return () => {
+            window.removeEventListener('resize', reposition);
+            window.removeEventListener('scroll', reposition, true);
+        };
+    }, [actionMenu, updateActionMenuPosition]);
+
+    useEffect(() => {
+        if (!actionMenu) {
+            return;
+        }
+
+        const handleOutsideClick = (event: MouseEvent) => {
+            const target = event.target as Node;
+            const isClickInsideMenu =
+                actionMenuRef.current?.contains(target) ?? false;
+            const isClickInsideTrigger =
+                actionButtonRefs.current[actionMenu.userId]?.contains(target) ??
+                false;
+
+            if (!isClickInsideMenu && !isClickInsideTrigger) {
+                setActionMenu(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick);
+
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, [actionMenu]);
+
+    const toggleActionMenu = (
+        event: ReactMouseEvent<HTMLButtonElement>,
+        userId: number,
+    ) => {
+        event.stopPropagation();
+
+        if (actionMenu?.userId === userId) {
+            setActionMenu(null);
+
+            return;
+        }
+
+        updateActionMenuPosition(userId, event.currentTarget);
+    };
 
     const openModal = (config: Omit<ConfirmModal, 'isOpen'>) => {
         setModal({ isOpen: true, ...config });
@@ -864,24 +989,30 @@ export default function Index({
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
-                        <button
-                            type="button"
-                            onClick={() => setBatchVerifyModalOpen(true)}
-                            disabled={selectedUserIds.length === 0}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg backdrop-blur-xl transition hover:bg-emerald-500/25 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            <CheckSquare className="h-4 w-4" />
-                            Verifikasi Batch ({selectedUserIds.length})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setBatchAccessModalOpen(true)}
-                            disabled={selectedUserIds.length === 0}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-fuchsia-300/25 bg-fuchsia-500/15 px-4 py-2 text-sm font-semibold text-fuchsia-50 shadow-lg backdrop-blur-xl transition hover:bg-fuchsia-500/25 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            <CheckSquare className="h-4 w-4" />
-                            Atur Akses Batch ({selectedUserIds.length})
-                        </button>
+                        {selectedUserIds.length > 0 && (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setBatchVerifyModalOpen(true)
+                                    }
+                                    className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg backdrop-blur-xl transition hover:bg-emerald-500/25"
+                                >
+                                    <CheckSquare className="h-4 w-4" />
+                                    Verifikasi Batch ({selectedUserIds.length})
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setBatchAccessModalOpen(true)
+                                    }
+                                    className="inline-flex items-center gap-2 rounded-2xl border border-fuchsia-300/25 bg-fuchsia-500/15 px-4 py-2 text-sm font-semibold text-fuchsia-50 shadow-lg backdrop-blur-xl transition hover:bg-fuchsia-500/25"
+                                >
+                                    <CheckSquare className="h-4 w-4" />
+                                    Atur Akses Batch ({selectedUserIds.length})
+                                </button>
+                            </>
+                        )}
                         <a
                             href={excelExportUrl}
                             className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg backdrop-blur-xl transition hover:bg-emerald-500/25"
@@ -1207,14 +1338,16 @@ export default function Index({
                                             <td className="px-5 py-4">
                                                 <div className="relative flex justify-end">
                                                     <button
+                                                        ref={(element) => {
+                                                            actionButtonRefs.current[
+                                                                user.id
+                                                            ] = element;
+                                                        }}
                                                         type="button"
-                                                        onClick={() =>
-                                                            setOpenActionMenuUserId(
-                                                                (current) =>
-                                                                    current ===
-                                                                    user.id
-                                                                        ? null
-                                                                        : user.id,
+                                                        onClick={(event) =>
+                                                            toggleActionMenu(
+                                                                event,
+                                                                user.id,
                                                             )
                                                         }
                                                         className="inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 p-2 text-white/80 transition hover:bg-white/20 hover:text-white"
@@ -1222,122 +1355,6 @@ export default function Index({
                                                     >
                                                         <EllipsisVertical className="h-4 w-4" />
                                                     </button>
-
-                                                    {openActionMenuUserId ===
-                                                        user.id && (
-                                                        <div className="absolute right-0 top-11 z-20 w-56 rounded-xl border border-white/20 bg-slate-950/90 p-2 shadow-2xl backdrop-blur">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    handleToggleAdminVerification(
-                                                                        user,
-                                                                    );
-                                                                    setOpenActionMenuUserId(
-                                                                        null,
-                                                                    );
-                                                                }}
-                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
-                                                            >
-                                                                {user.is_admin_verified ? (
-                                                                    <ShieldOff className="h-3.5 w-3.5 text-red-200" />
-                                                                ) : (
-                                                                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-200" />
-                                                                )}
-                                                                {user.is_admin_verified
-                                                                    ? 'Cabut Verifikasi Admin'
-                                                                    : 'Verifikasi User'}
-                                                            </button>
-
-                                                            {user.id !==
-                                                                currentUserId && (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        handleToggleAdmin(
-                                                                            user,
-                                                                        );
-                                                                        setOpenActionMenuUserId(
-                                                                            null,
-                                                                        );
-                                                                    }}
-                                                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
-                                                                >
-                                                                    {user.is_admin ? (
-                                                                        <ShieldOff className="h-3.5 w-3.5 text-red-200" />
-                                                                    ) : (
-                                                                        <ShieldPlus className="h-3.5 w-3.5 text-purple-200" />
-                                                                    )}
-                                                                    {user.is_admin
-                                                                        ? 'Cabut Admin'
-                                                                        : 'Jadikan Admin'}
-                                                                </button>
-                                                            )}
-
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    openEditAccessModal(
-                                                                        user,
-                                                                    );
-                                                                    setOpenActionMenuUserId(
-                                                                        null,
-                                                                    );
-                                                                }}
-                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
-                                                            >
-                                                                <Settings2 className="h-3.5 w-3.5 text-indigo-200" />
-                                                                Atur Akses
-                                                            </button>
-
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    openEditIdentityModal(
-                                                                        user,
-                                                                    );
-                                                                    setOpenActionMenuUserId(
-                                                                        null,
-                                                                    );
-                                                                }}
-                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
-                                                            >
-                                                                <Pencil className="h-3.5 w-3.5 text-sky-200" />
-                                                                Ubah Identitas
-                                                            </button>
-
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    handleResetPassword(
-                                                                        user,
-                                                                    );
-                                                                    setOpenActionMenuUserId(
-                                                                        null,
-                                                                    );
-                                                                }}
-                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
-                                                            >
-                                                                <KeyRound className="h-3.5 w-3.5 text-amber-200" />
-                                                                Reset Password
-                                                            </button>
-
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    handleResetTwoFactor(
-                                                                        user,
-                                                                    );
-                                                                    setOpenActionMenuUserId(
-                                                                        null,
-                                                                    );
-                                                                }}
-                                                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
-                                                            >
-                                                                <RotateCcw className="h-3.5 w-3.5 text-red-200" />
-                                                                Reset 2FA
-                                                            </button>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -1405,6 +1422,112 @@ export default function Index({
                         </div>
                     )}
                 </GlassCard>
+
+                {actionMenu && actionMenuUser && (
+                    <>
+                        <div
+                            ref={actionMenuRef}
+                            className="fixed z-40 w-56 overflow-y-auto rounded-xl border border-white/20 bg-slate-950/95 p-2 shadow-2xl backdrop-blur"
+                            style={{
+                                top: actionMenu.top,
+                                left: actionMenu.left,
+                                maxHeight: actionMenu.maxHeight,
+                                transform:
+                                    actionMenu.placement === 'top'
+                                        ? 'translateY(-100%)'
+                                        : 'translateY(0)',
+                            }}
+                        >
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    handleToggleAdminVerification(
+                                        actionMenuUser,
+                                    );
+                                    setActionMenu(null);
+                                }}
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                            >
+                                {actionMenuUser.is_admin_verified ? (
+                                    <ShieldOff className="h-3.5 w-3.5 text-red-200" />
+                                ) : (
+                                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-200" />
+                                )}
+                                {actionMenuUser.is_admin_verified
+                                    ? 'Cabut Verifikasi Admin'
+                                    : 'Verifikasi User'}
+                            </button>
+
+                            {actionMenuUser.id !== currentUserId && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        handleToggleAdmin(actionMenuUser);
+                                        setActionMenu(null);
+                                    }}
+                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                >
+                                    {actionMenuUser.is_admin ? (
+                                        <ShieldOff className="h-3.5 w-3.5 text-red-200" />
+                                    ) : (
+                                        <ShieldPlus className="h-3.5 w-3.5 text-purple-200" />
+                                    )}
+                                    {actionMenuUser.is_admin
+                                        ? 'Cabut Admin'
+                                        : 'Jadikan Admin'}
+                                </button>
+                            )}
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    openEditAccessModal(actionMenuUser);
+                                    setActionMenu(null);
+                                }}
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                            >
+                                <Settings2 className="h-3.5 w-3.5 text-indigo-200" />
+                                Atur Akses
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    openEditIdentityModal(actionMenuUser);
+                                    setActionMenu(null);
+                                }}
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                            >
+                                <Pencil className="h-3.5 w-3.5 text-sky-200" />
+                                Ubah Identitas
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    handleResetPassword(actionMenuUser);
+                                    setActionMenu(null);
+                                }}
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                            >
+                                <KeyRound className="h-3.5 w-3.5 text-amber-200" />
+                                Reset Password
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    handleResetTwoFactor(actionMenuUser);
+                                    setActionMenu(null);
+                                }}
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                            >
+                                <RotateCcw className="h-3.5 w-3.5 text-red-200" />
+                                Reset 2FA
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </AppLayout>
     );

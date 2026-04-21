@@ -158,17 +158,17 @@ export default function Security({
             <div className="py-12">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                     <div className="mb-8">
-                        <h1 className="text-4xl font-bold text-white drop-shadow-lg">
+                        <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl">
                             Pengaturan Keamanan
                         </h1>
-                        <p className="mt-2 text-lg text-white/80">
+                        <p className="mt-2 text-base text-white/80 sm:text-lg">
                             Kelola autentikasi dua faktor untuk akun Anda
                         </p>
                     </div>
 
                     <div className="space-y-6">
                         <GlassCard>
-                            <div className="flex items-start gap-4">
+                            <div className="flex flex-col items-start gap-4 sm:flex-row">
                                 <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 backdrop-blur-sm">
                                     <LockKeyhole className="h-8 w-8 text-sky-300" />
                                 </div>
@@ -291,7 +291,7 @@ export default function Security({
                         </GlassCard>
 
                         <GlassCard>
-                            <div className="flex items-start gap-4">
+                            <div className="flex flex-col items-start gap-4 sm:flex-row">
                                 <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 backdrop-blur-sm">
                                     <Mail className="h-8 w-8 text-blue-300" />
                                 </div>
@@ -377,7 +377,7 @@ export default function Security({
 
                         {/* 2FA Status Card */}
                         <GlassCard>
-                            <div className="flex items-start gap-4">
+                            <div className="flex flex-col items-start gap-4 sm:flex-row">
                                 <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 backdrop-blur-sm">
                                     <Shield
                                         className={`h-8 w-8 ${
@@ -399,10 +399,11 @@ export default function Security({
 
                                     <div className="mt-4">
                                         {twoFactorConfirmed ? (
-                                            <div className="flex gap-3">
+                                            <div className="flex flex-wrap gap-3">
                                                 <Button
                                                     onClick={showRecoveryCodes}
                                                     variant="secondary"
+                                                    className="w-full sm:w-auto"
                                                 >
                                                     <Key className="mr-2 h-4 w-4" />
                                                     Tampilkan Kode Pemulihan
@@ -412,6 +413,7 @@ export default function Security({
                                                         regenerateRecoveryCodes
                                                     }
                                                     variant="secondary"
+                                                    className="w-full sm:w-auto"
                                                 >
                                                     <RefreshCw className="mr-2 h-4 w-4" />
                                                     Regenerasi Kode
@@ -419,6 +421,7 @@ export default function Security({
                                                 <Button
                                                     onClick={disable2FA}
                                                     variant="danger"
+                                                    className="w-full sm:w-auto"
                                                 >
                                                     <X className="mr-2 h-4 w-4" />
                                                     Nonaktifkan 2FA

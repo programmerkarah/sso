@@ -73,13 +73,13 @@ export default function Dashboard({
         <AppLayout>
             <Head title="Dashboard" />
 
-            <div className="mx-auto max-w-7xl">
+            <div className="mx-auto max-w-7xl px-1 sm:px-0">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                    <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-3xl font-black text-transparent drop-shadow-xl sm:text-5xl">
                         Dashboard
                     </h1>
-                    <p className="mt-2 text-lg text-white/80 drop-shadow-lg">
+                    <p className="mt-2 text-base text-white/80 drop-shadow-lg sm:text-lg">
                         Selamat datang kembali, {user.name}!
                     </p>
                 </div>

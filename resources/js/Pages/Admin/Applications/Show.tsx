@@ -18,6 +18,7 @@ import { Head, Link, router } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
 import GlassCard from '@/Components/GlassCard';
+import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application } from '@/types';
 
@@ -29,20 +30,71 @@ interface ShowProps {
 export default function Show({ application, appUrl }: ShowProps) {
     const [showSecret, setShowSecret] = useState(false);
     const [copied, setCopied] = useState<'id' | 'secret' | 'env' | null>(null);
+    const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-    const copyToClipboard = (text: string, type: 'id' | 'secret' | 'env') => {
-        navigator.clipboard.writeText(text);
-        setCopied(type);
-        setTimeout(() => setCopied(null), 2000);
+    const pushCopyToast = (label: string) => {
+        const id = `copy-${label}-${Date.now()}`;
+
+        setToasts((current) => [
+            ...current,
+            {
+                id,
+                tone: 'success',
+                title: 'Tersalin',
+                message: `${label} berhasil disalin ke clipboard.`,
+            },
+        ]);
+    };
+
+    const copyToClipboard = async (
+        text: string,
+        type: 'id' | 'secret' | 'env',
+    ) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(type);
+            window.setTimeout(() => setCopied(null), 2000);
+
+            if (type === 'id') {
+                pushCopyToast('Client ID');
+            }
+
+            if (type === 'secret') {
+                pushCopyToast('Client Secret');
+            }
+
+            if (type === 'env') {
+                pushCopyToast('.ENV Example');
+            }
+        } catch {
+            setToasts((current) => [
+                ...current,
+                {
+                    id: `copy-error-${Date.now()}`,
+                    tone: 'error',
+                    title: 'Gagal Menyalin',
+                    message:
+                        'Clipboard tidak dapat diakses. Coba salin manual.',
+                },
+            ]);
+        }
     };
 
     return (
         <AppLayout>
             <Head title={`Detail - ${application.name}`} />
+            <ToastViewport
+                items={toasts}
+                onDismiss={(id) =>
+                    setToasts((current) =>
+                        current.filter((item) => item.id !== id),
+                    )
+                }
+            />
 
-            <div className="py-12">
+            <div className="py-8 sm:py-12">
                 <div className="mx-auto max-w-5xl sm:px-6 lg:px-8">
-                    <div className="mb-6">
+                    <div className="mb-6 px-1 sm:px-0">
                         <Link
                             href="/admin/applications"
                             className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-xl transition hover:bg-white/20"
@@ -50,20 +102,21 @@ export default function Show({ application, appUrl }: ShowProps) {
                             <ArrowLeft className="h-4 w-4" />
                             Kembali ke daftar
                         </Link>
-                        <div className="mt-4 flex items-center justify-between">
+                        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                                <h1 className="break-words bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-3xl font-black text-transparent drop-shadow-xl sm:text-5xl">
                                     {application.name}
                                 </h1>
-                                <p className="mt-2 text-white/80">
+                                <p className="mt-2 break-words text-white/80">
                                     Detail aplikasi, callback URL, dan
                                     kredensial OAuth yang sedang dipakai.
                                 </p>
                             </div>
                             <Link
                                 href={`/admin/applications/${application.route_key}/edit`}
+                                className="w-full sm:w-auto"
                             >
-                                <Button>
+                                <Button className="w-full sm:w-auto">
                                     <Edit className="h-4 w-4" />
                                     Edit
                                 </Button>
@@ -72,8 +125,8 @@ export default function Show({ application, appUrl }: ShowProps) {
                     </div>
 
                     <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-                        <GlassCard>
-                            <h2 className="mb-4 text-xl font-bold text-white">
+                        <GlassCard className="p-4 sm:p-6">
+                            <h2 className="mb-4 text-lg font-bold text-white sm:text-xl">
                                 Informasi Aplikasi
                             </h2>
                             <div className="space-y-4">
@@ -89,7 +142,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                     <label className="text-sm font-medium text-white/55">
                                         Slug
                                     </label>
-                                    <p className="mt-1 text-white">
+                                    <p className="mt-1 break-words text-white">
                                         {application.slug}
                                     </p>
                                 </div>
@@ -98,7 +151,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                         <label className="text-sm font-medium text-white/55">
                                             Deskripsi
                                         </label>
-                                        <p className="mt-1 leading-7 text-white/85">
+                                        <p className="mt-1 break-words leading-7 text-white/85">
                                             {application.description}
                                         </p>
                                     </div>
@@ -107,7 +160,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                     <label className="text-sm font-medium text-white/55">
                                         Domain
                                     </label>
-                                    <p className="mt-1 text-white">
+                                    <p className="mt-1 break-all text-white">
                                         {application.domain}
                                     </p>
                                 </div>
@@ -139,6 +192,30 @@ export default function Show({ application, appUrl }: ShowProps) {
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-white/55">
+                                        Tipe Organisasi Diizinkan
+                                    </label>
+                                    <div className="mt-2 flex flex-wrap gap-2">
+                                        {application.allowed_organization_types
+                                            ?.length ? (
+                                            application.allowed_organization_types.map(
+                                                (type) => (
+                                                    <span
+                                                        key={type}
+                                                        className="inline-flex rounded-full border border-blue-300/30 bg-blue-500/20 px-2.5 py-1 text-xs font-semibold text-blue-100"
+                                                    >
+                                                        {type}
+                                                    </span>
+                                                ),
+                                            )
+                                        ) : (
+                                            <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-semibold text-white/75">
+                                                Semua tipe organisasi
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-white/55">
                                         Dibuat
                                     </label>
                                     <p className="mt-1 text-white/85">
@@ -157,10 +234,10 @@ export default function Show({ application, appUrl }: ShowProps) {
                         </GlassCard>
 
                         <div className="space-y-6">
-                            <GlassCard>
-                                <div className="mb-4 flex items-start justify-between gap-4">
+                            <GlassCard className="p-4 sm:p-6">
+                                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                                     <div>
-                                        <h2 className="text-xl font-bold text-white">
+                                        <h2 className="text-lg font-bold text-white sm:text-xl">
                                             Kredensial OAuth2
                                         </h2>
                                         <p className="mt-1 text-sm text-white/65">
@@ -179,7 +256,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                                 },
                                             )
                                         }
-                                        className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/20"
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/20 sm:w-auto"
                                     >
                                         <RefreshCw className="h-4 w-4" />
                                         Regenerasi Secret
@@ -209,7 +286,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                             <label className="text-sm font-medium text-white/55">
                                                 Client ID
                                             </label>
-                                            <div className="mt-1 flex items-center gap-2">
+                                            <div className="mt-1 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
                                                 <input
                                                     type="text"
                                                     value={
@@ -217,27 +294,29 @@ export default function Show({ application, appUrl }: ShowProps) {
                                                             .id
                                                     }
                                                     readOnly
-                                                    className="flex-1 rounded-xl border border-white/20 bg-black/20 px-4 py-3 text-sm text-white"
+                                                    className="min-w-0 flex-1 rounded-xl border border-white/20 bg-black/20 px-4 py-3 text-sm text-white"
                                                 />
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        copyToClipboard(
-                                                            application
-                                                                .oauth_client!
-                                                                .id,
-                                                            'id',
-                                                        )
-                                                    }
-                                                    className="rounded-xl bg-white/10 p-3 text-white transition hover:bg-white/20"
-                                                    title="Copy Client ID"
-                                                >
-                                                    {copied === 'id' ? (
-                                                        <CheckCircle className="h-4 w-4 text-emerald-300" />
-                                                    ) : (
-                                                        <Copy className="h-4 w-4" />
-                                                    )}
-                                                </button>
+                                                <div className="flex items-center gap-2 self-end sm:self-auto">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            copyToClipboard(
+                                                                application
+                                                                    .oauth_client!
+                                                                    .id,
+                                                                'id',
+                                                            )
+                                                        }
+                                                        className="rounded-xl bg-white/10 p-3 text-white transition hover:bg-white/20"
+                                                        title="Copy Client ID"
+                                                    >
+                                                        {copied === 'id' ? (
+                                                            <CheckCircle className="h-4 w-4 text-emerald-300" />
+                                                        ) : (
+                                                            <Copy className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -246,7 +325,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                                 Client Secret
                                             </label>
                                             {application.oauth_client.secret ? (
-                                                <div className="mt-1 flex items-center gap-2">
+                                                <div className="mt-1 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
                                                     <input
                                                         type={
                                                             showSecret
@@ -259,41 +338,44 @@ export default function Show({ application, appUrl }: ShowProps) {
                                                                 .secret
                                                         }
                                                         readOnly
-                                                        className="flex-1 rounded-xl border border-white/20 bg-black/20 px-4 py-3 text-sm text-white"
+                                                        className="min-w-0 flex-1 rounded-xl border border-white/20 bg-black/20 px-4 py-3 text-sm text-white"
                                                     />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setShowSecret(
-                                                                !showSecret,
-                                                            )
-                                                        }
-                                                        className="rounded-xl bg-white/10 p-3 text-white transition hover:bg-white/20"
-                                                    >
-                                                        {showSecret ? (
-                                                            <EyeOff className="h-4 w-4" />
-                                                        ) : (
-                                                            <Eye className="h-4 w-4" />
-                                                        )}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            copyToClipboard(
-                                                                application
-                                                                    .oauth_client!
-                                                                    .secret!,
-                                                                'secret',
-                                                            )
-                                                        }
-                                                        className="rounded-xl bg-white/10 p-3 text-white transition hover:bg-white/20"
-                                                    >
-                                                        {copied === 'secret' ? (
-                                                            <CheckCircle className="h-4 w-4 text-emerald-300" />
-                                                        ) : (
-                                                            <Copy className="h-4 w-4" />
-                                                        )}
-                                                    </button>
+                                                    <div className="flex items-center gap-2 self-end sm:self-auto">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setShowSecret(
+                                                                    !showSecret,
+                                                                )
+                                                            }
+                                                            className="rounded-xl bg-white/10 p-3 text-white transition hover:bg-white/20"
+                                                        >
+                                                            {showSecret ? (
+                                                                <EyeOff className="h-4 w-4" />
+                                                            ) : (
+                                                                <Eye className="h-4 w-4" />
+                                                            )}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                copyToClipboard(
+                                                                    application
+                                                                        .oauth_client!
+                                                                        .secret!,
+                                                                    'secret',
+                                                                )
+                                                            }
+                                                            className="rounded-xl bg-white/10 p-3 text-white transition hover:bg-white/20"
+                                                        >
+                                                            {copied ===
+                                                            'secret' ? (
+                                                                <CheckCircle className="h-4 w-4 text-emerald-300" />
+                                                            ) : (
+                                                                <Copy className="h-4 w-4" />
+                                                            )}
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className="mt-2 rounded-xl border border-white/15 bg-white/5 p-4 text-sm text-white/70">
@@ -315,8 +397,8 @@ export default function Show({ application, appUrl }: ShowProps) {
                                 )}
                             </GlassCard>
 
-                            <GlassCard>
-                                <h2 className="mb-4 text-xl font-bold text-white">
+                            <GlassCard className="p-4 sm:p-6">
+                                <h2 className="mb-4 text-lg font-bold text-white sm:text-xl">
                                     Panduan Integrasi
                                 </h2>
                                 <div className="rounded-xl bg-black/40 p-4">
@@ -331,7 +413,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                                     'env',
                                                 )
                                             }
-                                            className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white/70 transition hover:bg-white/20 hover:text-white"
+                                            className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white/70 transition hover:bg-white/20 hover:text-white"
                                         >
                                             <Copy className="h-3.5 w-3.5" />
                                             {copied === 'env'
@@ -339,7 +421,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                                 : 'Salin'}
                                         </button>
                                     </div>
-                                    <pre className="overflow-x-auto text-xs leading-6 text-white/90">
+                                    <pre className="overflow-x-auto whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
                                         <code>
                                             {`SSO_CLIENT_ID=${application.oauth_client?.id || 'your-client-id'}\nSSO_CLIENT_SECRET=${application.oauth_client?.secret || 'regenerate-secret-first'}\nSSO_REDIRECT_URI=${application.callback_url}\nSSO_REGISTER_URL=${appUrl}/register\nSSO_BASE_URL=${appUrl}\nSSO_USER_ENDPOINT=/api/user`}
                                         </code>
@@ -356,7 +438,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                 </div>
                             </GlassCard>
 
-                            <GlassCard>
+                            <GlassCard className="p-4 sm:p-6">
                                 <div className="flex items-start gap-3">
                                     <div className="rounded-full bg-blue-400/15 p-3">
                                         <KeyRound className="h-5 w-5 text-blue-100" />

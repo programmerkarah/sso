@@ -10,14 +10,29 @@ import Input from '@/Components/Input';
 import Label from '@/Components/Label';
 import AppLayout from '@/Layouts/AppLayout';
 
-export default function Create() {
+interface CreateProps {
+    availableOrganizationTypes: string[];
+}
+
+export default function Create({ availableOrganizationTypes }: CreateProps) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         description: '',
         domain: '',
         callback_url: '',
         logo_url: '',
+        allowed_organization_types: [] as string[],
     });
+
+    const toggleOrgType = (type: string) => {
+        const current = data.allowed_organization_types;
+        setData(
+            'allowed_organization_types',
+            current.includes(type)
+                ? current.filter((entry) => entry !== type)
+                : [...current, type],
+        );
+    };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -144,6 +159,50 @@ export default function Create() {
                                     URL logo aplikasi (opsional)
                                 </p>
                             </div>
+
+                            {availableOrganizationTypes.length > 0 && (
+                                <div>
+                                    <Label>
+                                        Tipe Organisasi yang Diizinkan
+                                    </Label>
+                                    <p className="mb-2 text-sm text-white/55">
+                                        Kosongkan jika aplikasi bisa diakses
+                                        semua tipe organisasi.
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {availableOrganizationTypes.map(
+                                            (type) => {
+                                                const isSelected =
+                                                    data.allowed_organization_types.includes(
+                                                        type,
+                                                    );
+
+                                                return (
+                                                    <button
+                                                        key={type}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            toggleOrgType(type)
+                                                        }
+                                                        className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                                                            isSelected
+                                                                ? 'bg-blue-500 text-white shadow'
+                                                                : 'border border-white/20 bg-white/10 text-white/70 hover:bg-white/20'
+                                                        }`}
+                                                    >
+                                                        {type}
+                                                    </button>
+                                                );
+                                            },
+                                        )}
+                                    </div>
+                                    {errors.allowed_organization_types && (
+                                        <p className="mt-1 text-sm text-red-300">
+                                            {errors.allowed_organization_types}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
 
                             <div className="flex items-center justify-end gap-3 border-t pt-6">
                                 <Link href="/admin/applications">

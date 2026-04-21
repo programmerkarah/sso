@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ActivityLog;
 use App\Models\Organization;
 use App\Models\Role;
 use App\Models\TrustedDevice;
@@ -11,10 +12,12 @@ use App\Services\EncryptedStateService;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\Channels\MailChannel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia as Assert;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use RuntimeException;
 use Tests\TestCase;
 
 class AdminUserManagementTest extends TestCase
@@ -106,6 +109,49 @@ class AdminUserManagementTest extends TestCase
 
         // Email must be sent to the target user
         Notification::assertSentTo($targetUser, PasswordResetByAdmin::class);
+
+        $this->assertDatabaseHas('activity_logs', [
+            'event' => 'admin.users.password.reset',
+            'category' => 'user_management',
+            'status' => 'success',
+            'user_id' => $admin->id,
+        ]);
+    }
+
+    public function test_reset_password_is_rolled_back_when_notification_fails(): void
+    {
+        [$admin, $targetUser] = $this->createAdminAndTargetUser();
+
+        $previousPassword = $targetUser->password;
+        $previousStoredPreviousPassword = $targetUser->previous_password;
+
+        $this->mock(MailChannel::class, function ($mock): void {
+            $mock->shouldReceive('send')->andThrow(new RuntimeException('SMTP unavailable'));
+        });
+
+        $response = $this
+            ->actingAs($admin)
+            ->from('/admin/users')
+            ->post(route('admin.users.reset-password', $targetUser));
+
+        $targetUser->refresh();
+
+        $response
+            ->assertRedirect('/admin/users')
+            ->assertSessionHas('error');
+
+        $this->assertSame($previousPassword, $targetUser->password);
+        $this->assertFalse((bool) $targetUser->password_change_required);
+        $this->assertSame($previousStoredPreviousPassword, $targetUser->previous_password);
+
+        $failedLog = ActivityLog::query()
+            ->where('event', 'admin.users.password.reset.failed')
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($failedLog);
+        $this->assertSame('error', $failedLog->status);
+        $this->assertSame($admin->id, $failedLog->user_id);
     }
 
     /**

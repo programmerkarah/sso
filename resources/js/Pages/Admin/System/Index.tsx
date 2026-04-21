@@ -245,10 +245,10 @@ export default function Index({
         <AppLayout>
             <Head title="Sistem Admin" />
 
-            <div className="mx-auto max-w-7xl space-y-8">
+            <div className="mx-auto max-w-7xl space-y-8 px-1 sm:px-0">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
-                        <h1 className="bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                        <h1 className="bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-3xl font-black text-transparent drop-shadow-xl sm:text-5xl">
                             Sistem Admin
                         </h1>
                         <p className="mt-2 max-w-3xl text-white/80">
@@ -263,7 +263,7 @@ export default function Index({
                                 only: ['logs', 'database', 'server', 'backups'],
                             })
                         }
-                        className="inline-flex items-center gap-2"
+                        className="inline-flex w-full items-center gap-2 sm:w-auto"
                     >
                         <RefreshCw className="h-4 w-4" />
                         Refresh Data
@@ -458,14 +458,48 @@ export default function Index({
                             <Button
                                 type="button"
                                 onClick={handleCreateBackup}
-                                className="inline-flex items-center gap-2"
+                                className="inline-flex w-full items-center justify-center gap-2 sm:w-auto"
                             >
                                 <Database className="h-4 w-4" />
                                 Buat Backup Baru
                             </Button>
                         </div>
 
-                        <div className="mt-5 overflow-x-auto">
+                        <div className="mt-5 space-y-3 md:hidden">
+                            {backups.length === 0 ? (
+                                <div className="rounded-xl border border-white/10 bg-black/20 p-4 text-center text-sm text-white/55">
+                                    Belum ada backup.
+                                </div>
+                            ) : (
+                                backups.map((backup) => (
+                                    <div
+                                        key={`mobile-${backup.name}`}
+                                        className="rounded-xl border border-white/10 bg-black/20 p-4"
+                                    >
+                                        <p className="break-all text-sm font-semibold text-white">
+                                            {backup.name}
+                                        </p>
+                                        <div className="mt-2 flex items-center justify-between text-xs text-white/70">
+                                            <span>{backup.size_kb} KB</span>
+                                            <span>
+                                                {formatDateTime(
+                                                    backup.modified_at,
+                                                )}
+                                            </span>
+                                        </div>
+                                        <a
+                                            href={backup.download_url}
+                                            className="mt-3 inline-flex w-full items-center justify-center gap-1 rounded-lg border border-blue-300/25 bg-blue-500/15 px-3 py-2 text-xs font-semibold text-blue-50 transition hover:bg-blue-500/25"
+                                        >
+                                            <Download className="h-3.5 w-3.5" />
+                                            Unduh
+                                        </a>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="mt-5 hidden overflow-x-auto md:block">
                             <table className="w-full min-w-[420px]">
                                 <thead>
                                     <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wider text-white/55">
@@ -490,7 +524,7 @@ export default function Index({
                                     ) : (
                                         backups.map((backup) => (
                                             <tr key={backup.name}>
-                                                <td className="py-3 pr-2 text-white">
+                                                <td className="break-all py-3 pr-2 text-white">
                                                     {backup.name}
                                                 </td>
                                                 <td className="py-3 pr-2">
@@ -577,7 +611,7 @@ export default function Index({
                             <Button
                                 type="submit"
                                 disabled={restoreForm.processing}
-                                className="inline-flex items-center gap-2"
+                                className="inline-flex w-full items-center justify-center gap-2 sm:w-auto"
                             >
                                 <Upload className="h-4 w-4" />
                                 {restoreForm.processing
@@ -641,7 +675,55 @@ export default function Index({
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
+                    <div className="space-y-3 p-4 md:hidden">
+                        {logs.data.length === 0 ? (
+                            <div className="rounded-xl border border-white/10 bg-black/20 p-4 text-center text-sm text-white/55">
+                                Belum ada log aktivitas atau tidak ada data yang
+                                sesuai dengan filter.
+                            </div>
+                        ) : (
+                            logs.data.map((log) => (
+                                <div
+                                    key={`mobile-log-${log.id}`}
+                                    className="rounded-xl border border-white/10 bg-black/20 p-4"
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <p className="text-sm font-semibold text-white">
+                                            {log.event}
+                                        </p>
+                                        <span
+                                            className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusClasses[log.status] ?? 'border-white/20 bg-white/10 text-white/80'}`}
+                                        >
+                                            {log.status}
+                                        </span>
+                                    </div>
+                                    <p className="mt-1 text-xs text-white/65">
+                                        {formatDateTime(log.occurred_at)}
+                                    </p>
+                                    <p className="mt-2 text-sm text-white/80">
+                                        {log.description}
+                                    </p>
+                                    <div className="mt-3 flex items-center justify-between gap-2 text-xs text-white/70">
+                                        <span>
+                                            {log.user
+                                                ? log.user.name
+                                                : 'Sistem'}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedLog(log)}
+                                            className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-white/20"
+                                        >
+                                            <Eye className="h-3.5 w-3.5" />
+                                            Detail
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    <div className="hidden overflow-x-auto md:block">
                         <table className="w-full min-w-[1080px]">
                             <thead>
                                 <tr className="border-b border-white/10 bg-black/20 text-left text-xs uppercase tracking-wider text-white/60">
@@ -749,7 +831,7 @@ export default function Index({
                     </div>
 
                     {logs.last_page > 1 && (
-                        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-white/10 px-6 py-4">
+                        <div className="flex flex-wrap items-center justify-center gap-2 border-t border-white/10 px-6 py-4 sm:justify-end">
                             {logs.prev_page_token ? (
                                 <button
                                     type="button"

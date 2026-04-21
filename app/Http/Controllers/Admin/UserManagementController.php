@@ -18,11 +18,13 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Throwable;
 
 class UserManagementController extends Controller
 {
@@ -258,13 +260,38 @@ class UserManagementController extends Controller
         $temporaryPassword = Str::password(12, letters: true, numbers: true, symbols: false);
         $previousPasswordHash = $user->getRawOriginal('password');
 
-        $user->forceFill([
-            'password' => $temporaryPassword,
-            'password_change_required' => true,
-            'previous_password' => $previousPasswordHash,
-        ])->save();
+        try {
+            DB::transaction(function () use ($user, $temporaryPassword, $previousPasswordHash): void {
+                $user->forceFill([
+                    'password' => $temporaryPassword,
+                    'password_change_required' => true,
+                    'previous_password' => $previousPasswordHash,
+                ])->save();
 
-        $user->notify(new PasswordResetByAdmin($temporaryPassword));
+                $user->notify(new PasswordResetByAdmin($temporaryPassword));
+            });
+        } catch (Throwable $exception) {
+            Log::error('Gagal mengirim email reset password oleh admin.', [
+                'target_user_id' => $user->id,
+                'target_email' => $user->email,
+                'error' => $exception->getMessage(),
+            ]);
+
+            ActivityLogger::logByRequest(
+                request: request(),
+                event: 'admin.users.password.reset.failed',
+                category: 'user_management',
+                description: 'Reset password pengguna gagal karena notifikasi tidak terkirim.',
+                user: request()->user(),
+                metadata: [
+                    'target_user_id' => $user->id,
+                    'target_email' => $user->email,
+                ],
+                status: 'error',
+            );
+
+            return back()->with('error', "Reset password {$user->name} dibatalkan karena email gagal dikirim. Tidak ada perubahan password.");
+        }
 
         ActivityLogger::logByRequest(
             request: request(),
@@ -309,6 +336,19 @@ class UserManagementController extends Controller
     public function toggleAdmin(Request $request, User $user): RedirectResponse
     {
         if ($user->id === $request->user()->id) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'admin.users.role.blocked-self-update',
+                category: 'user_management',
+                description: 'Upaya perubahan peran admin akun sendiri ditolak.',
+                user: $request->user(),
+                metadata: [
+                    'target_user_id' => $user->id,
+                    'target_email' => $user->email,
+                ],
+                status: 'warning',
+            );
+
             return back()->with('error', 'Anda tidak dapat mengubah peran akun Anda sendiri.');
         }
 
@@ -364,6 +404,19 @@ class UserManagementController extends Controller
         $usernameChanged = $user->username !== $newUsername;
 
         if (! $emailChanged && ! $usernameChanged) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'admin.users.identity.no-change',
+                category: 'user_management',
+                description: 'Permintaan pembaruan identitas tidak mengubah data pengguna.',
+                user: $request->user(),
+                metadata: [
+                    'target_user_id' => $user->id,
+                    'target_email' => $user->email,
+                ],
+                status: 'warning',
+            );
+
             return back()->with('info', "Tidak ada perubahan untuk akun {$user->name}.");
         }
 
@@ -411,6 +464,19 @@ class UserManagementController extends Controller
             && $adminRoleId
             && ! $roleIds->contains((int) $adminRoleId)
         ) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'admin.users.access.blocked-self-admin-removal',
+                category: 'user_management',
+                description: 'Upaya menghapus peran admin dari akun sendiri ditolak.',
+                user: $request->user(),
+                metadata: [
+                    'target_user_id' => $user->id,
+                    'requested_role_ids' => $roleIds->all(),
+                ],
+                status: 'warning',
+            );
+
             return back()->with('error', 'Anda tidak dapat menghapus peran admin dari akun sendiri.');
         }
 
@@ -439,6 +505,19 @@ class UserManagementController extends Controller
     public function toggleAdminVerification(Request $request, User $user): RedirectResponse
     {
         if ($user->id === $request->user()?->id && $user->isAdminVerified()) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'admin.users.verification.blocked-self-revoke',
+                category: 'user_management',
+                description: 'Upaya mencabut verifikasi admin untuk akun sendiri ditolak.',
+                user: $request->user(),
+                metadata: [
+                    'target_user_id' => $user->id,
+                    'target_email' => $user->email,
+                ],
+                status: 'warning',
+            );
+
             return back()->with('error', 'Anda tidak dapat mencabut verifikasi admin untuk akun Anda sendiri.');
         }
 
@@ -492,6 +571,15 @@ class UserManagementController extends Controller
             ->values();
 
         if ($userIds->isEmpty()) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'admin.users.verification.batch-empty-selection',
+                category: 'user_management',
+                description: 'Verifikasi batch dibatalkan karena tidak ada pengguna terpilih.',
+                user: $request->user(),
+                status: 'warning',
+            );
+
             return back()->with('error', 'Tidak ada pengguna yang dipilih.');
         }
 
@@ -550,6 +638,19 @@ class UserManagementController extends Controller
             $adminRemoved = ! $roleIds->contains($adminRoleId);
 
             if ($containsSelf && $adminRemoved) {
+                ActivityLogger::logByRequest(
+                    request: $request,
+                    event: 'admin.users.access.batch-blocked-self-admin-removal',
+                    category: 'user_management',
+                    description: 'Pembaruan akses batch ditolak karena mencabut admin dari akun sendiri.',
+                    user: $request->user(),
+                    metadata: [
+                        'user_ids' => $userIds->all(),
+                        'requested_role_ids' => $roleIds->all(),
+                    ],
+                    status: 'warning',
+                );
+
                 return back()->with('error', 'Aksi batch tidak boleh mencabut peran admin dari akun Anda sendiri.');
             }
         }

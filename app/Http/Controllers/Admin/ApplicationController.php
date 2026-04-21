@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Passport\Client;
@@ -74,13 +75,29 @@ class ApplicationController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $availableOrganizationTypes = Organization::query()
+            ->where('is_active', true)
+            ->pluck('type')
+            ->unique()
+            ->values()
+            ->all();
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'domain' => ['required', 'string', 'max:255'],
             'callback_url' => ['required', 'url', 'max:255'],
             'logo_url' => ['nullable', 'url', 'max:255'],
+            'allowed_organization_types' => ['nullable', 'array'],
+            'allowed_organization_types.*' => ['string', Rule::in($availableOrganizationTypes)],
         ]);
+
+        $allowedOrganizationTypes = collect($validated['allowed_organization_types'] ?? [])
+            ->map(fn (mixed $type) => (string) $type)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
         $clientSecret = Str::random(40);
 
@@ -106,6 +123,7 @@ class ApplicationController extends Controller
             'oauth_client_id' => $client->getKey(),
             'oauth_client_secret' => $clientSecret,
             'is_active' => true,
+            'allowed_organization_types' => $allowedOrganizationTypes,
         ]);
 
         ActivityLogger::logByRequest(
@@ -117,6 +135,7 @@ class ApplicationController extends Controller
             metadata: [
                 'application_id' => $application->id,
                 'application_name' => $application->name,
+                'allowed_organization_types' => $allowedOrganizationTypes,
             ],
         );
 
@@ -183,6 +202,13 @@ class ApplicationController extends Controller
 
     public function update(Request $request, Application $application): RedirectResponse
     {
+        $availableOrganizationTypes = Organization::query()
+            ->where('is_active', true)
+            ->pluck('type')
+            ->unique()
+            ->values()
+            ->all();
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -191,8 +217,15 @@ class ApplicationController extends Controller
             'logo_url' => ['nullable', 'url', 'max:255'],
             'is_active' => ['boolean'],
             'allowed_organization_types' => ['nullable', 'array'],
-            'allowed_organization_types.*' => ['string'],
+            'allowed_organization_types.*' => ['string', Rule::in($availableOrganizationTypes)],
         ]);
+
+        $validated['allowed_organization_types'] = collect($validated['allowed_organization_types'] ?? [])
+            ->map(fn (mixed $type) => (string) $type)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
         $validated['slug'] = Str::slug($validated['name']);
 
@@ -215,6 +248,7 @@ class ApplicationController extends Controller
             metadata: [
                 'application_id' => $application->id,
                 'application_name' => $application->name,
+                'allowed_organization_types' => $validated['allowed_organization_types'],
             ],
         );
 

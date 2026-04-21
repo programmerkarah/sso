@@ -105,6 +105,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
             ) {
                 setDesktopDropdown(null);
                 setMobileDropdown(null);
+                setMobileMenuOpen(false);
             }
         };
 
@@ -142,25 +143,25 @@ export default function AppLayout({ children }: PropsWithChildren) {
                 {user && (
                     <nav
                         ref={navRef}
-                        className="fixed left-0 right-0 top-0 z-50 px-4 pt-4"
+                        className="fixed left-0 right-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4"
                     >
                         <div className="mx-auto max-w-7xl">
                             <div
                                 ref={dropdownContainerRef}
-                                className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 shadow-2xl backdrop-blur-xl"
+                                className="rounded-2xl border border-white/20 bg-white/10 px-3 py-3 shadow-2xl backdrop-blur-xl sm:px-6 sm:py-4"
                             >
                                 <div className="flex items-center justify-between">
                                     {/* Logo */}
                                     <div className="flex items-center gap-3">
                                         <Link
                                             href="/dashboard"
-                                            className="rounded-xl bg-white/10 p-2 backdrop-blur-sm transition hover:bg-white/20"
+                                            className="rounded-xl bg-white/10 p-1.5 backdrop-blur-sm transition hover:bg-white/20 sm:p-2"
                                         >
-                                            <AppIcon className="h-8 w-8" />
+                                            <AppIcon className="h-7 w-7 sm:h-8 sm:w-8" />
                                         </Link>
                                         <Link
                                             href="/dashboard"
-                                            className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-black text-transparent drop-shadow-lg transition hover:from-blue-100 hover:to-purple-100"
+                                            className="max-w-[11rem] truncate bg-gradient-to-r from-white to-blue-100 bg-clip-text text-lg font-black text-transparent drop-shadow-lg transition hover:from-blue-100 hover:to-purple-100 sm:max-w-none sm:text-2xl"
                                         >
                                             Single Sign-On
                                         </Link>
@@ -328,7 +329,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
                                 {/* Mobile Menu */}
                                 {mobileMenuOpen && (
-                                    <div className="mt-4 space-y-2 border-t border-white/20 pt-4 md:hidden">
+                                    <div className="mt-4 max-h-[70vh] space-y-2 overflow-y-auto border-t border-white/20 pt-4 md:hidden">
                                         <Link
                                             href="/dashboard"
                                             className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
@@ -410,7 +411,6 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                             </Link>
                                                         </>
                                                     )}
-                                                    \n{' '}
                                                 </NavDropdown>
                                             </>
                                         ) : (

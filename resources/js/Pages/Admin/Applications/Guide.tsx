@@ -38,20 +38,20 @@ function CodeBlock({
     onCopy: (value: string, key: CopyKey) => void;
 }) {
     return (
-        <div className="rounded-xl bg-black/40 p-4">
-            <div className="mb-2 flex items-center justify-between gap-3">
+        <div className="min-w-0 rounded-xl bg-black/40 p-3 sm:p-4">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/45">
                     {label}
                 </p>
                 <button
                     onClick={() => onCopy(value, copyKey)}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white/75 transition hover:bg-white/20 hover:text-white"
+                    className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white/75 transition hover:bg-white/20 hover:text-white"
                 >
                     <Copy className="h-3.5 w-3.5" />
                     {copied === copyKey ? 'Tersalin!' : 'Salin'}
                 </button>
             </div>
-            <pre className="overflow-x-auto text-xs leading-6 text-white/90">
+            <pre className="overflow-x-auto whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
                 <code>{value}</code>
             </pre>
         </div>
@@ -129,8 +129,8 @@ export default function Guide({ application, appUrl }: GuideProps) {
         <AppLayout>
             <Head title={`Panduan - ${application.name}`} />
 
-            <div className="mx-auto max-w-6xl space-y-8 py-12 sm:px-6 lg:px-8">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="mx-auto max-w-6xl space-y-8 px-1 py-8 sm:px-6 sm:py-12 lg:px-8">
+                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                     <Link
                         href={`/admin/applications/${application.route_key}`}
                         className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-xl transition hover:bg-white/20"
@@ -138,7 +138,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         <ArrowLeft className="h-4 w-4" />
                         Kembali ke detail aplikasi
                     </Link>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                         <a
                             href={`/admin/applications/${application.route_key}/guide/export-pdf`}
                             className="inline-flex items-center gap-2 rounded-xl border border-emerald-300/30 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-50 transition hover:bg-emerald-500/30"
@@ -154,11 +154,11 @@ export default function Guide({ application, appUrl }: GuideProps) {
                     </div>
                 </div>
 
-                <div>
-                    <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                <div className="px-1 sm:px-0">
+                    <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-3xl font-black text-transparent drop-shadow-xl sm:text-5xl">
                         Panduan Integrasi OAuth2 + Sinkronisasi User
                     </h1>
-                    <p className="mt-2 max-w-4xl text-white/80">
+                    <p className="mt-2 max-w-4xl text-sm text-white/80 sm:text-base">
                         Panduan implementasi {application.name} ke SSO, termasuk
                         guard organisasi, alur callback, sinkronisasi user lokal
                         di setiap login, dan opsi sinkronisasi lanjutan sesuai
@@ -167,7 +167,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
-                    <GlassCard className="space-y-6">
+                    <GlassCard className="space-y-6 p-4 sm:p-6">
                         <section className="space-y-3">
                             <h2 className="text-xl font-bold text-white">
                                 1. Ringkasan Kontrak Integrasi
@@ -394,7 +394,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                     </GlassCard>
 
                     <div className="space-y-6">
-                        <GlassCard>
+                        <GlassCard className="p-4 sm:p-6">
                             <h2 className="text-lg font-bold text-white">
                                 Checklist Implementasi
                             </h2>
@@ -434,7 +434,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                             </ul>
                         </GlassCard>
 
-                        <GlassCard>
+                        <GlassCard className="p-4 sm:p-6">
                             <h2 className="text-lg font-bold text-white">
                                 Aturan Organization
                             </h2>
@@ -460,7 +460,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                             </div>
                         </GlassCard>
 
-                        <GlassCard>
+                        <GlassCard className="p-4 sm:p-6">
                             <h2 className="text-lg font-bold text-white">
                                 Troubleshooting Cepat
                             </h2>

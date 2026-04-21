@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Application;
+use App\Models\Organization;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\EncryptedStateService;
@@ -35,7 +36,85 @@ class ApplicationManagementTest extends TestCase
                 ->component('Admin/Applications/Show')
                 ->has('application.route_key')
                 ->where('application.oauth_client.secret', 'secret-for-frontend')
+                ->where('application.allowed_organization_types', [])
             );
+    }
+
+    public function test_create_application_page_contains_available_organization_types(): void
+    {
+        $admin = $this->createAdmin();
+
+        Organization::query()->create([
+            'name' => 'BPS Internal',
+            'slug' => 'bps-internal',
+            'type' => 'internal',
+            'is_active' => true,
+        ]);
+
+        Organization::query()->create([
+            'name' => 'Mitra Vendor',
+            'slug' => 'mitra-vendor',
+            'type' => 'vendor',
+            'is_active' => true,
+        ]);
+
+        Organization::query()->create([
+            'name' => 'Legacy',
+            'slug' => 'legacy',
+            'type' => 'legacy',
+            'is_active' => false,
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->get(route('admin.applications.create'));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Applications/Create')
+                ->where('availableOrganizationTypes', ['internal', 'vendor'])
+            );
+    }
+
+    public function test_admin_can_create_application_with_allowed_organization_types(): void
+    {
+        $admin = $this->createAdmin();
+
+        Organization::query()->create([
+            'name' => 'BPS Internal',
+            'slug' => 'bps-internal',
+            'type' => 'internal',
+            'is_active' => true,
+        ]);
+
+        Organization::query()->create([
+            'name' => 'Mitra Vendor',
+            'slug' => 'mitra-vendor',
+            'type' => 'vendor',
+            'is_active' => true,
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->from(route('admin.applications.create'))
+            ->post(route('admin.applications.store'), [
+                'name' => 'Portal Kemitraan',
+                'description' => 'Portal internal dan vendor',
+                'domain' => 'kemitraan.test',
+                'callback_url' => 'https://kemitraan.test/auth/callback',
+                'logo_url' => '',
+                'allowed_organization_types' => ['internal', 'vendor'],
+            ]);
+
+        $response
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $application = Application::query()->where('name', 'Portal Kemitraan')->first();
+
+        $this->assertNotNull($application);
+        $this->assertSame(['internal', 'vendor'], $application->allowed_organization_types);
     }
 
     public function test_admin_can_paginate_applications_with_encrypted_post_state(): void
