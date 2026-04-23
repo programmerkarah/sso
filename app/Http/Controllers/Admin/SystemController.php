@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CreateBackupRequest;
 use App\Http\Requests\Admin\RestoreDatabaseRequest;
+use App\Http\Requests\Admin\UpdateBackupMetadataRequest;
 use App\Models\ActivityLog;
 use App\Services\EncryptedStateService;
 use App\Support\ActivityLogger;
@@ -11,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\Process\Process;
@@ -180,7 +183,7 @@ class SystemController extends Controller
         ]);
     }
 
-    public function backup(): RedirectResponse
+    public function backup(CreateBackupRequest $request): RedirectResponse
     {
         $backupPath = storage_path('app/backups');
 
@@ -188,7 +191,10 @@ class SystemController extends Controller
             File::makeDirectory($backupPath, 0755, true);
         }
 
-        $filename = 'backup-'.now()->format('Ymd-His').'.sql';
+        $title = $this->sanitizeBackupTitle($request->string('backup_title')->toString());
+        $description = $this->sanitizeBackupDescription($request->string('backup_description')->toString());
+
+        $filename = $this->buildBackupFilename($title);
         $fullPath = $backupPath.DIRECTORY_SEPARATOR.$filename;
 
         try {
@@ -238,9 +244,19 @@ class SystemController extends Controller
                 user: request()->user(),
                 metadata: [
                     'file' => $filename,
+                    'title' => $title,
+                    'description' => $description,
                     'backup_mode' => $fallbackUsed ? 'fallback' : 'mysqldump',
                 ],
             );
+
+            $metadata = $this->readBackupMetadataMap();
+            $metadata[$filename] = [
+                'title' => $title,
+                'description' => $description,
+                'created_at' => now()->toDateTimeString(),
+            ];
+            $this->writeBackupMetadataMap($metadata);
 
             $message = $fallbackUsed
                 ? 'Backup database berhasil dibuat menggunakan mode fallback: '.$filename
@@ -269,6 +285,82 @@ class SystemController extends Controller
         abort_unless(File::exists($fullPath), 404);
 
         return response()->download($fullPath);
+    }
+
+    public function destroyBackup(Request $request, string $filename): RedirectResponse
+    {
+        $safeFilename = basename($filename);
+        $fullPath = storage_path('app/backups'.DIRECTORY_SEPARATOR.$safeFilename);
+
+        if (! File::exists($fullPath) || ! str_ends_with(strtolower($safeFilename), '.sql')) {
+            return back()->with('error', 'File backup SQL tidak ditemukan.');
+        }
+
+        $metadata = $this->readBackupMetadataMap();
+        $backupMetadata = is_array($metadata[$safeFilename] ?? null)
+            ? $metadata[$safeFilename]
+            : [];
+
+        File::delete($fullPath);
+
+        if (array_key_exists($safeFilename, $metadata)) {
+            unset($metadata[$safeFilename]);
+            $this->writeBackupMetadataMap($metadata);
+        }
+
+        ActivityLogger::log(
+            event: 'database.backup.deleted',
+            category: 'system',
+            description: "Berhasil menghapus backup database {$safeFilename}.",
+            user: $request->user(),
+            metadata: [
+                'file' => $safeFilename,
+                'title' => is_string($backupMetadata['title'] ?? null) ? $backupMetadata['title'] : null,
+                'description' => is_string($backupMetadata['description'] ?? null) ? $backupMetadata['description'] : null,
+            ],
+        );
+
+        return back()->with('success', 'Backup database berhasil dihapus.');
+    }
+
+    public function updateBackupMetadata(UpdateBackupMetadataRequest $request, string $filename): RedirectResponse
+    {
+        $safeFilename = basename($filename);
+        $fullPath = storage_path('app/backups'.DIRECTORY_SEPARATOR.$safeFilename);
+
+        if (! File::exists($fullPath) || ! str_ends_with(strtolower($safeFilename), '.sql')) {
+            return back()->with('error', 'File backup SQL tidak ditemukan.');
+        }
+
+        $title = $this->sanitizeBackupTitle($request->string('backup_title')->toString());
+        $description = $this->sanitizeBackupDescription($request->string('backup_description')->toString());
+
+        $metadata = $this->readBackupMetadataMap();
+        $existingCreatedAt = is_array($metadata[$safeFilename] ?? null) && is_string($metadata[$safeFilename]['created_at'] ?? null)
+            ? trim((string) $metadata[$safeFilename]['created_at'])
+            : '';
+
+        $metadata[$safeFilename] = [
+            'title' => $title,
+            'description' => $description,
+            'created_at' => $existingCreatedAt !== '' ? $existingCreatedAt : now()->toDateTimeString(),
+        ];
+
+        $this->writeBackupMetadataMap($metadata);
+
+        ActivityLogger::log(
+            event: 'database.backup.metadata.updated',
+            category: 'system',
+            description: "Berhasil memperbarui metadata backup {$safeFilename}.",
+            user: $request->user(),
+            metadata: [
+                'file' => $safeFilename,
+                'title' => $title,
+                'description' => $description,
+            ],
+        );
+
+        return back()->with('success', 'Metadata backup berhasil diperbarui.');
     }
 
     public function restore(RestoreDatabaseRequest $request): RedirectResponse
@@ -425,18 +517,107 @@ class SystemController extends Controller
             return [];
         }
 
+        $metadataMap = $this->readBackupMetadataMap();
+
         return collect(File::files($backupsDir))
             ->filter(fn (\SplFileInfo $file) => $file->getExtension() === 'sql')
             ->sortByDesc(fn (\SplFileInfo $file) => $file->getMTime())
             ->take(30)
-            ->map(fn (\SplFileInfo $file) => [
-                'name' => $file->getFilename(),
-                'size_kb' => round($file->getSize() / 1024, 2),
-                'modified_at' => date('Y-m-d H:i:s', $file->getMTime()),
-                'download_url' => route('admin.system.backups.download', ['filename' => $file->getFilename()]),
-            ])
+            ->map(function (\SplFileInfo $file) use ($metadataMap) {
+                $filename = $file->getFilename();
+                $entry = $metadataMap[$filename] ?? [];
+
+                $title = is_array($entry) && isset($entry['title']) && is_string($entry['title'])
+                    ? trim($entry['title'])
+                    : null;
+                $description = is_array($entry) && isset($entry['description']) && is_string($entry['description'])
+                    ? trim($entry['description'])
+                    : null;
+
+                return [
+                    'name' => $filename,
+                    'title' => $title !== '' ? $title : null,
+                    'description' => $description !== '' ? $description : null,
+                    'size_kb' => round($file->getSize() / 1024, 2),
+                    'modified_at' => date('Y-m-d H:i:s', $file->getMTime()),
+                    'download_url' => route('admin.system.backups.download', ['filename' => $filename]),
+                ];
+            })
             ->values()
             ->all();
+    }
+
+    private function buildBackupFilename(?string $title): string
+    {
+        $timestamp = now()->format('Ymd-His');
+
+        if (! is_string($title) || $title === '') {
+            return 'backup-'.$timestamp.'.sql';
+        }
+
+        $slug = Str::slug(Str::limit($title, 40, ''), '-');
+        $suffix = $slug !== '' ? '-'.$slug : '';
+
+        return 'backup-'.$timestamp.$suffix.'.sql';
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    private function readBackupMetadataMap(): array
+    {
+        $path = $this->backupMetadataPath();
+
+        if (! File::exists($path)) {
+            return [];
+        }
+
+        $decoded = json_decode((string) File::get($path), true);
+
+        if (! is_array($decoded)) {
+            return [];
+        }
+
+        return collect($decoded)
+            ->filter(fn ($value, $key) => is_string($key) && is_array($value))
+            ->map(fn (array $value) => [
+                'title' => isset($value['title']) && is_string($value['title']) ? trim($value['title']) : '',
+                'description' => isset($value['description']) && is_string($value['description']) ? trim($value['description']) : '',
+                'created_at' => isset($value['created_at']) && is_string($value['created_at']) ? trim($value['created_at']) : '',
+            ])
+            ->all();
+    }
+
+    /**
+     * @param  array<string, array<string, string>>  $metadata
+     */
+    private function writeBackupMetadataMap(array $metadata): void
+    {
+        $path = $this->backupMetadataPath();
+
+        File::put(
+            $path,
+            json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+        );
+    }
+
+    private function backupMetadataPath(): string
+    {
+        return storage_path('app/backups/backup-metadata.json');
+    }
+
+    private function sanitizeBackupTitle(string $value): ?string
+    {
+        $normalized = trim($value);
+
+        return $normalized === '' ? null : Str::limit($normalized, 120, '');
+    }
+
+    private function sanitizeBackupDescription(string $value): ?string
+    {
+        $normalized = trim($value);
+
+        return $normalized === '' ? null : Str::limit($normalized, 500, '');
     }
 
     private function dumpDatabase(): string

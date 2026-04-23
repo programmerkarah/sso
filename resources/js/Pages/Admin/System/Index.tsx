@@ -8,8 +8,11 @@ import {
     Download,
     Eye,
     HardDrive,
+    MoreHorizontal,
     RefreshCw,
     Server,
+    SquarePen,
+    Trash2,
     Upload,
     User,
     X,
@@ -20,6 +23,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
+import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import GlassSelect from '@/Components/GlassSelect';
 import AppLayout from '@/Layouts/AppLayout';
@@ -46,6 +50,8 @@ interface SystemLog {
 
 interface BackupFile {
     name: string;
+    title: string | null;
+    description: string | null;
     size_kb: number;
     modified_at: string;
     download_url: string;
@@ -73,6 +79,22 @@ interface FilterOption {
     label: string;
     token: string;
 }
+
+interface ConfirmModal {
+    isOpen: boolean;
+    title: string;
+    description: string;
+    confirmLabel: string;
+    confirmVariant: 'amber' | 'red' | 'emerald';
+    onConfirm: () => void;
+}
+
+type CollapsedPaginationItem =
+    | PaginationLinks
+    | {
+          type: 'ellipsis';
+          key: string;
+      };
 
 interface AdminSystemPageProps extends PageProps {
     logs: PaginationMeta;
@@ -135,6 +157,55 @@ const renderMetadata = (metadata: Record<string, unknown> | null): string => {
     return JSON.stringify(metadata);
 };
 
+const renderMetadataForModal = (
+    metadata: Record<string, unknown> | null,
+): string => {
+    if (!metadata || Object.keys(metadata).length === 0) {
+        return '—';
+    }
+
+    return JSON.stringify(metadata, null, 2);
+};
+
+const collapsePaginationLinks = (
+    links: PaginationLinks[],
+): CollapsedPaginationItem[] => {
+    if (links.length <= 7) {
+        return links;
+    }
+
+    const activeIndex = links.findIndex((link) => link.active);
+    const safeActiveIndex = activeIndex >= 0 ? activeIndex : 0;
+    const candidateIndexes = new Set<number>([
+        0,
+        links.length - 1,
+        safeActiveIndex - 1,
+        safeActiveIndex,
+        safeActiveIndex + 1,
+    ]);
+
+    const sortedIndexes = Array.from(candidateIndexes)
+        .filter((index) => index >= 0 && index < links.length)
+        .sort((a, b) => a - b);
+
+    const collapsed: CollapsedPaginationItem[] = [];
+
+    sortedIndexes.forEach((index, position) => {
+        const previousIndex = sortedIndexes[position - 1];
+
+        if (position > 0 && index - previousIndex > 1) {
+            collapsed.push({
+                type: 'ellipsis',
+                key: `ellipsis-${previousIndex}-${index}`,
+            });
+        }
+
+        collapsed.push(links[index]);
+    });
+
+    return collapsed;
+};
+
 export default function Index({
     logs,
     filters,
@@ -144,11 +215,35 @@ export default function Index({
 }: AdminSystemPageProps) {
     const [selectedLog, setSelectedLog] = useState<SystemLog | null>(null);
     const [copied, setCopied] = useState(false);
+    const [editingBackup, setEditingBackup] = useState<BackupFile | null>(null);
+    const [deletingBackupName, setDeletingBackupName] = useState<string | null>(
+        null,
+    );
+    const [modal, setModal] = useState<ConfirmModal>({
+        isOpen: false,
+        title: '',
+        description: '',
+        confirmLabel: '',
+        confirmVariant: 'red',
+        onConfirm: () => {},
+    });
+
+    const createBackupForm = useForm<{
+        backup_title: string;
+        backup_description: string;
+    }>({
+        backup_title: '',
+        backup_description: '',
+    });
 
     const restoreOptions = backups.map((backup) => ({
-        label: `${backup.name} • ${backup.size_kb} KB`,
+        label: backup.title
+            ? `${backup.title} (${backup.name}) • ${backup.size_kb} KB`
+            : `${backup.name} • ${backup.size_kb} KB`,
         value: backup.name,
     }));
+
+    const collapsedPaginationItems = collapsePaginationLinks(logs.links);
 
     const statusFilterOptions = filters.status_options.map((option) => ({
         label: option.label,
@@ -171,8 +266,23 @@ export default function Index({
         backup_name: '',
     });
 
-    const handleCreateBackup = () => {
-        router.post('/admin/system/backups', {}, { preserveScroll: true });
+    const editBackupForm = useForm<{
+        backup_title: string;
+        backup_description: string;
+    }>({
+        backup_title: '',
+        backup_description: '',
+    });
+
+    const handleCreateBackup = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        createBackupForm.post('/admin/system/backups', {
+            preserveScroll: true,
+            onSuccess: () => {
+                createBackupForm.reset();
+            },
+        });
     };
 
     const handleRestoreSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -185,6 +295,69 @@ export default function Index({
                 restoreForm.reset();
             },
         });
+    };
+
+    const openEditBackupModal = (backup: BackupFile) => {
+        setEditingBackup(backup);
+        editBackupForm.clearErrors();
+        editBackupForm.setData({
+            backup_title: backup.title ?? '',
+            backup_description: backup.description ?? '',
+        });
+    };
+
+    const closeEditBackupModal = () => {
+        setEditingBackup(null);
+        editBackupForm.reset();
+        editBackupForm.clearErrors();
+    };
+
+    const handleEditBackupSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!editingBackup) {
+            return;
+        }
+
+        editBackupForm.put(
+            `/admin/system/backups/${encodeURIComponent(editingBackup.name)}/metadata`,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    closeEditBackupModal();
+                },
+            },
+        );
+    };
+
+    const handleDeleteBackup = (backup: BackupFile) => {
+        const backupLabel = backup.title || backup.name;
+        setModal({
+            isOpen: true,
+            title: 'Hapus Backup Database',
+            description: `Backup "${backupLabel}" akan dihapus permanen dari penyimpanan. Tindakan ini tidak dapat dibatalkan.`,
+            confirmLabel: 'Ya, Hapus Backup',
+            confirmVariant: 'red',
+            onConfirm: () => {
+                setDeletingBackupName(backup.name);
+
+                router.delete(
+                    `/admin/system/backups/${encodeURIComponent(backup.name)}`,
+                    {
+                        preserveScroll: true,
+                        onFinish: () => {
+                            setDeletingBackupName(null);
+                        },
+                    },
+                );
+
+                closeModal();
+            },
+        });
+    };
+
+    const closeModal = () => {
+        setModal((prev) => ({ ...prev, isOpen: false }));
     };
 
     const visitState = (state: string) => {
@@ -256,18 +429,6 @@ export default function Index({
                             restore, serta audit log aktivitas penting aplikasi.
                         </p>
                     </div>
-                    <Button
-                        type="button"
-                        onClick={() =>
-                            router.reload({
-                                only: ['logs', 'database', 'server', 'backups'],
-                            })
-                        }
-                        className="inline-flex w-full items-center gap-2 sm:w-auto"
-                    >
-                        <RefreshCw className="h-4 w-4" />
-                        Refresh Data
-                    </Button>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -454,16 +615,80 @@ export default function Index({
                             sudah tersedia.
                         </p>
 
-                        <div className="mt-4">
+                        <form
+                            onSubmit={handleCreateBackup}
+                            className="mt-4 space-y-3"
+                        >
+                            <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                                <label
+                                    htmlFor="backup_title"
+                                    className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60"
+                                >
+                                    Judul Backup (opsional)
+                                </label>
+                                <input
+                                    id="backup_title"
+                                    type="text"
+                                    value={createBackupForm.data.backup_title}
+                                    onChange={(event) =>
+                                        createBackupForm.setData(
+                                            'backup_title',
+                                            event.target.value,
+                                        )
+                                    }
+                                    placeholder="Contoh: Sebelum update hak akses aplikasi"
+                                    className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                />
+                                {createBackupForm.errors.backup_title && (
+                                    <p className="mt-2 text-xs text-rose-200">
+                                        {createBackupForm.errors.backup_title}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                                <label
+                                    htmlFor="backup_description"
+                                    className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60"
+                                >
+                                    Keterangan Backup (opsional)
+                                </label>
+                                <textarea
+                                    id="backup_description"
+                                    rows={3}
+                                    value={
+                                        createBackupForm.data.backup_description
+                                    }
+                                    onChange={(event) =>
+                                        createBackupForm.setData(
+                                            'backup_description',
+                                            event.target.value,
+                                        )
+                                    }
+                                    placeholder="Tuliskan konteks backup ini untuk memudahkan identifikasi saat restore."
+                                    className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                />
+                                {createBackupForm.errors.backup_description && (
+                                    <p className="mt-2 text-xs text-rose-200">
+                                        {
+                                            createBackupForm.errors
+                                                .backup_description
+                                        }
+                                    </p>
+                                )}
+                            </div>
+
                             <Button
-                                type="button"
-                                onClick={handleCreateBackup}
+                                type="submit"
+                                disabled={createBackupForm.processing}
                                 className="inline-flex w-full items-center justify-center gap-2 sm:w-auto"
                             >
                                 <Database className="h-4 w-4" />
-                                Buat Backup Baru
+                                {createBackupForm.processing
+                                    ? 'Membuat Backup...'
+                                    : 'Buat Backup Baru'}
                             </Button>
-                        </div>
+                        </form>
 
                         <div className="mt-5 space-y-3 md:hidden">
                             {backups.length === 0 ? (
@@ -477,8 +702,18 @@ export default function Index({
                                         className="rounded-xl border border-white/10 bg-black/20 p-4"
                                     >
                                         <p className="break-all text-sm font-semibold text-white">
-                                            {backup.name}
+                                            {backup.title || backup.name}
                                         </p>
+                                        {backup.title && (
+                                            <p className="mt-1 break-all text-xs text-white/55">
+                                                {backup.name}
+                                            </p>
+                                        )}
+                                        {backup.description && (
+                                            <p className="mt-2 text-xs text-white/75">
+                                                {backup.description}
+                                            </p>
+                                        )}
                                         <div className="mt-2 flex items-center justify-between text-xs text-white/70">
                                             <span>{backup.size_kb} KB</span>
                                             <span>
@@ -494,6 +729,35 @@ export default function Index({
                                             <Download className="h-3.5 w-3.5" />
                                             Unduh
                                         </a>
+                                        <div className="mt-2 grid grid-cols-2 gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    openEditBackupModal(backup)
+                                                }
+                                                className="inline-flex items-center justify-center gap-1 rounded-lg border border-amber-300/25 bg-amber-500/15 px-3 py-2 text-xs font-semibold text-amber-50 transition hover:bg-amber-500/25"
+                                            >
+                                                <SquarePen className="h-3.5 w-3.5" />
+                                                Edit
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleDeleteBackup(backup)
+                                                }
+                                                disabled={
+                                                    deletingBackupName ===
+                                                    backup.name
+                                                }
+                                                className="inline-flex items-center justify-center gap-1 rounded-lg border border-rose-300/25 bg-rose-500/15 px-3 py-2 text-xs font-semibold text-rose-50 transition hover:bg-rose-500/25 disabled:opacity-60"
+                                            >
+                                                <Trash2 className="h-3.5 w-3.5" />
+                                                {deletingBackupName ===
+                                                backup.name
+                                                    ? 'Menghapus...'
+                                                    : 'Hapus'}
+                                            </button>
+                                        </div>
                                     </div>
                                 ))
                             )}
@@ -503,7 +767,8 @@ export default function Index({
                             <table className="w-full min-w-[420px]">
                                 <thead>
                                     <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wider text-white/55">
-                                        <th className="py-2">Nama File</th>
+                                        <th className="py-2">Judul / File</th>
+                                        <th className="py-2">Keterangan</th>
                                         <th className="py-2">Ukuran</th>
                                         <th className="py-2">Diubah</th>
                                         <th className="py-2 text-right">
@@ -515,7 +780,7 @@ export default function Index({
                                     {backups.length === 0 ? (
                                         <tr>
                                             <td
-                                                colSpan={4}
+                                                colSpan={5}
                                                 className="py-6 text-center text-white/55"
                                             >
                                                 Belum ada backup.
@@ -524,8 +789,19 @@ export default function Index({
                                     ) : (
                                         backups.map((backup) => (
                                             <tr key={backup.name}>
-                                                <td className="break-all py-3 pr-2 text-white">
-                                                    {backup.name}
+                                                <td className="py-3 pr-3">
+                                                    <div className="break-all font-semibold text-white">
+                                                        {backup.title ||
+                                                            backup.name}
+                                                    </div>
+                                                    {backup.title && (
+                                                        <div className="mt-1 break-all text-xs text-white/55">
+                                                            {backup.name}
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td className="max-w-[260px] py-3 pr-3 text-xs text-white/75">
+                                                    {backup.description || '—'}
                                                 </td>
                                                 <td className="py-3 pr-2">
                                                     {backup.size_kb} KB
@@ -536,15 +812,48 @@ export default function Index({
                                                     )}
                                                 </td>
                                                 <td className="py-3 text-right">
-                                                    <a
-                                                        href={
-                                                            backup.download_url
-                                                        }
-                                                        className="inline-flex items-center gap-1 rounded-lg border border-blue-300/25 bg-blue-500/15 px-3 py-1.5 text-xs font-semibold text-blue-50 transition hover:bg-blue-500/25"
-                                                    >
-                                                        <Download className="h-3.5 w-3.5" />
-                                                        Unduh
-                                                    </a>
+                                                    <div className="inline-flex items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                openEditBackupModal(
+                                                                    backup,
+                                                                )
+                                                            }
+                                                            className="inline-flex items-center gap-1 rounded-lg border border-amber-300/25 bg-amber-500/15 px-3 py-1.5 text-xs font-semibold text-amber-50 transition hover:bg-amber-500/25"
+                                                        >
+                                                            <SquarePen className="h-3.5 w-3.5" />
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleDeleteBackup(
+                                                                    backup,
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                deletingBackupName ===
+                                                                backup.name
+                                                            }
+                                                            className="inline-flex items-center gap-1 rounded-lg border border-rose-300/25 bg-rose-500/15 px-3 py-1.5 text-xs font-semibold text-rose-50 transition hover:bg-rose-500/25 disabled:opacity-60"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                            {deletingBackupName ===
+                                                            backup.name
+                                                                ? 'Menghapus...'
+                                                                : 'Hapus'}
+                                                        </button>
+                                                        <a
+                                                            href={
+                                                                backup.download_url
+                                                            }
+                                                            className="inline-flex items-center gap-1 rounded-lg border border-blue-300/25 bg-blue-500/15 px-3 py-1.5 text-xs font-semibold text-blue-50 transition hover:bg-blue-500/25"
+                                                        >
+                                                            <Download className="h-3.5 w-3.5" />
+                                                            Unduh
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))
@@ -848,20 +1157,40 @@ export default function Index({
                                 </span>
                             )}
 
-                            {logs.links.map((link, index) => (
-                                <button
-                                    key={`${link.label}-${index}`}
-                                    type="button"
-                                    onClick={() => visitState(link.token)}
-                                    className={`rounded-lg border px-3 py-1.5 text-sm transition ${
-                                        link.active
-                                            ? 'border-white/45 bg-white/20 text-white'
-                                            : 'border-white/20 text-white/70 hover:bg-white/10 hover:text-white'
-                                    }`}
-                                >
-                                    {link.label}
-                                </button>
-                            ))}
+                            {collapsedPaginationItems.map((item, index) => {
+                                if (
+                                    'type' in item &&
+                                    item.type === 'ellipsis'
+                                ) {
+                                    return (
+                                        <span
+                                            key={item.key}
+                                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/50"
+                                        >
+                                            <MoreHorizontal className="h-4 w-4" />
+                                        </span>
+                                    );
+                                }
+
+                                const paginationLink = item as PaginationLinks;
+
+                                return (
+                                    <button
+                                        key={`${paginationLink.label}-${index}`}
+                                        type="button"
+                                        onClick={() =>
+                                            visitState(paginationLink.token)
+                                        }
+                                        className={`rounded-lg border px-3 py-1.5 text-sm transition ${
+                                            paginationLink.active
+                                                ? 'border-white/45 bg-white/20 text-white'
+                                                : 'border-white/20 text-white/70 hover:bg-white/10 hover:text-white'
+                                        }`}
+                                    >
+                                        {paginationLink.label}
+                                    </button>
+                                );
+                            })}
 
                             {logs.next_page_token ? (
                                 <button
@@ -882,20 +1211,34 @@ export default function Index({
                     )}
                 </GlassCard>
 
+                <Button
+                    type="button"
+                    onClick={() =>
+                        router.reload({
+                            only: ['logs', 'database', 'server', 'backups'],
+                        })
+                    }
+                    title="Refresh Data"
+                    className="fixed bottom-6 right-6 z-40 h-[4.5rem] w-[4.5rem] rounded-full p-0 shadow-2xl shadow-blue-700/40 sm:bottom-8 sm:right-8"
+                >
+                    <RefreshCw className="h-7 w-7" />
+                    <span className="sr-only">Refresh Data</span>
+                </Button>
+
                 {selectedLog && (
-                    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[90] flex items-end justify-center p-0 sm:items-center sm:p-4">
                         <div
                             className="absolute inset-0 bg-slate-950/70 backdrop-blur-md"
                             onClick={() => setSelectedLog(null)}
                         />
-                        <div className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
-                            <div className="mb-4 flex items-start justify-between gap-4">
+                        <div className="relative h-[100dvh] w-full overflow-y-auto rounded-none border-0 bg-white/10 p-4 shadow-2xl backdrop-blur-2xl sm:h-auto sm:max-h-[85vh] sm:max-w-3xl sm:rounded-2xl sm:border sm:border-white/20 sm:p-6">
+                            <div className="sticky top-0 z-10 -mx-4 mb-4 flex items-start justify-between gap-4 border-b border-white/10 bg-slate-900/45 px-4 py-3 backdrop-blur-md sm:static sm:mx-0 sm:mb-4 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
                                 <div>
-                                    <h3 className="text-xl font-bold text-white">
+                                    <h3 className="text-lg font-bold text-white sm:text-xl">
                                         Detail Log Aktivitas
                                     </h3>
                                     <div className="mt-1 flex items-center gap-2">
-                                        <p className="text-sm text-white/60">
+                                        <p className="break-all text-sm text-white/60">
                                             {selectedLog.event}
                                         </p>
                                         <span
@@ -914,11 +1257,11 @@ export default function Index({
                                 </button>
                             </div>
 
-                            <div className="mb-4 flex justify-end">
+                            <div className="mb-4 flex justify-stretch sm:justify-end">
                                 <button
                                     type="button"
                                     onClick={handleCopyLogDetails}
-                                    className="inline-flex items-center gap-1 rounded-lg border border-blue-300/30 bg-blue-500/15 px-3 py-1.5 text-xs font-semibold text-blue-100 transition hover:bg-blue-500/25"
+                                    className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-blue-300/30 bg-blue-500/15 px-3 py-2 text-xs font-semibold text-blue-100 transition hover:bg-blue-500/25 sm:w-auto sm:py-1.5"
                                 >
                                     {copied ? (
                                         <Check className="h-3.5 w-3.5" />
@@ -929,7 +1272,7 @@ export default function Index({
                                 </button>
                             </div>
 
-                            <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
                                 <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         Waktu
@@ -994,14 +1337,138 @@ export default function Index({
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         Metadata
                                     </div>
-                                    <pre className="mt-1 overflow-x-auto rounded bg-black/30 p-3 text-xs text-white/85">
-                                        {renderMetadata(selectedLog.metadata)}
+                                    <pre className="mt-1 max-w-full whitespace-pre-wrap break-all rounded bg-black/30 p-3 text-xs text-white/85">
+                                        {renderMetadataForModal(
+                                            selectedLog.metadata,
+                                        )}
                                     </pre>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
+
+                {editingBackup && (
+                    <div className="fixed inset-0 z-[95] flex items-center justify-center p-4">
+                        <div
+                            className="absolute inset-0 bg-slate-950/70 backdrop-blur-md"
+                            onClick={closeEditBackupModal}
+                        />
+                        <div className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                            <div className="mb-4 flex items-start justify-between gap-4">
+                                <div>
+                                    <h3 className="text-xl font-bold text-white">
+                                        Edit Metadata Backup
+                                    </h3>
+                                    <p className="mt-1 break-all text-xs text-white/60">
+                                        {editingBackup.name}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={closeEditBackupModal}
+                                    className="rounded-lg border border-white/20 p-2 text-white/80 transition hover:bg-white/10 hover:text-white"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
+
+                            <form
+                                onSubmit={handleEditBackupSubmit}
+                                className="space-y-3"
+                            >
+                                <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                                    <label
+                                        htmlFor="edit_backup_title"
+                                        className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60"
+                                    >
+                                        Judul Backup (opsional)
+                                    </label>
+                                    <input
+                                        id="edit_backup_title"
+                                        type="text"
+                                        value={editBackupForm.data.backup_title}
+                                        onChange={(event) =>
+                                            editBackupForm.setData(
+                                                'backup_title',
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                    />
+                                    {editBackupForm.errors.backup_title && (
+                                        <p className="mt-2 text-xs text-rose-200">
+                                            {editBackupForm.errors.backup_title}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                                    <label
+                                        htmlFor="edit_backup_description"
+                                        className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60"
+                                    >
+                                        Keterangan Backup (opsional)
+                                    </label>
+                                    <textarea
+                                        id="edit_backup_description"
+                                        rows={3}
+                                        value={
+                                            editBackupForm.data
+                                                .backup_description
+                                        }
+                                        onChange={(event) =>
+                                            editBackupForm.setData(
+                                                'backup_description',
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                    />
+                                    {editBackupForm.errors
+                                        .backup_description && (
+                                        <p className="mt-2 text-xs text-rose-200">
+                                            {
+                                                editBackupForm.errors
+                                                    .backup_description
+                                            }
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end">
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        onClick={closeEditBackupModal}
+                                        className="sm:w-auto"
+                                    >
+                                        Batal
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={editBackupForm.processing}
+                                        className="sm:w-auto"
+                                    >
+                                        {editBackupForm.processing
+                                            ? 'Menyimpan...'
+                                            : 'Simpan Perubahan'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                <ConfirmationModal
+                    isOpen={modal.isOpen}
+                    title={modal.title}
+                    description={modal.description}
+                    confirmLabel={modal.confirmLabel}
+                    confirmVariant={modal.confirmVariant}
+                    onCancel={closeModal}
+                    onConfirm={modal.onConfirm}
+                />
             </div>
         </AppLayout>
     );

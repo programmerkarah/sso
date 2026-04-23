@@ -126,6 +126,12 @@ Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-cha
 Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-change-password', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/system', [SystemController::class, 'index'])->name('system.index');
     Route::post('/system/backups', [SystemController::class, 'backup'])->name('system.backups.create');
+    Route::delete('/system/backups/{filename}', [SystemController::class, 'destroyBackup'])
+        ->where('filename', '.*')
+        ->name('system.backups.destroy');
+    Route::put('/system/backups/{filename}/metadata', [SystemController::class, 'updateBackupMetadata'])
+        ->where('filename', '.*')
+        ->name('system.backups.metadata.update');
     Route::get('/system/backups/{filename}', [SystemController::class, 'downloadBackup'])
         ->where('filename', '.*')
         ->name('system.backups.download');

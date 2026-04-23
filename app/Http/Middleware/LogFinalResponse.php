@@ -23,9 +23,9 @@ class LogFinalResponse
                 ? 'error'
                 : ($response->getStatusCode() >= 400 ? 'warning' : 'success');
             $description = match ($status) {
-                'error' => 'Gagal memproses permintaan OAuth2 dari aplikasi/client.',
-                'warning' => 'Permintaan OAuth2 diproses dengan peringatan atau penolakan.',
-                default => 'Berhasil memproses permintaan OAuth2 dari aplikasi/client.',
+                'error' => 'Gagal memproses permintaan login OAuth2 dari aplikasi/client.',
+                'warning' => 'Permintaan login OAuth2 diproses dengan peringatan atau penolakan.',
+                default => 'Berhasil memproses permintaan login OAuth2 dari aplikasi/client.',
             };
 
             /** @var User|null $user */
@@ -33,7 +33,7 @@ class LogFinalResponse
 
             ActivityLogger::logByRequest(
                 request: $request,
-                event: 'oauth.request',
+                event: 'oauth.login.request',
                 category: 'oauth',
                 description: $description,
                 user: $user,
@@ -66,10 +66,17 @@ class LogFinalResponse
 
     private function shouldTrackOAuthRequest(Request $request): bool
     {
-        return $request->is('oauth/authorize')
-            || $request->is('oauth/token')
-            || $request->is('api/user')
-            || $request->is('api/users');
+        if ($request->is('oauth/authorize')) {
+            return true;
+        }
+
+        if (! $request->is('oauth/token')) {
+            return false;
+        }
+
+        $grantType = (string) $request->input('grant_type', '');
+
+        return in_array($grantType, ['authorization_code', 'password'], true);
     }
 
     private function resolveClientId(Request $request): ?string
