@@ -145,7 +145,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                         ref={navRef}
                         className="fixed left-0 right-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4"
                     >
-                        <div className="mx-auto max-w-7xl">
+                        <div className="mx-auto max-w-9xl">
                             <div
                                 ref={dropdownContainerRef}
                                 className="rounded-2xl border border-white/20 bg-white/10 px-3 py-3 shadow-2xl backdrop-blur-xl sm:px-6 sm:py-4"
@@ -470,7 +470,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                 )}
 
                 <main
-                    className="px-4 pb-12"
+                    className="overflow-x-hidden px-4 pb-12"
                     style={
                         user ? { paddingTop: `${mainPaddingTop}px` } : undefined
                     }

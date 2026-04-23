@@ -26,9 +26,11 @@ export default function SearchableSelect({
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState(selectedOption?.label ?? '');
+    const [hasTypedSinceOpen, setHasTypedSinceOpen] = useState(false);
 
     useEffect(() => {
         setQuery(selectedOption?.label ?? '');
+        setHasTypedSinceOpen(false);
     }, [selectedOption?.label]);
 
     useEffect(() => {
@@ -45,6 +47,10 @@ export default function SearchableSelect({
     }, []);
 
     const filteredOptions = useMemo(() => {
+        if (open && !hasTypedSinceOpen) {
+            return options;
+        }
+
         const normalized = query.trim().toLowerCase();
 
         if (!normalized) {
@@ -66,10 +72,14 @@ export default function SearchableSelect({
                 <input
                     type="text"
                     value={query}
-                    onFocus={() => setOpen(true)}
+                    onFocus={() => {
+                        setOpen(true);
+                        setHasTypedSinceOpen(false);
+                    }}
                     onChange={(event) => {
                         setQuery(event.target.value);
                         setOpen(true);
+                        setHasTypedSinceOpen(true);
                     }}
                     placeholder={placeholder}
                     className="w-full rounded-xl border border-white/25 bg-white/10 py-3 pl-10 pr-11 text-sm text-white placeholder:text-white/45 backdrop-blur-sm transition focus:border-white/40 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/20"
@@ -80,6 +90,7 @@ export default function SearchableSelect({
                         onClick={() => {
                             setQuery('');
                             setOpen(false);
+                            setHasTypedSinceOpen(false);
                             onClear();
                         }}
                         className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-white/60 transition hover:bg-white/10 hover:text-white"
@@ -104,6 +115,7 @@ export default function SearchableSelect({
                                     onSelect(option);
                                     setQuery(option.label);
                                     setOpen(false);
+                                    setHasTypedSinceOpen(false);
                                 }}
                                 className="flex w-full flex-col rounded-xl px-3 py-3 text-left transition hover:bg-white/10"
                             >

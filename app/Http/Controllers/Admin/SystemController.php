@@ -183,6 +183,154 @@ class SystemController extends Controller
         ]);
     }
 
+    public function databaseTables(Request $request, EncryptedStateService $encryptedState): Response
+    {
+        $state = $this->resolveDatabaseTableState($request, $encryptedState);
+        $search = trim((string) ($state['search'] ?? ''));
+        $selectedTable = trim((string) ($state['table'] ?? ''));
+        $currentPage = max(1, (int) ($state['page'] ?? 1));
+
+        $tables = collect($this->listDatabaseTables())
+            ->filter(function (array $table) use ($search) {
+                if ($search === '') {
+                    return true;
+                }
+
+                return str_contains(Str::lower($table['name']), Str::lower($search));
+            })
+            ->values();
+
+        $tableNames = $tables->pluck('name')->all();
+        $activeTable = in_array($selectedTable, $tableNames, true)
+            ? $selectedTable
+            : ($tableNames[0] ?? null);
+
+        $currentStateToken = $encryptedState->encryptArray([
+            'search' => $search,
+            'table' => $activeTable,
+            'page' => $currentPage,
+        ]);
+
+        $tableEntries = $tables->map(fn (array $table) => [
+            ...$table,
+            'token' => $encryptedState->encryptArray([
+                'search' => $search,
+                'table' => $table['name'],
+                'page' => 1,
+            ]),
+        ])->values();
+
+        $tableColumns = $activeTable ? $this->describeDatabaseTable($activeTable) : [];
+        $primaryKey = $this->resolvePrimaryKeyColumn($tableColumns);
+
+        return Inertia::render('Admin/System/DatabaseTables', [
+            'database' => $this->databaseInfo(),
+            'filters' => [
+                'search' => $search,
+                'table' => $activeTable,
+                'current_token' => $currentStateToken,
+            ],
+            'tables' => $tableEntries->all(),
+            'selected_table' => $activeTable ? [
+                'name' => $activeTable,
+                'primary_key' => $primaryKey,
+                'columns' => $tableColumns,
+                'rows' => $this->previewDatabaseTable(
+                    tableName: $activeTable,
+                    columns: $tableColumns,
+                    page: $currentPage,
+                    search: $search,
+                    encryptedState: $encryptedState,
+                ),
+            ] : null,
+        ]);
+    }
+
+    public function navigateDatabaseTables(Request $request, EncryptedStateService $encryptedState): RedirectResponse
+    {
+        $token = $encryptedState->encryptArray([
+            'search' => trim($request->string('search')->toString()),
+            'table' => trim($request->string('table')->toString()) ?: null,
+            'page' => max(1, (int) $request->integer('page', 1)),
+        ]);
+
+        return redirect()->route('admin.system.database-tables', ['state' => $token]);
+    }
+
+    public function updateDatabaseTableRow(Request $request, EncryptedStateService $encryptedState): RedirectResponse
+    {
+        $rowToken = $request->string('row_token')->toString();
+        $rowState = $encryptedState->decryptArray($rowToken, []);
+
+        $tableName = trim((string) ($rowState['table'] ?? ''));
+        $primaryKey = trim((string) ($rowState['primary_key'] ?? ''));
+        $rowKey = (string) ($rowState['row_key'] ?? '');
+        $returnState = is_string($rowState['return_state'] ?? null)
+            ? $rowState['return_state']
+            : null;
+
+        if ($tableName === '' || $primaryKey === '' || $rowKey === '') {
+            return back()->with('error', 'Token edit data tabel tidak valid.');
+        }
+
+        $tableColumns = $this->describeDatabaseTable($tableName);
+        $allowedColumns = collect($tableColumns)
+            ->pluck('name')
+            ->filter(fn ($column) => is_string($column) && $column !== $primaryKey)
+            ->values()
+            ->all();
+
+        $payload = $request->input('values', []);
+
+        if (! is_array($payload)) {
+            return back()->with('error', 'Data edit tabel tidak valid.');
+        }
+
+        $updates = collect($payload)
+            ->filter(function ($value, $column) use ($allowedColumns, $tableColumns) {
+                if (! is_string($column) || ! in_array($column, $allowedColumns, true)) {
+                    return false;
+                }
+
+                $columnDefinition = collect($tableColumns)
+                    ->first(fn (array $item) => ($item['name'] ?? null) === $column);
+
+                return ! is_array($columnDefinition) || $this->isAllowedEditableColumn($column, $columnDefinition);
+            })
+            ->map(function ($value, $column) use ($tableColumns) {
+                $columnDefinition = collect($tableColumns)
+                    ->first(fn (array $item) => ($item['name'] ?? null) === $column);
+
+                return $this->normalizeSubmittedColumnValue($value, is_array($columnDefinition) ? $columnDefinition : []);
+            })
+            ->all();
+
+        if ($updates === []) {
+            return back()->with('error', 'Tidak ada perubahan yang bisa disimpan.');
+        }
+
+        DB::table($tableName)
+            ->where($primaryKey, $this->castPrimaryKeyValue($rowKey, $tableColumns, $primaryKey))
+            ->update($updates);
+
+        ActivityLogger::log(
+            event: 'database.table.row.updated',
+            category: 'system',
+            description: "Berhasil memperbarui data tabel {$tableName}.",
+            user: $request->user(),
+            metadata: [
+                'table' => $tableName,
+                'primary_key' => $primaryKey,
+                'row_key' => $rowKey,
+                'updated_columns' => array_keys($updates),
+            ],
+        );
+
+        return $returnState
+            ? redirect()->route('admin.system.database-tables', ['state' => $returnState])->with('success', 'Data tabel berhasil diperbarui.')
+            : back()->with('success', 'Data tabel berhasil diperbarui.');
+    }
+
     public function backup(CreateBackupRequest $request): RedirectResponse
     {
         $backupPath = storage_path('app/backups');
@@ -484,6 +632,186 @@ class SystemController extends Controller
     }
 
     /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function listDatabaseTables(): array
+    {
+        $connection = config('database.default');
+        $driver = (string) config('database.connections.'.$connection.'.driver');
+        $databaseName = (string) config('database.connections.'.$connection.'.database');
+
+        if ($driver === 'mysql' || $driver === 'mariadb') {
+            return DB::table('information_schema.tables')
+                ->where('table_schema', $databaseName)
+                ->where('table_type', 'BASE TABLE')
+                ->orderBy('table_name')
+                ->get([
+                    'table_name as name',
+                    'engine',
+                    'table_rows as row_count',
+                    'data_length',
+                    'index_length',
+                ])
+                ->map(function (object $table) use ($databaseName) {
+                    $columnCount = (int) DB::table('information_schema.columns')
+                        ->where('table_schema', $databaseName)
+                        ->where('table_name', $table->name)
+                        ->count();
+
+                    return [
+                        'name' => (string) $table->name,
+                        'engine' => $table->engine,
+                        'row_count' => (int) ($table->row_count ?? 0),
+                        'column_count' => $columnCount,
+                        'size_kb' => round(((int) ($table->data_length ?? 0) + (int) ($table->index_length ?? 0)) / 1024, 2),
+                    ];
+                })
+                ->values()
+                ->all();
+        }
+
+        if ($driver === 'sqlite') {
+            return collect(DB::select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"))
+                ->map(function (object $table) {
+                    $name = (string) $table->name;
+                    $columnCount = count(DB::select('PRAGMA table_info('.$this->quoteSqliteIdentifier($name).')'));
+                    $rowCount = (int) DB::table($name)->count();
+
+                    return [
+                        'name' => $name,
+                        'engine' => 'sqlite',
+                        'row_count' => $rowCount,
+                        'column_count' => $columnCount,
+                        'size_kb' => 0,
+                    ];
+                })
+                ->values()
+                ->all();
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function describeDatabaseTable(string $tableName): array
+    {
+        $connection = config('database.default');
+        $driver = (string) config('database.connections.'.$connection.'.driver');
+        $safeTableName = $this->escapeIdentifier($tableName);
+
+        if ($driver === 'mysql' || $driver === 'mariadb') {
+            $foreignKeys = $this->listMysqlForeignKeys($tableName);
+
+            return collect(DB::select('SHOW FULL COLUMNS FROM `'.$safeTableName.'`'))
+                ->map(function (object $column) use ($foreignKeys) {
+                    $columnName = (string) $column->Field;
+                    $type = (string) $column->Type;
+
+                    return [
+                        'name' => $columnName,
+                        'type' => $type,
+                        'nullable' => (string) $column->Null === 'YES',
+                        'key' => (string) ($column->Key ?? ''),
+                        'default' => $column->Default,
+                        'extra' => (string) ($column->Extra ?? ''),
+                        'enum_values' => $this->parseEnumValues($type),
+                        'foreign_key' => $this->buildForeignKeyMetadata($foreignKeys[$columnName] ?? null),
+                    ];
+                })
+                ->values()
+                ->all();
+        }
+
+        if ($driver === 'sqlite') {
+            return collect(DB::select('PRAGMA table_info('.$this->quoteSqliteIdentifier($tableName).')'))
+                ->map(fn (object $column) => [
+                    'name' => (string) $column->name,
+                    'type' => (string) $column->type,
+                    'nullable' => (int) $column->notnull === 0,
+                    'key' => (int) $column->pk === 1 ? 'PRI' : '',
+                    'default' => $column->dflt_value,
+                    'extra' => '',
+                    'enum_values' => [],
+                    'foreign_key' => null,
+                ])
+                ->values()
+                ->all();
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function previewDatabaseTable(
+        string $tableName,
+        array $columns,
+        int $page = 1,
+        string $search = '',
+        ?EncryptedStateService $encryptedState = null,
+    ): array
+    {
+        $perPage = 25;
+        $paginator = DB::table($tableName)->paginate($perPage, ['*'], 'page', $page);
+        $primaryKey = $this->resolvePrimaryKeyColumn($columns);
+        $primaryKeyType = $this->resolveColumnType($columns, $primaryKey);
+
+        return [
+            'data' => collect($paginator->items())
+                ->map(function (object $row) use ($tableName, $primaryKey, $primaryKeyType, $page, $search, $encryptedState) {
+                    $rowData = (array) $row;
+
+                    if (! $encryptedState || ! $primaryKey || ! array_key_exists($primaryKey, $rowData)) {
+                        return [
+                            ...$rowData,
+                            '__row_token' => null,
+                        ];
+                    }
+
+                    return [
+                        ...$rowData,
+                        '__row_token' => $encryptedState->encryptArray([
+                            'table' => $tableName,
+                            'primary_key' => $primaryKey,
+                            'row_key' => (string) $rowData[$primaryKey],
+                            'primary_key_type' => $primaryKeyType,
+                            'return_state' => $encryptedState->encryptArray([
+                                'search' => $search,
+                                'table' => $tableName,
+                                'page' => $page,
+                            ]),
+                        ]),
+                    ];
+                })
+                ->values()
+                ->all(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+            'total' => $paginator->total(),
+            'per_page' => $paginator->perPage(),
+            'prev_page_token' => $encryptedState && $paginator->currentPage() > 1
+                ? $encryptedState->encryptArray([
+                    'search' => $search,
+                    'table' => $tableName,
+                    'page' => $paginator->currentPage() - 1,
+                ])
+                : null,
+            'next_page_token' => $encryptedState && $paginator->hasMorePages()
+                ? $encryptedState->encryptArray([
+                    'search' => $search,
+                    'table' => $tableName,
+                    'page' => $paginator->currentPage() + 1,
+                ])
+                : null,
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function serverStatus(): array
@@ -604,6 +932,227 @@ class SystemController extends Controller
     private function backupMetadataPath(): string
     {
         return storage_path('app/backups/backup-metadata.json');
+    }
+
+    private function escapeIdentifier(string $identifier): string
+    {
+        return str_replace('`', '``', $identifier);
+    }
+
+    private function quoteSqliteIdentifier(string $identifier): string
+    {
+        return '"'.str_replace('"', '""', $identifier).'"';
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    private function listMysqlForeignKeys(string $tableName): array
+    {
+        $connection = config('database.default');
+        $databaseName = (string) config('database.connections.'.$connection.'.database');
+
+        return collect(DB::table('information_schema.KEY_COLUMN_USAGE')
+            ->where('TABLE_SCHEMA', $databaseName)
+            ->where('TABLE_NAME', $tableName)
+            ->whereNotNull('REFERENCED_TABLE_NAME')
+            ->get([
+                'COLUMN_NAME',
+                'REFERENCED_TABLE_NAME',
+                'REFERENCED_COLUMN_NAME',
+            ]))
+            ->mapWithKeys(fn (object $key) => [
+                (string) $key->COLUMN_NAME => [
+                    'table' => (string) $key->REFERENCED_TABLE_NAME,
+                    'column' => (string) $key->REFERENCED_COLUMN_NAME,
+                ],
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function parseEnumValues(string $type): array
+    {
+        if (! preg_match('/^enum\((.*)\)$/i', $type, $matches)) {
+            return [];
+        }
+
+        preg_match_all("/'((?:[^'\\]|\\.)*)'/", $matches[1], $valueMatches);
+
+        return collect($valueMatches[1] ?? [])
+            ->map(fn (string $value) => stripcslashes($value))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  array<string, string>|null  $reference
+     * @return array<string, mixed>|null
+     */
+    private function buildForeignKeyMetadata(?array $reference): ?array
+    {
+        if (! $reference) {
+            return null;
+        }
+
+        $referenceTable = $reference['table'] ?? null;
+        $referenceColumn = $reference['column'] ?? null;
+
+        if (! is_string($referenceTable) || ! is_string($referenceColumn) || $referenceTable === '' || $referenceColumn === '') {
+            return null;
+        }
+
+        $labelColumn = $this->resolveReferenceLabelColumn($referenceTable, $referenceColumn);
+        $query = DB::table($referenceTable)->orderBy($labelColumn ?? $referenceColumn);
+        $rows = $labelColumn && $labelColumn !== $referenceColumn
+            ? $query->get([$referenceColumn, $labelColumn])
+            : $query->get([$referenceColumn]);
+
+        return [
+            'table' => $referenceTable,
+            'column' => $referenceColumn,
+            'label_column' => $labelColumn,
+            'options' => collect($rows)
+                ->map(function (object $row) use ($referenceColumn, $labelColumn) {
+                    $value = $row->{$referenceColumn};
+                    $labelSource = $labelColumn ? ($row->{$labelColumn} ?? $value) : $value;
+
+                    return [
+                        'value' => $value,
+                        'label' => is_scalar($labelSource) || $labelSource === null
+                            ? (string) $labelSource
+                            : json_encode($labelSource, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                    ];
+                })
+                ->values()
+                ->all(),
+        ];
+    }
+
+    private function resolveReferenceLabelColumn(string $tableName, string $fallbackColumn): ?string
+    {
+        $availableColumns = collect($this->describeReferenceTableColumns($tableName));
+        $preferredColumns = ['name', 'title', 'label', 'display_name', 'username', 'email', 'code', 'slug'];
+
+        foreach ($preferredColumns as $candidate) {
+            if ($availableColumns->contains($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return $availableColumns->contains($fallbackColumn) ? $fallbackColumn : null;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function describeReferenceTableColumns(string $tableName): array
+    {
+        $safeTableName = $this->escapeIdentifier($tableName);
+
+        return collect(DB::select('SHOW COLUMNS FROM `'.$safeTableName.'`'))
+            ->map(fn (object $column) => (string) $column->Field)
+            ->values()
+            ->all();
+    }
+
+    private function normalizeSubmittedColumnValue(mixed $value, array $columnDefinition): mixed
+    {
+        if (is_array($value) || is_object($value)) {
+            $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+
+        if ($value === '' && ($columnDefinition['nullable'] ?? false)) {
+            return null;
+        }
+
+        $enumValues = is_array($columnDefinition['enum_values'] ?? null)
+            ? $columnDefinition['enum_values']
+            : [];
+
+        if ($enumValues !== [] && $value !== null && ! in_array((string) $value, $enumValues, true)) {
+            abort(422, 'Nilai enum yang dipilih tidak valid.');
+        }
+
+        $foreignKey = is_array($columnDefinition['foreign_key'] ?? null)
+            ? $columnDefinition['foreign_key']
+            : null;
+
+        if ($foreignKey && $value !== null) {
+            $referenceTable = $foreignKey['table'] ?? null;
+            $referenceColumn = $foreignKey['column'] ?? null;
+
+            if (is_string($referenceTable) && is_string($referenceColumn)) {
+                $exists = DB::table($referenceTable)
+                    ->where($referenceColumn, $value)
+                    ->exists();
+
+                if (! $exists) {
+                    abort(422, 'Referensi foreign key yang dipilih tidak valid.');
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    private function isAllowedEditableColumn(string $columnName, array $columnDefinition): bool
+    {
+        $type = Str::lower((string) ($columnDefinition['type'] ?? ''));
+        $isTimestampType = str_contains($type, 'timestamp') || str_contains($type, 'datetime');
+
+        if (! $isTimestampType) {
+            return true;
+        }
+
+        return in_array($columnName, ['created_at', 'updated_at'], true);
+    }
+
+    private function resolvePrimaryKeyColumn(array $columns): ?string
+    {
+        $primaryKey = collect($columns)->first(fn (array $column) => ($column['key'] ?? '') === 'PRI');
+
+        return is_array($primaryKey) && is_string($primaryKey['name'] ?? null)
+            ? $primaryKey['name']
+            : null;
+    }
+
+    private function resolveColumnType(array $columns, ?string $columnName): ?string
+    {
+        if (! $columnName) {
+            return null;
+        }
+
+        $column = collect($columns)->first(fn (array $item) => ($item['name'] ?? null) === $columnName);
+
+        return is_array($column) && is_string($column['type'] ?? null)
+            ? $column['type']
+            : null;
+    }
+
+    private function castPrimaryKeyValue(string $value, array $columns, string $primaryKey): mixed
+    {
+        $type = Str::lower((string) $this->resolveColumnType($columns, $primaryKey));
+
+        if ($type !== '' && (str_contains($type, 'int') || str_contains($type, 'decimal') || str_contains($type, 'float') || str_contains($type, 'double'))) {
+            return is_numeric($value) ? $value + 0 : $value;
+        }
+
+        return $value;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function resolveDatabaseTableState(Request $request, EncryptedStateService $encryptedState): array
+    {
+        return $encryptedState->decryptArray($request->string('state')->toString(), [
+            'search' => '',
+            'table' => null,
+            'page' => 1,
+        ]);
     }
 
     private function sanitizeBackupTitle(string $value): ?string

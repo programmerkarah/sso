@@ -73,7 +73,7 @@ export default function Dashboard({
         <AppLayout>
             <Head title="Dashboard" />
 
-            <div className="mx-auto max-w-7xl px-1 sm:px-0">
+            <div className="mx-auto max-w-9xl overflow-x-hidden px-1 sm:px-0">
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-3xl font-black text-transparent drop-shadow-xl sm:text-5xl">
@@ -226,35 +226,35 @@ export default function Dashboard({
                             <div className="space-y-3">
                                 <Link
                                     href="/admin/applications/create"
-                                    className="group flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition hover:border-white/30 hover:bg-white/20"
+                                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition hover:border-white/30 hover:bg-white/20"
                                 >
                                     <div className="rounded-full bg-gradient-to-br from-green-400/30 to-green-600/30 p-2 backdrop-blur-sm transition group-hover:scale-110">
                                         <Plus className="h-5 w-5 text-white" />
                                     </div>
-                                    <span className="font-semibold text-white">
+                                    <span className="min-w-0 break-words font-semibold text-white">
                                         Tambah Aplikasi
                                     </span>
                                 </Link>
                                 <Link
                                     href="/admin/applications"
-                                    className="group flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition hover:border-white/30 hover:bg-white/20"
+                                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition hover:border-white/30 hover:bg-white/20"
                                 >
                                     <div className="rounded-full bg-gradient-to-br from-blue-400/30 to-blue-600/30 p-2 backdrop-blur-sm transition group-hover:scale-110">
                                         <List className="h-5 w-5 text-white" />
                                     </div>
-                                    <span className="font-semibold text-white">
+                                    <span className="min-w-0 break-words font-semibold text-white">
                                         Lihat Semua Aplikasi
                                     </span>
                                 </Link>
                                 {canManageUsers && (
                                     <Link
                                         href="/admin/users"
-                                        className="group flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition hover:border-white/30 hover:bg-white/20"
+                                        className="group flex min-w-0 items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition hover:border-white/30 hover:bg-white/20"
                                     >
                                         <div className="rounded-full bg-gradient-to-br from-purple-400/30 to-purple-600/30 p-2 backdrop-blur-sm transition group-hover:scale-110">
                                             <UserCog className="h-5 w-5 text-white" />
                                         </div>
-                                        <span className="font-semibold text-white">
+                                        <span className="min-w-0 break-words font-semibold text-white">
                                             Kelola Pengguna
                                         </span>
                                     </Link>
@@ -277,12 +277,12 @@ export default function Dashboard({
                                 </div>
                                 <Link
                                     href="/settings/security"
-                                    className="group flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition hover:border-white/30 hover:bg-white/20"
+                                    className="group flex min-w-0 items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition hover:border-white/30 hover:bg-white/20"
                                 >
                                     <div className="rounded-full bg-gradient-to-br from-blue-400/30 to-blue-600/30 p-2 backdrop-blur-sm transition group-hover:scale-110">
                                         <Shield className="h-5 w-5 text-white" />
                                     </div>
-                                    <span className="font-semibold text-white">
+                                    <span className="min-w-0 break-words font-semibold text-white">
                                         Kelola Keamanan Akun
                                     </span>
                                 </Link>

@@ -82,7 +82,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                 onConfirm={confirmDelete}
             />
 
-            <div className="mx-auto max-w-7xl space-y-8">
+            <div className="mx-auto max-w-9xl space-y-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
                         <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">

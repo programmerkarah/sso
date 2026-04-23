@@ -125,6 +125,9 @@ Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-cha
 // Admin Routes - Only admins can manage applications
 Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-change-password', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/system', [SystemController::class, 'index'])->name('system.index');
+    Route::get('/system/database-tables', [SystemController::class, 'databaseTables'])->name('system.database-tables');
+    Route::post('/system/database-tables/navigate', [SystemController::class, 'navigateDatabaseTables'])->name('system.database-tables.navigate');
+    Route::put('/system/database-tables/rows', [SystemController::class, 'updateDatabaseTableRow'])->name('system.database-tables.rows.update');
     Route::post('/system/backups', [SystemController::class, 'backup'])->name('system.backups.create');
     Route::delete('/system/backups/{filename}', [SystemController::class, 'destroyBackup'])
         ->where('filename', '.*')

@@ -156,7 +156,7 @@ export default function Security({
             <Head title="Keamanan" />
 
             <div className="py-12">
-                <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-9xl px-4 sm:px-6 lg:px-8">
                     <div className="mb-8">
                         <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl">
                             Pengaturan Keamanan
