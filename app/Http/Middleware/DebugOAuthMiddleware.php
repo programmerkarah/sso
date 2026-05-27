@@ -13,7 +13,7 @@ class DebugOAuthMiddleware
     {
         if ($request->is('oauth/*')) {
             $webGuard = Auth::guard('web');
-            
+
             Log::channel('single')->info('=== OAuth Request Debug ===', [
                 'url' => $request->fullUrl(),
                 'session_id' => $request->session()->getId(),
