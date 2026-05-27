@@ -53,6 +53,22 @@ class CustomAuthorizationController extends AuthorizationController
                     ]);
             }
 
+            if ($user instanceof User && ! $user->hasVerifiedEmail()) {
+                return $this->denyAuthorizationRequest(
+                    request: $request,
+                    message: 'Email Anda belum terverifikasi. Silakan verifikasi email terlebih dahulu sebelum mengakses aplikasi.',
+                    fallbackRoute: route('verification.notice'),
+                );
+            }
+
+            if ($user instanceof User && is_null($user->two_factor_confirmed_at)) {
+                return $this->denyAuthorizationRequest(
+                    request: $request,
+                    message: 'Autentikasi dua faktor (2FA) belum aktif. Silakan aktifkan dan konfirmasi 2FA terlebih dahulu.',
+                    fallbackRoute: route('settings.security'),
+                );
+            }
+
             if ($clientId && $user) {
                 $application = Application::query()
                     ->where('oauth_client_id', $clientId)
@@ -146,5 +162,25 @@ class CustomAuthorizationController extends AuthorizationController
             ]);
             throw $e;
         }
+    }
+
+    private function denyAuthorizationRequest(Request $request, string $message, string $fallbackRoute): RedirectResponse
+    {
+        $redirectUri = $request->query('redirect_uri');
+        $state = $request->query('state', '');
+
+        if (is_string($redirectUri) && $redirectUri !== '') {
+            $errorUrl = $redirectUri.'?'.http_build_query([
+                'error' => 'access_denied',
+                'error_description' => $message,
+                'state' => $state,
+            ]);
+
+            return redirect()->away($errorUrl);
+        }
+
+        return redirect()->to($fallbackRoute)->withErrors([
+            'username' => $message,
+        ]);
     }
 }

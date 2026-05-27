@@ -36,6 +36,8 @@ class SystemController extends Controller
 
         if ($categoryFilter !== null) {
             $logsQuery->where('category', $categoryFilter);
+        } else {
+            $logsQuery->where('category', '!=', 'oauth_sync');
         }
 
         $logsPaginator = $logsQuery
@@ -752,8 +754,7 @@ class SystemController extends Controller
         int $page = 1,
         string $search = '',
         ?EncryptedStateService $encryptedState = null,
-    ): array
-    {
+    ): array {
         $perPage = 25;
         $paginator = DB::table($tableName)->paginate($perPage, ['*'], 'page', $page);
         $primaryKey = $this->resolvePrimaryKeyColumn($columns);

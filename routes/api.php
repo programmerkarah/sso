@@ -10,6 +10,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     $user = $request->user();
 
     abort_unless($user->isAdminVerified(), 403, 'Akun belum diverifikasi admin SSO.');
+    abort_unless($user->hasVerifiedEmail(), 403, 'Email akun belum terverifikasi.');
+    abort_unless(! is_null($user->two_factor_confirmed_at), 403, 'Autentikasi dua faktor (2FA) belum aktif.');
 
     $user->loadMissing('organization');
 
@@ -57,6 +59,8 @@ Route::middleware('auth:api')->get('/users', function (Request $request) {
     $user = $request->user();
 
     abort_unless($user->isAdminVerified(), 403, 'Akun belum diverifikasi admin SSO.');
+    abort_unless($user->hasVerifiedEmail(), 403, 'Email akun belum terverifikasi.');
+    abort_unless(! is_null($user->two_factor_confirmed_at), 403, 'Autentikasi dua faktor (2FA) belum aktif.');
 
     return User::select(['id', 'name', 'username', 'email', 'email_verified_at'])
         ->orderBy('id')

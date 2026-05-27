@@ -136,4 +136,46 @@ class AdminSystemManagementTest extends TestCase
             ->where('logs.links.0.active', true),
         );
     }
+
+    public function test_admin_system_default_logs_exclude_oauth_sync_category(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $admin = User::factory()->create([
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $admin->roles()->attach(Role::where('name', 'admin')->value('id'));
+
+        ActivityLog::query()->create([
+            'user_id' => $admin->id,
+            'event' => 'oauth.sync.request',
+            'category' => 'oauth_sync',
+            'status' => 'success',
+            'description' => 'Sinkronisasi sesi OAuth.',
+            'occurred_at' => now(),
+        ]);
+
+        ActivityLog::query()->create([
+            'user_id' => $admin->id,
+            'event' => 'security.login',
+            'category' => 'security',
+            'status' => 'success',
+            'description' => 'Login admin berhasil.',
+            'occurred_at' => now()->subSecond(),
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->get(route('admin.system.index'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Admin/System/Index')
+            ->where('filters.category', null)
+            ->where('logs.total', 1)
+            ->where('logs.data.0.event', 'security.login')
+            ->where('logs.data.0.category', 'security'),
+        );
+    }
 }

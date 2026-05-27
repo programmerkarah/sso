@@ -78,6 +78,41 @@ class AdminUserManagementTest extends TestCase
             ]);
     }
 
+    public function test_api_user_profile_rejects_user_with_unverified_email(): void
+    {
+        $user = User::factory()->unverified()->create([
+            'two_factor_secret' => encrypt('shared-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['code-1', 'code-2'])),
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        $response = $this
+            ->actingAs($user, 'api')
+            ->getJson('/api/user');
+
+        $response
+            ->assertForbidden()
+            ->assertSeeText('Email akun belum terverifikasi.');
+    }
+
+    public function test_api_user_profile_rejects_user_without_confirmed_two_factor(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+            'two_factor_confirmed_at' => null,
+        ]);
+
+        $response = $this
+            ->actingAs($user, 'api')
+            ->getJson('/api/user');
+
+        $response
+            ->assertForbidden()
+            ->assertSeeText('Autentikasi dua faktor (2FA) belum aktif.');
+    }
+
     /**
      * Ensure admin can reset a user's password and the user receives an email notification.
      */

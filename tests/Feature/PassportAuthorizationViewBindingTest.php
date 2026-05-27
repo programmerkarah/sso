@@ -58,6 +58,9 @@ class PassportAuthorizationViewBindingTest extends TestCase
 
         $user = User::factory()->create([
             'organization_id' => $organization->id,
+            'two_factor_secret' => encrypt('test-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['code-1'])),
+            'two_factor_confirmed_at' => now(),
         ]);
         $user->roles()->attach(Role::where('name', 'user')->value('id'));
 
@@ -138,5 +141,86 @@ class PassportAuthorizationViewBindingTest extends TestCase
         $this->assertNotNull($oauthLog);
         $this->assertSame('client-internal', data_get($oauthLog?->metadata, 'oauth_client_id'));
         $this->assertSame('Aplikasi Internal', data_get($oauthLog?->metadata, 'application_name'));
+    }
+
+    public function test_user_with_unverified_email_is_blocked_from_oauth_authorization_flow(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $organization = Organization::query()->create([
+            'name' => 'Internal',
+            'slug' => 'internal-email-unverified',
+            'type' => 'internal',
+            'is_active' => true,
+        ]);
+
+        $user = User::factory()->unverified()->create([
+            'organization_id' => $organization->id,
+            'admin_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $user->roles()->attach(Role::where('name', 'user')->value('id'));
+
+        Application::query()->create([
+            'name' => 'Aplikasi Internal Email',
+            'slug' => 'aplikasi-internal-email',
+            'description' => 'Hanya internal.',
+            'domain' => 'internal-email.example.test',
+            'callback_url' => 'https://internal-email.example.test/auth/callback',
+            'logo_url' => null,
+            'oauth_client_id' => 'client-internal-email',
+            'oauth_client_secret' => 'secret-internal-email',
+            'is_active' => true,
+            'allowed_organization_types' => ['internal'],
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/oauth/authorize?client_id=client-internal-email');
+
+        $response->assertRedirect(route('verification.notice'));
+        $response->assertSessionHasErrors('username');
+    }
+
+    public function test_user_without_confirmed_two_factor_is_blocked_from_oauth_authorization_flow(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $organization = Organization::query()->create([
+            'name' => 'Internal',
+            'slug' => 'internal-without-2fa',
+            'type' => 'internal',
+            'is_active' => true,
+        ]);
+
+        $user = User::factory()->create([
+            'organization_id' => $organization->id,
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => null,
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+        ]);
+        $user->roles()->attach(Role::where('name', 'user')->value('id'));
+
+        Application::query()->create([
+            'name' => 'Aplikasi Internal 2FA',
+            'slug' => 'aplikasi-internal-2fa',
+            'description' => 'Hanya internal.',
+            'domain' => 'internal-2fa.example.test',
+            'callback_url' => 'https://internal-2fa.example.test/auth/callback',
+            'logo_url' => null,
+            'oauth_client_id' => 'client-internal-2fa',
+            'oauth_client_secret' => 'secret-internal-2fa',
+            'is_active' => true,
+            'allowed_organization_types' => ['internal'],
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/oauth/authorize?client_id=client-internal-2fa');
+
+        $response->assertRedirect(route('settings.security'));
+        $response->assertSessionHasErrors('username');
     }
 }

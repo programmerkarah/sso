@@ -19,10 +19,17 @@ class LogFinalResponse
         if ($this->shouldTrackOAuthLoginRequest($request)) {
             $clientId = $this->resolveClientId($request);
             $application = $this->resolveApplication($clientId);
+            $isSyncRequest = $this->isSyncOAuthRequest($request);
             $status = $response->getStatusCode() >= 500
                 ? 'error'
                 : ($response->getStatusCode() >= 400 ? 'warning' : 'success');
-            $description = match ($status) {
+            $description = $isSyncRequest
+                ? match ($status) {
+                    'error' => 'Gagal memproses sinkronisasi sesi OAuth2 dari aplikasi/client.',
+                    'warning' => 'Sinkronisasi sesi OAuth2 diproses dengan peringatan atau penolakan.',
+                    default => 'Berhasil memproses sinkronisasi sesi OAuth2 dari aplikasi/client.',
+                }
+            : match ($status) {
                 'error' => 'Gagal memproses permintaan login OAuth2 dari aplikasi/client.',
                 'warning' => 'Permintaan login OAuth2 diproses dengan peringatan atau penolakan.',
                 default => 'Berhasil memproses permintaan login OAuth2 dari aplikasi/client.',
@@ -33,8 +40,8 @@ class LogFinalResponse
 
             ActivityLogger::logByRequest(
                 request: $request,
-                event: 'oauth.login.request',
-                category: 'oauth',
+                event: $isSyncRequest ? 'oauth.sync.request' : 'oauth.login.request',
+                category: $isSyncRequest ? 'oauth_sync' : 'oauth',
                 description: $description,
                 user: $user,
                 metadata: [
@@ -45,6 +52,7 @@ class LogFinalResponse
                     'response_status_code' => $response->getStatusCode(),
                     'is_redirect' => $response->isRedirection(),
                     'redirect_location' => $response->headers->get('Location'),
+                    'is_sync' => $isSyncRequest,
                 ],
                 status: $status,
             );
@@ -58,6 +66,7 @@ class LogFinalResponse
                 'content_preview' => substr($response->getContent(), 0, 500),
                 'oauth_client_id' => $clientId,
                 'application_name' => $application?->name,
+                'is_sync' => $isSyncRequest,
             ]);
         }
 
@@ -97,5 +106,19 @@ class LogFinalResponse
         }
 
         return Application::query()->where('oauth_client_id', $clientId)->first();
+    }
+
+    private function isSyncOAuthRequest(Request $request): bool
+    {
+        if ($request->is('oauth/authorize')) {
+            return $request->boolean('sync')
+                || $request->string('prompt')->toString() === 'none';
+        }
+
+        if ($request->is('oauth/token')) {
+            return $request->header('X-SSO-Sync') === '1';
+        }
+
+        return false;
     }
 }
