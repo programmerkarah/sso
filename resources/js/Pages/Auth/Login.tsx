@@ -10,6 +10,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 export default function Login({ status }: { status?: string }) {
     const { errors } = usePage<{ errors: Record<string, string> }>().props;
     const [processing, setProcessing] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const csrfToken =
         typeof document !== 'undefined'
@@ -101,14 +102,77 @@ export default function Login({ status }: { status?: string }) {
                     <Label htmlFor="password" required>
                         Password
                     </Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        name="password"
-                        autoComplete="current-password"
-                        placeholder="••••••••"
-                        required
-                    />
+                    <div className="relative">
+                        <Input
+                            id="password"
+                            type={showPassword ? 'text' : 'password'}
+                            name="password"
+                            autoComplete="current-password"
+                            placeholder="••••••••"
+                            className="pr-12"
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-white/80 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30"
+                            aria-label={
+                                showPassword
+                                    ? 'Sembunyikan password'
+                                    : 'Tampilkan password'
+                            }
+                        >
+                            {showPassword ? (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M3 3l18 18"
+                                    />
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M10.58 10.58a2 2 0 0 0 2.83 2.83"
+                                    />
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M9.88 5.09A9.77 9.77 0 0 1 12 4.85c5 0 9.27 3.11 10.86 7.5a11.8 11.8 0 0 1-3.3 4.88"
+                                    />
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M6.61 6.61A11.84 11.84 0 0 0 1.14 12.35a12.2 12.2 0 0 0 8.42 7.15"
+                                    />
+                                </svg>
+                            ) : (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M1.14 12.35C2.73 7.96 7 4.85 12 4.85s9.27 3.11 10.86 7.5c-1.59 4.39-5.86 7.5-10.86 7.5s-9.27-3.11-10.86-7.5z"
+                                    />
+                                    <circle cx="12" cy="12.35" r="3" />
+                                </svg>
+                            )}
+                        </button>
+                    </div>
                 </div>
 
                 <div>

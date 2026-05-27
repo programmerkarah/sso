@@ -125,13 +125,13 @@ class PassportAuthorizationViewBindingTest extends TestCase
         $this->assertGuest();
 
         $this->assertDatabaseHas('activity_logs', [
-            'event' => 'oauth.request',
+            'event' => 'oauth.login.request',
             'category' => 'oauth',
             'status' => 'success',
         ]);
 
         $oauthLog = ActivityLog::query()
-            ->where('event', 'oauth.request')
+            ->where('event', 'oauth.login.request')
             ->latest('id')
             ->first();
 

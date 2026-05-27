@@ -16,7 +16,7 @@ class LogFinalResponse
     {
         $response = $next($request);
 
-        if ($this->shouldTrackOAuthRequest($request)) {
+        if ($this->shouldTrackOAuthLoginRequest($request)) {
             $clientId = $this->resolveClientId($request);
             $application = $this->resolveApplication($clientId);
             $status = $response->getStatusCode() >= 500
@@ -64,7 +64,7 @@ class LogFinalResponse
         return $response;
     }
 
-    private function shouldTrackOAuthRequest(Request $request): bool
+    private function shouldTrackOAuthLoginRequest(Request $request): bool
     {
         if ($request->is('oauth/authorize')) {
             return true;
