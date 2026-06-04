@@ -6,6 +6,7 @@ import {
     Download,
     EllipsisVertical,
     KeyRound,
+    Laptop,
     Monitor,
     Pencil,
     RotateCcw,
@@ -14,6 +15,7 @@ import {
     ShieldCheck,
     ShieldOff,
     ShieldPlus,
+    Smartphone,
     Trash2,
     UserCog,
     XCircle,
@@ -153,6 +155,65 @@ interface UserSecurityModal {
     trustedDevices: TrustedDeviceInfo[];
 }
 
+const parseUserAgent = (
+    ua: string | null,
+): { browser: string; os: string; device: 'mobile' | 'tablet' | 'desktop' } => {
+    if (!ua)
+        return {
+            browser: 'Browser tidak diketahui',
+            os: 'OS tidak diketahui',
+            device: 'desktop',
+        };
+
+    // Device type
+    const isMobile = /Mobile|Android(?!.*Tablet)|iPhone|iPod/i.test(ua);
+    const isTablet = /iPad|Android.*Tablet|Tablet/i.test(ua);
+    const device: 'mobile' | 'tablet' | 'desktop' = isTablet
+        ? 'tablet'
+        : isMobile
+          ? 'mobile'
+          : 'desktop';
+
+    // OS
+    let os = 'OS tidak diketahui';
+    if (/Windows NT 10\.0/.test(ua)) os = 'Windows 10/11';
+    else if (/Windows NT 6\.3/.test(ua)) os = 'Windows 8.1';
+    else if (/Windows NT 6\.1/.test(ua)) os = 'Windows 7';
+    else if (/Windows/.test(ua)) os = 'Windows';
+    else if (/Mac OS X 10_15/.test(ua)) os = 'macOS Catalina+';
+    else if (/Mac OS X 10_14/.test(ua)) os = 'macOS Mojave';
+    else if (/Mac OS X/.test(ua)) os = 'macOS';
+    else if (/iPhone OS 18/.test(ua)) os = 'iOS 18';
+    else if (/iPhone OS 17/.test(ua)) os = 'iOS 17';
+    else if (/iPhone OS/.test(ua)) os = 'iOS';
+    else if (/iPad/.test(ua)) os = 'iPadOS';
+    else if (/Android 14/.test(ua)) os = 'Android 14';
+    else if (/Android 13/.test(ua)) os = 'Android 13';
+    else if (/Android 12/.test(ua)) os = 'Android 12';
+    else if (/Android/.test(ua)) os = 'Android';
+    else if (/Linux/.test(ua)) os = 'Linux';
+
+    // Browser
+    let browser = 'Browser tidak diketahui';
+    const chromeMatch = ua.match(/Chrome\/([\d]+)/);
+    const safariMatch = ua.match(/Version\/([\d]+).*Safari/);
+    const firefoxMatch = ua.match(/Firefox\/([\d]+)/);
+    const edgeMatch = ua.match(/Edg\/([\d]+)/);
+    const operaMatch = ua.match(/OPR\/([\d]+)/);
+
+    if (edgeMatch) browser = `Edge ${edgeMatch[1]}`;
+    else if (operaMatch) browser = `Opera ${operaMatch[1]}`;
+    else if (chromeMatch && !/Chromium/.test(ua))
+        browser = `Chrome ${chromeMatch[1]}`;
+    else if (safariMatch && /Safari/.test(ua))
+        browser = `Safari ${safariMatch[1]}`;
+    else if (firefoxMatch) browser = `Firefox ${firefoxMatch[1]}`;
+    else if (/Chromium/.test(ua)) browser = 'Chromium';
+    else if (/MSIE|Trident/.test(ua)) browser = 'Internet Explorer';
+
+    return { browser, os, device };
+};
+
 const formatDateTime = (value?: string) => {
     if (!value) {
         return '—';
@@ -212,6 +273,9 @@ export default function Index({
             sessions: [],
             trustedDevices: [],
         });
+    const [securityTab, setSecurityTab] = useState<'sessions' | 'devices'>(
+        'sessions',
+    );
     const actionButtonRefs = useRef<Record<number, HTMLButtonElement | null>>(
         {},
     );
@@ -632,6 +696,7 @@ export default function Index({
     };
 
     const openUserSecurity = async (user: ManagedUser) => {
+        setSecurityTab('sessions');
         setUserSecurityModal({
             isOpen: true,
             user,
@@ -1670,166 +1735,304 @@ export default function Index({
 
             {/* Modal Sesi & Perangkat */}
             {userSecurityModal.isOpen && (
-                <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto p-4 pt-16">
+                <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto p-4 pt-12">
                     <div
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                         onClick={closeUserSecurity}
                     />
-                    <div className="relative w-full max-w-2xl rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
-                        <div className="mb-4 flex items-center justify-between">
-                            <div>
-                                <h3 className="flex items-center gap-2 text-base font-bold text-white">
-                                    <Monitor className="h-4 w-4 text-teal-300" />
-                                    Sesi &amp; Perangkat
-                                </h3>
-                                <p className="mt-0.5 text-xs text-white/60">
-                                    {userSecurityModal.user?.name}
-                                </p>
+                    <div className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-gradient-to-b from-white/15 to-white/8 shadow-2xl backdrop-blur-2xl">
+                        {/* Header */}
+                        <div className="flex items-start justify-between gap-3 border-b border-white/10 px-5 py-4">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/20">
+                                    <Monitor className="h-4.5 w-4.5 text-teal-300" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-white">
+                                        Sesi &amp; Perangkat
+                                    </h3>
+                                    <p className="text-xs text-white/50">
+                                        {userSecurityModal.user?.name}
+                                    </p>
+                                </div>
                             </div>
                             <button
                                 type="button"
                                 onClick={closeUserSecurity}
-                                className="rounded-lg p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white"
+                                className="mt-0.5 rounded-lg p-1.5 text-white/40 transition hover:bg-white/10 hover:text-white"
                             >
-                                <XCircle className="h-5 w-5" />
+                                <XCircle className="h-4.5 w-4.5" />
                             </button>
                         </div>
 
-                        {userSecurityModal.loading ? (
-                            <div className="flex items-center justify-center py-12 text-white/50 text-sm">
-                                Memuat data...
-                            </div>
-                        ) : (
-                            <div className="space-y-6">
-                                {/* Sesi Aktif */}
-                                <div>
-                                    <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">
-                                        Sesi Login (
-                                        {userSecurityModal.sessions.length})
-                                    </h4>
+                        {/* Tabs */}
+                        <div className="flex border-b border-white/10 px-5">
+                            <button
+                                type="button"
+                                onClick={() => setSecurityTab('sessions')}
+                                className={`-mb-px border-b-2 px-1 py-3 text-xs font-semibold transition ${
+                                    securityTab === 'sessions'
+                                        ? 'border-teal-400 text-teal-300'
+                                        : 'border-transparent text-white/40 hover:text-white/70'
+                                }`}
+                            >
+                                Sesi Login
+                                <span
+                                    className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
+                                        securityTab === 'sessions'
+                                            ? 'bg-teal-500/20 text-teal-300'
+                                            : 'bg-white/10 text-white/40'
+                                    }`}
+                                >
+                                    {userSecurityModal.sessions.length}
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setSecurityTab('devices')}
+                                className={`-mb-px ml-5 border-b-2 px-1 py-3 text-xs font-semibold transition ${
+                                    securityTab === 'devices'
+                                        ? 'border-teal-400 text-teal-300'
+                                        : 'border-transparent text-white/40 hover:text-white/70'
+                                }`}
+                            >
+                                Perangkat Tepercaya 2FA
+                                <span
+                                    className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
+                                        securityTab === 'devices'
+                                            ? 'bg-teal-500/20 text-teal-300'
+                                            : 'bg-white/10 text-white/40'
+                                    }`}
+                                >
+                                    {userSecurityModal.trustedDevices.length}
+                                </span>
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="max-h-[60vh] overflow-y-auto p-5">
+                            {userSecurityModal.loading ? (
+                                <div className="flex flex-col items-center justify-center gap-2 py-12 text-white/40">
+                                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-teal-400" />
+                                    <span className="text-xs">
+                                        Memuat data...
+                                    </span>
+                                </div>
+                            ) : securityTab === 'sessions' ? (
+                                <>
                                     {userSecurityModal.sessions.length === 0 ? (
-                                        <p className="text-xs text-white/40">
-                                            Tidak ada sesi aktif.
-                                        </p>
+                                        <div className="flex flex-col items-center justify-center gap-2 py-10 text-white/30">
+                                            <Monitor className="h-8 w-8" />
+                                            <p className="text-xs">
+                                                Tidak ada sesi aktif.
+                                            </p>
+                                        </div>
                                     ) : (
-                                        <div className="space-y-2">
+                                        <div className="space-y-2.5">
                                             {userSecurityModal.sessions.map(
-                                                (session) => (
-                                                    <div
-                                                        key={session.id}
-                                                        className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
-                                                    >
-                                                        <div className="min-w-0 flex-1">
-                                                            <div className="flex items-center gap-2">
-                                                                {session.is_active && (
-                                                                    <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300">
-                                                                        Aktif
-                                                                    </span>
-                                                                )}
-                                                                <span className="text-xs text-white/80">
-                                                                    {session.ip_address ??
-                                                                        '—'}
-                                                                </span>
-                                                            </div>
-                                                            <p className="mt-1 truncate text-[11px] text-white/40">
-                                                                {session.user_agent ??
-                                                                    '—'}
-                                                            </p>
-                                                            <p className="mt-0.5 text-[11px] text-white/40">
-                                                                Aktivitas
-                                                                terakhir:{' '}
-                                                                {formatDateTime(
-                                                                    session.last_activity_at,
-                                                                )}
-                                                            </p>
-                                                        </div>
-                                                        <button
-                                                            type="button"
-                                                            title="Hentikan sesi"
-                                                            onClick={() =>
-                                                                handleTerminateSession(
-                                                                    session.id,
-                                                                )
-                                                            }
-                                                            className="mt-0.5 shrink-0 rounded-lg p-1.5 text-red-300/70 transition hover:bg-red-500/20 hover:text-red-300"
+                                                (session) => {
+                                                    const parsed =
+                                                        parseUserAgent(
+                                                            session.user_agent,
+                                                        );
+                                                    const DeviceIcon =
+                                                        parsed.device ===
+                                                        'mobile'
+                                                            ? Smartphone
+                                                            : parsed.device ===
+                                                                'tablet'
+                                                              ? Laptop
+                                                              : Monitor;
+
+                                                    return (
+                                                        <div
+                                                            key={session.id}
+                                                            className={`group flex items-center gap-3 rounded-xl border px-4 py-3 transition ${
+                                                                session.is_active
+                                                                    ? 'border-emerald-500/30 bg-emerald-500/10'
+                                                                    : 'border-white/8 bg-white/5 hover:bg-white/8'
+                                                            }`}
                                                         >
-                                                            <Trash2 className="h-3.5 w-3.5" />
-                                                        </button>
-                                                    </div>
-                                                ),
+                                                            <div
+                                                                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                                                                    session.is_active
+                                                                        ? 'bg-emerald-500/20'
+                                                                        : 'bg-white/10'
+                                                                }`}
+                                                            >
+                                                                <DeviceIcon
+                                                                    className={`h-4 w-4 ${session.is_active ? 'text-emerald-300' : 'text-white/50'}`}
+                                                                />
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-xs font-semibold text-white/90">
+                                                                        {
+                                                                            parsed.browser
+                                                                        }
+                                                                    </span>
+                                                                    <span className="text-white/30">
+                                                                        ·
+                                                                    </span>
+                                                                    <span className="text-xs text-white/55">
+                                                                        {
+                                                                            parsed.os
+                                                                        }
+                                                                    </span>
+                                                                    {session.is_active && (
+                                                                        <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300">
+                                                                            Aktif
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="mt-0.5 flex items-center gap-3 text-[11px] text-white/35">
+                                                                    <span>
+                                                                        IP:{' '}
+                                                                        {session.ip_address ??
+                                                                            '—'}
+                                                                    </span>
+                                                                    <span>
+                                                                        ·
+                                                                    </span>
+                                                                    <span>
+                                                                        Aktif:{' '}
+                                                                        {formatDateTime(
+                                                                            session.last_activity_at,
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                title="Hentikan sesi"
+                                                                onClick={() =>
+                                                                    handleTerminateSession(
+                                                                        session.id,
+                                                                    )
+                                                                }
+                                                                className="shrink-0 rounded-lg p-1.5 text-white/25 transition hover:bg-red-500/20 hover:text-red-300"
+                                                            >
+                                                                <Trash2 className="h-3.5 w-3.5" />
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                },
                                             )}
                                         </div>
                                     )}
-                                </div>
-
-                                {/* Perangkat Tepercaya */}
-                                <div>
-                                    <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">
-                                        Perangkat Tepercaya 2FA (
-                                        {
-                                            userSecurityModal.trustedDevices
-                                                .length
-                                        }
-                                        )
-                                    </h4>
+                                </>
+                            ) : (
+                                <>
                                     {userSecurityModal.trustedDevices.length ===
                                     0 ? (
-                                        <p className="text-xs text-white/40">
-                                            Tidak ada perangkat tepercaya.
-                                        </p>
+                                        <div className="flex flex-col items-center justify-center gap-2 py-10 text-white/30">
+                                            <ShieldCheck className="h-8 w-8" />
+                                            <p className="text-xs">
+                                                Tidak ada perangkat tepercaya.
+                                            </p>
+                                        </div>
                                     ) : (
-                                        <div className="space-y-2">
+                                        <div className="space-y-2.5">
                                             {userSecurityModal.trustedDevices.map(
-                                                (device) => (
-                                                    <div
-                                                        key={device.id}
-                                                        className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
-                                                    >
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="truncate text-xs text-white/80">
-                                                                {device.user_agent ??
-                                                                    '—'}
-                                                            </p>
-                                                            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-white/40">
-                                                                <span>
-                                                                    Terakhir
-                                                                    digunakan:{' '}
-                                                                    {device.last_used_at
-                                                                        ? formatDateTime(
-                                                                              device.last_used_at,
-                                                                          )
-                                                                        : '—'}
-                                                                </span>
-                                                                <span>
-                                                                    Kadaluarsa:{' '}
-                                                                    {device.expires_at
-                                                                        ? formatDateTime(
-                                                                              device.expires_at,
-                                                                          )
-                                                                        : '—'}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <button
-                                                            type="button"
-                                                            title="Cabut perangkat tepercaya"
-                                                            onClick={() =>
-                                                                handleRevokeDevice(
-                                                                    device.id,
-                                                                )
-                                                            }
-                                                            className="mt-0.5 shrink-0 rounded-lg p-1.5 text-red-300/70 transition hover:bg-red-500/20 hover:text-red-300"
+                                                (device) => {
+                                                    const parsed =
+                                                        parseUserAgent(
+                                                            device.user_agent,
+                                                        );
+                                                    const DeviceIcon =
+                                                        parsed.device ===
+                                                        'mobile'
+                                                            ? Smartphone
+                                                            : parsed.device ===
+                                                                'tablet'
+                                                              ? Laptop
+                                                              : Monitor;
+                                                    const now = Date.now();
+                                                    const isExpired =
+                                                        device.expires_at
+                                                            ? new Date(
+                                                                  device.expires_at,
+                                                              ).getTime() < now
+                                                            : false;
+
+                                                    return (
+                                                        <div
+                                                            key={device.id}
+                                                            className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition ${
+                                                                isExpired
+                                                                    ? 'border-white/5 bg-white/3 opacity-60'
+                                                                    : 'border-white/8 bg-white/5 hover:bg-white/8'
+                                                            }`}
                                                         >
-                                                            <Trash2 className="h-3.5 w-3.5" />
-                                                        </button>
-                                                    </div>
-                                                ),
+                                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                                                                <DeviceIcon className="h-4 w-4 text-white/50" />
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-xs font-semibold text-white/90">
+                                                                        {
+                                                                            parsed.browser
+                                                                        }
+                                                                    </span>
+                                                                    <span className="text-white/30">
+                                                                        ·
+                                                                    </span>
+                                                                    <span className="text-xs text-white/55">
+                                                                        {
+                                                                            parsed.os
+                                                                        }
+                                                                    </span>
+                                                                    {isExpired && (
+                                                                        <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] text-white/40">
+                                                                            Kadaluarsa
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0 text-[11px] text-white/35">
+                                                                    <span>
+                                                                        Digunakan:{' '}
+                                                                        {device.last_used_at
+                                                                            ? formatDateTime(
+                                                                                  device.last_used_at,
+                                                                              )
+                                                                            : '—'}
+                                                                    </span>
+                                                                    {device.expires_at && (
+                                                                        <>
+                                                                            <span>
+                                                                                ·
+                                                                            </span>
+                                                                            <span>
+                                                                                Exp:{' '}
+                                                                                {formatDateTime(
+                                                                                    device.expires_at,
+                                                                                )}
+                                                                            </span>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                title="Cabut perangkat"
+                                                                onClick={() =>
+                                                                    handleRevokeDevice(
+                                                                        device.id,
+                                                                    )
+                                                                }
+                                                                className="shrink-0 rounded-lg p-1.5 text-white/25 transition hover:bg-red-500/20 hover:text-red-300"
+                                                            >
+                                                                <Trash2 className="h-3.5 w-3.5" />
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                },
                                             )}
                                         </div>
                                     )}
-                                </div>
-                            </div>
-                        )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
