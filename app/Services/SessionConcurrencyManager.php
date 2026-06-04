@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\SessionDisplaced;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,9 @@ class SessionConcurrencyManager
                 ->where('id', $previousSessionId)
                 ->delete();
 
+            // Beritahu sesi lama secara real-time via Pusher bahwa mereka telah digusur.
+            SessionDisplaced::dispatch($userId);
+
             if ($forceTwoFactorOnNextLogin) {
                 Cache::forever(self::FORCE_2FA_CACHE_PREFIX.$userId, true);
             }
@@ -46,6 +50,19 @@ class SessionConcurrencyManager
         return is_string($activeSessionId)
             && $activeSessionId !== ''
             && hash_equals($activeSessionId, $request->session()->getId());
+    }
+
+    /**
+     * Determine if there is a registered active session for the user that differs
+     * from the current request's session (i.e. the user is logged in on another device).
+     */
+    public function hasOtherActiveSession(Request $request, int $userId): bool
+    {
+        $activeSessionId = $this->getActiveSessionId($userId);
+
+        return is_string($activeSessionId)
+            && $activeSessionId !== ''
+            && $activeSessionId !== $request->session()->getId();
     }
 
     public function hasActiveSessionRecord(int $userId): bool

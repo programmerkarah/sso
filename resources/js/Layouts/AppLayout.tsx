@@ -1,13 +1,16 @@
+import Echo from 'laravel-echo';
 import {
     AppWindow,
     Database,
     LayoutDashboard,
     LogOut,
     Menu,
+    MonitorX,
     Shield,
     User,
     X,
 } from 'lucide-react';
+import Pusher from 'pusher-js';
 
 import { PropsWithChildren, useEffect, useRef, useState } from 'react';
 
@@ -38,6 +41,29 @@ export default function AppLayout({ children }: PropsWithChildren) {
     >(null);
     const [mainPaddingTop, setMainPaddingTop] = useState(120);
     const [toasts, setToasts] = useState<ToastItem[]>([]);
+    const [sessionDisplaced, setSessionDisplaced] = useState(false);
+
+    // Dengarkan event session.displaced via Pusher (real-time, menggantikan polling)
+    useEffect(() => {
+        if (!user) return;
+
+        (window as Window & { Pusher?: typeof Pusher }).Pusher = Pusher;
+
+        const echo = new Echo({
+            broadcaster: 'pusher',
+            key: import.meta.env.VITE_PUSHER_APP_KEY as string,
+            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER as string,
+            forceTLS: true,
+        });
+
+        echo.private(`session.${user.id}`).listen('.session.displaced', () => {
+            setSessionDisplaced(true);
+        });
+
+        return () => {
+            echo.disconnect();
+        };
+    }, [user?.id]);
 
     useEffect(() => {
         const nextToasts: ToastItem[] = [];
@@ -139,6 +165,33 @@ export default function AppLayout({ children }: PropsWithChildren) {
                     )
                 }
             />
+
+            {/* Modal: sesi digusur perangkat lain */}
+            {sessionDisplaced && (
+                <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+                    <div className="relative w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-400/40 bg-red-500/10">
+                            <MonitorX className="h-6 w-6 text-red-400" />
+                        </div>
+                        <h3 className="mb-2 text-lg font-bold text-white">
+                            Sesi Berakhir
+                        </h3>
+                        <p className="mb-6 text-sm leading-6 text-white/75">
+                            Akun Anda masuk dari perangkat lain sehingga sesi
+                            ini otomatis diakhiri. Silakan login kembali untuk
+                            melanjutkan.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => (window.location.href = '/login')}
+                            className="w-full rounded-xl bg-red-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-600"
+                        >
+                            Ke Halaman Login
+                        </button>
+                    </div>
+                </div>
+            )}
             <div className="relative min-h-screen">
                 {user && (
                     <nav

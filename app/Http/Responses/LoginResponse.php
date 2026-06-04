@@ -25,18 +25,31 @@ class LoginResponse implements LoginResponseContract
     public function toResponse($request)
     {
         if ($request->user()) {
-            $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $request->user());
-            $this->sessionConcurrencyManager->activateLatestSession(
-                $request,
-                (int) $request->user()->id,
-            );
+            $user = $request->user();
+            $userId = (int) $user->id;
+
+            // Catat apakah login ini menggusur sesi aktif di perangkat lain
+            // sebelum sesi baru diaktifkan (setelah aktivasi, flag ini tidak bisa dibaca).
+            $isDisplacingOtherSession = $this->sessionConcurrencyManager->hasOtherActiveSession($request, $userId);
+
+            $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $user);
+            $this->sessionConcurrencyManager->activateLatestSession($request, $userId);
+
+            // 1 device, 1 session: hapus semua trusted device milik perangkat lain.
+            // Trusted device perangkat saat ini (baru dibuat/diperbarui di atas) dipertahankan.
+            if ($isDisplacingOtherSession) {
+                $currentFingerprint = $this->trustedDeviceManager->fingerprint($request);
+                $user->trustedDevices()
+                    ->where('device_fingerprint', '!=', $currentFingerprint)
+                    ->delete();
+            }
 
             ActivityLogger::logByRequest(
                 request: $request,
                 event: 'auth.login',
                 category: 'authentication',
-                description: "Berhasil login pengguna {$request->user()->name}.",
-                user: $request->user(),
+                description: "Berhasil login pengguna {$user->name}.",
+                user: $user,
             );
         }
 

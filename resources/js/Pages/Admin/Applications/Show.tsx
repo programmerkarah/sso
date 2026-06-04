@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
+import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import AppLayout from '@/Layouts/AppLayout';
@@ -31,6 +32,16 @@ export default function Show({ application, appUrl }: ShowProps) {
     const [showSecret, setShowSecret] = useState(false);
     const [copied, setCopied] = useState<'id' | 'secret' | 'env' | null>(null);
     const [toasts, setToasts] = useState<ToastItem[]>([]);
+    const [showRegenerateModal, setShowRegenerateModal] = useState(false);
+
+    const handleRegenerateSecret = () => {
+        setShowRegenerateModal(false);
+        router.post(
+            `/admin/applications/${application.route_key}/refresh-secret`,
+            {},
+            { preserveScroll: true },
+        );
+    };
 
     const pushCopyToast = (label: string) => {
         const id = `copy-${label}-${Date.now()}`;
@@ -248,13 +259,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            router.post(
-                                                `/admin/applications/${application.route_key}/refresh-secret`,
-                                                {},
-                                                {
-                                                    preserveScroll: true,
-                                                },
-                                            )
+                                            setShowRegenerateModal(true)
                                         }
                                         className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/20 sm:w-auto"
                                     >
@@ -477,6 +482,16 @@ export default function Show({ application, appUrl }: ShowProps) {
                     </div>
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={showRegenerateModal}
+                title="Regenerasi Client Secret"
+                description={`Client secret untuk aplikasi "${application.name}" akan diganti dengan yang baru. Secret lama akan langsung tidak berlaku dan integrasi yang menggunakannya akan gagal sampai diperbarui.`}
+                confirmLabel="Ya, Regenerasi Secret"
+                confirmVariant="amber"
+                onCancel={() => setShowRegenerateModal(false)}
+                onConfirm={handleRegenerateSecret}
+            />
         </AppLayout>
     );
 }

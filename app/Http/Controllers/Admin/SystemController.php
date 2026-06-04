@@ -1201,32 +1201,11 @@ class SystemController extends Controller
         // Filter SQL untuk skip tabel users dan sessions
         $filteredSql = $this->filterBackupSql($sqlContent, ['users', 'sessions']);
 
-        $connection = config('database.connections.'.config('database.default'));
-        $binary = $this->resolveDatabaseBinary('mysql');
-        $host = $this->normalizeMysqlHost((string) ($connection['host'] ?? '127.0.0.1'));
-
-        // Untuk Windows/XAMPP, gunakan named pipe jika host adalah localhost
-        $isLocalhost = in_array($host, ['127.0.0.1', 'localhost'], true);
-        $protocol = $isLocalhost && PHP_OS_FAMILY === 'Windows' ? 'pipe' : 'tcp';
-
-        $command = [
-            $binary,
-            '--host='.$host,
-            '--protocol='.$protocol,
-            '--port='.(string) ($connection['port'] ?? '3306'),
-            '--user='.(string) ($connection['username'] ?? 'root'),
-            '--password='.(string) ($connection['password'] ?? ''),
-            (string) ($connection['database'] ?? ''),
-        ];
-
-        $process = new Process($command);
-        $process->setTimeout(300);
-        $process->setInput($filteredSql);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException($process->getErrorOutput() ?: 'Unknown mysql restore error.');
-        }
+        // Gunakan koneksi PDO Laravel langsung — menghindari masalah kompatibilitas
+        // mysql.exe binary di Windows (named pipe / TCP socket issues di XAMPP).
+        // DB::transaction() tidak dipakai karena DDL (DROP/CREATE TABLE) menyebabkan
+        // implicit commit di MySQL yang membatalkan transaksi PDO.
+        DB::unprepared($filteredSql);
     }
 
     private function filterBackupSql(string $sqlContent, array $skipTables = []): string

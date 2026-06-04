@@ -12,6 +12,7 @@ use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
+use Laravel\Fortify\Fortify;
 
 class SettingsController extends Controller
 {
@@ -24,6 +25,9 @@ class SettingsController extends Controller
             'twoFactorConfirmed' => ! is_null($user->two_factor_confirmed_at),
             'qrCodeSvg' => $user->two_factor_secret
                 ? $user->twoFactorQrCodeSvg()
+                : null,
+            'twoFactorSecretKey' => $user->two_factor_secret
+                ? Fortify::currentEncrypter()->decrypt($user->two_factor_secret)
                 : null,
             'recoveryCodes' => $user->two_factor_confirmed_at && $request->session()->has('two-factor-recovery-codes')
                 ? $request->session()->get('two-factor-recovery-codes')

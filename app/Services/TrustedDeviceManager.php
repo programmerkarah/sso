@@ -20,6 +20,12 @@ class TrustedDeviceManager
      */
     public function shouldChallenge(Request $request, User $user): bool
     {
+        // 1 device, 1 session: jika ada sesi aktif di perangkat lain, wajib 2FA
+        // bahkan jika perangkat ini sudah pernah dipercaya.
+        if ($this->sessionConcurrencyManager->hasOtherActiveSession($request, (int) $user->id)) {
+            return true;
+        }
+
         if ($this->sessionConcurrencyManager->consumeForceTwoFactorFlag($user->id)) {
             return true;
         }

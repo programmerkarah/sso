@@ -8,4 +8,5 @@ return [
     AppServiceProvider::class,
     FortifyServiceProvider::class,
     PassportServiceProvider::class,
+    Illuminate\Broadcasting\BroadcastServiceProvider::class,
 ];

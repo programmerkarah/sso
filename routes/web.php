@@ -22,6 +22,13 @@ Route::get('/csrf-token', function () {
     ]);
 })->name('csrf.token');
 
+// Session ping — digunakan oleh frontend untuk mendeteksi sesi yang digusur perangkat lain.
+// Middleware EnsureSingleActiveSession akan mengembalikan 401 jika sesi tidak valid lagi.
+Route::get('/session/ping', function () {
+    return response()->json(['ok' => true]);
+})->middleware(['web', 'auth', 'verified', App\Http\Middleware\EnsureSingleActiveSession::class])
+  ->name('session.ping');
+
 // DEBUG: Test session & auth
 Route::get('/debug-auth', function () {
     return response()->json([

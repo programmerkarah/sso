@@ -1,10 +1,13 @@
 import {
+    Copy,
     Key,
     KeyRound,
     LockKeyhole,
     Mail,
+    QrCode,
     RefreshCw,
     Shield,
+    Type,
     X,
 } from 'lucide-react';
 
@@ -13,6 +16,7 @@ import { FormEventHandler, useEffect, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
+import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
@@ -23,12 +27,14 @@ interface SecurityProps extends PageProps {
     twoFactorEnabled: boolean;
     twoFactorConfirmed: boolean;
     qrCodeSvg?: string;
+    twoFactorSecretKey?: string;
     recoveryCodes?: string[];
 }
 
 export default function Security({
     twoFactorConfirmed,
     qrCodeSvg,
+    twoFactorSecretKey,
     recoveryCodes,
 }: SecurityProps) {
     const [showingQrCode, setShowingQrCode] = useState(false);
@@ -36,6 +42,17 @@ export default function Security({
         Boolean(recoveryCodes?.length),
     );
     const [showingConfirmation, setShowingConfirmation] = useState(false);
+    const [showCodeView, setShowCodeView] = useState(false);
+    const [copiedSecret, setCopiedSecret] = useState(false);
+    const [showDisable2FAModal, setShowDisable2FAModal] = useState(false);
+
+    const copySecretKey = () => {
+        if (twoFactorSecretKey) {
+            navigator.clipboard.writeText(twoFactorSecretKey);
+            setCopiedSecret(true);
+            setTimeout(() => setCopiedSecret(false), 2000);
+        }
+    };
 
     const { data, setData, processing, errors, reset } = useForm({
         code: '',
@@ -102,20 +119,20 @@ export default function Security({
     };
 
     const disable2FA = () => {
-        if (
-            confirm(
-                'Apakah Anda yakin ingin menonaktifkan autentikasi dua faktor?',
-            )
-        ) {
-            router.delete('/user/two-factor-authentication', {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setShowingQrCode(false);
-                    setShowingRecoveryCodes(false);
-                    setShowingConfirmation(false);
-                },
-            });
-        }
+        setShowDisable2FAModal(true);
+    };
+
+    const confirmDisable2FA = () => {
+        setShowDisable2FAModal(false);
+        router.delete('/user/two-factor-authentication', {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowingQrCode(false);
+                setShowingRecoveryCodes(false);
+                setShowingConfirmation(false);
+                setShowCodeView(false);
+            },
+        });
     };
 
     const showRecoveryCodes = () => {
@@ -439,26 +456,84 @@ export default function Security({
                         </GlassCard>
 
                         {/* QR Code Card */}
-                        {showingQrCode && qrCodeSvg && (
+                        {showingQrCode && (qrCodeSvg || twoFactorSecretKey) && (
                             <GlassCard>
                                 <div className="space-y-4">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white">
-                                            Scan QR Code
-                                        </h3>
-                                        <p className="mt-2 text-white/80">
-                                            Scan kode QR berikut menggunakan
-                                            aplikasi autentikator seperti Google
-                                            Authenticator atau Authy.
-                                        </p>
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-white">
+                                                {showCodeView
+                                                    ? 'Kode Setup Manual'
+                                                    : 'Scan QR Code'}
+                                            </h3>
+                                            <p className="mt-2 text-white/80">
+                                                {showCodeView
+                                                    ? 'Masukkan kode rahasia ini secara manual ke aplikasi autentikator seperti Google Authenticator atau Authy.'
+                                                    : 'Scan kode QR berikut menggunakan aplikasi autentikator seperti Google Authenticator atau Authy.'}
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setShowCodeView((v) => !v)
+                                            }
+                                            className="flex shrink-0 items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-sm transition hover:bg-white/20"
+                                        >
+                                            {showCodeView ? (
+                                                <>
+                                                    <QrCode className="h-4 w-4" />{' '}
+                                                    Tampilkan QR
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Type className="h-4 w-4" />{' '}
+                                                    Tampilkan Kode
+                                                </>
+                                            )}
+                                        </button>
                                     </div>
 
-                                    <div
-                                        className="flex justify-center rounded-xl bg-white p-6"
-                                        dangerouslySetInnerHTML={{
-                                            __html: qrCodeSvg,
-                                        }}
-                                    />
+                                    {showCodeView ? (
+                                        <div className="space-y-3">
+                                            <div className="rounded-xl border border-sky-400/30 bg-sky-400/10 p-4 text-sm text-sky-200 backdrop-blur-sm">
+                                                Buka aplikasi autentikator,
+                                                pilih{' '}
+                                                <strong>
+                                                    "Masukkan kode secara
+                                                    manual"
+                                                </strong>
+                                                , lalu ketik kode rahasia di
+                                                bawah ini.
+                                            </div>
+                                            <div className="flex items-center gap-3 rounded-xl bg-black/40 p-4 font-mono">
+                                                <span className="flex-1 break-all text-lg tracking-widest text-white">
+                                                    {twoFactorSecretKey}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={copySecretKey}
+                                                    title="Salin kode"
+                                                    className="shrink-0 rounded-lg border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
+                                                >
+                                                    <Copy className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                            {copiedSecret && (
+                                                <p className="text-sm text-green-400">
+                                                    Kode berhasil disalin!
+                                                </p>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        qrCodeSvg && (
+                                            <div
+                                                className="flex justify-center rounded-xl bg-white p-6"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: qrCodeSvg,
+                                                }}
+                                            />
+                                        )
+                                    )}
 
                                     {showingConfirmation && (
                                         <form
@@ -466,10 +541,9 @@ export default function Security({
                                             className="space-y-4"
                                         >
                                             <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-sm text-yellow-200 backdrop-blur-sm">
-                                                Setelah scan QR code, masukkan
-                                                kode 6 digit dari aplikasi
-                                                autentikator Anda untuk
-                                                mengonfirmasi setup.
+                                                {showCodeView
+                                                    ? 'Setelah menambahkan kode ke aplikasi autentikator, masukkan kode 6 digit yang dihasilkan untuk mengonfirmasi setup.'
+                                                    : 'Setelah scan QR code, masukkan kode 6 digit dari aplikasi autentikator Anda untuk mengonfirmasi setup.'}
                                             </div>
 
                                             <div>
@@ -552,6 +626,16 @@ export default function Security({
                     </div>
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={showDisable2FAModal}
+                title="Nonaktifkan Autentikasi Dua Faktor"
+                description="Apakah Anda yakin ingin menonaktifkan autentikasi dua faktor? Akun Anda akan menjadi kurang aman."
+                confirmLabel="Ya, Nonaktifkan"
+                confirmVariant="red"
+                onCancel={() => setShowDisable2FAModal(false)}
+                onConfirm={confirmDisable2FA}
+            />
         </AppLayout>
     );
 }
