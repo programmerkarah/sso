@@ -576,9 +576,6 @@ class SystemController extends Controller
         }
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     private static function categoryLabel(string $category): string
     {
         $labels = [

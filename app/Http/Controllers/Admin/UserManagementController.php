@@ -8,15 +8,18 @@ use App\Http\Requests\Admin\UpdateUserAccessRequest;
 use App\Http\Requests\Admin\UpdateUserIdentityRequest;
 use App\Models\Organization;
 use App\Models\Role;
+use App\Models\TrustedDevice;
 use App\Models\User;
 use App\Notifications\PasswordResetByAdmin;
 use App\Services\EncryptedStateService;
 use App\Support\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -710,6 +713,81 @@ class UserManagementController extends Controller
         );
 
         return back()->with('success', "Pembaruan batch berhasil diterapkan ke {$targetUsers->count()} pengguna.");
+    }
+
+    public function userSecurity(User $user): JsonResponse
+    {
+        $sessions = DB::table('sessions')
+            ->where('user_id', $user->id)
+            ->orderByDesc('last_activity')
+            ->get(['id', 'ip_address', 'user_agent', 'last_activity'])
+            ->map(function ($session) use ($user): array {
+                $activeSessionId = Cache::get('auth:session:'.$user->id);
+
+                return [
+                    'id' => $session->id,
+                    'ip_address' => $session->ip_address,
+                    'user_agent' => $session->user_agent,
+                    'last_activity' => $session->last_activity,
+                    'last_activity_at' => date('Y-m-d H:i:s', $session->last_activity),
+                    'is_active' => $session->id === $activeSessionId,
+                ];
+            })
+            ->values()
+            ->all();
+
+        $trustedDevices = $user->trustedDevices()
+            ->orderByDesc('last_used_at')
+            ->get(['id', 'user_agent', 'last_used_at', 'expires_at', 'created_at'])
+            ->map(fn (TrustedDevice $device): array => [
+                'id' => $device->id,
+                'user_agent' => $device->user_agent,
+                'last_used_at' => $device->last_used_at?->toISOString(),
+                'expires_at' => $device->expires_at?->toISOString(),
+                'created_at' => $device->created_at?->toISOString(),
+            ])
+            ->values()
+            ->all();
+
+        return response()->json([
+            'sessions' => $sessions,
+            'trusted_devices' => $trustedDevices,
+        ]);
+    }
+
+    public function revokeDevice(User $user, TrustedDevice $device): JsonResponse
+    {
+        if ($device->user_id !== $user->id) {
+            abort(404);
+        }
+
+        $device->delete();
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function terminateSession(Request $request, User $user): JsonResponse
+    {
+        $sessionId = $request->string('session_id')->toString();
+
+        if (empty($sessionId)) {
+            return response()->json(['error' => 'session_id wajib diisi.'], 422);
+        }
+
+        $deleted = DB::table('sessions')
+            ->where('id', $sessionId)
+            ->where('user_id', $user->id)
+            ->delete();
+
+        if ($deleted) {
+            // Jika sesi yang dihapus adalah sesi aktif yang dicache, hapus juga cache-nya
+            $cachedActive = Cache::get('auth:session:'.$user->id);
+            if ($cachedActive === $sessionId) {
+                Cache::forget('auth:session:'.$user->id);
+            }
+        }
+
+        return response()->json(['ok' => true]);
     }
 
     private function resolveState(Request $request, EncryptedStateService $encryptedState): array

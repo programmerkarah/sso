@@ -6,6 +6,7 @@ import {
     Download,
     EllipsisVertical,
     KeyRound,
+    Monitor,
     Pencil,
     RotateCcw,
     Settings2,
@@ -13,6 +14,7 @@ import {
     ShieldCheck,
     ShieldOff,
     ShieldPlus,
+    Trash2,
     UserCog,
     XCircle,
 } from 'lucide-react';
@@ -126,6 +128,31 @@ interface ActionMenuState {
     placement: 'top' | 'bottom';
 }
 
+interface SessionInfo {
+    id: string;
+    ip_address: string | null;
+    user_agent: string | null;
+    last_activity: number;
+    last_activity_at: string;
+    is_active: boolean;
+}
+
+interface TrustedDeviceInfo {
+    id: number;
+    user_agent: string | null;
+    last_used_at: string | null;
+    expires_at: string | null;
+    created_at: string | null;
+}
+
+interface UserSecurityModal {
+    isOpen: boolean;
+    user: ManagedUser | null;
+    loading: boolean;
+    sessions: SessionInfo[];
+    trustedDevices: TrustedDeviceInfo[];
+}
+
 const formatDateTime = (value?: string) => {
     if (!value) {
         return '—';
@@ -177,6 +204,14 @@ export default function Index({
     const [batchVerifyModalOpen, setBatchVerifyModalOpen] = useState(false);
     const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
     const [actionMenu, setActionMenu] = useState<ActionMenuState | null>(null);
+    const [userSecurityModal, setUserSecurityModal] =
+        useState<UserSecurityModal>({
+            isOpen: false,
+            user: null,
+            loading: false,
+            sessions: [],
+            trustedDevices: [],
+        });
     const actionButtonRefs = useRef<Record<number, HTMLButtonElement | null>>(
         {},
     );
@@ -594,6 +629,97 @@ export default function Index({
                 closeModal();
             },
         });
+    };
+
+    const openUserSecurity = async (user: ManagedUser) => {
+        setUserSecurityModal({
+            isOpen: true,
+            user,
+            loading: true,
+            sessions: [],
+            trustedDevices: [],
+        });
+
+        try {
+            const res = await fetch(`/admin/users/${user.route_key}/security`, {
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            const data = (await res.json()) as {
+                sessions: SessionInfo[];
+                trusted_devices: TrustedDeviceInfo[];
+            };
+            setUserSecurityModal((prev) => ({
+                ...prev,
+                loading: false,
+                sessions: data.sessions,
+                trustedDevices: data.trusted_devices,
+            }));
+        } catch {
+            setUserSecurityModal((prev) => ({ ...prev, loading: false }));
+        }
+    };
+
+    const closeUserSecurity = () => {
+        setUserSecurityModal({
+            isOpen: false,
+            user: null,
+            loading: false,
+            sessions: [],
+            trustedDevices: [],
+        });
+    };
+
+    const handleRevokeDevice = async (deviceId: number) => {
+        if (!userSecurityModal.user) return;
+        await fetch(
+            `/admin/users/${userSecurityModal.user.route_key}/trusted-devices/${deviceId}`,
+            {
+                method: 'DELETE',
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN':
+                        (
+                            document.querySelector(
+                                'meta[name="csrf-token"]',
+                            ) as HTMLMetaElement | null
+                        )?.content ?? '',
+                },
+            },
+        );
+        setUserSecurityModal((prev) => ({
+            ...prev,
+            trustedDevices: prev.trustedDevices.filter(
+                (d) => d.id !== deviceId,
+            ),
+        }));
+    };
+
+    const handleTerminateSession = async (sessionId: string) => {
+        if (!userSecurityModal.user) return;
+        await fetch(
+            `/admin/users/${userSecurityModal.user.route_key}/terminate-session`,
+            {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN':
+                        (
+                            document.querySelector(
+                                'meta[name="csrf-token"]',
+                            ) as HTMLMetaElement | null
+                        )?.content ?? '',
+                },
+                body: JSON.stringify({ session_id: sessionId }),
+            },
+        );
+        setUserSecurityModal((prev) => ({
+            ...prev,
+            sessions: prev.sessions.filter((s) => s.id !== sessionId),
+        }));
     };
 
     const adminCount = users.data.filter((u) => u.is_admin).length;
@@ -1517,6 +1643,18 @@ export default function Index({
                             <button
                                 type="button"
                                 onClick={() => {
+                                    openUserSecurity(actionMenuUser);
+                                    setActionMenu(null);
+                                }}
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                            >
+                                <Monitor className="h-3.5 w-3.5 text-teal-200" />
+                                Sesi &amp; Perangkat
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
                                     handleResetTwoFactor(actionMenuUser);
                                     setActionMenu(null);
                                 }}
@@ -1529,6 +1667,172 @@ export default function Index({
                     </>
                 )}
             </div>
+
+            {/* Modal Sesi & Perangkat */}
+            {userSecurityModal.isOpen && (
+                <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto p-4 pt-16">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={closeUserSecurity}
+                    />
+                    <div className="relative w-full max-w-2xl rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                        <div className="mb-4 flex items-center justify-between">
+                            <div>
+                                <h3 className="flex items-center gap-2 text-base font-bold text-white">
+                                    <Monitor className="h-4 w-4 text-teal-300" />
+                                    Sesi &amp; Perangkat
+                                </h3>
+                                <p className="mt-0.5 text-xs text-white/60">
+                                    {userSecurityModal.user?.name}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={closeUserSecurity}
+                                className="rounded-lg p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white"
+                            >
+                                <XCircle className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {userSecurityModal.loading ? (
+                            <div className="flex items-center justify-center py-12 text-white/50 text-sm">
+                                Memuat data...
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {/* Sesi Aktif */}
+                                <div>
+                                    <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">
+                                        Sesi Login (
+                                        {userSecurityModal.sessions.length})
+                                    </h4>
+                                    {userSecurityModal.sessions.length === 0 ? (
+                                        <p className="text-xs text-white/40">
+                                            Tidak ada sesi aktif.
+                                        </p>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            {userSecurityModal.sessions.map(
+                                                (session) => (
+                                                    <div
+                                                        key={session.id}
+                                                        className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                                                    >
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="flex items-center gap-2">
+                                                                {session.is_active && (
+                                                                    <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300">
+                                                                        Aktif
+                                                                    </span>
+                                                                )}
+                                                                <span className="text-xs text-white/80">
+                                                                    {session.ip_address ??
+                                                                        '—'}
+                                                                </span>
+                                                            </div>
+                                                            <p className="mt-1 truncate text-[11px] text-white/40">
+                                                                {session.user_agent ??
+                                                                    '—'}
+                                                            </p>
+                                                            <p className="mt-0.5 text-[11px] text-white/40">
+                                                                Aktivitas
+                                                                terakhir:{' '}
+                                                                {formatDateTime(
+                                                                    session.last_activity_at,
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            title="Hentikan sesi"
+                                                            onClick={() =>
+                                                                handleTerminateSession(
+                                                                    session.id,
+                                                                )
+                                                            }
+                                                            className="mt-0.5 shrink-0 rounded-lg p-1.5 text-red-300/70 transition hover:bg-red-500/20 hover:text-red-300"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </div>
+                                                ),
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Perangkat Tepercaya */}
+                                <div>
+                                    <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">
+                                        Perangkat Tepercaya 2FA (
+                                        {
+                                            userSecurityModal.trustedDevices
+                                                .length
+                                        }
+                                        )
+                                    </h4>
+                                    {userSecurityModal.trustedDevices.length ===
+                                    0 ? (
+                                        <p className="text-xs text-white/40">
+                                            Tidak ada perangkat tepercaya.
+                                        </p>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            {userSecurityModal.trustedDevices.map(
+                                                (device) => (
+                                                    <div
+                                                        key={device.id}
+                                                        className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                                                    >
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="truncate text-xs text-white/80">
+                                                                {device.user_agent ??
+                                                                    '—'}
+                                                            </p>
+                                                            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-white/40">
+                                                                <span>
+                                                                    Terakhir
+                                                                    digunakan:{' '}
+                                                                    {device.last_used_at
+                                                                        ? formatDateTime(
+                                                                              device.last_used_at,
+                                                                          )
+                                                                        : '—'}
+                                                                </span>
+                                                                <span>
+                                                                    Kadaluarsa:{' '}
+                                                                    {device.expires_at
+                                                                        ? formatDateTime(
+                                                                              device.expires_at,
+                                                                          )
+                                                                        : '—'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            title="Cabut perangkat tepercaya"
+                                                            onClick={() =>
+                                                                handleRevokeDevice(
+                                                                    device.id,
+                                                                )
+                                                            }
+                                                            className="mt-0.5 shrink-0 rounded-lg p-1.5 text-red-300/70 transition hover:bg-red-500/20 hover:text-red-300"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </div>
+                                                ),
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </AppLayout>
     );
 }
