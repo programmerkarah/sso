@@ -244,15 +244,15 @@ async function fetchGeoForIp(ip: string): Promise<string> {
     if (geoIpCache.has(ip)) return geoIpCache.get(ip)!;
     try {
         const res = await fetch(
-            `http://ip-api.com/json/${ip}?fields=status,city,country`,
-            { signal: AbortSignal.timeout(5000) },
+            `https://ipwho.is/${ip}`,
+            { signal: AbortSignal.timeout(6000) },
         );
         const data = (await res.json()) as {
-            status: string;
+            success: boolean;
             city?: string;
             country?: string;
         };
-        if (data.status === 'success') {
+        if (data.success) {
             const location = [data.city, data.country]
                 .filter(Boolean)
                 .join(', ');
