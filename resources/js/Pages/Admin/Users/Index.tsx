@@ -243,10 +243,9 @@ function isPrivateIp(ip: string): boolean {
 async function fetchGeoForIp(ip: string): Promise<string> {
     if (geoIpCache.has(ip)) return geoIpCache.get(ip)!;
     try {
-        const res = await fetch(
-            `https://ipwho.is/${ip}`,
-            { signal: AbortSignal.timeout(6000) },
-        );
+        const res = await fetch(`https://ipwho.is/${ip}`, {
+            signal: AbortSignal.timeout(6000),
+        });
         const data = (await res.json()) as {
             success: boolean;
             city?: string;
@@ -343,6 +342,17 @@ export default function Index({
             })),
         [organizationOptions],
     );
+
+    useEffect(() => {
+        if (userSecurityModal.isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [userSecurityModal.isOpen]);
 
     useEffect(() => {
         const visibleIds = new Set(users.data.map((user) => user.id));
