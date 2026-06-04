@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -754,6 +755,27 @@ class UserManagementController extends Controller
             'sessions' => $sessions,
             'trusted_devices' => $trustedDevices,
         ]);
+    }
+
+    public function geoLookup(string $ip): JsonResponse
+    {
+        $cacheKey = 'geo_ip:' . $ip;
+
+        $location = Cache::remember($cacheKey, now()->addDay(), function () use ($ip): string {
+            try {
+                $res = Http::timeout(6)->get("https://ipwho.is/{$ip}");
+                $data = $res->json();
+                if (($data['success'] ?? false) === true) {
+                    return implode(', ', array_filter([$data['city'] ?? '', $data['country'] ?? '']));
+                }
+            } catch (\Throwable) {
+                // ignore
+            }
+
+            return '';
+        });
+
+        return response()->json(['location' => $location]);
     }
 
     public function revokeDevice(User $user, TrustedDevice $device): JsonResponse

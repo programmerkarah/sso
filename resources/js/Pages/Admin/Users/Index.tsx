@@ -243,21 +243,14 @@ function isPrivateIp(ip: string): boolean {
 async function fetchGeoForIp(ip: string): Promise<string> {
     if (geoIpCache.has(ip)) return geoIpCache.get(ip)!;
     try {
-        const res = await fetch(`https://ipwho.is/${ip}`, {
-            signal: AbortSignal.timeout(6000),
+        const res = await fetch(`/admin/geo-lookup/${ip}`, {
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            signal: AbortSignal.timeout(8000),
         });
-        const data = (await res.json()) as {
-            success: boolean;
-            city?: string;
-            country?: string;
-        };
-        if (data.success) {
-            const location = [data.city, data.country]
-                .filter(Boolean)
-                .join(', ');
-            geoIpCache.set(ip, location);
-            return location;
-        }
+        const data = (await res.json()) as { location: string };
+        geoIpCache.set(ip, data.location ?? '');
+        return data.location ?? '';
     } catch {
         /* network error / timeout — ignore */
     }

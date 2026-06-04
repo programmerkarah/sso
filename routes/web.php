@@ -173,6 +173,7 @@ Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-cha
     Route::get('/users/{user}/security', [UserManagementController::class, 'userSecurity'])->name('users.security');
     Route::delete('/users/{user}/trusted-devices/{device}', [UserManagementController::class, 'revokeDevice'])->name('users.revoke-device');
     Route::post('/users/{user}/terminate-session', [UserManagementController::class, 'terminateSession'])->name('users.terminate-session');
+    Route::get('/geo-lookup/{ip}', [UserManagementController::class, 'geoLookup'])->name('geo-lookup')->where('ip', '[\d\.a-fA-F:]+');
 
     Route::get('/organizations', [OrganizationController::class, 'index'])->name('organizations.index');
     Route::get('/organizations/create', [OrganizationController::class, 'create'])->name('organizations.create');
