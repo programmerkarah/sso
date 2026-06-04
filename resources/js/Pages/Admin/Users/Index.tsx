@@ -142,6 +142,7 @@ interface SessionInfo {
 interface TrustedDeviceInfo {
     id: number;
     user_agent: string | null;
+    ip_address: string | null;
     last_used_at: string | null;
     expires_at: string | null;
     created_at: string | null;
@@ -228,6 +229,44 @@ const formatDateTime = (value?: string) => {
     });
 };
 
+// ---------- Geo-IP helpers ----------
+const geoIpCache = new Map<string, string>();
+
+function isPrivateIp(ip: string): boolean {
+    if (!ip || ip === '127.0.0.1' || ip === '::1') return true;
+    if (/^10\./.test(ip)) return true;
+    if (/^192\.168\./.test(ip)) return true;
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(ip)) return true;
+    return false;
+}
+
+async function fetchGeoForIp(ip: string): Promise<string> {
+    if (geoIpCache.has(ip)) return geoIpCache.get(ip)!;
+    try {
+        const res = await fetch(
+            `http://ip-api.com/json/${ip}?fields=status,city,country`,
+            { signal: AbortSignal.timeout(5000) },
+        );
+        const data = (await res.json()) as {
+            status: string;
+            city?: string;
+            country?: string;
+        };
+        if (data.status === 'success') {
+            const location = [data.city, data.country]
+                .filter(Boolean)
+                .join(', ');
+            geoIpCache.set(ip, location);
+            return location;
+        }
+    } catch {
+        /* network error / timeout — ignore */
+    }
+    geoIpCache.set(ip, '');
+    return '';
+}
+// ------------------------------------
+
 export default function Index({
     users,
     auth,
@@ -276,6 +315,7 @@ export default function Index({
     const [securityTab, setSecurityTab] = useState<'sessions' | 'devices'>(
         'sessions',
     );
+    const [geoMap, setGeoMap] = useState<Record<string, string>>({});
     const actionButtonRefs = useRef<Record<number, HTMLButtonElement | null>>(
         {},
     );
@@ -720,6 +760,30 @@ export default function Index({
                 sessions: data.sessions,
                 trustedDevices: data.trusted_devices,
             }));
+
+            // Kick off geo-IP lookups for all unique public IPs
+            const allIps = [
+                ...data.sessions
+                    .map((s) => s.ip_address)
+                    .filter((ip): ip is string => !!ip),
+                ...data.trusted_devices
+                    .map((d) => d.ip_address)
+                    .filter((ip): ip is string => !!ip),
+            ].filter((ip) => !isPrivateIp(ip));
+            const uniqueIps = [...new Set(allIps)];
+            if (uniqueIps.length > 0) {
+                void Promise.all(
+                    uniqueIps.map((ip) =>
+                        fetchGeoForIp(ip).then((loc) => ({ ip, loc })),
+                    ),
+                ).then((results) => {
+                    setGeoMap((prev) => {
+                        const next = { ...prev };
+                        for (const { ip, loc } of results) next[ip] = loc;
+                        return next;
+                    });
+                });
+            }
         } catch {
             setUserSecurityModal((prev) => ({ ...prev, loading: false }));
         }
@@ -1900,6 +1964,28 @@ export default function Index({
                                                                             session.last_activity_at,
                                                                         )}
                                                                     </span>
+                                                                    {session.ip_address &&
+                                                                        !isPrivateIp(
+                                                                            session.ip_address,
+                                                                        ) &&
+                                                                        geoMap[
+                                                                            session
+                                                                                .ip_address
+                                                                        ] && (
+                                                                            <>
+                                                                                <span>
+                                                                                    ·
+                                                                                </span>
+                                                                                <span className="text-sky-400/70">
+                                                                                    {
+                                                                                        geoMap[
+                                                                                            session
+                                                                                                .ip_address
+                                                                                        ]
+                                                                                    }
+                                                                                </span>
+                                                                            </>
+                                                                        )}
                                                                 </div>
                                                             </div>
                                                             <button
@@ -2008,6 +2094,39 @@ export default function Index({
                                                                                     device.expires_at,
                                                                                 )}
                                                                             </span>
+                                                                        </>
+                                                                    )}
+                                                                    {device.ip_address && (
+                                                                        <>
+                                                                            <span>
+                                                                                ·
+                                                                            </span>
+                                                                            <span className="font-mono">
+                                                                                {
+                                                                                    device.ip_address
+                                                                                }
+                                                                            </span>
+                                                                            {!isPrivateIp(
+                                                                                device.ip_address,
+                                                                            ) &&
+                                                                                geoMap[
+                                                                                    device
+                                                                                        .ip_address
+                                                                                ] && (
+                                                                                    <>
+                                                                                        <span>
+                                                                                            ·
+                                                                                        </span>
+                                                                                        <span className="text-sky-400/70">
+                                                                                            {
+                                                                                                geoMap[
+                                                                                                    device
+                                                                                                        .ip_address
+                                                                                                ]
+                                                                                            }
+                                                                                        </span>
+                                                                                    </>
+                                                                                )}
                                                                         </>
                                                                     )}
                                                                 </div>

@@ -110,6 +110,7 @@ class TrustedDeviceManager
             'device_fingerprint' => $fingerprint,
             'token_hash' => hash('sha256', $token),
             'user_agent' => $request->userAgent(),
+            'ip_address' => $request->ip(),
             'last_used_at' => now(),
             'expires_at' => now()->addDays(self::TRUST_DAYS),
         ]);

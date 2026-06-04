@@ -738,10 +738,11 @@ class UserManagementController extends Controller
 
         $trustedDevices = $user->trustedDevices()
             ->orderByDesc('last_used_at')
-            ->get(['id', 'user_agent', 'last_used_at', 'expires_at', 'created_at'])
+            ->get(['id', 'user_agent', 'ip_address', 'last_used_at', 'expires_at', 'created_at'])
             ->map(fn (TrustedDevice $device): array => [
                 'id' => $device->id,
                 'user_agent' => $device->user_agent,
+                'ip_address' => $device->ip_address,
                 'last_used_at' => $device->last_used_at?->toISOString(),
                 'expires_at' => $device->expires_at?->toISOString(),
                 'created_at' => $device->created_at?->toISOString(),

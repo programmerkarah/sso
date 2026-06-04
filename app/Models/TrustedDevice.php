@@ -17,6 +17,7 @@ class TrustedDevice extends Model
         'device_fingerprint',
         'token_hash',
         'user_agent',
+        'ip_address',
         'last_used_at',
         'expires_at',
     ];
