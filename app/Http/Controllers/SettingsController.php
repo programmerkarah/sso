@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateSecurityEmailRequest;
 use App\Models\User;
+use App\Rules\SecurePassword;
 use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -107,6 +108,7 @@ class SettingsController extends Controller
                 'required',
                 'confirmed',
                 Password::defaults(),
+                new SecurePassword($user->name, $user->username, $user->email),
                 function (string $attribute, mixed $value, \Closure $fail) use ($user): void {
                     if (Hash::check((string) $value, $user->password)) {
                         $fail('Password baru tidak boleh sama dengan password Anda saat ini.');

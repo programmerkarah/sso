@@ -8,6 +8,7 @@ use App\Http\Controllers\ApplicationCatalogController;
 use App\Http\Controllers\Auth\CustomAuthorizationController;
 use App\Http\Controllers\Settings\ChangePasswordController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Middleware\EnsureSingleActiveSession;
 use App\Models\Application;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -26,8 +27,8 @@ Route::get('/csrf-token', function () {
 // Middleware EnsureSingleActiveSession akan mengembalikan 401 jika sesi tidak valid lagi.
 Route::get('/session/ping', function () {
     return response()->json(['ok' => true]);
-})->middleware(['web', 'auth', 'verified', App\Http\Middleware\EnsureSingleActiveSession::class])
-  ->name('session.ping');
+})->middleware(['web', 'auth', 'verified', EnsureSingleActiveSession::class])
+    ->name('session.ping');
 
 // DEBUG: Test session & auth
 Route::get('/debug-auth', function () {
@@ -170,6 +171,7 @@ Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-cha
     Route::post('/users/access/batch', [UserManagementController::class, 'batchUpdateAccess'])->name('users.batch-update-access');
     Route::post('/users/verify/batch', [UserManagementController::class, 'batchVerify'])->name('users.batch-verify');
     Route::post('/users/{user}/toggle-admin', [UserManagementController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::delete('/users/{user}', [UserManagementController::class, 'deleteUser'])->name('users.delete');
     Route::get('/users/{user}/security', [UserManagementController::class, 'userSecurity'])->name('users.security');
     Route::delete('/users/{user}/trusted-devices/{device}', [UserManagementController::class, 'revokeDevice'])->name('users.revoke-device');
     Route::post('/users/{user}/terminate-session', [UserManagementController::class, 'terminateSession'])->name('users.terminate-session');

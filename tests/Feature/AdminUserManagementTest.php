@@ -13,6 +13,7 @@ use Database\Seeders\RoleSeeder;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\Channels\MailChannel;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -229,7 +230,7 @@ class AdminUserManagementTest extends TestCase
     {
         $this->seed(RoleSeeder::class);
 
-        $oldPassword = 'OldPassword1';
+        $oldPassword = 'OldPassword1!';
         $user = User::factory()->create([
             'password_change_required' => true,
             'previous_password' => Hash::make($oldPassword),
@@ -239,8 +240,8 @@ class AdminUserManagementTest extends TestCase
             ->actingAs($user)
             ->from('/settings/change-password')
             ->post(route('settings.change-password.update'), [
-                'password' => 'NewSecurePass2',
-                'password_confirmation' => 'NewSecurePass2',
+                'password' => 'NewSecurePass2!',
+                'password_confirmation' => 'NewSecurePass2!',
             ]);
 
         $user->refresh();
@@ -248,7 +249,7 @@ class AdminUserManagementTest extends TestCase
         $response->assertRedirect(route('dashboard'));
         $this->assertFalse($user->password_change_required);
         $this->assertNull($user->previous_password);
-        $this->assertTrue(Hash::check('NewSecurePass2', $user->password));
+        $this->assertTrue(Hash::check('NewSecurePass2!', $user->password));
     }
 
     /**
@@ -258,7 +259,7 @@ class AdminUserManagementTest extends TestCase
     {
         $this->seed(RoleSeeder::class);
 
-        $oldPassword = 'OldPassword1';
+        $oldPassword = 'OldPassword1!';
         $user = User::factory()->create([
             'password_change_required' => true,
             'previous_password' => Hash::make($oldPassword),
@@ -375,8 +376,8 @@ class AdminUserManagementTest extends TestCase
             ->from(route('settings.security'))
             ->post(route('settings.security.password.update'), [
                 'current_password' => 'password',
-                'password' => 'BaruSekali123',
-                'password_confirmation' => 'BaruSekali123',
+                'password' => 'BaruSekali123!',
+                'password_confirmation' => 'BaruSekali123!',
             ]);
 
         $user->refresh();
@@ -385,7 +386,74 @@ class AdminUserManagementTest extends TestCase
             ->assertRedirect(route('settings.security'))
             ->assertSessionHas('success');
 
-        $this->assertTrue(Hash::check('BaruSekali123', $user->password));
+        $this->assertTrue(Hash::check('BaruSekali123!', $user->password));
+    }
+
+    public function test_admin_can_soft_delete_user_and_cleanup_security_artifacts(): void
+    {
+        [$admin, $targetUser] = $this->createAdminAndTargetUser();
+
+        DB::table('sessions')->insert([
+            'id' => 'sess-'.$targetUser->id,
+            'user_id' => $targetUser->id,
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'PHPUnit',
+            'payload' => 'payload',
+            'last_activity' => time(),
+        ]);
+
+        TrustedDevice::query()->create([
+            'user_id' => $targetUser->id,
+            'device_fingerprint' => hash('sha256', 'stable-device'),
+            'token_hash' => hash('sha256', 'stable-token'),
+            'user_agent' => 'Mozilla/5.0',
+            'last_used_at' => now(),
+            'expires_at' => now()->addDays(7),
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->delete(route('admin.users.delete', $targetUser));
+
+        $response
+            ->assertRedirect(route('admin.users.index'))
+            ->assertSessionHas('success');
+
+        $this->assertSoftDeleted('users', ['id' => $targetUser->id]);
+        $this->assertDatabaseMissing('sessions', ['user_id' => $targetUser->id]);
+        $this->assertDatabaseMissing('trusted_devices', ['user_id' => $targetUser->id]);
+    }
+
+    public function test_admin_cannot_delete_own_account(): void
+    {
+        [$admin] = $this->createAdminAndTargetUser();
+
+        $response = $this
+            ->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->delete(route('admin.users.delete', $admin));
+
+        $response
+            ->assertRedirect(route('admin.users.index'))
+            ->assertSessionHas('error');
+
+        $this->assertDatabaseHas('users', ['id' => $admin->id]);
+        $this->assertNull($admin->fresh()->deleted_at);
+    }
+
+    public function test_non_admin_cannot_delete_user_account(): void
+    {
+        User::factory()->create();
+        $regularUser = User::factory()->create();
+        $targetUser = User::factory()->create();
+
+        $response = $this
+            ->actingAs($regularUser)
+            ->delete(route('admin.users.delete', $targetUser));
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('users', ['id' => $targetUser->id]);
     }
 
     public function test_user_can_update_email_from_security_page_and_receive_verification_email(): void

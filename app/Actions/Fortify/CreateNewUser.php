@@ -45,7 +45,11 @@ class CreateNewUser implements CreatesNewUsers
                 'max:255',
                 Rule::unique(User::class),
             ],
-            'password' => $this->passwordRules(),
+            'password' => $this->passwordRules(
+                $input['name'] ?? null,
+                $input['username'] ?? null,
+                $input['email'] ?? null,
+            ),
         ];
 
         if ($hasMultipleOrganizations) {

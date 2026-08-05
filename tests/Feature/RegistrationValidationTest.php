@@ -84,6 +84,47 @@ class RegistrationValidationTest extends TestCase
         $response->assertRedirect();
     }
 
+    public function test_password_must_contain_uppercase_number_and_required_symbol_set(): void
+    {
+        $response = $this->post('/register', $this->validPayload([
+            'password' => 'password123!',
+            'password_confirmation' => 'password123!',
+        ]));
+
+        $response->assertSessionHasErrors('password');
+
+        $response = $this->post('/register', $this->validPayload([
+            'password' => 'Password123+',
+            'password_confirmation' => 'Password123+',
+        ]));
+
+        $response->assertSessionHasErrors('password');
+    }
+
+    public function test_password_cannot_contain_name_username_or_email_local_part(): void
+    {
+        $response = $this->post('/register', $this->validPayload([
+            'password' => 'JohnDoe123!',
+            'password_confirmation' => 'JohnDoe123!',
+        ]));
+
+        $response->assertSessionHasErrors('password');
+
+        $response = $this->post('/register', $this->validPayload([
+            'password' => 'johndoe!A1x',
+            'password_confirmation' => 'johndoe!A1x',
+        ]));
+
+        $response->assertSessionHasErrors('password');
+
+        $response = $this->post('/register', $this->validPayload([
+            'password' => 'john!Secure9',
+            'password_confirmation' => 'john!Secure9',
+        ]));
+
+        $response->assertSessionHasErrors('password');
+    }
+
     public function test_new_registration_requires_admin_verification_before_access(): void
     {
         $this->post('/register', $this->validPayload([
@@ -113,5 +154,20 @@ class RegistrationValidationTest extends TestCase
         ]));
 
         Notification::assertSentTo($admin, NewUserPendingVerificationNotification::class);
+    }
+
+    public function test_unverified_email_user_cannot_access_dashboard(): void
+    {
+        $user = User::factory()->unverified()->create([
+            'two_factor_confirmed_at' => now(),
+            'admin_verified_at' => now(),
+        ]);
+        $user->roles()->attach(Role::where('name', 'user')->value('id'));
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('dashboard'));
+
+        $response->assertRedirect(route('verification.notice'));
     }
 }

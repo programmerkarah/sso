@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\TrustedDevice;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
@@ -67,17 +68,27 @@ class TrustedDeviceManager
             return false;
         }
 
-        return $user->trustedDevices()
-            ->where('token_hash', hash('sha256', $cookie['token']))
-            ->where('device_fingerprint', $this->fingerprint($request))
-            ->where('expires_at', '>', now())
-            ->exists();
+        return ! is_null($this->resolveTrustedDevice($request, $user, (string) $cookie['token']));
     }
 
     /**
      * Build the device fingerprint without relying on IP addresses.
      */
     public function fingerprint(Request $request): string
+    {
+        $normalizedUserAgent = $this->normalizeUserAgent((string) $request->userAgent());
+        $normalizedLanguage = $this->normalizeLanguage((string) $request->header('accept-language'));
+
+        return hash('sha256', implode('|', [
+            $normalizedUserAgent,
+            $normalizedLanguage,
+        ]));
+    }
+
+    /**
+     * Keep compatibility with legacy fingerprints created from raw headers.
+     */
+    public function legacyFingerprint(Request $request): string
     {
         return hash('sha256', implode('|', [
             (string) $request->userAgent(),
@@ -129,15 +140,115 @@ class TrustedDeviceManager
             return;
         }
 
-        $user->trustedDevices()
-            ->where('token_hash', hash('sha256', $cookie['token']))
-            ->where('device_fingerprint', $this->fingerprint($request))
-            ->update([
-                'last_used_at' => now(),
-                'expires_at' => now()->addDays(self::TRUST_DAYS),
-            ]);
+        $device = $this->resolveTrustedDevice($request, $user, (string) $cookie['token']);
+
+        if (! $device) {
+            return;
+        }
+
+        $device->forceFill([
+            'device_fingerprint' => $this->fingerprint($request),
+            'user_agent' => $request->userAgent(),
+            'ip_address' => $request->ip(),
+            'last_used_at' => now(),
+            'expires_at' => now()->addDays(self::TRUST_DAYS),
+        ])->save();
 
         $this->queueTrustedDeviceCookie($request, $user->id, $cookie['token']);
+    }
+
+    private function resolveTrustedDevice(Request $request, User $user, string $token): ?TrustedDevice
+    {
+        $tokenHash = hash('sha256', $token);
+
+        $device = $user->trustedDevices()
+            ->where('token_hash', $tokenHash)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (! $device) {
+            return null;
+        }
+
+        $currentFingerprint = $this->fingerprint($request);
+
+        if (hash_equals($device->device_fingerprint, $currentFingerprint)) {
+            return $device;
+        }
+
+        if (hash_equals($device->device_fingerprint, $this->legacyFingerprint($request))) {
+            $device->forceFill([
+                'device_fingerprint' => $currentFingerprint,
+                'user_agent' => $request->userAgent(),
+                'ip_address' => $request->ip(),
+                'last_used_at' => now(),
+            ])->save();
+
+            return $device;
+        }
+
+        return null;
+    }
+
+    private function normalizeUserAgent(string $userAgent): string
+    {
+        $ua = strtolower(trim($userAgent));
+
+        $browserFamily = 'other';
+        $browserMajor = '0';
+
+        if (preg_match('/edg\/(\d+)/', $ua, $matches)) {
+            $browserFamily = 'edge';
+            $browserMajor = $matches[1];
+        } elseif (preg_match('/chrome\/(\d+)/', $ua, $matches)) {
+            $browserFamily = 'chrome';
+            $browserMajor = $matches[1];
+        } elseif (preg_match('/firefox\/(\d+)/', $ua, $matches)) {
+            $browserFamily = 'firefox';
+            $browserMajor = $matches[1];
+        } elseif (preg_match('/version\/(\d+).+safari\//', $ua, $matches)) {
+            $browserFamily = 'safari';
+            $browserMajor = $matches[1];
+        }
+
+        $osFamily = 'other';
+        $osMajor = '0';
+
+        if (preg_match('/windows nt (\d+)\./', $ua, $matches)) {
+            $osFamily = 'windows';
+            $osMajor = $matches[1];
+        } elseif (preg_match('/android (\d+)/', $ua, $matches)) {
+            $osFamily = 'android';
+            $osMajor = $matches[1];
+        } elseif (preg_match('/iphone os (\d+)_|cpu os (\d+)_/', $ua, $matches)) {
+            $osFamily = 'ios';
+            $osMajor = $matches[1] ?: $matches[2];
+        } elseif (preg_match('/mac os x (\d+)[_.]/', $ua, $matches)) {
+            $osFamily = 'macos';
+            $osMajor = $matches[1];
+        } elseif (preg_match('/linux/', $ua)) {
+            $osFamily = 'linux';
+        }
+
+        return implode('|', [
+            $browserFamily,
+            $browserMajor,
+            $osFamily,
+            $osMajor,
+        ]);
+    }
+
+    private function normalizeLanguage(string $acceptLanguage): string
+    {
+        if ($acceptLanguage === '') {
+            return 'unknown';
+        }
+
+        $firstLanguage = explode(',', strtolower($acceptLanguage))[0] ?? '';
+        $withoutQuality = explode(';', $firstLanguage)[0] ?? '';
+        $normalized = trim($withoutQuality);
+
+        return $normalized !== '' ? $normalized : 'unknown';
     }
 
     /**

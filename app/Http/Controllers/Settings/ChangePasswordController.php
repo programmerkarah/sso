@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\SecurePassword;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -44,6 +45,7 @@ class ChangePasswordController extends Controller
                 'required',
                 'confirmed',
                 Password::defaults(),
+                new SecurePassword($user->name, $user->username, $user->email),
                 function (string $attribute, mixed $value, \Closure $fail) use ($user): void {
                     if ($user->previous_password && Hash::check($value, $user->previous_password)) {
                         $fail('Password baru tidak boleh sama dengan password Anda sebelum reset dilakukan.');

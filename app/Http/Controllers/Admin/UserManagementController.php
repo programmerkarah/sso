@@ -11,6 +11,7 @@ use App\Models\Role;
 use App\Models\TrustedDevice;
 use App\Models\User;
 use App\Notifications\PasswordResetByAdmin;
+use App\Rules\SecurePassword;
 use App\Services\EncryptedStateService;
 use App\Support\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -23,11 +24,13 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use RuntimeException;
 use Throwable;
 
 class UserManagementController extends Controller
@@ -261,7 +264,7 @@ class UserManagementController extends Controller
 
     public function resetPassword(User $user): RedirectResponse
     {
-        $temporaryPassword = Str::password(12, letters: true, numbers: true, symbols: false);
+        $temporaryPassword = $this->generateCompliantTemporaryPassword($user);
         $previousPasswordHash = $user->getRawOriginal('password');
 
         try {
@@ -330,6 +333,29 @@ class UserManagementController extends Controller
         return back()->with('success', "Password {$user->name} berhasil direset. Email dengan password sementara telah dikirim ke {$user->email}.");
     }
 
+    private function generateCompliantTemporaryPassword(User $user): string
+    {
+        for ($attempt = 0; $attempt < 25; $attempt++) {
+            $candidate = Str::password(16, letters: true, numbers: true, symbols: true, spaces: false);
+
+            $passes = Validator::make([
+                'password' => $candidate,
+            ], [
+                'password' => [
+                    'required',
+                    'string',
+                    new SecurePassword($user->name, $user->username, $user->email),
+                ],
+            ])->passes();
+
+            if ($passes) {
+                return $candidate;
+            }
+        }
+
+        throw new RuntimeException('Gagal membuat password sementara yang memenuhi kebijakan keamanan.');
+    }
+
     public function resetTwoFactor(User $user): RedirectResponse
     {
         $user->forceFill([
@@ -353,6 +379,52 @@ class UserManagementController extends Controller
         );
 
         return back()->with('success', "2FA untuk {$user->name} berhasil direset. Pengguna harus mengaktifkan ulang 2FA saat diperlukan.");
+    }
+
+    public function deleteUser(Request $request, User $user): RedirectResponse
+    {
+        if ($user->id === $request->user()?->id) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'admin.users.delete.blocked-self-delete',
+                category: 'user_management',
+                description: 'Upaya menghapus akun sendiri ditolak.',
+                user: $request->user(),
+                metadata: [
+                    'target_user_id' => $user->id,
+                    'target_email' => $user->email,
+                ],
+                status: 'warning',
+            );
+
+            return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        DB::transaction(function () use ($user): void {
+            DB::table('sessions')
+                ->where('user_id', $user->id)
+                ->delete();
+
+            Cache::forget('auth:session:'.$user->id);
+
+            $user->trustedDevices()->delete();
+            $user->tokens()->delete();
+            $user->delete();
+        });
+
+        ActivityLogger::logByRequest(
+            request: $request,
+            event: 'admin.users.deleted',
+            category: 'user_management',
+            description: "Akun pengguna {$user->name} berhasil dihapus (soft delete).",
+            user: $request->user(),
+            metadata: [
+                'target_user_id' => $user->id,
+                'target_email' => $user->email,
+            ],
+        );
+
+        return back()->with('success', "Akun {$user->name} berhasil dihapus.");
     }
 
     public function toggleAdmin(Request $request, User $user): RedirectResponse
@@ -759,7 +831,7 @@ class UserManagementController extends Controller
 
     public function geoLookup(string $ip): JsonResponse
     {
-        $cacheKey = 'geo_ip:' . $ip;
+        $cacheKey = 'geo_ip:'.$ip;
 
         $location = Cache::remember($cacheKey, now()->addDay(), function () use ($ip): string {
             try {
@@ -768,7 +840,7 @@ class UserManagementController extends Controller
                 if (($data['success'] ?? false) === true) {
                     return implode(', ', array_filter([$data['city'] ?? '', $data['country'] ?? '']));
                 }
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // ignore
             }
 

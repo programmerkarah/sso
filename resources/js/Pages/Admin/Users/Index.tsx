@@ -668,6 +668,21 @@ export default function Index({
         });
     };
 
+    const handleDeleteUser = (user: ManagedUser) => {
+        openModal({
+            title: 'Hapus Pengguna',
+            description: `Hapus akun ${user.name}? Aksi ini akan menonaktifkan akun dari daftar pengguna dan mencabut sesi/perangkat aktif miliknya.`,
+            confirmLabel: 'Ya, Hapus Pengguna',
+            confirmVariant: 'red',
+            onConfirm: () => {
+                router.delete(`/admin/users/${user.route_key}`, {
+                    preserveScroll: true,
+                });
+                closeModal();
+            },
+        });
+    };
+
     const handleToggleAdmin = (user: ManagedUser) => {
         if (user.is_admin) {
             openModal({
@@ -1795,6 +1810,20 @@ export default function Index({
                                 <RotateCcw className="h-3.5 w-3.5 text-red-200" />
                                 Reset 2FA
                             </button>
+
+                            {actionMenuUser.id !== currentUserId && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        handleDeleteUser(actionMenuUser);
+                                        setActionMenu(null);
+                                    }}
+                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-red-100 transition hover:bg-red-500/15"
+                                >
+                                    <Trash2 className="h-3.5 w-3.5 text-red-300" />
+                                    Hapus Pengguna
+                                </button>
+                            )}
                         </div>
                     </>
                 )}

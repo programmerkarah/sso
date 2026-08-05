@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\TrustedDeviceManager;
 use Carbon\CarbonInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class LoginSecurityTest extends TestCase
@@ -66,6 +67,27 @@ class LoginSecurityTest extends TestCase
         $response->assertRedirect(route('two-factor.login'));
     }
 
+    public function test_trusted_device_remains_valid_with_minor_user_agent_change(): void
+    {
+        $user = $this->createTwoFactorUser(lastLoginAt: now()->subDay());
+        [$cookieValue] = $this->createTrustedDeviceCookie($user, $this->deviceHeaders());
+
+        $minorUpdateHeaders = [
+            ...$this->deviceHeaders(),
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/146.0.1.2',
+        ];
+
+        $response = $this
+            ->withCookie(TrustedDeviceManager::COOKIE_NAME, $cookieValue)
+            ->withHeaders($minorUpdateHeaders)
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect('/dashboard');
+    }
+
     /**
      * Ensure a user flagged for forced password change is redirected immediately after login.
      */
@@ -96,19 +118,17 @@ class LoginSecurityTest extends TestCase
     /**
      * @return array{0:string,1:string}
      */
-    private function createTrustedDeviceCookie(User $user): array
+    private function createTrustedDeviceCookie(User $user, ?array $headers = null): array
     {
+        $headers ??= $this->deviceHeaders();
         $token = str_repeat('a', 80);
-        $fingerprint = hash('sha256', implode('|', [
-            $this->deviceHeaders()['User-Agent'],
-            $this->deviceHeaders()['accept-language'],
-        ]));
+        $fingerprint = app(TrustedDeviceManager::class)->fingerprint($this->requestFromHeaders($headers));
 
         TrustedDevice::create([
             'user_id' => $user->id,
             'device_fingerprint' => $fingerprint,
             'token_hash' => hash('sha256', $token),
-            'user_agent' => $this->deviceHeaders()['User-Agent'],
+            'user_agent' => $headers['User-Agent'],
             'last_used_at' => now(),
             'expires_at' => now()->addDays(TrustedDeviceManager::TRUST_DAYS),
         ]);
@@ -117,6 +137,17 @@ class LoginSecurityTest extends TestCase
             'user_id' => $user->id,
             'token' => $token,
         ], JSON_THROW_ON_ERROR), $token];
+    }
+
+    /**
+     * @param  array<string, string>  $headers
+     */
+    private function requestFromHeaders(array $headers): Request
+    {
+        return Request::create('/', 'GET', [], [], [], [
+            'HTTP_USER_AGENT' => $headers['User-Agent'],
+            'HTTP_ACCEPT_LANGUAGE' => $headers['accept-language'],
+        ]);
     }
 
     /**
