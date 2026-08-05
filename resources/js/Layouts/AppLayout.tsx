@@ -47,12 +47,30 @@ export default function AppLayout({ children }: PropsWithChildren) {
     useEffect(() => {
         if (!user) return;
 
+        const pusherKey = String(
+            import.meta.env.VITE_PUSHER_APP_KEY ?? '',
+        ).trim();
+        const pusherCluster = String(
+            import.meta.env.VITE_PUSHER_APP_CLUSTER ?? '',
+        ).trim();
+
+        if (!pusherKey || !pusherCluster) {
+            if (import.meta.env.DEV) {
+                // Hindari crash jika env realtime belum disediakan.
+                console.warn(
+                    '[Realtime] Pusher tidak diinisialisasi karena VITE_PUSHER_APP_KEY/VITE_PUSHER_APP_CLUSTER belum diatur.',
+                );
+            }
+
+            return;
+        }
+
         (window as Window & { Pusher?: typeof Pusher }).Pusher = Pusher;
 
         const echo = new Echo({
             broadcaster: 'pusher',
-            key: import.meta.env.VITE_PUSHER_APP_KEY as string,
-            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER as string,
+            key: pusherKey,
+            cluster: pusherCluster,
             forceTLS: true,
         });
 
