@@ -97,6 +97,17 @@ class TrustedDeviceManager
     }
 
     /**
+     * Keep compatibility with fingerprints created by older normalization logic.
+     */
+    public function versionedFingerprint(Request $request): string
+    {
+        return hash('sha256', implode('|', [
+            $this->normalizeUserAgentWithMajorVersion((string) $request->userAgent()),
+            $this->normalizeLanguageWithRegion((string) $request->header('accept-language')),
+        ]));
+    }
+
+    /**
      * Determine if the user must reconfirm 2FA because the last login is stale.
      */
     public function requiresFreshTwoFactorConfirmation(User $user): bool
@@ -176,6 +187,17 @@ class TrustedDeviceManager
             return $device;
         }
 
+        if (hash_equals($device->device_fingerprint, $this->versionedFingerprint($request))) {
+            $device->forceFill([
+                'device_fingerprint' => $currentFingerprint,
+                'user_agent' => $request->userAgent(),
+                'ip_address' => $request->ip(),
+                'last_used_at' => now(),
+            ])->save();
+
+            return $device;
+        }
+
         if (hash_equals($device->device_fingerprint, $this->legacyFingerprint($request))) {
             $device->forceFill([
                 'device_fingerprint' => $currentFingerprint,
@@ -191,6 +213,31 @@ class TrustedDeviceManager
     }
 
     private function normalizeUserAgent(string $userAgent): string
+    {
+        [$browserFamily, , $osFamily] = $this->extractUserAgentComponents($userAgent);
+
+        return implode('|', [
+            $browserFamily,
+            $osFamily,
+        ]);
+    }
+
+    private function normalizeUserAgentWithMajorVersion(string $userAgent): string
+    {
+        [$browserFamily, $browserMajor, $osFamily, $osMajor] = $this->extractUserAgentComponents($userAgent);
+
+        return implode('|', [
+            $browserFamily,
+            $browserMajor,
+            $osFamily,
+            $osMajor,
+        ]);
+    }
+
+    /**
+     * @return array{0:string,1:string,2:string,3:string}
+     */
+    private function extractUserAgentComponents(string $userAgent): array
     {
         $ua = strtolower(trim($userAgent));
 
@@ -230,15 +277,26 @@ class TrustedDeviceManager
             $osFamily = 'linux';
         }
 
-        return implode('|', [
+        return [
             $browserFamily,
             $browserMajor,
             $osFamily,
             $osMajor,
-        ]);
+        ];
     }
 
     private function normalizeLanguage(string $acceptLanguage): string
+    {
+        $regionSpecificLanguage = $this->normalizeLanguageWithRegion($acceptLanguage);
+
+        if ($regionSpecificLanguage === 'unknown') {
+            return 'unknown';
+        }
+
+        return explode('-', $regionSpecificLanguage)[0] ?: 'unknown';
+    }
+
+    private function normalizeLanguageWithRegion(string $acceptLanguage): string
     {
         if ($acceptLanguage === '') {
             return 'unknown';

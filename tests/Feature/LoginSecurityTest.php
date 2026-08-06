@@ -88,6 +88,28 @@ class LoginSecurityTest extends TestCase
         $response->assertRedirect('/dashboard');
     }
 
+    public function test_trusted_device_remains_valid_with_browser_major_update(): void
+    {
+        $user = $this->createTwoFactorUser(lastLoginAt: now()->subDay());
+        [$cookieValue] = $this->createTrustedDeviceCookie($user, $this->deviceHeaders());
+
+        $majorUpdateHeaders = [
+            ...$this->deviceHeaders(),
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/147.0.0.0',
+            'accept-language' => 'id,en-US;q=0.9',
+        ];
+
+        $response = $this
+            ->withCookie(TrustedDeviceManager::COOKIE_NAME, $cookieValue)
+            ->withHeaders($majorUpdateHeaders)
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect('/dashboard');
+    }
+
     /**
      * Ensure a user flagged for forced password change is redirected immediately after login.
      */
