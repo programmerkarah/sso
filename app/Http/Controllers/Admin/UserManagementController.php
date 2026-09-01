@@ -874,6 +874,8 @@ class UserManagementController extends Controller
                 'updated_at' => $token->updated_at,
                 'expires_at' => $token->expires_at,
             ])
+            ->groupBy('client_id')
+            ->map(fn ($tokenGroup) => collect($tokenGroup)->sortByDesc('created_at')->first())
             ->values()
             ->all();
 

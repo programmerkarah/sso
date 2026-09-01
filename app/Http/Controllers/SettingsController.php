@@ -123,6 +123,8 @@ class SettingsController extends Controller
                 'updated_at' => $token->updated_at,
                 'expires_at' => $token->expires_at,
             ])
+            ->groupBy('client_id')
+            ->map(fn ($tokenGroup) => collect($tokenGroup)->sortByDesc('created_at')->first())
             ->values()
             ->all();
 
@@ -142,7 +144,15 @@ class SettingsController extends Controller
                         'last_login_at' => $user->last_login_at,
                         'created_at' => $user->created_at,
                         'session_count' => DB::table('sessions')->where('user_id', $user->id)->count(),
-                        'oauth_count' => DB::table('oauth_access_tokens')->where('user_id', $user->id)->where('revoked', false)->count(),
+                        'oauth_count' => DB::table('oauth_access_tokens')
+                            ->where('user_id', $user->id)
+                            ->where('revoked', false)
+                            ->where(function ($query) {
+                                $query->whereNull('expires_at')
+                                    ->orWhere('expires_at', '>', now());
+                            })
+                            ->distinct('client_id')
+                            ->count('client_id'),
                         'state_token' => $encryptedState->encryptArray([
                             'page' => $page,
                             'user_id' => $user->id,

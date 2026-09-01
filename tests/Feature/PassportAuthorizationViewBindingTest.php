@@ -11,6 +11,8 @@ use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Laravel\Passport\Client;
 use Laravel\Passport\Contracts\AuthorizationViewResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Tests\TestCase;
@@ -43,6 +45,88 @@ class PassportAuthorizationViewBindingTest extends TestCase
                 $exception->getMessage()
             );
         }
+    }
+
+    public function test_user_authorizing_same_oauth_application_revokes_previous_active_tokens(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $organization = Organization::query()->create([
+            'name' => 'Internal',
+            'slug' => 'internal-revoke-old-token',
+            'type' => 'internal',
+            'is_active' => true,
+        ]);
+
+        $user = User::factory()->create([
+            'organization_id' => $organization->id,
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $user->roles()->attach(Role::where('name', 'user')->value('id'));
+
+        Application::query()->create([
+            'name' => 'Aplikasi Internal',
+            'slug' => 'aplikasi-internal-revoke',
+            'description' => 'Hanya internal.',
+            'domain' => 'internal-revoke.example.test',
+            'callback_url' => 'https://internal-revoke.example.test/auth/callback',
+            'logo_url' => null,
+            'oauth_client_id' => 'client-internal-revoke',
+            'oauth_client_secret' => 'secret-internal-revoke',
+            'is_active' => true,
+            'allowed_organization_types' => ['internal'],
+        ]);
+
+        $passportClient = Client::create([
+            'id' => 'client-internal-revoke',
+            'owner_type' => null,
+            'owner_id' => null,
+            'name' => 'Aplikasi Internal',
+            'secret' => 'secret-internal-revoke',
+            'provider' => null,
+            'redirect_uris' => ['https://internal-revoke.example.test/auth/callback'],
+            'grant_types' => ['authorization_code'],
+            'revoked' => false,
+        ]);
+
+        $oldTokenId = 'old-token-'.uniqid();
+        $newerTokenId = 'new-token-'.uniqid();
+
+        DB::table('oauth_access_tokens')->insert([
+            [
+                'id' => $oldTokenId,
+                'user_id' => $user->id,
+                'client_id' => $passportClient->id,
+                'name' => 'Aplikasi Internal',
+                'scopes' => '[]',
+                'revoked' => false,
+                'created_at' => now()->subDay(),
+                'updated_at' => now()->subDay(),
+                'expires_at' => now()->addDay(),
+            ],
+            [
+                'id' => $newerTokenId,
+                'user_id' => $user->id,
+                'client_id' => $passportClient->id,
+                'name' => 'Aplikasi Internal',
+                'scopes' => '[]',
+                'revoked' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/oauth/authorize?client_id='.$passportClient->id.'&redirect_uri='.urlencode('https://internal-revoke.example.test/auth/callback').'&response_type=code&state=oauth-state');
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('oauth_access_tokens', ['id' => $oldTokenId, 'revoked' => true]);
+        $this->assertDatabaseHas('oauth_access_tokens', ['id' => $newerTokenId, 'revoked' => true]);
     }
 
     public function test_user_gets_flash_message_when_forcing_login_to_disallowed_application(): void

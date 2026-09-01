@@ -8,6 +8,7 @@ use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Passport\Contracts\AuthorizationViewResponse;
 use Laravel\Passport\Http\Controllers\AuthorizationController;
@@ -70,6 +71,15 @@ class CustomAuthorizationController extends AuthorizationController
             }
 
             if ($clientId && $user) {
+                DB::table('oauth_access_tokens')
+                    ->where('user_id', $user->id)
+                    ->where('client_id', $clientId)
+                    ->where('revoked', false)
+                    ->update([
+                        'revoked' => true,
+                        'updated_at' => now(),
+                    ]);
+
                 $application = Application::query()
                     ->where('oauth_client_id', $clientId)
                     ->where('is_active', true)
