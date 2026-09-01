@@ -46,7 +46,7 @@ class SettingsController extends Controller
         $state = $this->resolveSessionState($request, $encryptedState);
         $selectedUserId = isset($state['user_id']) && $state['user_id'] !== null
             ? (int) $state['user_id']
-            : $currentUser->id;
+            : null;
         $page = max(1, (int) ($state['page'] ?? 1));
         $sessionPage = max(1, (int) ($state['session_page'] ?? 1));
         $oauthPage = max(1, (int) ($state['oauth_page'] ?? 1));
@@ -60,13 +60,9 @@ class SettingsController extends Controller
                 ->orderBy('name');
 
             $usersPaginator = $usersQuery->paginate(10, ['*'], 'page', $page);
-            $selectedUser = $selectedUserId ? User::query()->find($selectedUserId) : null;
+            $selectedUser = $selectedUserId !== null ? User::query()->find($selectedUserId) : null;
 
-            if (! $selectedUser && $usersPaginator->count() > 0) {
-                $selectedUser = collect($usersPaginator->items())->first();
-            }
-
-            if (! $selectedUser) {
+            if (! $selectedUser && $selectedUserId !== null) {
                 $selectedUser = $currentUser;
             }
         } else {
@@ -74,11 +70,18 @@ class SettingsController extends Controller
             $selectedUser = $currentUser;
         }
 
-        $allSessions = DB::table('sessions')
-            ->where('user_id', $selectedUser->id)
-            ->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END', [$activeSessionId])
-            ->orderByDesc('last_activity')
-            ->get(['id', 'ip_address', 'user_agent', 'last_activity'])
+        $allSessions = $selectedUser
+            ? collect(
+                DB::table('sessions')
+                    ->where('user_id', $selectedUser->id)
+                    ->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END', [$activeSessionId])
+                    ->orderByDesc('last_activity')
+                    ->get(['id', 'ip_address', 'user_agent', 'last_activity'])
+                    ->all(),
+            )
+            : collect();
+
+        $allSessions = $allSessions
             ->map(fn ($session) => [
                 'id' => $session->id,
                 'ip_address' => $session->ip_address,
@@ -90,43 +93,53 @@ class SettingsController extends Controller
             ->values()
             ->all();
 
+        usort($allSessions, function (array $left, array $right): int {
+            if ($left['is_current'] !== $right['is_current']) {
+                return $left['is_current'] ? -1 : 1;
+            }
+
+            return (int) $right['last_activity'] <=> (int) $left['last_activity'];
+        });
+
         $sessions = collect($allSessions)
             ->forPage($sessionPage, $sessionPerPage)
             ->values()
             ->all();
 
-        $allOauthApplications = DB::table('oauth_access_tokens as tokens')
-            ->join('oauth_clients as clients', 'clients.id', '=', 'tokens.client_id')
-            ->where('tokens.user_id', $selectedUser->id)
-            ->where('tokens.revoked', false)
-            ->where(function ($query) {
-                $query->whereNull('tokens.expires_at')
-                    ->orWhere('tokens.expires_at', '>', now());
-            })
-            ->select([
-                'tokens.id',
-                'tokens.client_id',
-                'clients.name as client_name',
-                'tokens.name as token_name',
-                'tokens.created_at',
-                'tokens.updated_at',
-                'tokens.expires_at',
-            ])
-            ->orderByDesc('tokens.created_at')
-            ->get()
-            ->map(fn ($token) => [
-                'id' => $token->id,
-                'client_id' => $token->client_id,
-                'client_name' => $token->client_name ?: $token->token_name,
-                'token_name' => $token->token_name,
-                'created_at' => $token->created_at,
-                'updated_at' => $token->updated_at,
-                'expires_at' => $token->expires_at,
-            ])
-            ->groupBy('client_id')
-            ->map(fn ($tokenGroup) => collect($tokenGroup)->sortByDesc('created_at')->first())
-            ->values()
-            ->all();
+        $allOauthApplications = $selectedUser
+            ? DB::table('oauth_access_tokens as tokens')
+                ->join('oauth_clients as clients', 'clients.id', '=', 'tokens.client_id')
+                ->where('tokens.user_id', $selectedUser->id)
+                ->where('tokens.revoked', false)
+                ->where(function ($query) {
+                    $query->whereNull('tokens.expires_at')
+                        ->orWhere('tokens.expires_at', '>', now());
+                })
+                ->select([
+                    'tokens.id',
+                    'tokens.client_id',
+                    'clients.name as client_name',
+                    'tokens.name as token_name',
+                    'tokens.created_at',
+                    'tokens.updated_at',
+                    'tokens.expires_at',
+                ])
+                ->orderByDesc('tokens.created_at')
+                ->get()
+                ->map(fn ($token) => [
+                    'id' => $token->id,
+                    'client_id' => $token->client_id,
+                    'client_name' => $token->client_name ?: $token->token_name,
+                    'token_name' => $token->token_name,
+                    'created_at' => $token->created_at,
+                    'updated_at' => $token->updated_at,
+                    'expires_at' => $token->expires_at,
+                ])
+                ->groupBy('client_id')
+                ->map(fn ($tokenGroup) => collect($tokenGroup)->sortByDesc('created_at')->first())
+                ->values()
+                ->all()
+            : [];
 
         $oauthApplications = collect($allOauthApplications)
             ->forPage($oauthPage, $oauthPerPage)
@@ -210,13 +223,13 @@ class SettingsController extends Controller
 
         return Inertia::render('Settings/Sessions', [
             'users' => $users,
-            'selectedUser' => [
+            'selectedUser' => $selectedUser ? [
                 'id' => $selectedUser->id,
                 'name' => $selectedUser->name,
                 'username' => $selectedUser->username,
                 'email' => $selectedUser->email,
                 'last_login_at' => $selectedUser->last_login_at,
-            ],
+            ] : null,
             'sessions' => $sessions,
             'sessionMeta' => [
                 'current_page' => $sessionPage,
@@ -270,7 +283,7 @@ class SettingsController extends Controller
     {
         $defaults = [
             'page' => 1,
-            'user_id' => $request->user()?->id,
+            'user_id' => null,
             'session_page' => 1,
             'oauth_page' => 1,
         ];
@@ -279,7 +292,7 @@ class SettingsController extends Controller
             return [
                 ...$defaults,
                 'page' => max(1, (int) $request->input('page', 1)),
-                'user_id' => $request->input('user_id') !== null ? (int) $request->input('user_id') : ($request->user()?->id ?? null),
+                'user_id' => $request->input('user_id') !== null ? (int) $request->input('user_id') : null,
                 'session_page' => max(1, (int) $request->input('session_page', 1)),
                 'oauth_page' => max(1, (int) $request->input('oauth_page', 1)),
             ];
@@ -294,10 +307,12 @@ class SettingsController extends Controller
     public function revokeSession(Request $request, string $sessionId): RedirectResponse
     {
         $user = $request->user();
+        $targetUserId = $request->input('user_id');
+        $targetUser = $this->resolveSessionTargetUser($user, $targetUserId);
 
         $deleted = DB::table('sessions')
             ->where('id', $sessionId)
-            ->where('user_id', $user->id)
+            ->where('user_id', $targetUser->id)
             ->delete();
 
         if ($deleted) {
@@ -305,24 +320,28 @@ class SettingsController extends Controller
                 request: $request,
                 event: 'account.session.revoked',
                 category: 'account_security',
-                description: "Pengguna {$user->name} mengakhiri sesi aktif yang dipilih.",
+                description: "Pengguna {$user->name} mengakhiri sesi aktif yang dipilih untuk {$targetUser->name}.",
                 user: $user,
                 metadata: [
                     'session_id' => $sessionId,
+                    'target_user_id' => $targetUser->id,
                 ],
             );
         }
 
-        return back()->with('success', 'Sesi yang dipilih berhasil diakhiri.');
+        return redirect()->route('settings.sessions', ['user_id' => $targetUser->id])
+            ->with('success', 'Sesi yang dipilih berhasil diakhiri.');
     }
 
     public function revokeOauthAccess(Request $request, string $tokenId): RedirectResponse
     {
         $user = $request->user();
+        $targetUserId = $request->input('user_id');
+        $targetUser = $this->resolveSessionTargetUser($user, $targetUserId);
 
         $updated = DB::table('oauth_access_tokens')
             ->where('id', $tokenId)
-            ->where('user_id', $user->id)
+            ->where('user_id', $targetUser->id)
             ->update([
                 'revoked' => true,
                 'updated_at' => now(),
@@ -333,15 +352,42 @@ class SettingsController extends Controller
                 request: $request,
                 event: 'account.oauth.token.revoked',
                 category: 'account_security',
-                description: "Pengguna {$user->name} mencabut akses aplikasi OAuth yang terdaftar.",
+                description: "Pengguna {$user->name} mencabut akses aplikasi OAuth yang terdaftar untuk {$targetUser->name}.",
                 user: $user,
                 metadata: [
                     'token_id' => $tokenId,
+                    'target_user_id' => $targetUser->id,
                 ],
             );
         }
 
-        return back()->with('success', 'Akses OAuth untuk aplikasi yang dipilih berhasil dicabut.');
+        return redirect()->route('settings.sessions', ['user_id' => $targetUser->id])
+            ->with('success', 'Akses OAuth untuk aplikasi yang dipilih berhasil dicabut.');
+    }
+
+    private function resolveSessionTargetUser(User $actor, mixed $targetUserId): User
+    {
+        if ($targetUserId === null || $targetUserId === '') {
+            return $actor;
+        }
+
+        $targetUserId = (int) $targetUserId;
+
+        if ($targetUserId === $actor->id) {
+            return $actor;
+        }
+
+        if (! $actor->isAdmin()) {
+            abort(403, 'Anda tidak diizinkan untuk mengelola akun pengguna lain.');
+        }
+
+        $targetUser = User::query()->find($targetUserId);
+
+        if (! $targetUser) {
+            abort(404, 'Pengguna target tidak ditemukan.');
+        }
+
+        return $targetUser;
     }
 
     public function showRecoveryCodes(Request $request): RedirectResponse

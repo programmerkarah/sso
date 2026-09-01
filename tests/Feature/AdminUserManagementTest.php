@@ -486,6 +486,114 @@ class AdminUserManagementTest extends TestCase
         Notification::assertSentTo($user, VerifyEmail::class);
     }
 
+    public function test_admin_session_page_does_not_default_to_active_user_until_selection_is_made(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $admin = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $admin->roles()->attach(Role::where('name', 'admin')->value('id'));
+
+        $otherUser = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $otherUser->roles()->attach(Role::where('name', 'user')->value('id'));
+
+        $response = $this
+            ->actingAs($admin)
+            ->get(route('settings.sessions'));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Settings/Sessions')
+                ->where('selectedUser', null)
+                ->where('sessions', [])
+                ->where('users.total', 2)
+            );
+    }
+
+    public function test_admin_can_revoke_another_users_session_and_oauth_access_from_session_management(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $admin = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $admin->roles()->attach(Role::where('name', 'admin')->value('id'));
+
+        $targetUser = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $targetUser->roles()->attach(Role::where('name', 'user')->value('id'));
+
+        $sessionId = 'session-target-'.uniqid();
+        DB::table('sessions')->insert([
+            [
+                'id' => $sessionId,
+                'user_id' => $targetUser->id,
+                'ip_address' => '10.0.0.5',
+                'user_agent' => 'Target Browser',
+                'payload' => json_encode([]),
+                'last_activity' => now()->timestamp,
+            ],
+        ]);
+
+        $client = Client::create([
+            'id' => (string) fake()->uuid(),
+            'owner_type' => null,
+            'owner_id' => null,
+            'name' => 'Aplikasi Target',
+            'secret' => null,
+            'provider' => null,
+            'redirect_uris' => ['https://example.test/callback'],
+            'grant_types' => ['authorization_code', 'refresh_token'],
+            'revoked' => false,
+        ]);
+
+        $tokenId = 'access-token-target-'.uniqid();
+        DB::table('oauth_access_tokens')->insert([
+            [
+                'id' => $tokenId,
+                'user_id' => $targetUser->id,
+                'client_id' => $client->id,
+                'name' => 'Aplikasi Target',
+                'scopes' => '[]',
+                'revoked' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->post(route('settings.sessions.revoke', ['sessionId' => $sessionId]), [
+                'user_id' => $targetUser->id,
+            ]);
+
+        $response->assertRedirect(route('settings.sessions', ['user_id' => $targetUser->id]));
+        $this->assertDatabaseMissing('sessions', ['id' => $sessionId]);
+
+        $tokenResponse = $this
+            ->actingAs($admin)
+            ->post(route('settings.oauth.revoke', ['tokenId' => $tokenId]), [
+                'user_id' => $targetUser->id,
+            ]);
+
+        $tokenResponse->assertRedirect(route('settings.sessions', ['user_id' => $targetUser->id]));
+        $this->assertDatabaseHas('oauth_access_tokens', ['id' => $tokenId, 'revoked' => true]);
+    }
+
     public function test_user_can_view_their_active_sessions_and_revoke_an_oauth_client_access(): void
     {
         $this->seed(RoleSeeder::class);
@@ -496,8 +604,13 @@ class AdminUserManagementTest extends TestCase
             'two_factor_confirmed_at' => now(),
         ]);
 
-        $currentSessionId = session()->getId();
+        $currentSessionId = 'session-current-'.uniqid();
+        session()->setId($currentSessionId);
+        session()->save();
+        $this->actingAs($user);
         $otherSessionId = 'session-other-'.uniqid();
+        $currentTimestamp = now()->timestamp + 10;
+        $otherTimestamp = now()->timestamp;
 
         DB::table('sessions')->insert([
             [
@@ -506,7 +619,7 @@ class AdminUserManagementTest extends TestCase
                 'ip_address' => '127.0.0.1',
                 'user_agent' => 'Current Browser',
                 'payload' => json_encode([]),
-                'last_activity' => now()->timestamp,
+                'last_activity' => $currentTimestamp,
             ],
             [
                 'id' => $otherSessionId,
@@ -514,7 +627,7 @@ class AdminUserManagementTest extends TestCase
                 'ip_address' => '10.0.0.2',
                 'user_agent' => 'Other Browser',
                 'payload' => json_encode([]),
-                'last_activity' => now()->timestamp,
+                'last_activity' => $otherTimestamp,
             ],
         ]);
 
@@ -547,12 +660,13 @@ class AdminUserManagementTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get(route('settings.sessions'));
+            ->get(route('settings.sessions', ['user_id' => $user->id]));
 
         $response
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Settings/Sessions')
+                ->where('selectedUser.id', $user->id)
                 ->where('sessions.0.is_current', true)
                 ->where('sessions.1.is_current', false)
                 ->where('oauthApplications.0.client_name', 'Aplikasi Terdaftar')
@@ -569,16 +683,20 @@ class AdminUserManagementTest extends TestCase
 
         $revokeResponse = $this
             ->actingAs($user)
-            ->post(route('settings.sessions.revoke', ['sessionId' => $otherSessionId]));
+            ->post(route('settings.sessions.revoke', ['sessionId' => $otherSessionId]), [
+                'user_id' => $user->id,
+            ]);
 
-        $revokeResponse->assertRedirect(route('settings.sessions'));
+        $revokeResponse->assertRedirect(route('settings.sessions', ['user_id' => $user->id]));
         $this->assertDatabaseMissing('sessions', ['id' => $otherSessionId]);
 
         $tokenRevokeResponse = $this
             ->actingAs($user)
-            ->post(route('settings.oauth.revoke', ['tokenId' => $tokenId]));
+            ->post(route('settings.oauth.revoke', ['tokenId' => $tokenId]), [
+                'user_id' => $user->id,
+            ]);
 
-        $tokenRevokeResponse->assertRedirect(route('settings.sessions'));
+        $tokenRevokeResponse->assertRedirect(route('settings.sessions', ['user_id' => $user->id]));
         $this->assertDatabaseHas('oauth_access_tokens', ['id' => $tokenId, 'revoked' => true]);
     }
 

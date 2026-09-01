@@ -132,7 +132,7 @@ export default function Sessions({
     oauth_next_page_token,
 }: SessionsProps) {
     const currentUserList = users?.data ?? [];
-    const selectedUserId = selectedUser?.id ?? currentUserList[0]?.id ?? null;
+    const selectedUserId = selectedUser?.id ?? null;
 
     const visitState = (state: string | null | undefined) => {
         if (!state) {
@@ -168,7 +168,7 @@ export default function Sessions({
     const revokeSession = (sessionId: string) => {
         router.post(
             `/settings/sessions/${sessionId}/revoke`,
-            {},
+            { user_id: selectedUserId },
             {
                 preserveScroll: true,
             },
@@ -178,7 +178,7 @@ export default function Sessions({
     const revokeOauthAccess = (tokenId: string) => {
         router.post(
             `/settings/oauth/${tokenId}/revoke`,
-            {},
+            { user_id: selectedUserId },
             {
                 preserveScroll: true,
             },
@@ -241,10 +241,7 @@ export default function Sessions({
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="min-w-0">
                                                     <div className="truncate text-sm font-semibold text-white">
-                                                        {user.name}
-                                                    </div>
-                                                    <div className="mt-1 truncate text-xs text-white/60">
-                                                        {user.email}
+                                                        {user.name.toUpperCase()}
                                                     </div>
                                                 </div>
                                                 {selectedUserId === user.id && (
@@ -315,7 +312,7 @@ export default function Sessions({
                                         </h2>
                                         <p className="text-sm text-white/70">
                                             {selectedUser
-                                                ? `Untuk ${selectedUser.name}`
+                                                ? `Untuk ${selectedUser.name.toUpperCase()}`
                                                 : 'Pilih pengguna terlebih dahulu'}
                                         </p>
                                     </div>
