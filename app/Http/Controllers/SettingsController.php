@@ -8,6 +8,7 @@ use App\Rules\SecurePassword;
 use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
@@ -34,6 +35,118 @@ class SettingsController extends Controller
                 ? $request->session()->get('two-factor-recovery-codes')
                 : [],
         ]);
+    }
+
+    public function sessions(Request $request): Response
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $activeSessionId = $request->session()->getId();
+
+        $sessions = DB::table('sessions')
+            ->where('user_id', $user->id)
+            ->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END', [$activeSessionId])
+            ->orderByDesc('last_activity')
+            ->get(['id', 'ip_address', 'user_agent', 'last_activity'])
+            ->map(fn ($session) => [
+                'id' => $session->id,
+                'ip_address' => $session->ip_address,
+                'user_agent' => $session->user_agent,
+                'last_activity' => $session->last_activity,
+                'last_activity_at' => date('Y-m-d H:i:s', (int) $session->last_activity),
+                'is_current' => $session->id === $activeSessionId,
+            ])
+            ->values()
+            ->all();
+
+        $oauthApplications = DB::table('oauth_access_tokens as tokens')
+            ->join('oauth_clients as clients', 'clients.id', '=', 'tokens.client_id')
+            ->where('tokens.user_id', $user->id)
+            ->where('tokens.revoked', false)
+            ->where(function ($query) {
+                $query->whereNull('tokens.expires_at')
+                    ->orWhere('tokens.expires_at', '>', now());
+            })
+            ->select([
+                'tokens.id',
+                'tokens.client_id',
+                'clients.name as client_name',
+                'tokens.name as token_name',
+                'tokens.created_at',
+                'tokens.updated_at',
+                'tokens.expires_at',
+            ])
+            ->orderByDesc('tokens.created_at')
+            ->get()
+            ->map(fn ($token) => [
+                'id' => $token->id,
+                'client_id' => $token->client_id,
+                'client_name' => $token->client_name ?: $token->token_name,
+                'token_name' => $token->token_name,
+                'created_at' => $token->created_at,
+                'updated_at' => $token->updated_at,
+                'expires_at' => $token->expires_at,
+            ])
+            ->values()
+            ->all();
+
+        return Inertia::render('Settings/Sessions', [
+            'sessions' => $sessions,
+            'oauthApplications' => $oauthApplications,
+        ]);
+    }
+
+    public function revokeSession(Request $request, string $sessionId): RedirectResponse
+    {
+        $user = $request->user();
+
+        $deleted = DB::table('sessions')
+            ->where('id', $sessionId)
+            ->where('user_id', $user->id)
+            ->delete();
+
+        if ($deleted) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'account.session.revoked',
+                category: 'account_security',
+                description: "Pengguna {$user->name} mengakhiri sesi aktif yang dipilih.",
+                user: $user,
+                metadata: [
+                    'session_id' => $sessionId,
+                ],
+            );
+        }
+
+        return back()->with('success', 'Sesi yang dipilih berhasil diakhiri.');
+    }
+
+    public function revokeOauthAccess(Request $request, string $tokenId): RedirectResponse
+    {
+        $user = $request->user();
+
+        $updated = DB::table('oauth_access_tokens')
+            ->where('id', $tokenId)
+            ->where('user_id', $user->id)
+            ->update([
+                'revoked' => true,
+                'updated_at' => now(),
+            ]);
+
+        if ($updated) {
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'account.oauth.token.revoked',
+                category: 'account_security',
+                description: "Pengguna {$user->name} mencabut akses aplikasi OAuth yang terdaftar.",
+                user: $user,
+                metadata: [
+                    'token_id' => $tokenId,
+                ],
+            );
+        }
+
+        return back()->with('success', 'Akses OAuth untuk aplikasi yang dipilih berhasil dicabut.');
     }
 
     public function showRecoveryCodes(Request $request): RedirectResponse

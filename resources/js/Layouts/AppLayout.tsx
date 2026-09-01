@@ -271,6 +271,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                     >
                                                         Keamanan
                                                     </Link>
+                                                    <Link
+                                                        href="/settings/sessions"
+                                                        className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                    >
+                                                        Kelola Sesi
+                                                    </Link>
                                                     {canManageUsers && (
                                                         <Link
                                                             href="/admin/users"
@@ -432,6 +438,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                         className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
                                                     >
                                                         Keamanan
+                                                    </Link>
+                                                    <Link
+                                                        href="/settings/sessions"
+                                                        className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
+                                                    >
+                                                        Kelola Sesi
                                                     </Link>
                                                     {canManageUsers && (
                                                         <Link

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia as Assert;
+use Laravel\Passport\Client;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use RuntimeException;
 use Tests\TestCase;
@@ -483,6 +484,93 @@ class AdminUserManagementTest extends TestCase
         $this->assertNull($user->email_verified_at);
 
         Notification::assertSentTo($user, VerifyEmail::class);
+    }
+
+    public function test_user_can_view_their_active_sessions_and_revoke_an_oauth_client_access(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $user = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        $currentSessionId = session()->getId();
+        $otherSessionId = 'session-other-'.uniqid();
+
+        DB::table('sessions')->insert([
+            [
+                'id' => $currentSessionId,
+                'user_id' => $user->id,
+                'ip_address' => '127.0.0.1',
+                'user_agent' => 'Current Browser',
+                'payload' => json_encode([]),
+                'last_activity' => now()->timestamp,
+            ],
+            [
+                'id' => $otherSessionId,
+                'user_id' => $user->id,
+                'ip_address' => '10.0.0.2',
+                'user_agent' => 'Other Browser',
+                'payload' => json_encode([]),
+                'last_activity' => now()->timestamp,
+            ],
+        ]);
+
+        $client = Client::create([
+            'id' => (string) fake()->uuid(),
+            'owner_type' => null,
+            'owner_id' => null,
+            'name' => 'Aplikasi Terdaftar',
+            'secret' => null,
+            'provider' => null,
+            'redirect_uris' => ['https://example.test/callback'],
+            'grant_types' => ['authorization_code', 'refresh_token'],
+            'revoked' => false,
+        ]);
+
+        $tokenId = 'access-token-'.uniqid();
+        DB::table('oauth_access_tokens')->insert([
+            [
+                'id' => $tokenId,
+                'user_id' => $user->id,
+                'client_id' => $client->id,
+                'name' => 'Aplikasi Terdaftar',
+                'scopes' => '[]',
+                'revoked' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('settings.sessions'));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Settings/Sessions')
+                ->where('sessions.0.is_current', true)
+                ->where('sessions.1.is_current', false)
+                ->where('oauthApplications.0.client_name', 'Aplikasi Terdaftar')
+            );
+
+        $revokeResponse = $this
+            ->actingAs($user)
+            ->post(route('settings.sessions.revoke', ['sessionId' => $otherSessionId]));
+
+        $revokeResponse->assertRedirect(route('settings.sessions'));
+        $this->assertDatabaseMissing('sessions', ['id' => $otherSessionId]);
+
+        $tokenRevokeResponse = $this
+            ->actingAs($user)
+            ->post(route('settings.oauth.revoke', ['tokenId' => $tokenId]));
+
+        $tokenRevokeResponse->assertRedirect(route('settings.sessions'));
+        $this->assertDatabaseHas('oauth_access_tokens', ['id' => $tokenId, 'revoked' => true]);
     }
 
     public function test_admin_can_update_user_identity_and_trigger_reverification_when_email_changes(): void
