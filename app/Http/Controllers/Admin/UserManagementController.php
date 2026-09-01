@@ -846,9 +846,41 @@ class UserManagementController extends Controller
             ->values()
             ->all();
 
+        $oauthTokens = DB::table('oauth_access_tokens as tokens')
+            ->join('oauth_clients as clients', 'clients.id', '=', 'tokens.client_id')
+            ->where('tokens.user_id', $user->id)
+            ->where('tokens.revoked', false)
+            ->where(function ($query) {
+                $query->whereNull('tokens.expires_at')
+                    ->orWhere('tokens.expires_at', '>', now());
+            })
+            ->select([
+                'tokens.id',
+                'tokens.client_id',
+                'clients.name as client_name',
+                'tokens.name as token_name',
+                'tokens.created_at',
+                'tokens.updated_at',
+                'tokens.expires_at',
+            ])
+            ->orderByDesc('tokens.created_at')
+            ->get()
+            ->map(fn ($token): array => [
+                'id' => $token->id,
+                'client_id' => $token->client_id,
+                'client_name' => $token->client_name ?: $token->token_name,
+                'token_name' => $token->token_name,
+                'created_at' => $token->created_at,
+                'updated_at' => $token->updated_at,
+                'expires_at' => $token->expires_at,
+            ])
+            ->values()
+            ->all();
+
         return response()->json([
             'sessions' => $sessions,
             'trusted_devices' => $trustedDevices,
+            'oauth_tokens' => $oauthTokens,
         ]);
     }
 

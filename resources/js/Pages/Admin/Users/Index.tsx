@@ -148,12 +148,23 @@ interface TrustedDeviceInfo {
     created_at: string | null;
 }
 
+interface OauthTokenInfo {
+    id: string;
+    client_id: string;
+    client_name: string;
+    token_name: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+    expires_at: string | null;
+}
+
 interface UserSecurityModal {
     isOpen: boolean;
     user: ManagedUser | null;
     loading: boolean;
     sessions: SessionInfo[];
     trustedDevices: TrustedDeviceInfo[];
+    oauthTokens: OauthTokenInfo[];
 }
 
 const parseUserAgent = (
@@ -215,7 +226,7 @@ const parseUserAgent = (
     return { browser, os, device };
 };
 
-const formatDateTime = (value?: string) => {
+const formatDateTime = (value?: string | null) => {
     if (!value) {
         return '—';
     }
@@ -303,10 +314,13 @@ export default function Index({
             loading: false,
             sessions: [],
             trustedDevices: [],
+            oauthTokens: [],
         });
-    const [securityTab, setSecurityTab] = useState<'sessions' | 'devices'>(
-        'sessions',
-    );
+    const [securityTab, setSecurityTab] = useState<
+        'sessions' | 'devices' | 'oauth'
+    >('sessions');
+    const [sessionPage, setSessionPage] = useState(1);
+    const sessionPageSize = 5;
     const [geoMap, setGeoMap] = useState<Record<string, string>>({});
     const actionButtonRefs = useRef<Record<number, HTMLButtonElement | null>>(
         {},
@@ -772,12 +786,14 @@ export default function Index({
 
     const openUserSecurity = async (user: ManagedUser) => {
         setSecurityTab('sessions');
+        setSessionPage(1);
         setUserSecurityModal({
             isOpen: true,
             user,
             loading: true,
             sessions: [],
             trustedDevices: [],
+            oauthTokens: [],
         });
 
         try {
@@ -788,12 +804,14 @@ export default function Index({
             const data = (await res.json()) as {
                 sessions: SessionInfo[];
                 trusted_devices: TrustedDeviceInfo[];
+                oauth_tokens: OauthTokenInfo[];
             };
             setUserSecurityModal((prev) => ({
                 ...prev,
                 loading: false,
                 sessions: data.sessions,
                 trustedDevices: data.trusted_devices,
+                oauthTokens: data.oauth_tokens ?? [],
             }));
 
             // Kick off geo-IP lookups for all unique public IPs
@@ -831,7 +849,9 @@ export default function Index({
             loading: false,
             sessions: [],
             trustedDevices: [],
+            oauthTokens: [],
         });
+        setSessionPage(1);
     };
 
     const handleRevokeDevice = async (deviceId: number) => {
@@ -895,6 +915,15 @@ export default function Index({
     const allSelectedOnCurrentPage =
         users.data.length > 0 &&
         users.data.every((user) => selectedUserIds.includes(user.id));
+
+    const sessionTotalPages = Math.max(
+        1,
+        Math.ceil(userSecurityModal.sessions.length / sessionPageSize),
+    );
+    const visibleSessions = userSecurityModal.sessions.slice(
+        (sessionPage - 1) * sessionPageSize,
+        sessionPage * sessionPageSize,
+    );
 
     const selectedAccessOrganization = accessForm.data.organization_id
         ? organizationSelectOptions.find(
@@ -1918,6 +1947,26 @@ export default function Index({
                             </button>
                             <button
                                 type="button"
+                                onClick={() => setSecurityTab('oauth')}
+                                className={`-mb-px ml-5 border-b-2 px-1 py-3 text-xs font-semibold transition ${
+                                    securityTab === 'oauth'
+                                        ? 'border-teal-400 text-teal-300'
+                                        : 'border-transparent text-white/40 hover:text-white/70'
+                                }`}
+                            >
+                                OAuth Terhubung
+                                <span
+                                    className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
+                                        securityTab === 'oauth'
+                                            ? 'bg-teal-500/20 text-teal-300'
+                                            : 'bg-white/10 text-white/40'
+                                    }`}
+                                >
+                                    {userSecurityModal.oauthTokens.length}
+                                </span>
+                            </button>
+                            <button
+                                type="button"
                                 onClick={() => setSecurityTab('devices')}
                                 className={`-mb-px ml-5 border-b-2 px-1 py-3 text-xs font-semibold transition ${
                                     securityTab === 'devices'
@@ -1958,116 +2007,210 @@ export default function Index({
                                         </div>
                                     ) : (
                                         <div className="space-y-2.5">
-                                            {userSecurityModal.sessions.map(
-                                                (session) => {
-                                                    const parsed =
-                                                        parseUserAgent(
-                                                            session.user_agent,
-                                                        );
-                                                    const DeviceIcon =
-                                                        parsed.device ===
-                                                        'mobile'
-                                                            ? Smartphone
-                                                            : parsed.device ===
-                                                                'tablet'
-                                                              ? Laptop
-                                                              : Monitor;
+                                            {visibleSessions.map((session) => {
+                                                const parsed = parseUserAgent(
+                                                    session.user_agent,
+                                                );
+                                                const DeviceIcon =
+                                                    parsed.device === 'mobile'
+                                                        ? Smartphone
+                                                        : parsed.device ===
+                                                            'tablet'
+                                                          ? Laptop
+                                                          : Monitor;
 
-                                                    return (
+                                                return (
+                                                    <div
+                                                        key={session.id}
+                                                        className={`group flex items-center gap-3 rounded-xl border px-4 py-3 transition ${
+                                                            session.is_active
+                                                                ? 'border-emerald-500/30 bg-emerald-500/10'
+                                                                : 'border-white/8 bg-white/5 hover:bg-white/8'
+                                                        }`}
+                                                    >
                                                         <div
-                                                            key={session.id}
-                                                            className={`group flex items-center gap-3 rounded-xl border px-4 py-3 transition ${
+                                                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
                                                                 session.is_active
-                                                                    ? 'border-emerald-500/30 bg-emerald-500/10'
-                                                                    : 'border-white/8 bg-white/5 hover:bg-white/8'
+                                                                    ? 'bg-emerald-500/20'
+                                                                    : 'bg-white/10'
                                                             }`}
                                                         >
-                                                            <div
-                                                                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                                                                    session.is_active
-                                                                        ? 'bg-emerald-500/20'
-                                                                        : 'bg-white/10'
-                                                                }`}
-                                                            >
-                                                                <DeviceIcon
-                                                                    className={`h-4 w-4 ${session.is_active ? 'text-emerald-300' : 'text-white/50'}`}
-                                                                />
-                                                            </div>
-                                                            <div className="min-w-0 flex-1">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="text-xs font-semibold text-white/90">
-                                                                        {
-                                                                            parsed.browser
-                                                                        }
-                                                                    </span>
-                                                                    <span className="text-white/30">
-                                                                        ·
-                                                                    </span>
-                                                                    <span className="text-xs text-white/55">
-                                                                        {
-                                                                            parsed.os
-                                                                        }
-                                                                    </span>
-                                                                    {session.is_active && (
-                                                                        <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300">
-                                                                            Aktif
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                                <div className="mt-0.5 flex items-center gap-3 text-[11px] text-white/35">
-                                                                    <span>
-                                                                        IP:{' '}
-                                                                        {session.ip_address ??
-                                                                            '—'}
-                                                                    </span>
-                                                                    <span>
-                                                                        ·
-                                                                    </span>
-                                                                    <span>
-                                                                        Aktif:{' '}
-                                                                        {formatDateTime(
-                                                                            session.last_activity_at,
-                                                                        )}
-                                                                    </span>
-                                                                    {session.ip_address &&
-                                                                        !isPrivateIp(
-                                                                            session.ip_address,
-                                                                        ) &&
-                                                                        geoMap[
-                                                                            session
-                                                                                .ip_address
-                                                                        ] && (
-                                                                            <>
-                                                                                <span>
-                                                                                    ·
-                                                                                </span>
-                                                                                <span className="text-sky-400/70">
-                                                                                    {
-                                                                                        geoMap[
-                                                                                            session
-                                                                                                .ip_address
-                                                                                        ]
-                                                                                    }
-                                                                                </span>
-                                                                            </>
-                                                                        )}
-                                                                </div>
-                                                            </div>
-                                                            <button
-                                                                type="button"
-                                                                title="Hentikan sesi"
-                                                                onClick={() =>
-                                                                    handleTerminateSession(
-                                                                        session.id,
-                                                                    )
-                                                                }
-                                                                className="shrink-0 rounded-lg p-1.5 text-white/25 transition hover:bg-red-500/20 hover:text-red-300"
-                                                            >
-                                                                <Trash2 className="h-3.5 w-3.5" />
-                                                            </button>
+                                                            <DeviceIcon
+                                                                className={`h-4 w-4 ${session.is_active ? 'text-emerald-300' : 'text-white/50'}`}
+                                                            />
                                                         </div>
-                                                    );
-                                                },
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-semibold text-white/90">
+                                                                    {
+                                                                        parsed.browser
+                                                                    }
+                                                                </span>
+                                                                <span className="text-white/30">
+                                                                    ·
+                                                                </span>
+                                                                <span className="text-xs text-white/55">
+                                                                    {parsed.os}
+                                                                </span>
+                                                                {session.is_active && (
+                                                                    <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300">
+                                                                        Aktif
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="mt-0.5 flex items-center gap-3 text-[11px] text-white/35">
+                                                                <span>
+                                                                    IP:{' '}
+                                                                    {session.ip_address ??
+                                                                        '—'}
+                                                                </span>
+                                                                <span>·</span>
+                                                                <span>
+                                                                    Aktif:{' '}
+                                                                    {formatDateTime(
+                                                                        session.last_activity_at,
+                                                                    )}
+                                                                </span>
+                                                                {session.ip_address &&
+                                                                    !isPrivateIp(
+                                                                        session.ip_address,
+                                                                    ) &&
+                                                                    geoMap[
+                                                                        session
+                                                                            .ip_address
+                                                                    ] && (
+                                                                        <>
+                                                                            <span>
+                                                                                ·
+                                                                            </span>
+                                                                            <span className="text-sky-400/70">
+                                                                                {
+                                                                                    geoMap[
+                                                                                        session
+                                                                                            .ip_address
+                                                                                    ]
+                                                                                }
+                                                                            </span>
+                                                                        </>
+                                                                    )}
+                                                            </div>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            title="Hentikan sesi"
+                                                            onClick={() =>
+                                                                handleTerminateSession(
+                                                                    session.id,
+                                                                )
+                                                            }
+                                                            className="shrink-0 rounded-lg p-1.5 text-white/25 transition hover:bg-red-500/20 hover:text-red-300"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                            {sessionTotalPages > 1 && (
+                                                <div className="mt-3 flex items-center justify-between gap-3 pt-2 text-xs text-white/60">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setSessionPage(
+                                                                (page) =>
+                                                                    Math.max(
+                                                                        1,
+                                                                        page -
+                                                                            1,
+                                                                    ),
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            sessionPage === 1
+                                                        }
+                                                        className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-40"
+                                                    >
+                                                        Sebelumnya
+                                                    </button>
+                                                    <span>
+                                                        Halaman {sessionPage} /{' '}
+                                                        {sessionTotalPages}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setSessionPage(
+                                                                (page) =>
+                                                                    Math.min(
+                                                                        sessionTotalPages,
+                                                                        page +
+                                                                            1,
+                                                                    ),
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            sessionPage ===
+                                                            sessionTotalPages
+                                                        }
+                                                        className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-40"
+                                                    >
+                                                        Berikutnya
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
+                            ) : securityTab === 'oauth' ? (
+                                <>
+                                    {userSecurityModal.oauthTokens.length ===
+                                    0 ? (
+                                        <div className="flex flex-col items-center justify-center gap-2 py-10 text-white/30">
+                                            <ShieldCheck className="h-8 w-8" />
+                                            <p className="text-xs">
+                                                Tidak ada aplikasi OAuth yang
+                                                terhubung.
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2.5">
+                                            {userSecurityModal.oauthTokens.map(
+                                                (token) => (
+                                                    <div
+                                                        key={token.id}
+                                                        className="rounded-xl border border-white/8 bg-white/5 p-3"
+                                                    >
+                                                        <div className="flex items-center justify-between gap-3">
+                                                            <div>
+                                                                <p className="text-sm font-semibold text-white">
+                                                                    {
+                                                                        token.client_name
+                                                                    }
+                                                                </p>
+                                                                <p className="text-[11px] text-white/50">
+                                                                    {token.token_name ??
+                                                                        'Akses SSO'}
+                                                                </p>
+                                                            </div>
+                                                            <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-200">
+                                                                OAuth
+                                                            </span>
+                                                        </div>
+                                                        <div className="mt-2 space-y-1 text-[11px] text-white/45">
+                                                            <div>
+                                                                Dibuat:{' '}
+                                                                {formatDateTime(
+                                                                    token.created_at,
+                                                                )}
+                                                            </div>
+                                                            <div>
+                                                                Expired:{' '}
+                                                                {formatDateTime(
+                                                                    token.expires_at,
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ),
                                             )}
                                         </div>
                                     )}

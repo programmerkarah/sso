@@ -558,6 +558,15 @@ class AdminUserManagementTest extends TestCase
                 ->where('oauthApplications.0.client_name', 'Aplikasi Terdaftar')
             );
 
+        $securityResponse = $this
+            ->actingAs($user)
+            ->getJson(route('admin.users.security', $user));
+
+        $securityResponse
+            ->assertOk()
+            ->assertJsonPath('sessions.0.is_active', true)
+            ->assertJsonPath('oauth_tokens.0.client_name', 'Aplikasi Terdaftar');
+
         $revokeResponse = $this
             ->actingAs($user)
             ->post(route('settings.sessions.revoke', ['sessionId' => $otherSessionId]));
