@@ -39,12 +39,35 @@ class SettingsController extends Controller
 
     public function sessions(Request $request): Response
     {
-        /** @var User $user */
-        $user = $request->user();
+        /** @var User $currentUser */
+        $currentUser = $request->user();
         $activeSessionId = $request->session()->getId();
+        $selectedUserId = $request->input('user_id');
+        $page = max(1, (int) $request->input('page', 1));
+        $isAdmin = $currentUser->isAdmin();
+
+        if ($isAdmin) {
+            $usersQuery = User::query()
+                ->select(['id', 'name', 'username', 'email', 'last_login_at', 'created_at'])
+                ->orderBy('name');
+
+            $usersPaginator = $usersQuery->paginate(10, ['*'], 'page', $page);
+            $selectedUser = $selectedUserId ? User::query()->find($selectedUserId) : null;
+
+            if (! $selectedUser && $usersPaginator->count() > 0) {
+                $selectedUser = $usersPaginator->first();
+            }
+
+            if (! $selectedUser) {
+                $selectedUser = $currentUser;
+            }
+        } else {
+            $usersPaginator = null;
+            $selectedUser = $currentUser;
+        }
 
         $sessions = DB::table('sessions')
-            ->where('user_id', $user->id)
+            ->where('user_id', $selectedUser->id)
             ->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END', [$activeSessionId])
             ->orderByDesc('last_activity')
             ->get(['id', 'ip_address', 'user_agent', 'last_activity'])
@@ -61,7 +84,7 @@ class SettingsController extends Controller
 
         $oauthApplications = DB::table('oauth_access_tokens as tokens')
             ->join('oauth_clients as clients', 'clients.id', '=', 'tokens.client_id')
-            ->where('tokens.user_id', $user->id)
+            ->where('tokens.user_id', $selectedUser->id)
             ->where('tokens.revoked', false)
             ->where(function ($query) {
                 $query->whereNull('tokens.expires_at')
@@ -90,7 +113,49 @@ class SettingsController extends Controller
             ->values()
             ->all();
 
+        $users = $isAdmin && $usersPaginator
+            ? [
+                'data' => $usersPaginator->items()->map(fn (User $user) => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'username' => $user->username,
+                    'email' => $user->email,
+                    'last_login_at' => $user->last_login_at,
+                    'created_at' => $user->created_at,
+                    'session_count' => DB::table('sessions')->where('user_id', $user->id)->count(),
+                    'oauth_count' => DB::table('oauth_access_tokens')->where('user_id', $user->id)->where('revoked', false)->count(),
+                ])->values()->all(),
+                'current_page' => $usersPaginator->currentPage(),
+                'last_page' => $usersPaginator->lastPage(),
+                'per_page' => $usersPaginator->perPage(),
+                'total' => $usersPaginator->total(),
+            ]
+            : [
+                'data' => [[
+                    'id' => $selectedUser->id,
+                    'name' => $selectedUser->name,
+                    'username' => $selectedUser->username,
+                    'email' => $selectedUser->email,
+                    'last_login_at' => $selectedUser->last_login_at,
+                    'created_at' => $selectedUser->created_at,
+                    'session_count' => count($sessions),
+                    'oauth_count' => count($oauthApplications),
+                ]],
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => 1,
+                'total' => 1,
+            ];
+
         return Inertia::render('Settings/Sessions', [
+            'users' => $users,
+            'selectedUser' => [
+                'id' => $selectedUser->id,
+                'name' => $selectedUser->name,
+                'username' => $selectedUser->username,
+                'email' => $selectedUser->email,
+                'last_login_at' => $selectedUser->last_login_at,
+            ],
             'sessions' => $sessions,
             'oauthApplications' => $oauthApplications,
         ]);
