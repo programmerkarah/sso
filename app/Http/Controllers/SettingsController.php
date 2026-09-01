@@ -288,20 +288,34 @@ class SettingsController extends Controller
             'oauth_page' => 1,
         ];
 
+        if ($request->isMethod('get') && $request->exists('user_id')) {
+            abort(401, 'Tidak diizinkan.');
+        }
+
+        $storedState = $request->session()->get('settings.sessions.state', []);
+
         if (! $request->isMethod('post')) {
+            $stateFromQuery = [
+                'page' => max(1, (int) $request->input('page', $storedState['page'] ?? 1)),
+                'user_id' => $storedState['user_id'] ?? null,
+                'session_page' => max(1, (int) $request->input('session_page', $storedState['session_page'] ?? 1)),
+                'oauth_page' => max(1, (int) $request->input('oauth_page', $storedState['oauth_page'] ?? 1)),
+            ];
+
             return [
                 ...$defaults,
-                'page' => max(1, (int) $request->input('page', 1)),
-                'user_id' => $request->input('user_id') !== null ? (int) $request->input('user_id') : null,
-                'session_page' => max(1, (int) $request->input('session_page', 1)),
-                'oauth_page' => max(1, (int) $request->input('oauth_page', 1)),
+                ...$stateFromQuery,
             ];
         }
 
-        return array_merge(
+        $decodedState = array_merge(
             $defaults,
             $encryptedState->decryptArray($request->string('state')->toString(), $defaults),
         );
+
+        $request->session()->put('settings.sessions.state', $decodedState);
+
+        return $decodedState;
     }
 
     public function revokeSession(Request $request, string $sessionId): RedirectResponse
@@ -329,7 +343,14 @@ class SettingsController extends Controller
             );
         }
 
-        return redirect()->route('settings.sessions', ['user_id' => $targetUser->id])
+        $request->session()->put('settings.sessions.state', [
+            'page' => max(1, (int) $request->input('page', 1)),
+            'user_id' => $targetUser->id,
+            'session_page' => max(1, (int) $request->input('session_page', 1)),
+            'oauth_page' => max(1, (int) $request->input('oauth_page', 1)),
+        ]);
+
+        return redirect()->route('settings.sessions')
             ->with('success', 'Sesi yang dipilih berhasil diakhiri.');
     }
 
@@ -361,7 +382,14 @@ class SettingsController extends Controller
             );
         }
 
-        return redirect()->route('settings.sessions', ['user_id' => $targetUser->id])
+        $request->session()->put('settings.sessions.state', [
+            'page' => max(1, (int) $request->input('page', 1)),
+            'user_id' => $targetUser->id,
+            'session_page' => max(1, (int) $request->input('session_page', 1)),
+            'oauth_page' => max(1, (int) $request->input('oauth_page', 1)),
+        ]);
+
+        return redirect()->route('settings.sessions')
             ->with('success', 'Akses OAuth untuk aplikasi yang dipilih berhasil dicabut.');
     }
 

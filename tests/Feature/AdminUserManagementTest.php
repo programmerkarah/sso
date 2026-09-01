@@ -13,6 +13,7 @@ use Database\Seeders\RoleSeeder;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\Channels\MailChannel;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -518,6 +519,80 @@ class AdminUserManagementTest extends TestCase
             );
     }
 
+    public function test_session_page_rejects_user_id_query_parameter_as_unauthorized(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $admin = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $admin->roles()->attach(Role::where('name', 'admin')->value('id'));
+
+        $targetUser = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $targetUser->roles()->attach(Role::where('name', 'user')->value('id'));
+
+        $response = $this
+            ->actingAs($admin)
+            ->get(route('settings.sessions', ['user_id' => $targetUser->id]));
+
+        $response
+            ->assertUnauthorized();
+    }
+
+    public function test_user_is_logged_out_when_all_oauth_access_tokens_are_revoked(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $user = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        $client = Client::create([
+            'id' => (string) fake()->uuid(),
+            'owner_type' => null,
+            'owner_id' => null,
+            'name' => 'Aplikasi Terblokir',
+            'secret' => null,
+            'provider' => null,
+            'redirect_uris' => ['https://example.test/callback'],
+            'grant_types' => ['authorization_code', 'refresh_token'],
+            'revoked' => false,
+        ]);
+
+        DB::table('oauth_access_tokens')->insert([
+            [
+                'id' => 'blocked-token-'.uniqid(),
+                'user_id' => $user->id,
+                'client_id' => $client->id,
+                'name' => 'Aplikasi Terblokir',
+                'scopes' => '[]',
+                'revoked' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('dashboard'))
+            ->get(route('dashboard'));
+
+        $response
+            ->assertRedirect(route('login'))
+            ->assertSessionHas('error');
+
+        $this->assertFalse(Auth::check());
+    }
+
     public function test_admin_can_revoke_another_users_session_and_oauth_access_from_session_management(): void
     {
         $this->seed(RoleSeeder::class);
@@ -581,7 +656,7 @@ class AdminUserManagementTest extends TestCase
                 'user_id' => $targetUser->id,
             ]);
 
-        $response->assertRedirect(route('settings.sessions', ['user_id' => $targetUser->id]));
+        $response->assertRedirect(route('settings.sessions'));
         $this->assertDatabaseMissing('sessions', ['id' => $sessionId]);
 
         $tokenResponse = $this
@@ -590,7 +665,7 @@ class AdminUserManagementTest extends TestCase
                 'user_id' => $targetUser->id,
             ]);
 
-        $tokenResponse->assertRedirect(route('settings.sessions', ['user_id' => $targetUser->id]));
+        $tokenResponse->assertRedirect(route('settings.sessions'));
         $this->assertDatabaseHas('oauth_access_tokens', ['id' => $tokenId, 'revoked' => true]);
     }
 
@@ -660,7 +735,7 @@ class AdminUserManagementTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get(route('settings.sessions', ['user_id' => $user->id]));
+            ->get(route('settings.sessions'));
 
         $response
             ->assertOk()
@@ -687,7 +762,7 @@ class AdminUserManagementTest extends TestCase
                 'user_id' => $user->id,
             ]);
 
-        $revokeResponse->assertRedirect(route('settings.sessions', ['user_id' => $user->id]));
+        $revokeResponse->assertRedirect(route('settings.sessions'));
         $this->assertDatabaseMissing('sessions', ['id' => $otherSessionId]);
 
         $tokenRevokeResponse = $this
@@ -696,7 +771,7 @@ class AdminUserManagementTest extends TestCase
                 'user_id' => $user->id,
             ]);
 
-        $tokenRevokeResponse->assertRedirect(route('settings.sessions', ['user_id' => $user->id]));
+        $tokenRevokeResponse->assertRedirect(route('settings.sessions'));
         $this->assertDatabaseHas('oauth_access_tokens', ['id' => $tokenId, 'revoked' => true]);
     }
 

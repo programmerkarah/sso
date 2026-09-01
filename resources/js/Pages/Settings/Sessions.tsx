@@ -168,7 +168,12 @@ export default function Sessions({
     const revokeSession = (sessionId: string) => {
         router.post(
             `/settings/sessions/${sessionId}/revoke`,
-            { user_id: selectedUserId },
+            {
+                user_id: selectedUserId,
+                page: users?.current_page ?? 1,
+                session_page: sessionMeta.current_page,
+                oauth_page: oauthMeta.current_page,
+            },
             {
                 preserveScroll: true,
             },
@@ -178,7 +183,12 @@ export default function Sessions({
     const revokeOauthAccess = (tokenId: string) => {
         router.post(
             `/settings/oauth/${tokenId}/revoke`,
-            { user_id: selectedUserId },
+            {
+                user_id: selectedUserId,
+                page: users?.current_page ?? 1,
+                session_page: sessionMeta.current_page,
+                oauth_page: oauthMeta.current_page,
+            },
             {
                 preserveScroll: true,
             },
