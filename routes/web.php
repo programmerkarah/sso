@@ -165,6 +165,7 @@ Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-cha
     Route::get('/users/export/pdf', [UserManagementController::class, 'exportPdf'])->name('users.export.pdf');
     Route::post('/users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
     Route::post('/users/{user}/reset-two-factor', [UserManagementController::class, 'resetTwoFactor'])->name('users.reset-two-factor');
+    Route::post('/users/{user}/resend-verification-email', [UserManagementController::class, 'resendVerificationEmail'])->name('users.resend-verification-email');
     Route::post('/users/{user}/identity', [UserManagementController::class, 'updateIdentity'])->name('users.update-identity');
     Route::post('/users/{user}/access', [UserManagementController::class, 'updateAccess'])->name('users.update-access');
     Route::post('/users/{user}/toggle-admin-verification', [UserManagementController::class, 'toggleAdminVerification'])->name('users.toggle-admin-verification');

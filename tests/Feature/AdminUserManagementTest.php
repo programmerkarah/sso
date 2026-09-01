@@ -515,6 +515,27 @@ class AdminUserManagementTest extends TestCase
         Notification::assertSentTo($targetUser, VerifyEmail::class);
     }
 
+    public function test_admin_can_resend_verification_email_to_user(): void
+    {
+        Notification::fake();
+
+        [$admin, $targetUser] = $this->createAdminAndTargetUser();
+        $targetUser->forceFill([
+            'email_verified_at' => null,
+        ])->save();
+
+        $response = $this
+            ->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->post(route('admin.users.resend-verification-email', $targetUser));
+
+        $response
+            ->assertRedirect(route('admin.users.index'))
+            ->assertSessionHas('success');
+
+        Notification::assertSentTo($targetUser, VerifyEmail::class);
+    }
+
     /**
      * Ensure the users page can filter with encrypted state sent via POST.
      */

@@ -381,6 +381,29 @@ class UserManagementController extends Controller
         return back()->with('success', "2FA untuk {$user->name} berhasil direset. Pengguna harus mengaktifkan ulang 2FA saat diperlukan.");
     }
 
+    public function resendVerificationEmail(User $user): RedirectResponse
+    {
+        if (! is_null($user->email_verified_at)) {
+            return back()->with('info', "Email {$user->email} sudah terverifikasi dan tidak perlu dikirim ulang.");
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        ActivityLogger::logByRequest(
+            request: request(),
+            event: 'admin.users.verification.email.resend',
+            category: 'user_management',
+            description: "Admin mengirim ulang email verifikasi untuk {$user->name}.",
+            user: request()->user(),
+            metadata: [
+                'target_user_id' => $user->id,
+                'target_email' => $user->email,
+            ],
+        );
+
+        return back()->with('success', "Email verifikasi untuk {$user->name} berhasil dikirim ulang ke {$user->email}.");
+    }
+
     public function deleteUser(Request $request, User $user): RedirectResponse
     {
         if ($user->id === $request->user()?->id) {

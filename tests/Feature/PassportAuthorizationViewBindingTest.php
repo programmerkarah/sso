@@ -176,10 +176,11 @@ class PassportAuthorizationViewBindingTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get('/oauth/authorize?client_id=client-internal-email');
+            ->get('/oauth/authorize?client_id=client-internal-email&redirect_uri=https%3A%2F%2Fapp.example.test%2Fcallback&state=oauth-state');
 
         $response->assertRedirect(route('verification.notice'));
         $response->assertSessionHasErrors('username');
+        $this->assertStringNotContainsString('app.example.test', $response->headers->get('Location', ''));
     }
 
     public function test_user_without_confirmed_two_factor_is_blocked_from_oauth_authorization_flow(): void
@@ -218,9 +219,10 @@ class PassportAuthorizationViewBindingTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get('/oauth/authorize?client_id=client-internal-2fa');
+            ->get('/oauth/authorize?client_id=client-internal-2fa&redirect_uri=https%3A%2F%2Fapp.example.test%2Fcallback&state=oauth-state');
 
         $response->assertRedirect(route('settings.security'));
         $response->assertSessionHasErrors('username');
+        $this->assertStringNotContainsString('app.example.test', $response->headers->get('Location', ''));
     }
 }

@@ -166,19 +166,9 @@ class CustomAuthorizationController extends AuthorizationController
 
     private function denyAuthorizationRequest(Request $request, string $message, string $fallbackRoute): RedirectResponse
     {
-        $redirectUri = $request->query('redirect_uri');
-        $state = $request->query('state', '');
-
-        if (is_string($redirectUri) && $redirectUri !== '') {
-            $errorUrl = $redirectUri.'?'.http_build_query([
-                'error' => 'access_denied',
-                'error_description' => $message,
-                'state' => $state,
-            ]);
-
-            return redirect()->away($errorUrl);
-        }
-
+        // Users must complete SSO security requirements before they can access any application.
+        // Redirecting back to the external app callback here would bypass verification/2FA setup
+        // and would allow an app to observe a user as "authorized" without satisfying SSO policy.
         return redirect()->to($fallbackRoute)->withErrors([
             'username' => $message,
         ]);

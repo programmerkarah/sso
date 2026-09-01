@@ -668,6 +668,23 @@ export default function Index({
         });
     };
 
+    const handleResendVerificationEmail = (user: ManagedUser) => {
+        openModal({
+            title: 'Kirim Ulang Verifikasi Email',
+            description: `Kirim ulang email verifikasi ke ${user.email} untuk ${user.name}?`,
+            confirmLabel: 'Ya, Kirim Ulang',
+            confirmVariant: 'amber',
+            onConfirm: () => {
+                router.post(
+                    `/admin/users/${user.route_key}/resend-verification-email`,
+                    {},
+                    { preserveScroll: true },
+                );
+                closeModal();
+            },
+        });
+    };
+
     const handleDeleteUser = (user: ManagedUser) => {
         openModal({
             title: 'Hapus Pengguna',
@@ -1786,6 +1803,22 @@ export default function Index({
                                 <KeyRound className="h-3.5 w-3.5 text-amber-200" />
                                 Reset Password
                             </button>
+
+                            {!actionMenuUser.email_verified_at && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        handleResendVerificationEmail(
+                                            actionMenuUser,
+                                        );
+                                        setActionMenu(null);
+                                    }}
+                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                >
+                                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-200" />
+                                    Kirim Ulang Verifikasi Email
+                                </button>
+                            )}
 
                             <button
                                 type="button"
