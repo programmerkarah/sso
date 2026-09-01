@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateSecurityEmailRequest;
 use App\Models\User;
 use App\Rules\SecurePassword;
+use App\Services\EncryptedStateService;
 use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,13 +38,20 @@ class SettingsController extends Controller
         ]);
     }
 
-    public function sessions(Request $request): Response
+    public function sessions(Request $request, EncryptedStateService $encryptedState): Response
     {
         /** @var User $currentUser */
         $currentUser = $request->user();
         $activeSessionId = $request->session()->getId();
-        $selectedUserId = $request->input('user_id');
-        $page = max(1, (int) $request->input('page', 1));
+        $state = $this->resolveSessionState($request, $encryptedState);
+        $selectedUserId = isset($state['user_id']) && $state['user_id'] !== null
+            ? (int) $state['user_id']
+            : $currentUser->id;
+        $page = max(1, (int) ($state['page'] ?? 1));
+        $sessionPage = max(1, (int) ($state['session_page'] ?? 1));
+        $oauthPage = max(1, (int) ($state['oauth_page'] ?? 1));
+        $sessionPerPage = 5;
+        $oauthPerPage = 5;
         $isAdmin = $currentUser->isAdmin();
 
         if ($isAdmin) {
@@ -55,7 +63,7 @@ class SettingsController extends Controller
             $selectedUser = $selectedUserId ? User::query()->find($selectedUserId) : null;
 
             if (! $selectedUser && $usersPaginator->count() > 0) {
-                $selectedUser = $usersPaginator->first();
+                $selectedUser = collect($usersPaginator->items())->first();
             }
 
             if (! $selectedUser) {
@@ -66,7 +74,7 @@ class SettingsController extends Controller
             $selectedUser = $currentUser;
         }
 
-        $sessions = DB::table('sessions')
+        $allSessions = DB::table('sessions')
             ->where('user_id', $selectedUser->id)
             ->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END', [$activeSessionId])
             ->orderByDesc('last_activity')
@@ -82,7 +90,12 @@ class SettingsController extends Controller
             ->values()
             ->all();
 
-        $oauthApplications = DB::table('oauth_access_tokens as tokens')
+        $sessions = collect($allSessions)
+            ->forPage($sessionPage, $sessionPerPage)
+            ->values()
+            ->all();
+
+        $allOauthApplications = DB::table('oauth_access_tokens as tokens')
             ->join('oauth_clients as clients', 'clients.id', '=', 'tokens.client_id')
             ->where('tokens.user_id', $selectedUser->id)
             ->where('tokens.revoked', false)
@@ -113,22 +126,52 @@ class SettingsController extends Controller
             ->values()
             ->all();
 
+        $oauthApplications = collect($allOauthApplications)
+            ->forPage($oauthPage, $oauthPerPage)
+            ->values()
+            ->all();
+
         $users = $isAdmin && $usersPaginator
             ? [
-                'data' => $usersPaginator->items()->map(fn (User $user) => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'username' => $user->username,
-                    'email' => $user->email,
-                    'last_login_at' => $user->last_login_at,
-                    'created_at' => $user->created_at,
-                    'session_count' => DB::table('sessions')->where('user_id', $user->id)->count(),
-                    'oauth_count' => DB::table('oauth_access_tokens')->where('user_id', $user->id)->where('revoked', false)->count(),
-                ])->values()->all(),
+                'data' => collect($usersPaginator->items())
+                    ->map(fn (User $user) => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'username' => $user->username,
+                        'email' => $user->email,
+                        'last_login_at' => $user->last_login_at,
+                        'created_at' => $user->created_at,
+                        'session_count' => DB::table('sessions')->where('user_id', $user->id)->count(),
+                        'oauth_count' => DB::table('oauth_access_tokens')->where('user_id', $user->id)->where('revoked', false)->count(),
+                        'state_token' => $encryptedState->encryptArray([
+                            'page' => $page,
+                            'user_id' => $user->id,
+                            'session_page' => $sessionPage,
+                            'oauth_page' => $oauthPage,
+                        ]),
+                    ])
+                    ->values()
+                    ->all(),
                 'current_page' => $usersPaginator->currentPage(),
                 'last_page' => $usersPaginator->lastPage(),
                 'per_page' => $usersPaginator->perPage(),
                 'total' => $usersPaginator->total(),
+                'prev_page_token' => $usersPaginator->currentPage() > 1
+                    ? $encryptedState->encryptArray([
+                        'page' => $usersPaginator->currentPage() - 1,
+                        'user_id' => $selectedUserId,
+                        'session_page' => 1,
+                        'oauth_page' => 1,
+                    ])
+                    : null,
+                'next_page_token' => $usersPaginator->hasMorePages()
+                    ? $encryptedState->encryptArray([
+                        'page' => $usersPaginator->currentPage() + 1,
+                        'user_id' => $selectedUserId,
+                        'session_page' => 1,
+                        'oauth_page' => 1,
+                    ])
+                    : null,
             ]
             : [
                 'data' => [[
@@ -140,11 +183,19 @@ class SettingsController extends Controller
                     'created_at' => $selectedUser->created_at,
                     'session_count' => count($sessions),
                     'oauth_count' => count($oauthApplications),
+                    'state_token' => $encryptedState->encryptArray([
+                        'page' => $page,
+                        'user_id' => $selectedUser->id,
+                        'session_page' => $sessionPage,
+                        'oauth_page' => $oauthPage,
+                    ]),
                 ]],
                 'current_page' => 1,
                 'last_page' => 1,
                 'per_page' => 1,
                 'total' => 1,
+                'prev_page_token' => null,
+                'next_page_token' => null,
             ];
 
         return Inertia::render('Settings/Sessions', [
@@ -157,8 +208,77 @@ class SettingsController extends Controller
                 'last_login_at' => $selectedUser->last_login_at,
             ],
             'sessions' => $sessions,
+            'sessionMeta' => [
+                'current_page' => $sessionPage,
+                'last_page' => max(1, (int) ceil(count($allSessions) / $sessionPerPage)),
+                'per_page' => $sessionPerPage,
+                'total' => count($allSessions),
+            ],
+            'session_prev_page_token' => $sessionPage > 1
+                ? $encryptedState->encryptArray([
+                    'page' => $page,
+                    'user_id' => $selectedUserId,
+                    'session_page' => $sessionPage - 1,
+                    'oauth_page' => $oauthPage,
+                ])
+                : null,
+            'session_next_page_token' => $sessionPage < max(1, (int) ceil(count($allSessions) / $sessionPerPage))
+                ? $encryptedState->encryptArray([
+                    'page' => $page,
+                    'user_id' => $selectedUserId,
+                    'session_page' => $sessionPage + 1,
+                    'oauth_page' => $oauthPage,
+                ])
+                : null,
             'oauthApplications' => $oauthApplications,
+            'oauthMeta' => [
+                'current_page' => $oauthPage,
+                'last_page' => max(1, (int) ceil(count($allOauthApplications) / $oauthPerPage)),
+                'per_page' => $oauthPerPage,
+                'total' => count($allOauthApplications),
+            ],
+            'oauth_prev_page_token' => $oauthPage > 1
+                ? $encryptedState->encryptArray([
+                    'page' => $page,
+                    'user_id' => $selectedUserId,
+                    'session_page' => $sessionPage,
+                    'oauth_page' => $oauthPage - 1,
+                ])
+                : null,
+            'oauth_next_page_token' => $oauthPage < max(1, (int) ceil(count($allOauthApplications) / $oauthPerPage))
+                ? $encryptedState->encryptArray([
+                    'page' => $page,
+                    'user_id' => $selectedUserId,
+                    'session_page' => $sessionPage,
+                    'oauth_page' => $oauthPage + 1,
+                ])
+                : null,
         ]);
+    }
+
+    private function resolveSessionState(Request $request, EncryptedStateService $encryptedState): array
+    {
+        $defaults = [
+            'page' => 1,
+            'user_id' => $request->user()?->id,
+            'session_page' => 1,
+            'oauth_page' => 1,
+        ];
+
+        if (! $request->isMethod('post')) {
+            return [
+                ...$defaults,
+                'page' => max(1, (int) $request->input('page', 1)),
+                'user_id' => $request->input('user_id') !== null ? (int) $request->input('user_id') : ($request->user()?->id ?? null),
+                'session_page' => max(1, (int) $request->input('session_page', 1)),
+                'oauth_page' => max(1, (int) $request->input('oauth_page', 1)),
+            ];
+        }
+
+        return array_merge(
+            $defaults,
+            $encryptedState->decryptArray($request->string('state')->toString(), $defaults),
+        );
     }
 
     public function revokeSession(Request $request, string $sessionId): RedirectResponse

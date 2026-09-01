@@ -124,7 +124,7 @@ Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-cha
     Route::post('/security/email', [SettingsController::class, 'updateEmail'])->name('security.email.update');
     Route::get('/security/recovery-codes', [SettingsController::class, 'showRecoveryCodes'])->name('security.recovery-codes.show');
     Route::post('/security/recovery-codes/regenerate', [SettingsController::class, 'regenerateRecoveryCodes'])->name('security.recovery-codes.regenerate');
-    Route::get('/sessions', [SettingsController::class, 'sessions'])->name('sessions');
+    Route::match(['GET', 'POST'], '/sessions', [SettingsController::class, 'sessions'])->name('sessions');
     Route::post('/sessions/{sessionId}/revoke', [SettingsController::class, 'revokeSession'])->name('sessions.revoke');
     Route::post('/oauth/{tokenId}/revoke', [SettingsController::class, 'revokeOauthAccess'])->name('oauth.revoke');
 });

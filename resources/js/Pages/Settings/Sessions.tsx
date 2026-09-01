@@ -21,6 +21,7 @@ interface UserSummary {
     created_at?: string | null;
     session_count: number;
     oauth_count: number;
+    state_token?: string;
 }
 
 interface UserListPayload {
@@ -29,6 +30,8 @@ interface UserListPayload {
     last_page: number;
     per_page: number;
     total: number;
+    prev_page_token?: string | null;
+    next_page_token?: string | null;
 }
 
 interface SelectedUser {
@@ -58,11 +61,24 @@ interface OauthApplicationEntry {
     expires_at: string | null;
 }
 
+interface PaginationMeta {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
+
 interface SessionsProps extends PageProps {
     users?: UserListPayload;
     selectedUser?: SelectedUser | null;
     sessions: SessionEntry[];
+    sessionMeta: PaginationMeta;
+    session_prev_page_token?: string | null;
+    session_next_page_token?: string | null;
     oauthApplications: OauthApplicationEntry[];
+    oauthMeta: PaginationMeta;
+    oauth_prev_page_token?: string | null;
+    oauth_next_page_token?: string | null;
 }
 
 const formatDate = (value?: string | null) => {
@@ -107,33 +123,46 @@ export default function Sessions({
     users,
     selectedUser,
     sessions,
+    sessionMeta,
+    session_prev_page_token,
+    session_next_page_token,
     oauthApplications,
+    oauthMeta,
+    oauth_prev_page_token,
+    oauth_next_page_token,
 }: SessionsProps) {
     const currentUserList = users?.data ?? [];
     const selectedUserId = selectedUser?.id ?? currentUserList[0]?.id ?? null;
 
-    const changeUserPage = (page: number) => {
-        const params: Record<string, string | number | undefined> = {
-            page,
-            user_id: selectedUserId ?? undefined,
-        };
+    const visitState = (state: string | null | undefined) => {
+        if (!state) {
+            return;
+        }
 
-        router.get('/settings/sessions', params, {
-            preserveScroll: true,
-        });
-    };
-
-    const selectUser = (userId: number) => {
-        router.get(
+        router.post(
             '/settings/sessions',
-            {
-                page: 1,
-                user_id: userId,
-            },
+            { state },
             {
                 preserveScroll: true,
+                preserveState: true,
             },
         );
+    };
+
+    const changeUserPage = (token: string | null | undefined) => {
+        visitState(token);
+    };
+
+    const changeSessionPage = (token: string | null | undefined) => {
+        visitState(token);
+    };
+
+    const changeOauthPage = (token: string | null | undefined) => {
+        visitState(token);
+    };
+
+    const selectUser = (user: UserSummary) => {
+        visitState(user.state_token);
     };
 
     const revokeSession = (sessionId: string) => {
@@ -202,7 +231,7 @@ export default function Sessions({
                                         <button
                                             key={user.id}
                                             type="button"
-                                            onClick={() => selectUser(user.id)}
+                                            onClick={() => selectUser(user)}
                                             className={`w-full rounded-2xl border px-3 py-3 text-left transition ${
                                                 selectedUserId === user.id
                                                     ? 'border-sky-400/50 bg-sky-500/10 shadow-lg shadow-sky-500/5'
@@ -244,13 +273,10 @@ export default function Sessions({
                                         type="button"
                                         onClick={() =>
                                             changeUserPage(
-                                                Math.max(
-                                                    1,
-                                                    users.current_page - 1,
-                                                ),
+                                                users.prev_page_token,
                                             )
                                         }
-                                        disabled={users.current_page === 1}
+                                        disabled={!users.prev_page_token}
                                         className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
                                     >
                                         <ChevronLeft className="h-3.5 w-3.5" />
@@ -264,16 +290,10 @@ export default function Sessions({
                                         type="button"
                                         onClick={() =>
                                             changeUserPage(
-                                                Math.min(
-                                                    users.last_page,
-                                                    users.current_page + 1,
-                                                ),
+                                                users.next_page_token,
                                             )
                                         }
-                                        disabled={
-                                            users.current_page ===
-                                            users.last_page
-                                        }
+                                        disabled={!users.next_page_token}
                                         className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
                                     >
                                         Next
@@ -363,6 +383,41 @@ export default function Sessions({
                                         ))
                                     )}
                                 </div>
+
+                                {sessionMeta.last_page > 1 && (
+                                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs text-white/65">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                changeSessionPage(
+                                                    session_prev_page_token,
+                                                )
+                                            }
+                                            disabled={!session_prev_page_token}
+                                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                        >
+                                            <ChevronLeft className="h-3.5 w-3.5" />
+                                            Prev
+                                        </button>
+                                        <span>
+                                            Hal {sessionMeta.current_page} /{' '}
+                                            {sessionMeta.last_page}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                changeSessionPage(
+                                                    session_next_page_token,
+                                                )
+                                            }
+                                            disabled={!session_next_page_token}
+                                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                        >
+                                            Next
+                                            <ChevronRight className="h-3.5 w-3.5" />
+                                        </button>
+                                    </div>
+                                )}
                             </GlassCard>
 
                             <GlassCard>
@@ -434,6 +489,41 @@ export default function Sessions({
                                         ))
                                     )}
                                 </div>
+
+                                {oauthMeta.last_page > 1 && (
+                                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs text-white/65">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                changeOauthPage(
+                                                    oauth_prev_page_token,
+                                                )
+                                            }
+                                            disabled={!oauth_prev_page_token}
+                                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                        >
+                                            <ChevronLeft className="h-3.5 w-3.5" />
+                                            Prev
+                                        </button>
+                                        <span>
+                                            Hal {oauthMeta.current_page} /{' '}
+                                            {oauthMeta.last_page}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                changeOauthPage(
+                                                    oauth_next_page_token,
+                                                )
+                                            }
+                                            disabled={!oauth_next_page_token}
+                                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                        >
+                                            Next
+                                            <ChevronRight className="h-3.5 w-3.5" />
+                                        </button>
+                                    </div>
+                                )}
                             </GlassCard>
                         </div>
                     </div>
