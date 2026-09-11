@@ -11,7 +11,7 @@
         <div class="max-w-4xl w-full">
             <div class="text-center text-white mb-12">
                 <h1 class="text-5xl font-bold mb-4">{{ config('app.name') }}</h1>
-                <p class="text-xl opacity-90">Sistem Single Sign-On untuk Aplikasi Sawahlunto.io</p>
+                <p class="text-xl opacity-90">Sistem Single Sign-On untuk Aplikasi BPS Kota Sawahlunto</p>
             </div>
 
             <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12">

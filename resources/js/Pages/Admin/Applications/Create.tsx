@@ -117,7 +117,7 @@ export default function Create({ availableOrganizationTypes }: CreateProps) {
                                         setData('domain', e.target.value)
                                     }
                                     error={errors.domain}
-                                    placeholder="mitra.sawahlunto.io"
+                                    placeholder="simantik.bpskotasawahlunto.cloud"
                                     required
                                 />
                             </div>
@@ -134,7 +134,7 @@ export default function Create({ availableOrganizationTypes }: CreateProps) {
                                         setData('callback_url', e.target.value)
                                     }
                                     error={errors.callback_url}
-                                    placeholder="https://mitra.sawahlunto.io/auth/callback"
+                                    placeholder="https://simantik.bpskotasawahlunto.cloud/auth/callback"
                                     required
                                 />
                                 <p className="mt-1 text-sm text-zinc-200">
