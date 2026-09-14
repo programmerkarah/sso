@@ -117,9 +117,14 @@ Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(functi
     Route::post('/change-password', [ChangePasswordController::class, 'update'])->name('change-password.update');
 });
 
+// Halaman aktivasi 2FA harus dapat diakses setelah login meskipun 2FA belum aktif.
+// Persyaratan lain tetap berlaku; dashboard dan OAuth tetap dilindungi oleh guard 2FA.
+Route::get('/settings/security', [SettingsController::class, 'security'])
+    ->middleware(['auth', 'admin-verified', 'verified', 'must-change-password'])
+    ->name('settings.security');
+
 // Settings Routes
 Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-change-password'])->prefix('settings')->name('settings.')->group(function () {
-    Route::get('/security', [SettingsController::class, 'security'])->name('security');
     Route::post('/security/password', [SettingsController::class, 'updatePassword'])->name('security.password.update');
     Route::post('/security/email', [SettingsController::class, 'updateEmail'])->name('security.email.update');
     Route::get('/security/recovery-codes', [SettingsController::class, 'showRecoveryCodes'])->name('security.recovery-codes.show');
