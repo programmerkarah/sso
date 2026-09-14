@@ -14,6 +14,49 @@ class LoginSecurityTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_user_without_two_factor_is_logged_in_and_redirected_to_security_setup(): void
+    {
+        $user = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+            'two_factor_confirmed_at' => null,
+        ]);
+
+        $oauthAuthorizeUrl = '/oauth/authorize?client_id=test-client&redirect_uri='.urlencode('https://app.example.test/auth/callback').'&response_type=code&state=test-state';
+
+        $response = $this
+            ->withSession(['url.intended' => $oauthAuthorizeUrl])
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect(route('settings.security'));
+        $response->assertSessionHas('url.intended', $oauthAuthorizeUrl);
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_user_without_two_factor_can_open_security_setup_but_not_dashboard(): void
+    {
+        $user = User::factory()->create([
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+            'two_factor_confirmed_at' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('settings.security'))
+            ->assertOk();
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertRedirect(route('settings.security'));
+    }
+
     /**
      * Ensure a user with 2FA enabled is challenged on an untrusted device.
      */
