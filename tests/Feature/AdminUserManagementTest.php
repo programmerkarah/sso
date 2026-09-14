@@ -545,7 +545,7 @@ class AdminUserManagementTest extends TestCase
             ->assertUnauthorized();
     }
 
-    public function test_user_is_logged_out_when_all_oauth_access_tokens_are_revoked(): void
+    public function test_user_remains_logged_in_when_all_oauth_access_tokens_are_revoked(): void
     {
         $this->seed(RoleSeeder::class);
 
@@ -583,14 +583,10 @@ class AdminUserManagementTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->from(route('dashboard'))
             ->get(route('dashboard'));
 
-        $response
-            ->assertRedirect(route('login'))
-            ->assertSessionHas('error');
-
-        $this->assertFalse(Auth::check());
+        $response->assertOk();
+        $this->assertTrue(Auth::check());
     }
 
     public function test_admin_can_revoke_another_users_session_and_oauth_access_from_session_management(): void
