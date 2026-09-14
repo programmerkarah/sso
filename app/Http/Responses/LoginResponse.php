@@ -59,6 +59,20 @@ class LoginResponse implements LoginResponseContract
                 : redirect()->route('settings.change-password');
         }
 
+        // Pengguna tanpa 2FA tetap dianggap berhasil login, tetapi hanya boleh
+        // membuka halaman aktivasi 2FA. URL tujuan (termasuk OAuth authorize)
+        // sengaja tetap disimpan agar dapat dilanjutkan setelah 2FA aktif.
+        if ($request->user() && is_null($request->user()->two_factor_confirmed_at)) {
+            return $request->wantsJson()
+                ? response()->json([
+                    'two_factor' => false,
+                    'redirect' => route('settings.security'),
+                ])
+                : redirect()
+                    ->route('settings.security')
+                    ->with('status', 'Aktifkan dan konfirmasi autentikasi dua faktor (2FA) untuk melanjutkan.');
+        }
+
         $intendedUrl = $request->session()->get('url.intended');
         $defaultRedirect = Fortify::redirects('login');
 
