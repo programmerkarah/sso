@@ -1,5 +1,6 @@
 @php
     $introLines = $introLines ?? [];
+    $afterCodeLines = $afterCodeLines ?? [];
     $outroLines = $outroLines ?? [];
 @endphp
 
@@ -14,6 +15,17 @@
 {{ $line }}
 
 @endforeach
+
+@if (!empty($codeBlock))
+<x-mail::panel>
+<span style="font-family: monospace; font-size: 18px; letter-spacing: 1px;">{{ $codeBlock }}</span>
+</x-mail::panel>
+
+@foreach ($afterCodeLines as $line)
+{{ $line }}
+
+@endforeach
+@endif
 
 @if (!empty($actionText) && !empty($actionUrl))
 <x-mail::button :url="$actionUrl">
