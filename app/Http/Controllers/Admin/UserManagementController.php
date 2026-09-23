@@ -336,18 +336,16 @@ class UserManagementController extends Controller
     private function generateCompliantTemporaryPassword(User $user): string
     {
         for ($attempt = 0; $attempt < 25; $attempt++) {
-            // Gunakan karakter yang aman ditampilkan dalam email Markdown.
-            // Simbol seperti * atau _ dapat dianggap sebagai pemformatan sehingga
-            // password yang terlihat/disalin berbeda dari nilai yang disimpan.
-            $candidate = Str::password(15, letters: true, numbers: true, symbols: false, spaces: false).'!';
-            $characters = mb_str_split($candidate);
+            // Pola mudah dibaca: simbol + kata acak + angka + Kata acak + simbol.
+            // Contoh bentuk: $mavero3Kinuta@
+            $symbols = ['!', '@', '#', '$', '%', '&'];
+            $firstWord = $this->generateReadablePasswordWord(6);
+            $secondWord = ucfirst($this->generateReadablePasswordWord(6));
+            $number = (string) random_int(0, 9);
+            $openingSymbol = $symbols[random_int(0, count($symbols) - 1)];
+            $closingSymbol = $symbols[random_int(0, count($symbols) - 1)];
 
-            for ($index = count($characters) - 1; $index > 0; $index--) {
-                $swapIndex = random_int(0, $index);
-                [$characters[$index], $characters[$swapIndex]] = [$characters[$swapIndex], $characters[$index]];
-            }
-
-            $candidate = implode('', $characters);
+            $candidate = $openingSymbol.$firstWord.$number.$secondWord.$closingSymbol;
 
             $passes = Validator::make([
                 'password' => $candidate,
@@ -365,6 +363,20 @@ class UserManagementController extends Controller
         }
 
         throw new RuntimeException('Gagal membuat password sementara yang memenuhi kebijakan keamanan.');
+    }
+
+    private function generateReadablePasswordWord(int $length): string
+    {
+        $consonants = 'bcdfghjklmnpqrstvwxyz';
+        $vowels = 'aeiou';
+        $word = '';
+
+        for ($index = 0; $index < $length; $index++) {
+            $characters = $index % 2 === 0 ? $consonants : $vowels;
+            $word .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+
+        return $word;
     }
 
     public function resetTwoFactor(User $user): RedirectResponse
