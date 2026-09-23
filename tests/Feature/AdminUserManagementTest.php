@@ -160,6 +160,10 @@ class AdminUserManagementTest extends TestCase
         );
 
         $this->assertIsString($temporaryPassword);
+        $this->assertMatchesRegularExpression(
+            '/^[!@#$%&][a-z]{6}\\d[A-Z][a-z]{5}[!@#$%&]$/',
+            $temporaryPassword,
+        );
 
         Auth::logout();
 
