@@ -145,8 +145,31 @@ class AdminUserManagementTest extends TestCase
         $this->assertTrue($targetUser->password_change_required);
         $this->assertNotNull($targetUser->previous_password);
 
-        // Email must be sent to the target user
-        Notification::assertSentTo($targetUser, PasswordResetByAdmin::class);
+        // Password di email harus sama dengan hash yang disimpan dan dapat digunakan login.
+        $temporaryPassword = null;
+        Notification::assertSentTo(
+            $targetUser,
+            PasswordResetByAdmin::class,
+            function (PasswordResetByAdmin $notification) use ($targetUser, &$temporaryPassword): bool {
+                $mail = $notification->toMail($targetUser);
+                $temporaryPassword = $mail->viewData['codeBlock'] ?? null;
+
+                return is_string($temporaryPassword)
+                    && Hash::check($temporaryPassword, $targetUser->password);
+            },
+        );
+
+        $this->assertIsString($temporaryPassword);
+
+        Auth::logout();
+
+        $loginResponse = $this->post('/login', [
+            'username' => $targetUser->username,
+            'password' => $temporaryPassword,
+        ]);
+
+        $loginResponse->assertRedirect(route('settings.change-password'));
+        $this->assertAuthenticatedAs($targetUser);
 
         $this->assertDatabaseHas('activity_logs', [
             'event' => 'admin.users.password.reset',
