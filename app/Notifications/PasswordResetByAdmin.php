@@ -38,7 +38,10 @@ class PasswordResetByAdmin extends Notification
                 'introLines' => [
                     'Administrator telah melakukan reset password pada akun Anda.',
                     'Gunakan password sementara berikut untuk proses login:',
-                    $this->temporaryPassword,
+                ],
+                'codeBlock' => $this->temporaryPassword,
+                'afterCodeLines' => [
+                    'Salin password tepat seperti yang ditampilkan, tanpa spasi tambahan.',
                     'Demi keamanan akun, segera ubah password setelah berhasil masuk.',
                 ],
                 'actionText' => 'Masuk Sekarang',
