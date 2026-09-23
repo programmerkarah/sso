@@ -336,7 +336,18 @@ class UserManagementController extends Controller
     private function generateCompliantTemporaryPassword(User $user): string
     {
         for ($attempt = 0; $attempt < 25; $attempt++) {
-            $candidate = Str::password(16, letters: true, numbers: true, symbols: true, spaces: false);
+            // Gunakan karakter yang aman ditampilkan dalam email Markdown.
+            // Simbol seperti * atau _ dapat dianggap sebagai pemformatan sehingga
+            // password yang terlihat/disalin berbeda dari nilai yang disimpan.
+            $candidate = Str::password(15, letters: true, numbers: true, symbols: false, spaces: false).'!';
+            $characters = mb_str_split($candidate);
+
+            for ($index = count($characters) - 1; $index > 0; $index--) {
+                $swapIndex = random_int(0, $index);
+                [$characters[$index], $characters[$swapIndex]] = [$characters[$swapIndex], $characters[$index]];
+            }
+
+            $candidate = implode('', $characters);
 
             $passes = Validator::make([
                 'password' => $candidate,
