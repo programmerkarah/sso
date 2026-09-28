@@ -103,7 +103,8 @@ Route::post('/applications/eligible-users', function (Request $request) {
 
     $query = User::query()->with('organization')
         ->whereNotNull('admin_verified_at')
-        ->whereNotNull('email_verified_at');
+        ->whereNotNull('email_verified_at')
+        ->whereNotNull('two_factor_confirmed_at');
 
     if ($application->hasOrganizationRestrictions()) {
         $query->whereHas('organization', fn ($q) =>
