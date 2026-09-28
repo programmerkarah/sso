@@ -90,6 +90,37 @@ Route::middleware('auth:api')->get('/users', function (Request $request) {
     ]);
 });
 
+Route::post('/applications/eligible-users', function (Request $request) {
+    $application = Application::query()
+        ->where('oauth_client_id', (string) $request->input('client_id'))
+        ->where('is_active', true)
+        ->firstOrFail();
+
+    abort_unless(
+        hash_equals((string) $application->oauth_client_secret, (string) $request->input('client_secret')),
+        401
+    );
+
+    $query = User::query()->with('organization')
+        ->whereNotNull('admin_verified_at')
+        ->whereNotNull('email_verified_at');
+
+    if ($application->hasOrganizationRestrictions()) {
+        $query->whereHas('organization', fn ($q) =>
+            $q->whereIn('type', $application->allowed_organization_types)
+        );
+    }
+
+    return $query->orderBy('name')->get()->map(fn (User $item) => [
+        'id' => $item->id,
+        'name' => $item->name,
+        'username' => $item->username,
+        'email' => $item->email,
+        'email_verified_at' => $item->email_verified_at,
+        'organization_type' => $item->organization?->type,
+    ]);
+});
+
 // Public: Check application active status by OAuth client_id
 Route::get('/application/status', function (Request $request) {
     $clientId = $request->query('client_id');
