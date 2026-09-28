@@ -62,9 +62,32 @@ Route::middleware('auth:api')->get('/users', function (Request $request) {
     abort_unless($user->hasVerifiedEmail(), 403, 'Email akun belum terverifikasi.');
     abort_unless(! is_null($user->two_factor_confirmed_at), 403, 'Autentikasi dua faktor (2FA) belum aktif.');
 
-    return User::select(['id', 'name', 'username', 'email', 'email_verified_at'])
-        ->orderBy('id')
-        ->get();
+    $query = User::query()->with('organization')
+        ->whereNotNull('admin_verified_at')
+        ->whereNotNull('email_verified_at');
+
+    if ($clientId = $request->query('client_id')) {
+        $application = Application::query()->where('oauth_client_id', $clientId)->firstOrFail();
+        $allowed = $application->allowed_organization_types;
+        if (is_array($allowed) && $allowed !== []) {
+            $query->whereHas('organization', fn ($q) => $q->whereIn('type', $allowed));
+        }
+    }
+
+    return $query->orderBy('id')->get()->map(fn (User $item) => [
+        'id' => $item->id,
+        'name' => $item->name,
+        'username' => $item->username,
+        'email' => $item->email,
+        'email_verified_at' => $item->email_verified_at,
+        'organization_type' => $item->organization?->type,
+        'organization' => $item->organization ? [
+            'id' => $item->organization->id,
+            'name' => $item->organization->name,
+            'slug' => $item->organization->slug,
+            'type' => $item->organization->type,
+        ] : null,
+    ]);
 });
 
 // Public: Check application active status by OAuth client_id
