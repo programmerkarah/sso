@@ -8,6 +8,7 @@ use App\Services\TrustedDeviceManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
@@ -84,6 +85,11 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        $userId = Auth::id();
+        if ($userId) {
+            DB::table('oauth_access_tokens')->where('user_id', $userId)->update(['revoked' => true]);
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();
