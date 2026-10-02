@@ -543,15 +543,6 @@ html[data-theme='dark'] .theme-warning {
     color: #347fae;
 }
 
-.workspace-summary {
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--bps-bg) 98%, transparent),
-        color-mix(in srgb, var(--bps-bg) 94%, transparent) 88%,
-        transparent
-    );
-}
-
 html[data-theme='dark'] .ui-hover:hover {
     background: #29404d;
     border-color: #4b6877;
@@ -707,12 +698,6 @@ html[data-theme='dark'] .ui-modal-surface {
     opacity: 1;
 }
 
-.workspace-summary {
-    background: var(--bps-bg);
-    border-bottom: 1px solid color-mix(in srgb, var(--bps-border) 65%, transparent);
-}
-
-
 /* Consistent keyboard focus without browser-default black outlines. */
 .app-background :is(button, a, input, textarea, select):focus-visible {
     outline: none;
@@ -744,14 +729,4 @@ html[data-theme='dark'] .ui-modal-surface {
 }
 .ui-inactive-card .inactive-muted {
     color: var(--bps-disabled-text) !important;
-}
-.workspace-summary {
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--bps-bg) 82%, transparent) 0%,
-        color-mix(in srgb, var(--bps-bg) 68%, transparent) 74%,
-        transparent 100%
-    );
-    border-bottom: 0;
-    backdrop-filter: blur(12px);
 }
