@@ -135,9 +135,14 @@ export default function Guide({ application, appUrl }: GuideProps) {
                     title="Panduan integrasi"
                     description={`Panduan OAuth2 dan sinkronisasi pengguna untuk ${application.name}.`}
                     actions={
-                        <Link href={`/admin/applications/${application.route_key}`} className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
-                            <ArrowLeft className="h-4 w-4" /> Detail aplikasi
-                        </Link>
+                        <>
+                            <Link href={`/admin/applications/${application.route_key}`} className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                                <ArrowLeft className="h-4 w-4" /> Detail aplikasi
+                            </Link>
+                            <a href={`/admin/applications/${application.route_key}/guide/export-pdf`} className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                                <Download className="h-4 w-4" /> PDF
+                            </a>
+                        </>
                     }
                 />
 
