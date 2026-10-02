@@ -17,10 +17,10 @@ interface ToastViewportProps {
 }
 
 const toneClasses: Record<ToastItem['tone'], string> = {
-    success: 'border-emerald-500/30 text-emerald-100',
-    info: 'border-sky-500/30 text-sky-100',
-    error: 'border-red-500/30 text-red-100',
-    status: 'border-slate-700 text-slate-100',
+    success: 'border-[#b9dcb3] text-[#4f8a49]',
+    info: 'border-[#b8d9ee] text-[#347fae]',
+    error: 'border-[#efc3bd] text-[#b85d52]',
+    status: 'border-[var(--bps-border)] text-[var(--bps-text)]',
 };
 
 const toneIcons = {
@@ -47,7 +47,7 @@ function ToastCard({
     return (
         <div
             className={
-                'pointer-events-auto rounded-xl border bg-[#08263b] px-4 py-3 shadow-xl ' +
+                'pointer-events-auto rounded-xl border bg-[var(--bps-surface)] px-4 py-3 shadow-xl ' +
                 toneClasses[item.tone]
             }
         >
@@ -59,14 +59,14 @@ function ToastCard({
                             {item.title}
                         </div>
                     )}
-                    <div className="mt-0.5 text-sm leading-5 text-slate-300">
+                    <div className="mt-0.5 text-sm leading-5 text-[var(--bps-muted)]">
                         {item.message}
                     </div>
                 </div>
                 <button
                     type="button"
                     onClick={() => onDismiss(item.id)}
-                    className="rounded p-1 text-slate-500 transition hover:bg-[#11364f] hover:text-slate-200"
+                    className="rounded p-1 text-[var(--bps-muted)] transition hover:bg-[var(--bps-surface-soft)] hover:text-[var(--bps-text)]"
                 >
                     <X className="h-4 w-4" />
                 </button>
