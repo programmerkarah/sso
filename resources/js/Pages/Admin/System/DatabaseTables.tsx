@@ -932,7 +932,7 @@ export default function DatabaseTables({
                             <pre className="max-w-full whitespace-pre-wrap break-all rounded-xl border border-slate-800 bg-black/30 p-4 text-xs leading-6 text-white/85">
                                 {expandedCell.value}
                             </pre>
-                        </div>
+                        </ScrollArea>
                     </div>
                 )}
 
@@ -1157,7 +1157,7 @@ export default function DatabaseTables({
                                 </div>
                             </form>
                         </ScrollArea>
-                    </ScrollArea>
+                    </div>
                 )}
             </div>
         </AppLayout>
