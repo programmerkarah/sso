@@ -16,6 +16,7 @@ import SectionTabs from '@/Components/SectionTabs';
 import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
+import { formatNumber } from '@/utils/number';
 
 interface UserSummary {
     id: number;
@@ -179,7 +180,7 @@ export default function Sessions(props: SessionsProps) {
                 <button type="button" onClick={() => visitState(previous)} disabled={!previous} className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30">
                     <ChevronLeft className="h-3.5 w-3.5" /> Sebelumnya
                 </button>
-                <span>{page} / {pages}</span>
+                <span>{formatNumber(page)} / {formatNumber(pages)}</span>
                 <button type="button" onClick={() => visitState(next)} disabled={!next} className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30">
                     Berikutnya <ChevronRight className="h-3.5 w-3.5" />
                 </button>
@@ -199,7 +200,7 @@ export default function Sessions(props: SessionsProps) {
                             <div className="flex items-center justify-between gap-3">
                                 <div>
                                     <h2 className="font-semibold text-white">Pengguna</h2>
-                                    <p className="mt-0.5 text-xs text-slate-500">{users?.total ?? currentUserList.length} akun</p>
+                                    <p className="mt-0.5 text-xs text-slate-500">{formatNumber(users?.total ?? currentUserList.length)} akun</p>
                                 </div>
                                 <UserRound className="h-5 w-5 text-slate-500" />
                             </div>
@@ -230,8 +231,8 @@ export default function Sessions(props: SessionsProps) {
                                     <div className="truncate text-sm font-medium">{user.name}</div>
                                     <div className="mt-0.5 truncate text-xs text-slate-500">@{user.username}</div>
                                     <div className="mt-2 flex gap-3 text-[11px] text-slate-500">
-                                        <span>{user.session_count} sesi</span>
-                                        <span>{user.oauth_count} aplikasi</span>
+                                        <span>{formatNumber(user.session_count)} sesi</span>
+                                        <span>{formatNumber(user.oauth_count)} aplikasi</span>
                                     </div>
                                 </button>
                             ))}
@@ -258,11 +259,11 @@ export default function Sessions(props: SessionsProps) {
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
-                                            <div className="text-xl font-semibold text-white">{sessionMeta.total}</div>
+                                            <div className="text-xl font-semibold text-white">{formatNumber(sessionMeta.total)}</div>
                                             <div className="text-xs text-slate-500">Sesi web</div>
                                         </div>
                                         <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
-                                            <div className="text-xl font-semibold text-white">{oauthMeta.total}</div>
+                                            <div className="text-xl font-semibold text-white">{formatNumber(oauthMeta.total)}</div>
                                             <div className="text-xs text-slate-500">Akses OAuth</div>
                                         </div>
                                     </div>
