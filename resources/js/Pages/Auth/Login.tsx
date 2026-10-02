@@ -1,5 +1,4 @@
-import { Eye, EyeOff, LogIn, ShieldCheck } from 'lucide-react';
-
+import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -40,9 +39,12 @@ export default function Login({ status }: { status?: string }) {
             const hiddenToken = form.querySelector<HTMLInputElement>(
                 'input[name="_token"]',
             );
-            if (hiddenToken) hiddenToken.value = data.token ?? csrfToken;
+
+            if (hiddenToken) {
+                hiddenToken.value = data.token ?? csrfToken;
+            }
         } catch {
-            // Gunakan token yang sudah ada bila refresh token tidak tersedia.
+            // Gunakan token yang tersedia bila refresh token tidak berhasil.
         }
 
         form.submit();
@@ -53,25 +55,22 @@ export default function Login({ status }: { status?: string }) {
             <Head title="Masuk" />
 
             <div className="mb-7">
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-300">
-                    <LogIn className="h-5 w-5" />
-                </div>
                 <h2 className="text-2xl font-semibold tracking-tight text-white">
-                    Masuk ke akun SSO
+                    Masuk
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
-                    Gunakan username dan password SSO Anda untuk melanjutkan.
+                    Gunakan akun SSO BPS Kota Sawahlunto.
                 </p>
             </div>
 
             {status && (
-                <div className="mb-5 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-3 text-sm text-emerald-200">
+                <div className="mb-5 rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-3.5 py-3 text-sm text-emerald-200">
                     {status}
                 </div>
             )}
 
             {errors.username && (
-                <div className="mb-5 rounded-xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-200">
+                <div className="mb-5 rounded-lg border border-red-400/20 bg-red-400/10 px-3.5 py-3 text-sm text-red-200">
                     {errors.username}
                 </div>
             )}
@@ -98,7 +97,7 @@ export default function Login({ status }: { status?: string }) {
                         name="username"
                         autoComplete="username"
                         autoFocus
-                        placeholder="Masukkan username"
+                        placeholder="Username"
                         required
                     />
                 </div>
@@ -117,7 +116,7 @@ export default function Login({ status }: { status?: string }) {
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             autoComplete="current-password"
-                            placeholder="Masukkan password"
+                            placeholder="Password"
                             className="pr-12"
                             required
                         />
@@ -126,7 +125,7 @@ export default function Login({ status }: { status?: string }) {
                             onClick={() =>
                                 setShowPassword((current) => !current)
                             }
-                            className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/5 hover:text-white"
+                            className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-slate-500 transition hover:text-slate-200"
                             aria-label={
                                 showPassword
                                     ? 'Sembunyikan password'
@@ -142,35 +141,34 @@ export default function Login({ status }: { status?: string }) {
                     </div>
                 </div>
 
-                <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-400">
+                <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-400">
                     <input
                         type="checkbox"
                         name="remember"
                         value="1"
-                        className="h-4 w-4 rounded border-white/20 bg-slate-950 text-sky-600 focus:ring-sky-500/30"
+                        className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-sky-600 focus:ring-sky-500/30"
                     />
-                    Tetap masuk di perangkat ini
+                    Ingat saya di perangkat ini
                 </label>
 
                 <button
                     type="submit"
                     disabled={processing}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-lg bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    <ShieldCheck className="h-4 w-4" />
                     {processing ? 'Memproses...' : 'Masuk'}
                 </button>
             </form>
 
-            <div className="mt-6 border-t border-white/10 pt-5 text-center text-sm text-slate-400">
+            <p className="mt-6 text-center text-sm text-slate-500">
                 Belum memiliki akun?{' '}
                 <Link
                     href="/register"
-                    className="font-semibold text-sky-300 transition hover:text-sky-200"
+                    className="font-medium text-sky-300 transition hover:text-sky-200"
                 >
-                    Daftar akun
+                    Daftar
                 </Link>
-            </div>
+            </p>
         </GuestLayout>
     );
 }

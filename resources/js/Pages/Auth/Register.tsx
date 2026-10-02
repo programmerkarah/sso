@@ -1,5 +1,3 @@
-import { UserPlus } from 'lucide-react';
-
 import { FormEventHandler } from 'react';
 
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
@@ -59,15 +57,11 @@ export default function Register() {
             <Head title="Daftar Akun" />
 
             <div className="mb-7">
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
-                    <UserPlus className="h-5 w-5" />
-                </div>
                 <h2 className="text-2xl font-semibold tracking-tight text-white">
-                    Buat akun SSO
+                    Daftar akun
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
-                    Lengkapi identitas berikut. Akun baru dapat memerlukan
-                    verifikasi administrator sebelum digunakan.
+                    Isi data berikut untuk membuat akun SSO.
                 </p>
             </div>
 
@@ -88,7 +82,7 @@ export default function Register() {
                         autoFocus
                         onChange={(e) => setData('name', e.target.value)}
                         error={errors.name}
-                        placeholder="Nama sesuai identitas"
+                        placeholder="Nama lengkap"
                         required
                     />
                 </div>
@@ -111,10 +105,11 @@ export default function Register() {
                                 setData('username', e.target.value)
                             }
                             error={errors.username}
-                            placeholder="username"
+                            placeholder="Username"
                             required
                         />
                     </div>
+
                     <div>
                         <Label
                             htmlFor="email"
@@ -131,7 +126,7 @@ export default function Register() {
                             autoComplete="email"
                             onChange={(e) => setData('email', e.target.value)}
                             error={errors.email}
-                            placeholder="nama@contoh.com"
+                            placeholder="Email"
                             required
                         />
                     </div>
@@ -143,7 +138,7 @@ export default function Register() {
                             required
                             className="text-slate-200 drop-shadow-none"
                         >
-                            Organisasi / jenis pengguna
+                            Organisasi
                         </Label>
                         <SearchableSelect
                             options={organizationSelectOptions}
@@ -156,7 +151,7 @@ export default function Register() {
                                       }
                                     : null
                             }
-                            placeholder="Cari atau pilih organisasi"
+                            placeholder="Pilih organisasi"
                             onSelect={(option) =>
                                 setData('organization_id', option.state_token)
                             }
@@ -193,13 +188,14 @@ export default function Register() {
                             required
                         />
                     </div>
+
                     <div>
                         <Label
                             htmlFor="password_confirmation"
                             required
                             className="text-slate-200 drop-shadow-none"
                         >
-                            Konfirmasi
+                            Konfirmasi password
                         </Label>
                         <Input
                             id="password_confirmation"
@@ -217,25 +213,29 @@ export default function Register() {
                     </div>
                 </div>
 
+                <p className="text-xs leading-5 text-slate-500">
+                    Akun baru dapat memerlukan verifikasi administrator sebelum
+                    digunakan untuk mengakses aplikasi.
+                </p>
+
                 <button
                     type="submit"
                     disabled={processing}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-lg bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    <UserPlus className="h-4 w-4" />
-                    {processing ? 'Membuat akun...' : 'Buat akun'}
+                    {processing ? 'Menyimpan...' : 'Daftar'}
                 </button>
             </form>
 
-            <div className="mt-6 border-t border-white/10 pt-5 text-center text-sm text-slate-400">
+            <p className="mt-6 text-center text-sm text-slate-500">
                 Sudah memiliki akun?{' '}
                 <Link
                     href="/login"
-                    className="font-semibold text-sky-300 transition hover:text-sky-200"
+                    className="font-medium text-sky-300 transition hover:text-sky-200"
                 >
                     Masuk
                 </Link>
-            </div>
+            </p>
         </GuestLayout>
     );
 }
