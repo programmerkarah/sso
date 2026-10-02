@@ -31,6 +31,7 @@ import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
+import PageHeader from '@/Components/PageHeader';
 import SearchableSelect, {
     SearchableSelectOption,
 } from '@/Components/SearchableSelect';
@@ -1297,57 +1298,38 @@ export default function Index({
             )}
 
             <div className="mx-auto max-w-7xl space-y-6">
-                <div className="flex flex-col gap-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                            Kelola Pengguna
-                        </h1>
-                        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-                            Pantau akun terdaftar, reset password, nonaktifkan
-                            2FA, dan kelola peran pengguna.
-                        </p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3">
-                        {selectedUserIds.length > 0 && (
-                            <>
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setBatchVerifyModalOpen(true)
-                                    }
-                                    className="inline-flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-100 transition hover:bg-emerald-500/20"
-                                >
-                                    <CheckSquare className="h-4 w-4" />
-                                    Verifikasi Batch ({selectedUserIds.length})
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setBatchAccessModalOpen(true)
-                                    }
-                                    className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-700"
-                                >
-                                    <CheckSquare className="h-4 w-4" />
-                                    Atur Akses Batch ({selectedUserIds.length})
-                                </button>
-                            </>
-                        )}
-                        <a
-                            href={excelExportUrl}
-                            className="inline-flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-100 transition hover:bg-emerald-500/20"
-                        >
-                            <Download className="h-4 w-4" />
-                            Export Excel
-                        </a>
-                        <a
-                            href={pdfExportUrl}
-                            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
-                        >
-                            <Download className="h-4 w-4" />
-                            Export PDF
-                        </a>
-                    </div>
-                </div>
+                <PageHeader
+                    actions={
+                        <>
+                            {selectedUserIds.length > 0 && (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={() => setBatchVerifyModalOpen(true)}
+                                        className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-200 transition hover:bg-emerald-500/20"
+                                    >
+                                        <CheckSquare className="h-4 w-4" />
+                                        Verifikasi ({selectedUserIds.length})
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setBatchAccessModalOpen(true)}
+                                        className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-700"
+                                    >
+                                        <Settings2 className="h-4 w-4" />
+                                        Atur akses ({selectedUserIds.length})
+                                    </button>
+                                </>
+                            )}
+                            <a href={excelExportUrl} className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800">
+                                <Download className="h-4 w-4" /> Excel
+                            </a>
+                            <a href={pdfExportUrl} className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800">
+                                <Download className="h-4 w-4" /> PDF
+                            </a>
+                        </>
+                    }
+                />
 
                 <div className="grid gap-3 sm:grid-cols-3">
                     <GlassCard>
@@ -1669,10 +1651,11 @@ export default function Index({
                                                                 user.id,
                                                             )
                                                         }
-                                                        className="inline-flex items-center justify-center rounded-lg border border-slate-800 bg-slate-900/80 p-2 text-white/80 transition hover:bg-slate-800 hover:text-white"
-                                                        title="Buka menu aksi"
+                                                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/80 px-2.5 py-2 text-xs font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                                                        title="Kelola pengguna"
                                                     >
-                                                        <EllipsisVertical className="h-4 w-4" />
+                                                        <Settings2 className="h-3.5 w-3.5" />
+                                                        <span className="hidden xl:inline">Kelola</span>
                                                     </button>
                                                 </div>
                                             </td>
