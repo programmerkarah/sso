@@ -1,4 +1,5 @@
 import { Eye, EyeOff, LogIn, ShieldCheck } from 'lucide-react';
+
 import { useState } from 'react';
 
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -14,7 +15,9 @@ export default function Login({ status }: { status?: string }) {
 
     const csrfToken =
         typeof document !== 'undefined'
-            ? (document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '')
+            ? (document
+                  .querySelector('meta[name="csrf-token"]')
+                  ?.getAttribute('content') ?? '')
             : '';
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,7 +37,9 @@ export default function Login({ status }: { status?: string }) {
                 headers: { Accept: 'application/json' },
             });
             const data = (await response.json()) as { token?: string };
-            const hiddenToken = form.querySelector<HTMLInputElement>('input[name="_token"]');
+            const hiddenToken = form.querySelector<HTMLInputElement>(
+                'input[name="_token"]',
+            );
             if (hiddenToken) hiddenToken.value = data.token ?? csrfToken;
         } catch {
             // Gunakan token yang sudah ada bila refresh token tidak tersedia.
@@ -51,7 +56,9 @@ export default function Login({ status }: { status?: string }) {
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-300">
                     <LogIn className="h-5 w-5" />
                 </div>
-                <h2 className="text-2xl font-semibold tracking-tight text-white">Masuk ke akun SSO</h2>
+                <h2 className="text-2xl font-semibold tracking-tight text-white">
+                    Masuk ke akun SSO
+                </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
                     Gunakan username dan password SSO Anda untuk melanjutkan.
                 </p>
@@ -69,16 +76,41 @@ export default function Login({ status }: { status?: string }) {
                 </div>
             )}
 
-            <form method="POST" action="/login" onSubmit={handleSubmit} className="space-y-5">
+            <form
+                method="POST"
+                action="/login"
+                onSubmit={handleSubmit}
+                className="space-y-5"
+            >
                 <input type="hidden" name="_token" value={csrfToken} />
 
                 <div>
-                    <Label htmlFor="username" required className="text-slate-200 drop-shadow-none">Username</Label>
-                    <Input id="username" type="text" name="username" autoComplete="username" autoFocus placeholder="Masukkan username" required />
+                    <Label
+                        htmlFor="username"
+                        required
+                        className="text-slate-200 drop-shadow-none"
+                    >
+                        Username
+                    </Label>
+                    <Input
+                        id="username"
+                        type="text"
+                        name="username"
+                        autoComplete="username"
+                        autoFocus
+                        placeholder="Masukkan username"
+                        required
+                    />
                 </div>
 
                 <div>
-                    <Label htmlFor="password" required className="text-slate-200 drop-shadow-none">Password</Label>
+                    <Label
+                        htmlFor="password"
+                        required
+                        className="text-slate-200 drop-shadow-none"
+                    >
+                        Password
+                    </Label>
                     <div className="relative">
                         <Input
                             id="password"
@@ -91,17 +123,32 @@ export default function Login({ status }: { status?: string }) {
                         />
                         <button
                             type="button"
-                            onClick={() => setShowPassword((current) => !current)}
+                            onClick={() =>
+                                setShowPassword((current) => !current)
+                            }
                             className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/5 hover:text-white"
-                            aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                            aria-label={
+                                showPassword
+                                    ? 'Sembunyikan password'
+                                    : 'Tampilkan password'
+                            }
                         >
-                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                            ) : (
+                                <Eye className="h-4 w-4" />
+                            )}
                         </button>
                     </div>
                 </div>
 
                 <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-400">
-                    <input type="checkbox" name="remember" value="1" className="h-4 w-4 rounded border-white/20 bg-slate-950 text-sky-600 focus:ring-sky-500/30" />
+                    <input
+                        type="checkbox"
+                        name="remember"
+                        value="1"
+                        className="h-4 w-4 rounded border-white/20 bg-slate-950 text-sky-600 focus:ring-sky-500/30"
+                    />
                     Tetap masuk di perangkat ini
                 </label>
 
@@ -117,7 +164,10 @@ export default function Login({ status }: { status?: string }) {
 
             <div className="mt-6 border-t border-white/10 pt-5 text-center text-sm text-slate-400">
                 Belum memiliki akun?{' '}
-                <Link href="/register" className="font-semibold text-sky-300 transition hover:text-sky-200">
+                <Link
+                    href="/register"
+                    className="font-semibold text-sky-300 transition hover:text-sky-200"
+                >
                     Daftar akun
                 </Link>
             </div>

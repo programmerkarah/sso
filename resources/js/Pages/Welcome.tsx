@@ -14,15 +14,25 @@ export default function Welcome() {
                         <div className="flex items-center gap-3">
                             <AppIcon className="h-9 w-9" />
                             <div>
-                                <p className="text-sm font-bold leading-tight">SSO BPS Kota Sawahlunto</p>
-                                <p className="text-xs text-slate-500">Single Sign-On</p>
+                                <p className="text-sm font-bold leading-tight">
+                                    SSO BPS Kota Sawahlunto
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                    Single Sign-On
+                                </p>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Link href="/login" className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-white/5 hover:text-white">
+                            <Link
+                                href="/login"
+                                className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-white/5 hover:text-white"
+                            >
                                 Masuk
                             </Link>
-                            <Link href="/register" className="hidden rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 sm:inline-flex">
+                            <Link
+                                href="/register"
+                                className="hidden rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 sm:inline-flex"
+                            >
                                 Daftar
                             </Link>
                         </div>
@@ -40,14 +50,23 @@ export default function Welcome() {
                                 Pusat akses aplikasi BPS Kota Sawahlunto.
                             </h1>
                             <p className="mt-6 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg">
-                                Gunakan satu identitas untuk masuk ke aplikasi internal yang terhubung dengan SSO. Lebih sederhana untuk pengguna, lebih mudah dikelola oleh administrator.
+                                Gunakan satu identitas untuk masuk ke aplikasi
+                                internal yang terhubung dengan SSO. Lebih
+                                sederhana untuk pengguna, lebih mudah dikelola
+                                oleh administrator.
                             </p>
                             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                                <Link href="/login" className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-500">
+                                <Link
+                                    href="/login"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-500"
+                                >
                                     Masuk ke SSO
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
-                                <Link href="/register" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10">
+                                <Link
+                                    href="/register"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
+                                >
                                     <UserPlus className="h-4 w-4" />
                                     Buat akun
                                 </Link>
@@ -57,8 +76,12 @@ export default function Welcome() {
                         <div className="rounded-3xl border border-white/10 bg-slate-900 p-5 shadow-2xl shadow-black/20 sm:p-7">
                             <div className="flex items-center justify-between border-b border-white/10 pb-5">
                                 <div>
-                                    <p className="text-sm font-semibold">Akses terpusat</p>
-                                    <p className="mt-1 text-xs text-slate-500">SSO BPS Kota Sawahlunto</p>
+                                    <p className="text-sm font-semibold">
+                                        Akses terpusat
+                                    </p>
+                                    <p className="mt-1 text-xs text-slate-500">
+                                        SSO BPS Kota Sawahlunto
+                                    </p>
                                 </div>
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10">
                                     <LockKeyhole className="h-5 w-5 text-sky-300" />
@@ -66,15 +89,36 @@ export default function Welcome() {
                             </div>
                             <div className="space-y-3 py-5">
                                 {[
-                                    ['01', 'Masuk sekali', 'Gunakan akun SSO untuk aplikasi yang telah terintegrasi.'],
-                                    ['02', 'Akses sesuai hak pengguna', 'Aplikasi ditampilkan sesuai organisasi dan kewenangan akun.'],
-                                    ['03', 'Kelola keamanan', 'Pantau sesi aktif dan gunakan verifikasi dua langkah.'],
+                                    [
+                                        '01',
+                                        'Masuk sekali',
+                                        'Gunakan akun SSO untuk aplikasi yang telah terintegrasi.',
+                                    ],
+                                    [
+                                        '02',
+                                        'Akses sesuai hak pengguna',
+                                        'Aplikasi ditampilkan sesuai organisasi dan kewenangan akun.',
+                                    ],
+                                    [
+                                        '03',
+                                        'Kelola keamanan',
+                                        'Pantau sesi aktif dan gunakan verifikasi dua langkah.',
+                                    ],
                                 ].map(([number, title, description]) => (
-                                    <div key={number} className="flex gap-4 rounded-xl border border-white/8 bg-white/[0.025] p-4">
-                                        <span className="text-xs font-bold text-sky-300">{number}</span>
+                                    <div
+                                        key={number}
+                                        className="flex gap-4 rounded-xl border border-white/8 bg-white/[0.025] p-4"
+                                    >
+                                        <span className="text-xs font-bold text-sky-300">
+                                            {number}
+                                        </span>
                                         <div>
-                                            <p className="text-sm font-semibold">{title}</p>
-                                            <p className="mt-1 text-sm leading-6 text-slate-400">{description}</p>
+                                            <p className="text-sm font-semibold">
+                                                {title}
+                                            </p>
+                                            <p className="mt-1 text-sm leading-6 text-slate-400">
+                                                {description}
+                                            </p>
                                         </div>
                                     </div>
                                 ))}
@@ -88,16 +132,31 @@ export default function Welcome() {
                     <section className="border-y border-white/10 bg-white/[0.025]">
                         <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 md:grid-cols-3">
                             <div>
-                                <p className="text-sm font-semibold">Satu identitas</p>
-                                <p className="mt-2 text-sm leading-6 text-slate-400">Kurangi akun terpisah dan gunakan identitas yang sama untuk layanan terhubung.</p>
+                                <p className="text-sm font-semibold">
+                                    Satu identitas
+                                </p>
+                                <p className="mt-2 text-sm leading-6 text-slate-400">
+                                    Kurangi akun terpisah dan gunakan identitas
+                                    yang sama untuk layanan terhubung.
+                                </p>
                             </div>
                             <div>
-                                <p className="text-sm font-semibold">Kontrol akses</p>
-                                <p className="mt-2 text-sm leading-6 text-slate-400">Hak akses aplikasi mengikuti organisasi dan kewenangan pengguna.</p>
+                                <p className="text-sm font-semibold">
+                                    Kontrol akses
+                                </p>
+                                <p className="mt-2 text-sm leading-6 text-slate-400">
+                                    Hak akses aplikasi mengikuti organisasi dan
+                                    kewenangan pengguna.
+                                </p>
                             </div>
                             <div>
-                                <p className="text-sm font-semibold">Keamanan terpadu</p>
-                                <p className="mt-2 text-sm leading-6 text-slate-400">Pengelolaan 2FA, perangkat, dan sesi dilakukan dari pusat SSO.</p>
+                                <p className="text-sm font-semibold">
+                                    Keamanan terpadu
+                                </p>
+                                <p className="mt-2 text-sm leading-6 text-slate-400">
+                                    Pengelolaan 2FA, perangkat, dan sesi
+                                    dilakukan dari pusat SSO.
+                                </p>
                             </div>
                         </div>
                     </section>
