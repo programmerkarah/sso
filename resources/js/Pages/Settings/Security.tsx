@@ -20,6 +20,7 @@ import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -172,18 +173,9 @@ export default function Security({
         <AppLayout>
             <Head title="Keamanan" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-9xl px-4 sm:px-6 lg:px-8">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-white  sm:text-4xl">
-                            Pengaturan Keamanan
-                        </h1>
-                        <p className="mt-2 text-base text-white/80 sm:text-lg">
-                            Kelola autentikasi dua faktor untuk akun Anda
-                        </p>
-                    </div>
-
-                    <div className="space-y-6">
+            <div className="space-y-6">
+                <PageHeader />
+                <div className="space-y-4">
                         <GlassCard>
                             <div className="flex flex-col items-start gap-4 sm:flex-row">
                                 <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
