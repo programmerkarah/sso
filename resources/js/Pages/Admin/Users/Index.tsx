@@ -1315,7 +1315,7 @@ export default function Index({
                                                         true,
                                                     )
                                                 }
-                                                className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-200 transition hover:bg-emerald-500/20"
+                                                className="ui-success inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium"
                                             >
                                                 <CheckSquare className="h-4 w-4" />
                                                 Verifikasi (
@@ -1328,7 +1328,7 @@ export default function Index({
                                                         true,
                                                     )
                                                 }
-                                                className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-700"
+                                                className="ui-hover inline-flex items-center gap-2 rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] px-3 py-2 text-sm font-medium text-[var(--bps-text)]"
                                             >
                                                 <Settings2 className="h-4 w-4" />
                                                 Atur akses (
@@ -1338,13 +1338,13 @@ export default function Index({
                                     )}
                                     <a
                                         href={excelExportUrl}
-                                        className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+                                        className="ui-hover inline-flex items-center gap-2 rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] px-3 py-2 text-sm font-medium text-[var(--bps-text)]"
                                     >
                                         <Download className="h-4 w-4" /> Excel
                                     </a>
                                     <a
                                         href={pdfExportUrl}
-                                        className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+                                        className="ui-hover inline-flex items-center gap-2 rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] px-3 py-2 text-sm font-medium text-[var(--bps-text)]"
                                     >
                                         <Download className="h-4 w-4" /> PDF
                                     </a>
@@ -1488,7 +1488,7 @@ export default function Index({
                                     users.data.map((user) => (
                                         <tr
                                             key={user.id}
-                                            className="transition-colors hover:bg-slate-800/40"
+                                            className="ui-hover transition-colors"
                                         >
                                             <td className="px-5 py-4">
                                                 <input
@@ -1649,7 +1649,7 @@ export default function Index({
                                                                 user.id,
                                                             )
                                                         }
-                                                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/80 px-2.5 py-2 text-xs font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                                                        className="ui-hover inline-flex items-center gap-1.5 rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] px-2.5 py-2 text-xs font-medium text-[var(--bps-text)]"
                                                         title="Kelola pengguna"
                                                     >
                                                         <Settings2 className="h-3.5 w-3.5" />
@@ -1681,7 +1681,7 @@ export default function Index({
                                         onClick={() =>
                                             visitState(users.prev_page_token!)
                                         }
-                                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/70 transition hover:bg-slate-900/80 hover:text-white"
+                                        className="ui-icon-button flex h-8 w-8 items-center justify-center rounded-lg"
                                     >
                                         <ChevronLeft className="h-4 w-4" />
                                     </button>
@@ -1712,7 +1712,7 @@ export default function Index({
                                         onClick={() =>
                                             visitState(users.next_page_token!)
                                         }
-                                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/70 transition hover:bg-slate-900/80 hover:text-white"
+                                        className="ui-icon-button flex h-8 w-8 items-center justify-center rounded-lg"
                                     >
                                         <ChevronRight className="h-4 w-4" />
                                     </button>
@@ -1754,7 +1754,7 @@ export default function Index({
                             <button
                                 type="button"
                                 onClick={() => setActionMenu(null)}
-                                className="rounded-lg border border-slate-800 p-2 text-slate-400 transition hover:bg-slate-900 hover:text-white"
+                                className="ui-icon-button rounded-lg p-2"
                             >
                                 <XCircle className="h-4 w-4" />
                             </button>
@@ -1778,7 +1778,7 @@ export default function Index({
                                             );
                                             setActionMenu(null);
                                         }}
-                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                        className="ui-hover flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm text-[var(--bps-text)]"
                                     >
                                         <Pencil className="h-4 w-4 text-sky-300" />
                                         <span>
@@ -1796,7 +1796,7 @@ export default function Index({
                                             openEditAccessModal(actionMenuUser);
                                             setActionMenu(null);
                                         }}
-                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                        className="ui-hover flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm text-[var(--bps-text)]"
                                     >
                                         <Settings2 className="h-4 w-4 text-indigo-300" />
                                         <span>
@@ -1816,7 +1816,7 @@ export default function Index({
                                             );
                                             setActionMenu(null);
                                         }}
-                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                        className="ui-hover flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm text-[var(--bps-text)]"
                                     >
                                         {actionMenuUser.is_admin_verified ? (
                                             <ShieldOff className="h-4 w-4 text-amber-300" />
@@ -1844,7 +1844,7 @@ export default function Index({
                                                 );
                                                 setActionMenu(null);
                                             }}
-                                            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                            className="ui-hover flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm text-[var(--bps-text)]"
                                         >
                                             {actionMenuUser.is_admin ? (
                                                 <ShieldOff className="h-4 w-4 text-amber-300" />
@@ -1877,7 +1877,7 @@ export default function Index({
                                             openUserSecurity(actionMenuUser);
                                             setActionMenu(null);
                                         }}
-                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                        className="ui-hover flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm text-[var(--bps-text)]"
                                     >
                                         <Monitor className="h-4 w-4 text-teal-300" />
                                         <span>
@@ -1896,7 +1896,7 @@ export default function Index({
                                             handleResetPassword(actionMenuUser);
                                             setActionMenu(null);
                                         }}
-                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                        className="ui-hover flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm text-[var(--bps-text)]"
                                     >
                                         <KeyRound className="h-4 w-4 text-amber-300" />
                                         <span>
@@ -1916,7 +1916,7 @@ export default function Index({
                                             );
                                             setActionMenu(null);
                                         }}
-                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                        className="ui-hover flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm text-[var(--bps-text)]"
                                     >
                                         <RotateCcw className="h-4 w-4 text-red-300" />
                                         <span>
@@ -1938,7 +1938,7 @@ export default function Index({
                                                 );
                                                 setActionMenu(null);
                                             }}
-                                            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                            className="ui-hover flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm text-[var(--bps-text)]"
                                         >
                                             <ShieldCheck className="h-4 w-4 text-emerald-300" />
                                             <span>
@@ -1966,7 +1966,7 @@ export default function Index({
                                             handleDeleteUser(actionMenuUser);
                                             setActionMenu(null);
                                         }}
-                                        className="flex w-full items-center gap-3 rounded-xl border border-red-500/15 px-3 py-3 text-left text-sm text-red-200 transition hover:bg-red-500/10"
+                                        className="ui-danger flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left text-sm"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                         <span>
@@ -2011,7 +2011,7 @@ export default function Index({
                             <button
                                 type="button"
                                 onClick={closeUserSecurity}
-                                className="mt-0.5 rounded-lg p-1.5 text-white/40 transition hover:bg-slate-900/80 hover:text-white"
+                                className="ui-icon-button mt-0.5 rounded-lg p-1.5"
                             >
                                 <XCircle className="h-4.5 w-4.5" />
                             </button>
@@ -2200,7 +2200,7 @@ export default function Index({
                                                                     session.id,
                                                                 )
                                                             }
-                                                            className="shrink-0 rounded-lg p-1.5 text-white/25 transition hover:bg-red-500/20 hover:text-red-300"
+                                                            className="ui-danger shrink-0 rounded-lg border border-transparent p-1.5"
                                                         >
                                                             <Trash2 className="h-3.5 w-3.5" />
                                                         </button>
@@ -2444,7 +2444,7 @@ export default function Index({
                                                                         device.id,
                                                                     )
                                                                 }
-                                                                className="shrink-0 rounded-lg p-1.5 text-white/25 transition hover:bg-red-500/20 hover:text-red-300"
+                                                                className="ui-danger shrink-0 rounded-lg border border-transparent p-1.5"
                                                             >
                                                                 <Trash2 className="h-3.5 w-3.5" />
                                                             </button>
