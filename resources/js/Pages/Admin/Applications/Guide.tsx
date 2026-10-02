@@ -6,6 +6,7 @@ import { Head, Link } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
 import GlassCard from '@/Components/GlassCard';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application } from '@/types';
 
@@ -129,44 +130,18 @@ export default function Guide({ application, appUrl }: GuideProps) {
         <AppLayout>
             <Head title={`Panduan - ${application.name}`} />
 
-            <div className="mx-auto max-w-6xl space-y-8 px-1 py-8 sm:px-6 sm:py-12 lg:px-8">
-                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-                    <Link
-                        href={`/admin/applications/${application.route_key}`}
-                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-white   transition hover:bg-slate-800"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        Kembali ke detail aplikasi
-                    </Link>
-                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                        <a
-                            href={`/admin/applications/${application.route_key}/guide/export-pdf`}
-                            className="inline-flex items-center gap-2 rounded-xl border border-emerald-300/30 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-50 transition hover:bg-emerald-500/30"
-                        >
-                            <Download className="h-4 w-4" />
-                            Export PDF
-                        </a>
-                        <Link
-                            href={`/admin/applications/${application.route_key}/edit`}
-                        >
-                            <Button>Edit Konfigurasi</Button>
+            <div className="mx-auto max-w-6xl space-y-6">
+                <PageHeader
+                    title="Panduan integrasi"
+                    description={`Panduan OAuth2 dan sinkronisasi pengguna untuk ${application.name}.`}
+                    actions={
+                        <Link href={`/admin/applications/${application.route_key}`} className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                            <ArrowLeft className="h-4 w-4" /> Detail aplikasi
                         </Link>
-                    </div>
-                </div>
+                    }
+                />
 
-                <div className="px-1 sm:px-0">
-                    <h1 className=" text-3xl font-semibold text-white  sm:text-5xl">
-                        Panduan Integrasi OAuth2 + Sinkronisasi User
-                    </h1>
-                    <p className="mt-2 max-w-4xl text-sm text-white/80 sm:text-base">
-                        Panduan implementasi {application.name} ke SSO, termasuk
-                        guard organisasi, alur callback, sinkronisasi user lokal
-                        di setiap login, dan opsi sinkronisasi lanjutan sesuai
-                        kebutuhan aplikasi.
-                    </p>
-                </div>
-
-                <div className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
                     <GlassCard className="space-y-6 p-4 sm:p-6">
                         <section className="space-y-3">
                             <h2 className="text-xl font-bold text-white">
