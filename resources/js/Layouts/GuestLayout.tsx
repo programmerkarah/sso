@@ -119,13 +119,9 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                     </p>
                 </aside>
 
-                <ScrollArea className="min-h-0 h-full" viewportClassName="px-4 py-6 sm:px-8 lg:px-12 xl:px-16">
-                    <main className="flex min-h-full items-center justify-center">
-                    <div className="w-full max-w-lg">
-                        <Link
-                            href="/"
-                            className="mb-8 flex items-center gap-3 lg:hidden"
-                        >
+                <div className="relative flex h-full min-h-0 flex-col">
+                    <div className="absolute left-4 top-5 z-10 sm:left-8 lg:hidden">
+                        <Link href="/" className="flex items-center gap-3">
                             <AppIcon className="h-9 w-9" />
                             <div>
                                 <div className="text-sm font-semibold text-slate-100">
@@ -136,23 +132,31 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                                 </div>
                             </div>
                         </Link>
+                    </div>
 
-                        <div className="app-panel-background rounded-2xl border border-cyan-900/50 px-6 py-7 shadow-2xl shadow-black/10 sm:px-8 sm:py-8">
-                            {children}
-                        </div>
+                    <ScrollArea className="min-h-0 flex-1" viewportClassName="px-4 py-20 sm:px-8 sm:py-20 lg:px-12 xl:px-16">
+                        <main className="flex min-h-full items-center justify-center">
+                            <div className="w-full max-w-lg">
+                                <div className="app-panel-background rounded-2xl border border-cyan-900/50 px-6 py-7 shadow-2xl shadow-black/10 sm:px-8 sm:py-8">
+                                    {children}
+                                </div>
+                            </div>
+                        </main>
+                    </ScrollArea>
 
-                        <div className="mt-5 flex items-center justify-between gap-4 text-xs text-slate-600">
+                    <footer className="shrink-0 border-t border-cyan-950/60 bg-[#061f32]/55 px-4 py-3 sm:px-8 lg:px-12 xl:px-16">
+                        <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-4 text-xs text-slate-500">
                             <Link
                                 href="/"
-                                className="transition hover:text-slate-400"
+                                className="inline-flex items-center gap-2 rounded-lg border border-cyan-900/60 bg-[#0b2d46] px-3 py-2 font-medium text-slate-300 transition hover:bg-[#11364f] hover:text-white"
                             >
+                                <span aria-hidden="true">←</span>
                                 Beranda
                             </Link>
                             <span>BPS Kota Sawahlunto</span>
                         </div>
-                    </div>
-                    </main>
-                </ScrollArea>
+                    </footer>
+                </div>
             </div>
         </div>
     );
