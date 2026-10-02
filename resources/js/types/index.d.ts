@@ -71,6 +71,7 @@ export type PageProps<
                 mode: 'document' | 'workspace';
                 sticky_summary: boolean;
                 content_scroll: boolean;
+                content_strategy: 'document' | 'scroll' | 'panes';
             };
         };
         container: string;
