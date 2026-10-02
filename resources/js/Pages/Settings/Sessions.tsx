@@ -209,7 +209,7 @@ export default function Sessions(props: SessionsProps) {
                                     value={query}
                                     onChange={(event) => setQuery(event.target.value)}
                                     placeholder="Cari pengguna…"
-                                    className="h-10 w-full rounded-lg border border-slate-800 bg-slate-950 pl-9 pr-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-slate-600"
+                                    className="h-10 w-full rounded-lg border border-cyan-900/60 bg-[#041b2d]/85 pl-9 pr-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-slate-600"
                                 />
                             </div>
                         </div>
@@ -257,11 +257,11 @@ export default function Sessions(props: SessionsProps) {
                                         <p className="mt-1 truncate text-sm text-slate-400">{selectedUser.email}</p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div className="rounded-xl bg-slate-950/70 px-4 py-3">
+                                        <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
                                             <div className="text-xl font-semibold text-white">{sessionMeta.total}</div>
                                             <div className="text-xs text-slate-500">Sesi web</div>
                                         </div>
-                                        <div className="rounded-xl bg-slate-950/70 px-4 py-3">
+                                        <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
                                             <div className="text-xl font-semibold text-white">{oauthMeta.total}</div>
                                             <div className="text-xs text-slate-500">Akses OAuth</div>
                                         </div>
