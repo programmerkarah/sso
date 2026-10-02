@@ -1356,7 +1356,7 @@ export default function Index({
                             }
                         />
 
-                        <div className="grid gap-3 sm:grid-cols-3">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3">
                             <MetricCard
                                 label="Total akun"
                                 value={formatNumber(users.total)}
