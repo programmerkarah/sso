@@ -31,6 +31,7 @@ import SectionTabs from '@/Components/SectionTabs';
 import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
+import { formatNumber } from '@/utils/number';
 
 interface SystemLog {
     id: number;
@@ -242,8 +243,8 @@ export default function Index({
 
     const restoreOptions = backups.map((backup) => ({
         label: backup.title
-            ? `${backup.title} (${backup.name}) • ${backup.size_kb} KB`
-            : `${backup.name} • ${backup.size_kb} KB`,
+            ? `${backup.title} (${backup.name}) • ${formatNumber(backup.size_kb)} KB`
+            : `${backup.name} • ${formatNumber(backup.size_kb)} KB`,
         value: backup.name,
     }));
 
@@ -445,7 +446,7 @@ export default function Index({
                                     Jumlah tabel
                                 </div>
                                 <div className="text-3xl font-semibold text-white">
-                                    {database.table_count}
+                                    {formatNumber(database.table_count)}
                                 </div>
                             </div>
                         </div>
@@ -461,7 +462,7 @@ export default function Index({
                                     Total pengguna
                                 </div>
                                 <div className="text-3xl font-semibold text-white">
-                                    {database.user_count}
+                                    {formatNumber(database.user_count)}
                                 </div>
                             </div>
                         </div>
@@ -477,7 +478,7 @@ export default function Index({
                                     Total log ditampilkan
                                 </div>
                                 <div className="text-3xl font-semibold text-white">
-                                    {logs.total}
+                                    {formatNumber(logs.total)}
                                 </div>
                             </div>
                         </div>
@@ -493,7 +494,7 @@ export default function Index({
                                     Disk bebas
                                 </div>
                                 <div className="text-3xl font-semibold text-white">
-                                    {server.disk_free_gb} GB
+                                    {formatNumber(server.disk_free_gb)} GB
                                 </div>
                             </div>
                         </div>
@@ -521,13 +522,13 @@ export default function Index({
                             <div>
                                 Ukuran:{' '}
                                 <span className="font-semibold text-white">
-                                    {database.size_mb} MB
+                                    {formatNumber(database.size_mb)} MB
                                 </span>
                             </div>
                             <div>
                                 Jumlah aplikasi:{' '}
                                 <span className="font-semibold text-white">
-                                    {database.application_count}
+                                    {formatNumber(database.application_count)}
                                 </span>
                             </div>
                             <div>
@@ -604,7 +605,7 @@ export default function Index({
                             <div>
                                 Disk total:{' '}
                                 <span className="font-semibold text-white">
-                                    {server.disk_total_gb} GB
+                                    {formatNumber(server.disk_total_gb)} GB
                                 </span>
                             </div>
                             <div className="truncate">
@@ -727,7 +728,7 @@ export default function Index({
                                             </p>
                                         )}
                                         <div className="mt-2 flex items-center justify-between text-xs text-white/70">
-                                            <span>{backup.size_kb} KB</span>
+                                            <span>{formatNumber(backup.size_kb)} KB</span>
                                             <span>
                                                 {formatDateTime(
                                                     backup.modified_at,
@@ -816,7 +817,7 @@ export default function Index({
                                                     {backup.description || '—'}
                                                 </td>
                                                 <td className="py-3 pr-2">
-                                                    {backup.size_kb} KB
+                                                    {formatNumber(backup.size_kb)} KB
                                                 </td>
                                                 <td className="py-3 pr-2">
                                                     {formatDateTime(
@@ -951,7 +952,7 @@ export default function Index({
                         </h2>
                         <p className="mt-1 text-sm text-white/65">
                             Menampilkan {logs.from ?? 0} sampai {logs.to ?? 0}{' '}
-                            dari {logs.total} log aktivitas terbaru.
+                            dari {formatNumber(logs.total)} log aktivitas terbaru.
                         </p>
 
                         <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_220px]">
