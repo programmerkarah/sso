@@ -189,7 +189,7 @@ export default function Sessions(props: SessionsProps) {
                     type="button"
                     onClick={() => visitState(previous)}
                     disabled={!previous}
-                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:ui-disabled"
+                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                     <ChevronLeft className="h-3.5 w-3.5" /> Sebelumnya
                 </button>
@@ -200,7 +200,7 @@ export default function Sessions(props: SessionsProps) {
                     type="button"
                     onClick={() => visitState(next)}
                     disabled={!next}
-                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:ui-disabled"
+                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                     Berikutnya <ChevronRight className="h-3.5 w-3.5" />
                 </button>
