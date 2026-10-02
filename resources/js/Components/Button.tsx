@@ -14,7 +14,7 @@ export default function Button({
         primary:
             'bg-[#5aaee8] text-white hover:bg-[#4aa3de] focus:ring-[#5aaee8]/30',
         secondary:
-            'border border-[#d5e1e9] bg-white text-[#29465f] hover:bg-[#eef5f9] focus:ring-[#5aaee8]/20',
+            'border border-[var(--bps-border)] bg-[var(--bps-surface)] text-[var(--bps-text)] hover:bg-[var(--bps-surface-soft)] focus:ring-[#5aaee8]/20',
         danger: 'bg-red-600 text-white hover:bg-red-500 focus:ring-red-500/30',
     };
 
