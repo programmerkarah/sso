@@ -25,6 +25,7 @@ import PageHeader from '@/Components/PageHeader';
 import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
+import { formatNumber } from '@/utils/number';
 
 interface DatabaseTableSummary {
     name: string;
@@ -450,10 +451,10 @@ export default function DatabaseTables({
                                                         {table.name}
                                                     </div>
                                                     <div className="mt-1 text-xs text-white/55">
-                                                        {table.column_count}{' '}
+                                                        {formatNumber(table.column_count)}{' '}
                                                         kolom
                                                         {' • '}
-                                                        {table.row_count} baris
+                                                        {formatNumber(table.row_count)} baris
                                                     </div>
                                                 </div>
                                                 <span className="rounded-full bg-slate-900/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white/65">
@@ -498,7 +499,7 @@ export default function DatabaseTables({
                                                     Preview
                                                 </div>
                                                 <div className="mt-1 text-xl font-bold text-white">
-                                                    {selectedTable.rows.total}
+                                                    {formatNumber(selectedTable.rows.total)}
                                                 </div>
                                             </div>
                                             <div className="rounded-xl border border-slate-800 bg-black/20 px-4 py-3 text-sm text-white/80">
@@ -655,11 +656,9 @@ export default function DatabaseTables({
                                             <div className="border-b border-slate-800 px-4 py-3 sm:px-6">
                                                 <p className="text-sm text-white/65">
                                                     Menampilkan{' '}
-                                                    {selectedTable.rows.from ??
-                                                        0}{' '}
+                                                    {formatNumber(selectedTable.rows.from ?? 0)}{' '}
                                                     sampai{' '}
-                                                    {selectedTable.rows.to ??
-                                                        0}{' '}
+                                                    {formatNumber(selectedTable.rows.to ?? 0)}{' '}
                                                 </p>
                                             </div>
                                             <ScrollArea axis="horizontal" viewportClassName="pb-2">
