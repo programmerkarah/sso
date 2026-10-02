@@ -221,6 +221,7 @@ class SettingsController extends Controller
                     'oauth_count' => count($oauthApplications),
                     'state_token' => $encryptedState->encryptArray([
                         'page' => $page,
+                        'search' => $search,
                         'user_id' => $selectedUser->id,
                         'session_page' => $sessionPage,
                         'oauth_page' => $oauthPage,
@@ -254,6 +255,7 @@ class SettingsController extends Controller
             'session_prev_page_token' => $sessionPage > 1
                 ? $encryptedState->encryptArray([
                     'page' => $page,
+                    'search' => $search,
                     'user_id' => $selectedUserId,
                     'session_page' => $sessionPage - 1,
                     'oauth_page' => $oauthPage,
@@ -262,6 +264,7 @@ class SettingsController extends Controller
             'session_next_page_token' => $sessionPage < max(1, (int) ceil(count($allSessions) / $sessionPerPage))
                 ? $encryptedState->encryptArray([
                     'page' => $page,
+                    'search' => $search,
                     'user_id' => $selectedUserId,
                     'session_page' => $sessionPage + 1,
                     'oauth_page' => $oauthPage,
@@ -277,6 +280,7 @@ class SettingsController extends Controller
             'oauth_prev_page_token' => $oauthPage > 1
                 ? $encryptedState->encryptArray([
                     'page' => $page,
+                    'search' => $search,
                     'user_id' => $selectedUserId,
                     'session_page' => $sessionPage,
                     'oauth_page' => $oauthPage - 1,
@@ -285,6 +289,7 @@ class SettingsController extends Controller
             'oauth_next_page_token' => $oauthPage < max(1, (int) ceil(count($allOauthApplications) / $oauthPerPage))
                 ? $encryptedState->encryptArray([
                     'page' => $page,
+                    'search' => $search,
                     'user_id' => $selectedUserId,
                     'session_page' => $sessionPage,
                     'oauth_page' => $oauthPage + 1,
