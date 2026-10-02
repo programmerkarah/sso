@@ -421,7 +421,7 @@ export default function DatabaseTables({
                                             className={`w-full rounded-xl border p-3 text-left transition ${
                                                 isActive
                                                     ? 'ui-selected'
-                                                    : 'border-[var(--bps-border)] bg-[var(--bps-surface-soft)] hover:bg-[var(--bps-surface-soft)]'
+                                                    : 'ui-hover border-[var(--bps-border)] bg-[var(--bps-surface)]'
                                             }`}
                                         >
                                             <div className="flex items-start justify-between gap-3">
@@ -765,7 +765,7 @@ export default function DatabaseTables({
                                                                                                             },
                                                                                                         )
                                                                                                     }
-                                                                                                    className="block w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] p-2 text-left transition hover:bg-[var(--bps-surface-soft)]"
+                                                                                                    className="ui-hover block w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] p-2 text-left"
                                                                                                 >
                                                                                                     <div className="max-h-24 overflow-hidden whitespace-pre-wrap break-all text-xs leading-5 text-[var(--bps-text)]">
                                                                                                         {
@@ -783,7 +783,7 @@ export default function DatabaseTables({
                                                                                                             },
                                                                                                         )
                                                                                                     }
-                                                                                                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-cyan-100 transition hover:text-[var(--bps-text)]"
+                                                                                                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#4a9fd7] transition hover:text-[var(--bps-blue-strong)]"
                                                                                                 >
                                                                                                     <Expand className="h-3.5 w-3.5" />
                                                                                                     Expand
@@ -804,7 +804,7 @@ export default function DatabaseTables({
                                                                                             row,
                                                                                         )
                                                                                     }
-                                                                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-300/25 bg-amber-500/15 px-3 py-1.5 text-xs font-semibold text-amber-50 transition hover:bg-amber-500/25"
+                                                                                    className="ui-warning inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-semibold"
                                                                                 >
                                                                                     <SquarePen className="h-3.5 w-3.5" />
                                                                                     Edit
@@ -926,7 +926,7 @@ export default function DatabaseTables({
                                 <button
                                     type="button"
                                     onClick={() => setExpandedCell(null)}
-                                    className="rounded-lg border border-[var(--bps-border)] p-2 text-[var(--bps-text)] transition hover:bg-[var(--bps-surface-soft)] hover:text-[var(--bps-text)]"
+                                    className="ui-icon-button rounded-lg p-2"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -961,7 +961,7 @@ export default function DatabaseTables({
                                 <button
                                     type="button"
                                     onClick={closeEditRowModal}
-                                    className="rounded-lg border border-[var(--bps-border)] p-2 text-[var(--bps-text)] transition hover:bg-[var(--bps-surface-soft)] hover:text-[var(--bps-text)]"
+                                    className="ui-icon-button rounded-lg p-2"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
