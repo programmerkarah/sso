@@ -40,9 +40,9 @@ function CodeBlock({
     onCopy: (value: string, key: CopyKey) => void;
 }) {
     return (
-        <div className="min-w-0 rounded-xl bg-black/40 p-3 sm:p-4">
+        <div className="theme-code min-w-0 rounded-xl p-3 sm:p-4">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--bps-text)]/45">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--bps-muted)]">
                     {label}
                 </p>
                 <button
@@ -54,7 +54,7 @@ function CodeBlock({
                 </button>
             </div>
             <ScrollArea axis="horizontal" viewportClassName="pb-2">
-                <pre className="whitespace-pre-wrap break-all text-xs leading-6 text-[var(--bps-text)]/90">
+                <pre className="whitespace-pre-wrap break-all text-xs leading-6 text-[var(--bps-text)]">
                     <code>{value}</code>
                 </pre>
             </ScrollArea>
@@ -162,7 +162,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                             <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 1. Ringkasan Kontrak Integrasi
                             </h2>
-                            <div className="rounded-xl border border-[var(--bps-border)] bg-slate-900/50 p-4 text-sm leading-7 text-[var(--bps-muted)]">
+                            <div className="rounded-xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] p-4 text-sm leading-7 text-[var(--bps-muted)]">
                                 <p>
                                     <span className="font-semibold text-[var(--bps-text)]">
                                         Authorize endpoint:
@@ -346,7 +346,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                             <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 9. Panduan Sinkronisasi Data Sesuai Kebutuhan
                             </h2>
-                            <div className="space-y-3 rounded-xl border border-[var(--bps-border)] bg-slate-900/50 p-4 text-sm leading-7 text-[var(--bps-muted)]">
+                            <div className="space-y-3 rounded-xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] p-4 text-sm leading-7 text-[var(--bps-muted)]">
                                 <p>
                                     <span className="font-semibold text-[var(--bps-text)]">
                                         Minimal sync:
