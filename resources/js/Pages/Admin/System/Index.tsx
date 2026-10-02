@@ -28,6 +28,7 @@ import GlassCard from '@/Components/GlassCard';
 import GlassSelect from '@/Components/GlassSelect';
 import PageHeader from '@/Components/PageHeader';
 import SectionTabs from '@/Components/SectionTabs';
+import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -1043,7 +1044,7 @@ export default function Index({
                         )}
                     </div>
 
-                    <div className="hidden overflow-x-auto md:block">
+                    <ScrollArea axis="horizontal" className="hidden md:block" viewportClassName="pb-2">
                         <table className="w-full min-w-[1080px]">
                             <thead>
                                 <tr className="border-b border-slate-800 bg-black/20 text-left text-xs uppercase tracking-wider text-white/60">
@@ -1148,7 +1149,7 @@ export default function Index({
                                 )}
                             </tbody>
                         </table>
-                    </div>
+                    </ScrollArea>
 
                     {logs.last_page > 1 && (
                         <div className="flex flex-wrap items-center justify-center gap-2 border-t border-slate-800 px-6 py-4 sm:justify-end">
@@ -1242,7 +1243,7 @@ export default function Index({
                             className="absolute inset-0 bg-slate-950/70 "
                             onClick={() => setSelectedLog(null)}
                         />
-                        <div className="relative h-[100dvh] w-full overflow-y-auto rounded-none border-0 bg-slate-900/80 p-4   sm:h-auto sm:max-h-[85vh] sm:max-w-3xl sm:rounded-2xl sm:border sm:border-slate-800 sm:p-6">
+                        <ScrollArea className="relative h-[100dvh] w-full rounded-none border-0 bg-slate-900/80 sm:h-[85vh] sm:max-h-[85vh] sm:max-w-3xl sm:rounded-2xl sm:border sm:border-slate-800" viewportClassName="p-4 sm:p-6">
                             <div className="sticky top-0 z-10 -mx-4 mb-4 flex items-start justify-between gap-4 border-b border-slate-800 bg-slate-900/45 px-4 py-3  sm:static sm:mx-0 sm:mb-4 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
                                 <div>
                                     <h3 className="text-lg font-bold text-white sm:text-xl">
@@ -1356,7 +1357,7 @@ export default function Index({
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </ScrollArea>
                 )}
 
                 {editingBackup && (
