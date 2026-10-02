@@ -48,6 +48,7 @@ class SettingsController extends Controller
             ? (int) $state['user_id']
             : null;
         $page = max(1, (int) ($state['page'] ?? 1));
+        $search = trim((string) ($state['search'] ?? ''));
         $sessionPage = max(1, (int) ($state['session_page'] ?? 1));
         $oauthPage = max(1, (int) ($state['oauth_page'] ?? 1));
         $sessionPerPage = 5;
@@ -57,6 +58,15 @@ class SettingsController extends Controller
         if ($isAdmin) {
             $usersQuery = User::query()
                 ->select(['id', 'name', 'username', 'email', 'last_login_at', 'created_at'])
+                ->when($search !== '', function ($query) use ($search) {
+                    $needle = '%'.str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $search).'%';
+
+                    $query->where(function ($query) use ($needle) {
+                        $query->where('name', 'like', $needle)
+                            ->orWhere('username', 'like', $needle)
+                            ->orWhere('email', 'like', $needle);
+                    });
+                })
                 ->orderBy('name');
 
             $usersPaginator = $usersQuery->paginate(10, ['*'], 'page', $page);
@@ -168,6 +178,7 @@ class SettingsController extends Controller
                             ->count('client_id'),
                         'state_token' => $encryptedState->encryptArray([
                             'page' => $page,
+                            'search' => $search,
                             'user_id' => $user->id,
                             'session_page' => $sessionPage,
                             'oauth_page' => $oauthPage,
@@ -182,6 +193,7 @@ class SettingsController extends Controller
                 'prev_page_token' => $usersPaginator->currentPage() > 1
                     ? $encryptedState->encryptArray([
                         'page' => $usersPaginator->currentPage() - 1,
+                        'search' => $search,
                         'user_id' => $selectedUserId,
                         'session_page' => 1,
                         'oauth_page' => 1,
@@ -190,6 +202,7 @@ class SettingsController extends Controller
                 'next_page_token' => $usersPaginator->hasMorePages()
                     ? $encryptedState->encryptArray([
                         'page' => $usersPaginator->currentPage() + 1,
+                        'search' => $search,
                         'user_id' => $selectedUserId,
                         'session_page' => 1,
                         'oauth_page' => 1,
@@ -223,6 +236,7 @@ class SettingsController extends Controller
 
         return Inertia::render('Settings/Sessions', [
             'users' => $users,
+            'search' => $search,
             'selectedUser' => $selectedUser ? [
                 'id' => $selectedUser->id,
                 'name' => $selectedUser->name,
@@ -283,6 +297,7 @@ class SettingsController extends Controller
     {
         $defaults = [
             'page' => 1,
+            'search' => '',
             'user_id' => null,
             'session_page' => 1,
             'oauth_page' => 1,
@@ -297,6 +312,7 @@ class SettingsController extends Controller
         if (! $request->isMethod('post')) {
             $stateFromQuery = [
                 'page' => max(1, (int) $request->input('page', $storedState['page'] ?? 1)),
+                'search' => trim((string) ($storedState['search'] ?? '')),
                 'user_id' => $storedState['user_id'] ?? null,
                 'session_page' => max(1, (int) $request->input('session_page', $storedState['session_page'] ?? 1)),
                 'oauth_page' => max(1, (int) $request->input('oauth_page', $storedState['oauth_page'] ?? 1)),
@@ -308,10 +324,17 @@ class SettingsController extends Controller
             ];
         }
 
-        $decodedState = array_merge(
-            $defaults,
-            $encryptedState->decryptArray($request->string('state')->toString(), $defaults),
-        );
+        $decodedState = $request->filled('state')
+            ? array_merge(
+                $defaults,
+                $encryptedState->decryptArray($request->string('state')->toString(), $defaults),
+            )
+            : array_merge($defaults, is_array($storedState) ? $storedState : []);
+
+        if ($request->exists('search')) {
+            $decodedState['search'] = trim($request->string('search')->toString());
+            $decodedState['page'] = 1;
+        }
 
         $request->session()->put('settings.sessions.state', $decodedState);
 
@@ -345,6 +368,7 @@ class SettingsController extends Controller
 
         $request->session()->put('settings.sessions.state', [
             'page' => max(1, (int) $request->input('page', 1)),
+            'search' => trim($request->string('search')->toString()),
             'user_id' => $targetUser->id,
             'session_page' => max(1, (int) $request->input('session_page', 1)),
             'oauth_page' => max(1, (int) $request->input('oauth_page', 1)),
@@ -384,6 +408,7 @@ class SettingsController extends Controller
 
         $request->session()->put('settings.sessions.state', [
             'page' => max(1, (int) $request->input('page', 1)),
+            'search' => trim($request->string('search')->toString()),
             'user_id' => $targetUser->id,
             'session_page' => max(1, (int) $request->input('session_page', 1)),
             'oauth_page' => max(1, (int) $request->input('oauth_page', 1)),
