@@ -22,24 +22,24 @@ export default function PageHeader({
     const resolvedDescription = description ?? ui.page.description;
 
     return (
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <header className="flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div className="min-w-0">
                 {eyebrow && (
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#4a9fd7]">
+                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.14em] sm:text-xs sm:tracking-[0.16em] text-[#4a9fd7]">
                         {eyebrow}
                     </p>
                 )}
-                <h1 className="text-2xl font-semibold tracking-tight text-[var(--bps-text)] sm:text-3xl">
+                <h1 className="text-xl font-semibold tracking-tight text-[var(--bps-text)] sm:text-3xl">
                     {resolvedTitle}
                 </h1>
                 {resolvedDescription && (
-                    <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--bps-muted)]">
+                    <p className="mt-1 max-w-3xl text-xs leading-5 sm:mt-2 sm:text-sm sm:leading-6 text-[var(--bps-muted)]">
                         {resolvedDescription}
                     </p>
                 )}
             </div>
             {actions && (
-                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                <div className="flex shrink-0 flex-wrap items-center gap-1.5 sm:gap-2">
                     {actions}
                 </div>
             )}
