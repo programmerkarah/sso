@@ -244,3 +244,32 @@ html[data-theme='dark'] .app-background input::placeholder,
 html[data-theme='dark'] .app-background textarea::placeholder {
     color: #718995;
 }
+
+
+html[data-theme='dark'] .app-background .bg-\[\#f2f8fc\],
+html[data-theme='dark'] .app-background .bg-\[\#e8f4fb\],
+html[data-theme='dark'] .app-background .bg-\[\#dff0fa\] {
+    background-color: rgba(126, 197, 239, 0.12);
+}
+
+html[data-theme='dark'] .app-background .bg-\[\#e5f2e2\] {
+    background-color: rgba(169, 214, 163, 0.12);
+}
+
+html[data-theme='dark'] .app-background .bg-\[\#fceddc\] {
+    background-color: rgba(246, 201, 149, 0.12);
+}
+
+html[data-theme='dark'] .app-background .border-\[\#cfe5f3\],
+html[data-theme='dark'] .app-background .border-\[\#a9d3ec\],
+html[data-theme='dark'] .app-background .border-\[\#d7e9d3\],
+html[data-theme='dark'] .app-background .border-\[\#bdddb8\],
+html[data-theme='dark'] .app-background .border-\[\#f1dfc8\],
+html[data-theme='dark'] .app-background .border-\[\#e7cba8\] {
+    border-color: #35505f;
+}
+
+html[data-theme='dark'] .app-background .bg-white\/80,
+html[data-theme='dark'] .app-background .bg-white\/85 {
+    background-color: rgba(34, 54, 66, 0.92);
+}
