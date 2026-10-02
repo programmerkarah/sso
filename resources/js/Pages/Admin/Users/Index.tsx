@@ -1092,8 +1092,8 @@ export default function Index({
                                                 key={role.id}
                                                 className={`flex cursor-pointer items-start gap-2 rounded-xl border px-3 py-2 text-sm transition ${
                                                     checked
-                                                        ? 'border-blue-300/50 bg-blue-500/20 text-[var(--bps-text)]'
-                                                        : 'border-slate-800 bg-slate-900/50 text-[var(--bps-text)]/80 hover:bg-slate-900/80'
+                                                        ? 'ui-selected'
+                                                        : 'ui-hover border-[var(--bps-border)] bg-[var(--bps-surface)] text-[var(--bps-text)]'
                                                 }`}
                                             >
                                                 <input
@@ -1155,7 +1155,7 @@ export default function Index({
                         className="ui-modal-overlay absolute inset-0"
                         onClick={() => setBatchAccessModalOpen(false)}
                     />
-                    <div className="relative w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
+                    <div className="ui-modal-surface relative w-full max-w-2xl rounded-2xl p-6">
                         <h3 className="text-lg font-bold text-[var(--bps-text)]">
                             Atur Organisasi & Role (Batch)
                         </h3>
@@ -1217,8 +1217,8 @@ export default function Index({
                                                 key={role.id}
                                                 className={`flex cursor-pointer items-start gap-2 rounded-xl border px-3 py-2 text-sm transition ${
                                                     checked
-                                                        ? 'border-blue-300/50 bg-blue-500/20 text-[var(--bps-text)]'
-                                                        : 'border-slate-800 bg-slate-900/50 text-[var(--bps-text)]/80 hover:bg-slate-900/80'
+                                                        ? 'ui-selected'
+                                                        : 'ui-hover border-[var(--bps-border)] bg-[var(--bps-surface)] text-[var(--bps-text)]'
                                                 }`}
                                             >
                                                 <input
@@ -1272,7 +1272,7 @@ export default function Index({
                         className="ui-modal-overlay absolute inset-0"
                         onClick={() => setBatchVerifyModalOpen(false)}
                     />
-                    <div className="relative w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
+                    <div className="ui-modal-surface relative w-full max-w-md rounded-2xl p-6">
                         <h3 className="text-lg font-bold text-[var(--bps-text)]">
                             Verifikasi Pengguna (Batch)
                         </h3>
@@ -1692,7 +1692,7 @@ export default function Index({
                                         <ChevronLeft className="h-4 w-4" />
                                     </button>
                                 ) : (
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-[var(--bps-muted)]">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--bps-border)] text-[var(--bps-muted)]">
                                         <ChevronLeft className="h-4 w-4" />
                                     </span>
                                 )}
@@ -1704,8 +1704,8 @@ export default function Index({
                                         onClick={() => visitState(page.token)}
                                         className={`flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium transition ${
                                             page.active
-                                                ? 'border-white/40 bg-white/20 text-[var(--bps-text)]'
-                                                : 'border-slate-800 text-[var(--bps-muted)] hover:bg-slate-900/80 hover:text-[var(--bps-text)]'
+                                                ? 'ui-selected'
+                                                : 'ui-hover border-[var(--bps-border)] text-[var(--bps-muted)]'
                                         }`}
                                     >
                                         {page.label}
@@ -1723,7 +1723,7 @@ export default function Index({
                                         <ChevronRight className="h-4 w-4" />
                                     </button>
                                 ) : (
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-[var(--bps-muted)]">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--bps-border)] text-[var(--bps-muted)]">
                                         <ChevronRight className="h-4 w-4" />
                                     </span>
                                 )}
@@ -1739,21 +1739,21 @@ export default function Index({
                         type="button"
                         aria-label="Tutup menu aksi"
                         onClick={() => setActionMenu(null)}
-                        className="absolute inset-0 bg-black/55"
+                        className="ui-modal-overlay absolute inset-0"
                     />
                     <aside
                         ref={actionMenuRef}
-                        className="absolute bottom-0 right-0 top-0 flex w-full max-w-sm flex-col border-l border-slate-800 bg-slate-950 shadow-2xl"
+                        className="ui-modal-surface absolute bottom-0 right-0 top-0 flex w-full max-w-sm flex-col rounded-none border-y-0 border-r-0 shadow-2xl"
                     >
                         <div className="flex items-start justify-between gap-4 border-b border-[var(--bps-border)] p-5">
                             <div className="min-w-0">
-                                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                                <p className="text-xs font-medium uppercase tracking-wide text-[var(--bps-muted)]">
                                     Kelola pengguna
                                 </p>
                                 <h3 className="mt-1 truncate text-lg font-semibold text-[var(--bps-text)]">
                                     {actionMenuUser.name}
                                 </h3>
-                                <p className="mt-0.5 truncate text-sm text-slate-500">
+                                <p className="mt-0.5 truncate text-sm text-[var(--bps-muted)]">
                                     @{actionMenuUser.username}
                                 </p>
                             </div>
@@ -1772,7 +1772,7 @@ export default function Index({
                             contentClassName="space-y-5"
                         >
                             <div>
-                                <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">
+                                <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--bps-muted)]">
                                     Akun & akses
                                 </p>
                                 <div className="space-y-1">
@@ -1791,7 +1791,7 @@ export default function Index({
                                             <span className="block font-medium">
                                                 Ubah identitas
                                             </span>
-                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                            <span className="mt-0.5 block text-xs text-[var(--bps-muted)]">
                                                 Username dan email pengguna
                                             </span>
                                         </span>
@@ -1809,7 +1809,7 @@ export default function Index({
                                             <span className="block font-medium">
                                                 Organisasi & role
                                             </span>
-                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                            <span className="mt-0.5 block text-xs text-[var(--bps-muted)]">
                                                 Atur cakupan dan kewenangan akun
                                             </span>
                                         </span>
@@ -1835,7 +1835,7 @@ export default function Index({
                                                     ? 'Cabut verifikasi'
                                                     : 'Verifikasi pengguna'}
                                             </span>
-                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                            <span className="mt-0.5 block text-xs text-[var(--bps-muted)]">
                                                 Status validasi administrator
                                                 SSO
                                             </span>
@@ -1863,7 +1863,7 @@ export default function Index({
                                                         ? 'Cabut administrator'
                                                         : 'Jadikan administrator'}
                                                 </span>
-                                                <span className="mt-0.5 block text-xs text-slate-500">
+                                                <span className="mt-0.5 block text-xs text-[var(--bps-muted)]">
                                                     Hak akses administrasi SSO
                                                 </span>
                                             </span>
@@ -1873,7 +1873,7 @@ export default function Index({
                             </div>
 
                             <div className="border-t border-[var(--bps-border)] pt-4">
-                                <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">
+                                <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--bps-muted)]">
                                     Keamanan
                                 </p>
                                 <div className="space-y-1">
@@ -1890,7 +1890,7 @@ export default function Index({
                                             <span className="block font-medium">
                                                 Sesi & perangkat
                                             </span>
-                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                            <span className="mt-0.5 block text-xs text-[var(--bps-muted)]">
                                                 Periksa sesi, OAuth, dan
                                                 perangkat tepercaya
                                             </span>
@@ -1909,7 +1909,7 @@ export default function Index({
                                             <span className="block font-medium">
                                                 Reset password
                                             </span>
-                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                            <span className="mt-0.5 block text-xs text-[var(--bps-muted)]">
                                                 Buat password sementara baru
                                             </span>
                                         </span>
@@ -1929,7 +1929,7 @@ export default function Index({
                                             <span className="block font-medium">
                                                 Reset autentikasi 2FA
                                             </span>
-                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                            <span className="mt-0.5 block text-xs text-[var(--bps-muted)]">
                                                 Wajibkan pengguna mengatur ulang
                                                 2FA
                                             </span>
@@ -1951,7 +1951,7 @@ export default function Index({
                                                 <span className="block font-medium">
                                                     Kirim ulang verifikasi email
                                                 </span>
-                                                <span className="mt-0.5 block text-xs text-slate-500">
+                                                <span className="mt-0.5 block text-xs text-[var(--bps-muted)]">
                                                     Kirim tautan verifikasi ke
                                                     email akun
                                                 </span>
