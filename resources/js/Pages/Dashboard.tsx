@@ -12,6 +12,7 @@ import { Head, Link } from '@inertiajs/react';
 import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
+import { formatNumber } from '@/utils/number';
 
 interface DashboardProps extends PageProps {
     applicationsCount: number;
@@ -82,7 +83,7 @@ export default function Dashboard({
                         </p>
                         <div className="mt-3 flex items-end justify-between gap-4">
                             <p className="text-4xl font-semibold text-white">
-                                {applicationsCount}
+                                {formatNumber(applicationsCount)}
                             </p>
                             <Link
                                 href="/applications"
@@ -122,7 +123,7 @@ export default function Dashboard({
                         {canManageUsers ? (
                             <>
                                 <p className="mt-3 text-4xl font-semibold text-white">
-                                    {pendingVerificationUsers.length}
+                                    {formatNumber(pendingVerificationUsers.length)}
                                 </p>
                                 <p className="mt-3 text-sm text-slate-400">
                                     Pengguna menunggu verifikasi dari
@@ -264,7 +265,7 @@ export default function Dashboard({
                                             Menunggu verifikasi
                                         </h2>
                                         <span className="rounded-full bg-amber-400/10 px-2 py-1 text-xs font-bold text-amber-200">
-                                            {pendingVerificationUsers.length}
+                                            {formatNumber(pendingVerificationUsers.length)}
                                         </span>
                                     </div>
                                     <div className="mt-4 divide-y divide-white/8">
