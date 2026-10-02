@@ -20,6 +20,7 @@ import Button from '@/Components/Button';
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application } from '@/types';
 
@@ -103,39 +104,23 @@ export default function Show({ application, appUrl }: ShowProps) {
                 }
             />
 
-            <div className="py-8 sm:py-12">
-                <div className="mx-auto max-w-5xl sm:px-6 lg:px-8">
-                    <div className="mb-6 px-1 sm:px-0">
-                        <Link
-                            href="/admin/applications"
-                            className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-white   transition hover:bg-slate-800"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                            Kembali ke daftar
-                        </Link>
-                        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <h1 className="break-words  text-3xl font-semibold text-white  sm:text-5xl">
-                                    {application.name}
-                                </h1>
-                                <p className="mt-2 break-words text-white/80">
-                                    Detail aplikasi, callback URL, dan
-                                    kredensial OAuth yang sedang dipakai.
-                                </p>
-                            </div>
-                            <Link
-                                href={`/admin/applications/${application.route_key}/edit`}
-                                className="w-full sm:w-auto"
-                            >
-                                <Button className="w-full sm:w-auto">
-                                    <Edit className="h-4 w-4" />
-                                    Edit
-                                </Button>
+            <div className="mx-auto max-w-5xl space-y-6">
+                <PageHeader
+                    title={application.name}
+                    description="Detail aplikasi, endpoint, dan kredensial OAuth yang digunakan."
+                    actions={
+                        <>
+                            <Link href="/admin/applications" className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                                <ArrowLeft className="h-4 w-4" /> Daftar
                             </Link>
-                        </div>
-                    </div>
+                            <Link href={`/admin/applications/${application.route_key}/edit`}>
+                                <Button><Edit className="h-4 w-4" /> Edit</Button>
+                            </Link>
+                        </>
+                    }
+                />
 
-                    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
                         <GlassCard className="p-4 sm:p-6">
                             <h2 className="mb-4 text-lg font-bold text-white sm:text-xl">
                                 Informasi Aplikasi
