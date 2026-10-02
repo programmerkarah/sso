@@ -78,7 +78,7 @@ export default function SearchableSelect({
                         setHasTypedSinceOpen(true);
                     }}
                     placeholder={placeholder}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 py-2.5 pl-10 pr-10 text-sm text-slate-100 outline-none transition-colors placeholder:text-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    className="w-full rounded-lg border border-cyan-900/60 bg-[#041b2d]/85 py-2.5 pl-10 pr-10 text-sm text-slate-100 outline-none transition-colors placeholder:text-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
                 />
                 {onClear && query && (
                     <button
@@ -89,7 +89,7 @@ export default function SearchableSelect({
                             setHasTypedSinceOpen(false);
                             onClear();
                         }}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 transition hover:bg-slate-800 hover:text-slate-200"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 transition hover:bg-[#11364f] hover:text-slate-200"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -97,7 +97,7 @@ export default function SearchableSelect({
             </div>
 
             {open && (
-                <ScrollArea className="absolute z-[75] mt-1.5 h-72 max-h-72 w-full rounded-lg border border-slate-700 bg-slate-900 shadow-xl" viewportClassName="p-1.5">
+                <ScrollArea className="absolute z-[75] mt-1.5 h-72 max-h-72 w-full rounded-lg border border-cyan-900/60 bg-[#08263b] shadow-xl" viewportClassName="p-1.5">
                     {filteredOptions.length === 0 ? (
                         <div className="px-3 py-4 text-sm text-slate-500">
                             Tidak ada hasil.
@@ -113,7 +113,7 @@ export default function SearchableSelect({
                                     setOpen(false);
                                     setHasTypedSinceOpen(false);
                                 }}
-                                className="flex w-full flex-col rounded-md px-3 py-2.5 text-left transition-colors hover:bg-slate-800"
+                                className="flex w-full flex-col rounded-md px-3 py-2.5 text-left transition-colors hover:bg-[#11364f]"
                             >
                                 <span className="text-sm font-medium text-slate-100">
                                     {option.label}
