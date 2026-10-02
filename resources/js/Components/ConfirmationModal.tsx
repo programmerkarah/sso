@@ -40,12 +40,12 @@ export default function ConfirmationModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4">
-            <div className="relative w-full max-w-md rounded-2xl border border-cyan-900/60 bg-[#08263b] p-6 shadow-xl">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/45 p-4">
+            <div className="relative w-full max-w-md rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-6 shadow-xl">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="absolute right-4 top-4 rounded-md p-1 text-slate-500 transition hover:bg-[#11364f] hover:text-slate-200"
+                    className="absolute right-4 top-4 rounded-md p-1 text-[var(--bps-muted)] transition hover:bg-[var(--bps-surface-soft)] hover:text-[var(--bps-text)]"
                 >
                     <X className="h-5 w-5" />
                 </button>
@@ -63,8 +63,8 @@ export default function ConfirmationModal({
                     />
                 </div>
 
-                <h3 className="text-lg font-semibold text-white">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-400">
+                <h3 className="text-lg font-semibold text-[var(--bps-text)]">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--bps-muted)]">
                     {description}
                 </p>
 
@@ -72,7 +72,7 @@ export default function ConfirmationModal({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="rounded-lg border border-cyan-900/60 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-[#11364f]"
+                        className="rounded-lg border border-[var(--bps-border)] px-4 py-2 text-sm font-medium text-[var(--bps-text)] transition hover:bg-[var(--bps-surface-soft)]"
                     >
                         Batal
                     </button>
