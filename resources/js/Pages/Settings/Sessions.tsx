@@ -189,7 +189,7 @@ export default function Sessions(props: SessionsProps) {
                     type="button"
                     onClick={() => visitState(previous)}
                     disabled={!previous}
-                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:opacity-30"
+                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:ui-disabled"
                 >
                     <ChevronLeft className="h-3.5 w-3.5" /> Sebelumnya
                 </button>
@@ -200,7 +200,7 @@ export default function Sessions(props: SessionsProps) {
                     type="button"
                     onClick={() => visitState(next)}
                     disabled={!next}
-                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:opacity-30"
+                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:ui-disabled"
                 >
                     Berikutnya <ChevronRight className="h-3.5 w-3.5" />
                 </button>
@@ -240,7 +240,7 @@ export default function Sessions(props: SessionsProps) {
                                         setQuery(event.target.value)
                                     }
                                     placeholder="Cari pengguna…"
-                                    className="h-10 w-full rounded-lg border border-cyan-900/60 bg-[#041b2d]/85 pl-9 pr-3 text-sm text-[var(--bps-text)] outline-none placeholder:text-slate-600 focus:border-slate-600"
+                                    className="ui-field h-10 w-full rounded-lg pl-9 pr-3 text-sm placeholder:text-[var(--bps-muted)]"
                                 />
                             </div>
                         </div>
@@ -258,8 +258,8 @@ export default function Sessions(props: SessionsProps) {
                                     className={
                                         'w-full rounded-xl px-3 py-3 text-left transition ' +
                                         (selectedUserId === user.id
-                                            ? 'bg-slate-800 text-[var(--bps-text)]'
-                                            : 'text-[var(--bps-text)] hover:bg-slate-800/60')
+                                            ? 'ui-selected'
+                                            : 'ui-hover text-[var(--bps-text)]')
                                     }
                                 >
                                     <div className="truncate text-sm font-medium">
@@ -315,7 +315,7 @@ export default function Sessions(props: SessionsProps) {
                                         </p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
+                                        <div className="ui-surface rounded-xl border px-4 py-3">
                                             <div className="text-xl font-semibold text-[var(--bps-text)]">
                                                 {formatNumber(
                                                     sessionMeta.total,
@@ -325,7 +325,7 @@ export default function Sessions(props: SessionsProps) {
                                                 Sesi web
                                             </div>
                                         </div>
-                                        <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
+                                        <div className="ui-surface rounded-xl border px-4 py-3">
                                             <div className="text-xl font-semibold text-[var(--bps-text)]">
                                                 {formatNumber(oauthMeta.total)}
                                             </div>
@@ -380,7 +380,7 @@ export default function Sessions(props: SessionsProps) {
                                         sessions.map((session) => (
                                             <div
                                                 key={session.id}
-                                                className="flex flex-col gap-3 rounded-xl border border-[var(--bps-border)] bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between"
+                                                className="flex flex-col gap-3 rounded-xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-4 sm:flex-row sm:items-center sm:justify-between"
                                             >
                                                 <div className="min-w-0">
                                                     <div className="flex flex-wrap items-center gap-2">
@@ -412,7 +412,7 @@ export default function Sessions(props: SessionsProps) {
                                                                 session.id,
                                                             )
                                                         }
-                                                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-500/10"
+                                                        className="ui-danger inline-flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium"
                                                     >
                                                         <Trash2 className="h-3.5 w-3.5" />{' '}
                                                         Akhiri sesi
@@ -449,7 +449,7 @@ export default function Sessions(props: SessionsProps) {
                                         oauthApplications.map((app) => (
                                             <div
                                                 key={app.id}
-                                                className="flex flex-col gap-3 rounded-xl border border-[var(--bps-border)] bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between"
+                                                className="flex flex-col gap-3 rounded-xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-4 sm:flex-row sm:items-center sm:justify-between"
                                             >
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-2">
@@ -476,7 +476,7 @@ export default function Sessions(props: SessionsProps) {
                                                             app.id,
                                                         )
                                                     }
-                                                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-500/10"
+                                                    className="ui-danger inline-flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium"
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />{' '}
                                                     Cabut akses
