@@ -184,12 +184,12 @@ export default function Sessions(props: SessionsProps) {
         next?: string | null;
     }) =>
         pages > 1 ? (
-            <div className="flex items-center justify-between border-t border-slate-800 pt-4 text-xs text-slate-500">
+            <div className="flex items-center justify-between border-t border-[var(--bps-border)] pt-4 text-xs text-[var(--bps-muted)]">
                 <button
                     type="button"
                     onClick={() => visitState(previous)}
                     disabled={!previous}
-                    className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30"
+                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:opacity-30"
                 >
                     <ChevronLeft className="h-3.5 w-3.5" /> Sebelumnya
                 </button>
@@ -200,7 +200,7 @@ export default function Sessions(props: SessionsProps) {
                     type="button"
                     onClick={() => visitState(next)}
                     disabled={!next}
-                    className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30"
+                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] px-2.5 py-1.5 text-[var(--bps-text)] disabled:opacity-30"
                 >
                     Berikutnya <ChevronRight className="h-3.5 w-3.5" />
                 </button>
@@ -215,14 +215,14 @@ export default function Sessions(props: SessionsProps) {
                 <PageHeader />
 
                 <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
-                    <aside className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 lg:sticky lg:top-24 lg:self-start">
-                        <div className="border-b border-slate-800 p-4">
+                    <aside className="overflow-hidden rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] lg:sticky lg:top-24 lg:self-start">
+                        <div className="border-b border-[var(--bps-border)] p-4">
                             <div className="flex items-center justify-between gap-3">
                                 <div>
-                                    <h2 className="font-semibold text-white">
+                                    <h2 className="font-semibold text-[var(--bps-text)]">
                                         Pengguna
                                     </h2>
-                                    <p className="mt-0.5 text-xs text-slate-500">
+                                    <p className="mt-0.5 text-xs text-[var(--bps-muted)]">
                                         {formatNumber(
                                             users?.total ??
                                                 currentUserList.length,
@@ -230,7 +230,7 @@ export default function Sessions(props: SessionsProps) {
                                         akun
                                     </p>
                                 </div>
-                                <UserRound className="h-5 w-5 text-slate-500" />
+                                <UserRound className="h-5 w-5 text-[var(--bps-muted)]" />
                             </div>
                             <div className="relative mt-3">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600" />
@@ -240,7 +240,7 @@ export default function Sessions(props: SessionsProps) {
                                         setQuery(event.target.value)
                                     }
                                     placeholder="Cari pengguna…"
-                                    className="h-10 w-full rounded-lg border border-cyan-900/60 bg-[#041b2d]/85 pl-9 pr-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-slate-600"
+                                    className="h-10 w-full rounded-lg border border-cyan-900/60 bg-[#041b2d]/85 pl-9 pr-3 text-sm text-[var(--bps-text)] outline-none placeholder:text-slate-600 focus:border-slate-600"
                                 />
                             </div>
                         </div>
@@ -258,17 +258,17 @@ export default function Sessions(props: SessionsProps) {
                                     className={
                                         'w-full rounded-xl px-3 py-3 text-left transition ' +
                                         (selectedUserId === user.id
-                                            ? 'bg-slate-800 text-white'
-                                            : 'text-slate-300 hover:bg-slate-800/60')
+                                            ? 'bg-slate-800 text-[var(--bps-text)]'
+                                            : 'text-[var(--bps-text)] hover:bg-slate-800/60')
                                     }
                                 >
                                     <div className="truncate text-sm font-medium">
                                         {user.name}
                                     </div>
-                                    <div className="mt-0.5 truncate text-xs text-slate-500">
+                                    <div className="mt-0.5 truncate text-xs text-[var(--bps-muted)]">
                                         @{user.username}
                                     </div>
-                                    <div className="mt-2 flex gap-3 text-[11px] text-slate-500">
+                                    <div className="mt-2 flex gap-3 text-[11px] text-[var(--bps-muted)]">
                                         <span>
                                             {formatNumber(user.session_count)}{' '}
                                             sesi
@@ -281,14 +281,14 @@ export default function Sessions(props: SessionsProps) {
                                 </button>
                             ))}
                             {filteredUsers.length === 0 && (
-                                <div className="px-3 py-8 text-center text-sm text-slate-500">
+                                <div className="px-3 py-8 text-center text-sm text-[var(--bps-muted)]">
                                     Pengguna tidak ditemukan.
                                 </div>
                             )}
                         </ScrollArea>
 
                         {users && users.last_page > 1 && (
-                            <div className="border-t border-slate-800 p-3">
+                            <div className="border-t border-[var(--bps-border)] p-3">
                                 <Pager
                                     page={users.current_page}
                                     pages={users.last_page}
@@ -300,43 +300,43 @@ export default function Sessions(props: SessionsProps) {
                     </aside>
 
                     <section className="min-w-0 space-y-4">
-                        <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4 sm:p-5">
+                        <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] p-4 sm:p-5">
                             {selectedUser ? (
                                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div className="min-w-0">
-                                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                                        <p className="text-xs font-medium uppercase tracking-wide text-[var(--bps-muted)]">
                                             Akun dipilih
                                         </p>
-                                        <h2 className="mt-1 truncate text-xl font-semibold text-white">
+                                        <h2 className="mt-1 truncate text-xl font-semibold text-[var(--bps-text)]">
                                             {selectedUser.name}
                                         </h2>
-                                        <p className="mt-1 truncate text-sm text-slate-400">
+                                        <p className="mt-1 truncate text-sm text-[var(--bps-muted)]">
                                             {selectedUser.email}
                                         </p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
-                                            <div className="text-xl font-semibold text-white">
+                                            <div className="text-xl font-semibold text-[var(--bps-text)]">
                                                 {formatNumber(
                                                     sessionMeta.total,
                                                 )}
                                             </div>
-                                            <div className="text-xs text-slate-500">
+                                            <div className="text-xs text-[var(--bps-muted)]">
                                                 Sesi web
                                             </div>
                                         </div>
                                         <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
-                                            <div className="text-xl font-semibold text-white">
+                                            <div className="text-xl font-semibold text-[var(--bps-text)]">
                                                 {formatNumber(oauthMeta.total)}
                                             </div>
-                                            <div className="text-xs text-slate-500">
+                                            <div className="text-xs text-[var(--bps-muted)]">
                                                 Akses OAuth
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="py-4 text-sm text-slate-500">
+                                <div className="py-4 text-sm text-[var(--bps-muted)]">
                                     Pilih pengguna untuk melihat sesi dan akses
                                     aplikasinya.
                                 </div>
@@ -361,30 +361,30 @@ export default function Sessions(props: SessionsProps) {
                         />
 
                         {activeTab === 'sessions' ? (
-                            <div className="rounded-2xl border border-slate-800 bg-slate-900/50">
-                                <div className="border-b border-slate-800 px-4 py-4 sm:px-5">
-                                    <h3 className="font-semibold text-white">
+                            <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)]">
+                                <div className="border-b border-[var(--bps-border)] px-4 py-4 sm:px-5">
+                                    <h3 className="font-semibold text-[var(--bps-text)]">
                                         Sesi web aktif
                                     </h3>
-                                    <p className="mt-1 text-xs text-slate-500">
+                                    <p className="mt-1 text-xs text-[var(--bps-muted)]">
                                         Perangkat yang memiliki sesi login aktif
                                         pada akun ini.
                                     </p>
                                 </div>
                                 <div className="space-y-2 p-3 sm:p-4">
                                     {sessions.length === 0 ? (
-                                        <div className="rounded-xl border border-dashed border-slate-800 px-4 py-10 text-center text-sm text-slate-500">
+                                        <div className="rounded-xl border border-dashed border-[var(--bps-border)] px-4 py-10 text-center text-sm text-[var(--bps-muted)]">
                                             Tidak ada sesi aktif.
                                         </div>
                                     ) : (
                                         sessions.map((session) => (
                                             <div
                                                 key={session.id}
-                                                className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between"
+                                                className="flex flex-col gap-3 rounded-xl border border-[var(--bps-border)] bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between"
                                             >
                                                 <div className="min-w-0">
                                                     <div className="flex flex-wrap items-center gap-2">
-                                                        <span className="font-medium text-white">
+                                                        <span className="font-medium text-[var(--bps-text)]">
                                                             {deviceLabel(
                                                                 session.user_agent,
                                                             )}
@@ -395,7 +395,7 @@ export default function Sessions(props: SessionsProps) {
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="mt-1 truncate text-xs text-slate-500">
+                                                    <p className="mt-1 truncate text-xs text-[var(--bps-muted)]">
                                                         {session.ip_address ??
                                                             'IP tidak diketahui'}{' '}
                                                         · Aktif{' '}
@@ -430,35 +430,35 @@ export default function Sessions(props: SessionsProps) {
                                 </div>
                             </div>
                         ) : (
-                            <div className="rounded-2xl border border-slate-800 bg-slate-900/50">
-                                <div className="border-b border-slate-800 px-4 py-4 sm:px-5">
-                                    <h3 className="font-semibold text-white">
+                            <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)]">
+                                <div className="border-b border-[var(--bps-border)] px-4 py-4 sm:px-5">
+                                    <h3 className="font-semibold text-[var(--bps-text)]">
                                         Akses aplikasi OAuth
                                     </h3>
-                                    <p className="mt-1 text-xs text-slate-500">
+                                    <p className="mt-1 text-xs text-[var(--bps-muted)]">
                                         Aplikasi yang masih memiliki izin
                                         menggunakan akun SSO ini.
                                     </p>
                                 </div>
                                 <div className="space-y-2 p-3 sm:p-4">
                                     {oauthApplications.length === 0 ? (
-                                        <div className="rounded-xl border border-dashed border-slate-800 px-4 py-10 text-center text-sm text-slate-500">
+                                        <div className="rounded-xl border border-dashed border-[var(--bps-border)] px-4 py-10 text-center text-sm text-[var(--bps-muted)]">
                                             Tidak ada aplikasi OAuth aktif.
                                         </div>
                                     ) : (
                                         oauthApplications.map((app) => (
                                             <div
                                                 key={app.id}
-                                                className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between"
+                                                className="flex flex-col gap-3 rounded-xl border border-[var(--bps-border)] bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between"
                                             >
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-2">
-                                                        <KeyRound className="h-4 w-4 text-slate-500" />
-                                                        <span className="truncate font-medium text-white">
+                                                        <KeyRound className="h-4 w-4 text-[var(--bps-muted)]" />
+                                                        <span className="truncate font-medium text-[var(--bps-text)]">
                                                             {app.client_name}
                                                         </span>
                                                     </div>
-                                                    <p className="mt-1 text-xs text-slate-500">
+                                                    <p className="mt-1 text-xs text-[var(--bps-muted)]">
                                                         Diberikan{' '}
                                                         {formatDate(
                                                             app.created_at,
