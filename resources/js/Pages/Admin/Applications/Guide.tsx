@@ -130,7 +130,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
         <AppLayout>
             <Head title={`Panduan - ${application.name}`} />
 
-            <div className="mx-auto max-w-6xl space-y-6">
+            <div className="space-y-6">
                 <PageHeader
                     title="Panduan integrasi"
                     description={`Panduan OAuth2 dan sinkronisasi pengguna untuk ${application.name}.`}
@@ -146,7 +146,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                     }
                 />
 
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(420px,0.8fr)]">
                     <GlassCard className="space-y-6 p-4 sm:p-6">
                         <section className="space-y-3">
                             <h2 className="text-xl font-bold text-white">
