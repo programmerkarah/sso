@@ -12,9 +12,9 @@ export default function Welcome() {
             <Head title="SSO" />
             <div className="app-background grid h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden text-[#18324a]">
                 <header className="app-header-background shrink-0 border-b border-[#dbe5ec]">
-                    <div className="mx-auto flex max-w-[1680px] items-center justify-between px-5 py-4 sm:px-8">
+                    <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-3 sm:px-8 sm:py-4">
                         <div className="flex items-center gap-3">
-                            <AppIcon className="h-9 w-9" />
+                            <AppIcon className="h-8 w-8 sm:h-9 sm:w-9" />
                             <div>
                                 <p className="text-sm font-bold leading-tight text-[#18324a]">
                                     SSO BPS Kota Sawahlunto
@@ -44,22 +44,22 @@ export default function Welcome() {
 
                 <ScrollArea className="min-h-0" contentClassName="min-h-full">
                     <main className="flex min-h-full flex-col">
-                        <section className="mx-auto grid w-full max-w-[1680px] flex-1 items-center gap-12 px-5 py-10 sm:px-8 sm:py-12 lg:grid-cols-[1.08fr_0.92fr] lg:py-10">
+                        <section className="mx-auto grid w-full max-w-[1680px] flex-1 items-center gap-6 px-4 py-6 sm:px-8 sm:py-9 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-10">
                             <div>
-                                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#b8d9ee] bg-[#e7f3fb] px-3 py-1.5 text-xs font-semibold text-[#347fae]">
+                                <div className="mb-4 inline-flex sm:mb-6 items-center gap-2 rounded-full border border-[#b8d9ee] bg-[#e7f3fb] px-3 py-1.5 text-xs font-semibold text-[#347fae]">
                                     <ShieldCheck className="h-4 w-4" />
                                     Akses aplikasi dalam satu akun
                                 </div>
-                                <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-[#18324a] sm:text-5xl lg:text-6xl">
+                                <h1 className="max-w-3xl text-3xl font-semibold leading-[1.08] tracking-tight text-[#18324a] sm:text-5xl lg:text-6xl">
                                     Pusat akses aplikasi BPS Kota Sawahlunto.
                                 </h1>
-                                <p className="mt-6 max-w-2xl text-base leading-7 text-[#6f8495] sm:text-lg">
+                                <p className="mt-4 max-w-2xl text-sm leading-6 text-[#6f8495] sm:mt-6 sm:text-lg sm:leading-7">
                                     Gunakan satu identitas untuk masuk ke
                                     aplikasi internal yang terhubung dengan SSO.
                                     Lebih sederhana untuk pengguna, lebih mudah
                                     dikelola oleh administrator.
                                 </p>
-                                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                                <div className="mt-6 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:gap-3">
                                     <Link
                                         href="/login"
                                         className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5aaee8] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4aa3de]"
@@ -77,7 +77,7 @@ export default function Welcome() {
                                 </div>
                             </div>
 
-                            <div className="rounded-3xl border border-[#d7e5ed] bg-white/90 p-5 shadow-[0_18px_40px_rgba(67,96,116,0.08)] sm:p-7">
+                            <div className="hidden rounded-3xl border border-[#d7e5ed] bg-white/90 p-5 shadow-[0_18px_40px_rgba(67,96,116,0.08)] md:block sm:p-7">
                                 <div className="flex items-center justify-between border-b border-[#e2ebf1] pb-5">
                                     <div>
                                         <p className="text-sm font-semibold text-[#18324a]">
@@ -143,7 +143,7 @@ export default function Welcome() {
                             </div>
                         </section>
 
-                        <section className="border-t border-[#dbe5ec] bg-white/55">
+                        <section className="hidden border-t border-[#dbe5ec] bg-white/55 md:block">
                             <div className="mx-auto grid max-w-[1680px] gap-8 px-5 py-8 sm:px-8 md:grid-cols-3">
                                 {[
                                     [
@@ -180,7 +180,7 @@ export default function Welcome() {
                 </ScrollArea>
 
                 <footer className="border-t border-[#dbe5ec] bg-white/75">
-                    <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-2 px-5 py-4 text-xs text-[#8799a7] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+                    <div className="mx-auto flex w-full max-w-[1680px] flex-row items-center justify-between gap-3 px-4 py-3 text-[11px] sm:px-8 sm:py-4 sm:text-xs text-[#8799a7] sm:flex-row sm:items-center sm:justify-between sm:px-8">
                         <span>© 2026 BPS Kota Sawahlunto</span>
                         <span>Single Sign-On untuk aplikasi internal</span>
                     </div>
