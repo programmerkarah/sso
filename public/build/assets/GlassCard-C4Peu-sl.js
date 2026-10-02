@@ -1,1 +1,0 @@
-import{j as o}from"./app-efX2Eg3O.js";function t({children:r,className:s="",hover:e=!1}){return o.jsx("div",{className:"min-w-0 w-full rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:p-6 "+(e?"transition-colors hover:border-slate-700 hover:bg-slate-900/80 ":"")+s,children:r})}export{t as G};
