@@ -69,7 +69,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'ui' => [
                 'page' => $pageMeta,
-                'container' => 'max-w-7xl',
+                'container' => 'max-w-[1680px]',
             ],
             'navigation' => [
                 'primary' => array_values(array_filter([
