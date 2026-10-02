@@ -13,9 +13,9 @@ export default function GlassCard({
     return (
         <div
             className={
-                'app-panel-background min-w-0 w-full rounded-2xl border border-cyan-900/45 p-5 sm:p-6 ' +
+                'app-panel-background min-w-0 w-full rounded-2xl border border-[#dbe5ec] p-5 sm:p-6 ' +
                 (hover
-                    ? 'transition-colors hover:border-cyan-800/70 hover:brightness-105 '
+                    ? 'transition-colors hover:border-[#b9d4e6] hover:shadow-md '
                     : '') +
                 className
             }
