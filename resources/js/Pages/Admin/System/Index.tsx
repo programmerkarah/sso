@@ -775,7 +775,7 @@ export default function Index({
                             )}
                         </div>
 
-                        <div className="mt-5 hidden overflow-x-auto md:block">
+                        <ScrollArea axis="horizontal" className="mt-5 hidden md:block" viewportClassName="pb-2">
                             <table className="w-full min-w-[420px]">
                                 <thead>
                                     <tr className="border-b border-slate-800 text-left text-xs uppercase tracking-wider text-white/55">
@@ -872,7 +872,7 @@ export default function Index({
                                     )}
                                 </tbody>
                             </table>
-                        </div>
+                        </ScrollArea>
                     </GlassCard>
 
                     <GlassCard>
