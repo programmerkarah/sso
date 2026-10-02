@@ -4,6 +4,7 @@ import { Head, Link, router } from '@inertiajs/react';
 
 import GlassCard from '@/Components/GlassCard';
 import PageHeader from '@/Components/PageHeader';
+import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { Organization, PageProps } from '@/types';
 
@@ -44,7 +45,7 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                             <p className="text-sm">Belum ada organisasi</p>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
+                        <ScrollArea axis="horizontal" className="w-full" viewportClassName="pb-2">
                             <table className="w-full text-sm text-white/80">
                                 <thead>
                                     <tr className="border-b border-slate-800 text-left text-white/50">
@@ -168,7 +169,7 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
+                        </ScrollArea>
                     )}
                 </GlassCard>
             </div>
