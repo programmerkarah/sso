@@ -33,9 +33,7 @@ export default function PageWorkspace({
             <div
                 className={
                     'shrink-0 pb-4 ' +
-                    (layout.sticky_summary
-                        ? 'relative z-20'
-                        : '')
+                    (layout.sticky_summary ? 'relative z-20' : '')
                 }
             >
                 <div className="space-y-4">{summary}</div>
