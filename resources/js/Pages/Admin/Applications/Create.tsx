@@ -47,12 +47,12 @@ export default function Create({ availableOrganizationTypes }: CreateProps) {
                 <div>
                     <Link
                         href="/admin/applications"
-                        className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-xl transition hover:bg-white/20"
+                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-white   transition hover:bg-slate-800"
                     >
                         <ArrowLeft className="h-4 w-4" />
                         Kembali ke daftar
                     </Link>
-                    <h1 className="mt-5 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                    <h1 className="mt-5  text-4xl font-semibold text-white  sm:text-5xl">
                         Tambah Aplikasi Baru
                     </h1>
                     <p className="mt-2 max-w-2xl text-white/80">
@@ -91,10 +91,10 @@ export default function Create({ availableOrganizationTypes }: CreateProps) {
                                         setData('description', e.target.value)
                                     }
                                     rows={3}
-                                    className={`w-full rounded-xl border bg-white/10 px-4 py-3 text-sm text-white shadow-sm backdrop-blur-sm transition focus:outline-none focus:ring-2 ${
+                                    className={`w-full rounded-xl border bg-slate-900/80 px-4 py-3 text-sm text-white shadow-sm  transition focus:outline-none focus:ring-2 ${
                                         errors.description
                                             ? 'border-red-400 focus:border-red-400 focus:ring-red-400/40'
-                                            : 'border-white/20 focus:border-white/40 focus:ring-white/20'
+                                            : 'border-slate-800 focus:border-white/40 focus:ring-white/20'
                                     }`}
                                     placeholder="Deskripsi singkat aplikasi"
                                 />
@@ -187,7 +187,7 @@ export default function Create({ availableOrganizationTypes }: CreateProps) {
                                                         className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
                                                             isSelected
                                                                 ? 'bg-blue-500 text-white shadow'
-                                                                : 'border border-white/20 bg-white/10 text-white/70 hover:bg-white/20'
+                                                                : 'border border-slate-800 bg-slate-900/80 text-white/70 hover:bg-slate-800'
                                                         }`}
                                                     >
                                                         {type}

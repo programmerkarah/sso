@@ -45,7 +45,7 @@ function CodeBlock({
                 </p>
                 <button
                     onClick={() => onCopy(value, copyKey)}
-                    className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white/75 transition hover:bg-white/20 hover:text-white"
+                    className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-white/75 transition hover:bg-slate-800 hover:text-white"
                 >
                     <Copy className="h-3.5 w-3.5" />
                     {copied === copyKey ? 'Tersalin!' : 'Salin'}
@@ -133,7 +133,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                     <Link
                         href={`/admin/applications/${application.route_key}`}
-                        className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-xl transition hover:bg-white/20"
+                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-white   transition hover:bg-slate-800"
                     >
                         <ArrowLeft className="h-4 w-4" />
                         Kembali ke detail aplikasi
@@ -155,7 +155,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                 </div>
 
                 <div className="px-1 sm:px-0">
-                    <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-3xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                    <h1 className=" text-3xl font-semibold text-white  sm:text-5xl">
                         Panduan Integrasi OAuth2 + Sinkronisasi User
                     </h1>
                     <p className="mt-2 max-w-4xl text-sm text-white/80 sm:text-base">
@@ -172,7 +172,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                             <h2 className="text-xl font-bold text-white">
                                 1. Ringkasan Kontrak Integrasi
                             </h2>
-                            <div className="rounded-xl border border-white/15 bg-white/5 p-4 text-sm leading-7 text-white/80">
+                            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm leading-7 text-white/80">
                                 <p>
                                     <span className="font-semibold text-white">
                                         Authorize endpoint:
@@ -356,7 +356,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                             <h2 className="text-xl font-bold text-white">
                                 9. Panduan Sinkronisasi Data Sesuai Kebutuhan
                             </h2>
-                            <div className="space-y-3 rounded-xl border border-white/15 bg-white/5 p-4 text-sm leading-7 text-white/80">
+                            <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm leading-7 text-white/80">
                                 <p>
                                     <span className="font-semibold text-white">
                                         Minimal sync:

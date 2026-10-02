@@ -85,7 +85,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
             <div className="mx-auto max-w-9xl space-y-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
-                        <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                        <h1 className=" text-4xl font-semibold text-white  sm:text-5xl">
                             Daftar Aplikasi
                         </h1>
                         <p className="mt-2 max-w-2xl text-white/80">
@@ -95,7 +95,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                     </div>
                     <Link
                         href="/admin/applications/create"
-                        className="inline-flex items-center gap-2 rounded-2xl border border-white/25 bg-white/15 px-5 py-3 text-sm font-semibold text-white shadow-xl backdrop-blur-xl transition hover:bg-white/25"
+                        className="inline-flex items-center gap-2 rounded-2xl border border-white/25 bg-white/15 px-5 py-3 text-sm font-semibold text-white   transition hover:bg-white/25"
                     >
                         <Plus className="h-4 w-4" />
                         Tambah Aplikasi
@@ -107,7 +107,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                         <div className="text-sm text-white/70">
                             Total aplikasi
                         </div>
-                        <div className="mt-2 text-4xl font-black text-white">
+                        <div className="mt-2 text-4xl font-semibold text-white">
                             {stats.total}
                         </div>
                     </GlassCard>
@@ -115,7 +115,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                         <div className="text-sm text-white/70">
                             Aplikasi aktif
                         </div>
-                        <div className="mt-2 text-4xl font-black text-white">
+                        <div className="mt-2 text-4xl font-semibold text-white">
                             {stats.active}
                         </div>
                     </GlassCard>
@@ -135,7 +135,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                 <GlassCard className="overflow-hidden p-0">
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-white/10">
-                            <thead className="bg-white/5">
+                            <thead className="bg-slate-900/50">
                                 <tr>
                                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
                                         Aplikasi
@@ -168,7 +168,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                     applications.data.map((app) => (
                                         <tr
                                             key={app.id}
-                                            className="transition hover:bg-white/5"
+                                            className="transition hover:bg-slate-900/50"
                                         >
                                             <td className="whitespace-nowrap px-6 py-4">
                                                 <div className="flex items-center gap-3">
@@ -179,7 +179,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                             className="h-10 w-10 rounded-lg object-cover"
                                                         />
                                                     ) : (
-                                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-lg font-bold text-white">
+                                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900/80 text-lg font-bold text-white">
                                                             {app.name
                                                                 .charAt(0)
                                                                 .toUpperCase()}
@@ -220,13 +220,13 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                 <div className="flex justify-end gap-2">
                                                     <Link
                                                         href={`/admin/applications/${app.route_key}`}
-                                                        className="rounded-xl bg-white/10 p-2 text-blue-100 transition hover:bg-white/20"
+                                                        className="rounded-xl bg-slate-900/80 p-2 text-blue-100 transition hover:bg-slate-800"
                                                     >
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                     <Link
                                                         href={`/admin/applications/${app.route_key}/edit`}
-                                                        className="rounded-xl bg-white/10 p-2 text-amber-100 transition hover:bg-white/20"
+                                                        className="rounded-xl bg-slate-900/80 p-2 text-amber-100 transition hover:bg-slate-800"
                                                     >
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
@@ -253,7 +253,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
 
                         {/* Pagination */}
                         {applications.last_page > 1 && (
-                            <div className="border-t border-white/10 px-4 py-4 sm:px-6">
+                            <div className="border-t border-slate-800 px-4 py-4 sm:px-6">
                                 <div className="flex items-center justify-between gap-3">
                                     <p className="text-sm text-white/60">
                                         Menampilkan {applications.from ?? 0}–
@@ -269,7 +269,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                         applications.prev_page_token!,
                                                     )
                                                 }
-                                                className="rounded-md bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20"
+                                                className="rounded-md bg-slate-900/80 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
                                             >
                                                 Sebelumnya
                                             </button>
@@ -285,7 +285,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                     className={`rounded-md px-3 py-2 text-sm font-medium ${
                                                         page.active
                                                             ? 'bg-white text-slate-900'
-                                                            : 'bg-white/10 text-white hover:bg-white/20'
+                                                            : 'bg-slate-900/80 text-white hover:bg-slate-800'
                                                     }`}
                                                 >
                                                     {page.label}
@@ -300,7 +300,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                         applications.next_page_token!,
                                                     )
                                                 }
-                                                className="rounded-md bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20"
+                                                className="rounded-md bg-slate-900/80 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
                                             >
                                                 Berikutnya
                                             </button>
