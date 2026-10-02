@@ -65,7 +65,7 @@ export default function SearchableSelect({
     return (
         <div ref={containerRef} className="relative">
             <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8799a7]" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--bps-muted)]" />
                 <input
                     type="text"
                     value={query}
@@ -79,7 +79,7 @@ export default function SearchableSelect({
                         setHasTypedSinceOpen(true);
                     }}
                     placeholder={placeholder}
-                    className="w-full rounded-lg border border-[#d5e1e9] bg-white py-2.5 pl-10 pr-10 text-sm text-[#18324a] outline-none transition-colors placeholder:text-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    className="ui-field w-full rounded-lg py-2.5 pl-10 pr-10 text-sm placeholder:text-[var(--bps-muted)]"
                 />
                 {onClear && query && (
                     <button
@@ -90,7 +90,7 @@ export default function SearchableSelect({
                             setHasTypedSinceOpen(false);
                             onClear();
                         }}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-[#8799a7] transition hover:bg-[#eef5f9] hover:text-[#18324a]"
+                        className="ui-icon-button absolute right-2.5 top-1/2 -translate-y-1/2 rounded border-transparent p-1"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -99,11 +99,11 @@ export default function SearchableSelect({
 
             {open && (
                 <ScrollArea
-                    className="absolute z-[75] mt-1.5 w-full rounded-lg border border-[#d5e1e9] bg-white shadow-xl"
+                    className="ui-modal-surface absolute z-[75] mt-1.5 w-full rounded-lg shadow-xl"
                     viewportClassName="max-h-72 p-1.5"
                 >
                     {filteredOptions.length === 0 ? (
-                        <div className="px-3 py-4 text-sm text-[#8799a7]">
+                        <div className="px-3 py-4 text-sm text-[var(--bps-muted)]">
                             Tidak ada hasil.
                         </div>
                     ) : (
@@ -117,13 +117,13 @@ export default function SearchableSelect({
                                     setOpen(false);
                                     setHasTypedSinceOpen(false);
                                 }}
-                                className="flex w-full flex-col rounded-md px-3 py-2.5 text-left transition-colors hover:bg-[#eef5f9]"
+                                className="ui-hover flex w-full flex-col rounded-md border border-transparent px-3 py-2.5 text-left"
                             >
-                                <span className="text-sm font-medium text-slate-100">
+                                <span className="text-sm font-medium text-[var(--bps-text)]">
                                     {option.label}
                                 </span>
                                 {option.description && (
-                                    <span className="mt-0.5 text-xs text-[#8799a7]">
+                                    <span className="mt-0.5 text-xs text-[var(--bps-muted)]">
                                         {option.description}
                                     </span>
                                 )}
