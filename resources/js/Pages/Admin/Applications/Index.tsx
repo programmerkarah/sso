@@ -99,7 +99,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                     }
                 />
 
-                <div className="grid gap-3 md:grid-cols-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
                     <MetricCard
                         label="Total aplikasi"
                         value={formatNumber(stats.total)}
@@ -108,12 +108,12 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                         label="Aplikasi aktif"
                         value={formatNumber(stats.active)}
                     />
-                    <GlassCard>
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-[var(--bps-selected-bg)] p-3">
+                    <GlassCard className="col-span-2 md:col-span-1">
+                        <div className="flex items-center gap-2.5 sm:gap-3">
+                            <div className="rounded-full bg-[var(--bps-selected-bg)] p-2 sm:p-3">
                                 <Globe className="h-5 w-5 text-[#4a9fd7]" />
                             </div>
-                            <p className="text-sm text-[var(--bps-muted)]">
+                            <p className="text-xs leading-5 text-[var(--bps-muted)] sm:text-sm">
                                 Pastikan setiap callback URL mengarah ke
                                 endpoint OAuth yang benar pada aplikasi tujuan.
                             </p>
