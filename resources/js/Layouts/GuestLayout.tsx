@@ -119,7 +119,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                     </p>
                 </aside>
 
-                <div className="relative flex h-full min-h-0 flex-col">
+                <div className="relative grid h-full min-h-0 grid-rows-[minmax(0,1fr)_auto]">
                     <div className="absolute left-4 top-5 z-10 sm:left-8 lg:hidden">
                         <Link href="/" className="flex items-center gap-3">
                             <AppIcon className="h-9 w-9" />
@@ -134,17 +134,19 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                         </Link>
                     </div>
 
-                    <ScrollArea className="min-h-0 flex-1" viewportClassName="px-4 py-20 sm:px-8 sm:py-20 lg:px-12 xl:px-16">
-                        <main className="flex min-h-full items-center justify-center">
-                            <div className="w-full max-w-lg">
-                                <div className="app-panel-background rounded-2xl border border-cyan-900/50 px-6 py-7 shadow-2xl shadow-black/10 sm:px-8 sm:py-8">
-                                    {children}
-                                </div>
+                    <ScrollArea
+                        className="min-h-0"
+                        viewportClassName="px-4 py-16 sm:px-8 sm:py-16 lg:px-12 xl:px-16"
+                        contentClassName="flex min-h-full items-center justify-center"
+                    >
+                        <main className="w-full max-w-lg">
+                            <div className="app-panel-background rounded-2xl border border-cyan-900/50 px-6 py-7 shadow-2xl shadow-black/10 sm:px-8 sm:py-8">
+                                {children}
                             </div>
                         </main>
                     </ScrollArea>
 
-                    <footer className="shrink-0 border-t border-cyan-950/60 bg-[#061f32]/55 px-4 py-3 sm:px-8 lg:px-12 xl:px-16">
+                    <footer className="border-t border-cyan-950/60 bg-[#061f32]/72 px-4 py-3 sm:px-8 lg:px-12 xl:px-16">
                         <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-4 text-xs text-slate-500">
                             <Link
                                 href="/"
