@@ -97,7 +97,7 @@ export default function SearchableSelect({
             </div>
 
             {open && (
-                <ScrollArea className="absolute z-[75] mt-1.5 h-72 max-h-72 w-full rounded-lg border border-cyan-900/60 bg-[#08263b] shadow-xl" viewportClassName="p-1.5">
+                <ScrollArea className="absolute z-[75] mt-1.5 w-full rounded-lg border border-cyan-900/60 bg-[#08263b] shadow-xl" viewportClassName="max-h-72 p-1.5">
                     {filteredOptions.length === 0 ? (
                         <div className="px-3 py-4 text-sm text-slate-500">
                             Tidak ada hasil.
