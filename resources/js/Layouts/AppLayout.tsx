@@ -146,7 +146,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
             {user && (
                 <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
-                    <div ref={navContainerRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div ref={navContainerRef} className="mx-auto max-w-[1680px] px-4 sm:px-6 lg:px-8 2xl:px-10">
                         <div className="flex h-16 items-center justify-between gap-4">
                             <Link href="/dashboard" className="flex min-w-0 items-center gap-3">
                                 <AppIcon className="h-8 w-8 shrink-0" />
@@ -272,7 +272,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                 </header>
             )}
 
-            <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">{children}</main>
+            <main className="mx-auto w-full max-w-[1680px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">{children}</main>
         </div>
     );
 }
