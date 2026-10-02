@@ -56,10 +56,10 @@ export default function Login({ status }: { status?: string }) {
             <Head title="Masuk" />
 
             <div className="mb-7">
-                <h2 className="text-2xl font-semibold tracking-tight text-white">
+                <h2 className="text-2xl font-semibold tracking-tight text-[#18324a]">
                     Masuk
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-slate-400">
+                <p className="mt-2 text-sm leading-6 text-[#6f8495]">
                     Gunakan akun SSO BPS Kota Sawahlunto.
                 </p>
             </div>
@@ -88,7 +88,7 @@ export default function Login({ status }: { status?: string }) {
                     <Label
                         htmlFor="username"
                         required
-                        className="text-slate-200 drop-shadow-none"
+                        className="text-[#29465f] drop-shadow-none"
                     >
                         Username
                     </Label>
@@ -107,7 +107,7 @@ export default function Login({ status }: { status?: string }) {
                     <Label
                         htmlFor="password"
                         required
-                        className="text-slate-200 drop-shadow-none"
+                        className="text-[#29465f] drop-shadow-none"
                     >
                         Password
                     </Label>
@@ -126,7 +126,7 @@ export default function Login({ status }: { status?: string }) {
                             onClick={() =>
                                 setShowPassword((current) => !current)
                             }
-                            className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-slate-500 transition hover:text-slate-200"
+                            className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-[#8799a7] transition hover:text-[#29465f]"
                             aria-label={
                                 showPassword
                                     ? 'Sembunyikan password'
@@ -142,7 +142,7 @@ export default function Login({ status }: { status?: string }) {
                     </div>
                 </div>
 
-                <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-400">
+                <label className="flex cursor-pointer items-center gap-2.5 text-sm text-[#6f8495]">
                     <input
                         type="checkbox"
                         name="remember"
@@ -155,17 +155,17 @@ export default function Login({ status }: { status?: string }) {
                 <button
                     type="submit"
                     disabled={processing}
-                    className="w-full rounded-lg bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-lg bg-sky-600 px-4 py-3 text-sm font-semibold text-[#18324a] transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     {processing ? 'Memproses...' : 'Masuk'}
                 </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-slate-500">
+            <p className="mt-6 text-center text-sm text-[#8799a7]">
                 Belum memiliki akun?{' '}
                 <Link
                     href="/register"
-                    className="font-medium text-sky-300 transition hover:text-sky-200"
+                    className="font-medium text-[#4a9fd7] transition hover:text-[#347fae]"
                 >
                     Daftar
                 </Link>
