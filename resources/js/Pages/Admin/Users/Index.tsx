@@ -31,6 +31,7 @@ import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
 import PageHeader from '@/Components/PageHeader';
+import ScrollArea from '@/Components/ScrollArea';
 import SearchableSelect, {
     SearchableSelectOption,
 } from '@/Components/SearchableSelect';
@@ -1433,7 +1434,7 @@ export default function Index({
                     </div>
 
                     {/* Table */}
-                    <div className="overflow-x-auto">
+                    <ScrollArea axis="horizontal" className="w-full" viewportClassName="pb-2">
                         <table className="w-full min-w-[900px]">
                             <thead className="sticky top-0 z-10 bg-slate-950">
                                 <tr className="border-b border-slate-800 bg-black/20">
@@ -1663,7 +1664,7 @@ export default function Index({
                                 )}
                             </tbody>
                         </table>
-                    </div>
+                    </ScrollArea>
 
                     {/* Pagination */}
                     {users.last_page > 1 && (
