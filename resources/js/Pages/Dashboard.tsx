@@ -9,6 +9,7 @@ import {
 
 import { Head, Link } from '@inertiajs/react';
 
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -59,30 +60,22 @@ export default function Dashboard({
         <AppLayout>
             <Head title="Dashboard" />
 
-            <div className="mx-auto max-w-7xl">
-                <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <p className="text-sm font-medium text-sky-300">
-                            Dashboard SSO
-                        </p>
-                        <h1 className="mt-1 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                            Selamat datang, {user.name}
-                        </h1>
-                        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
-                            Akses aplikasi yang tersedia dan kelola kebutuhan
-                            akun Anda dari satu tempat.
-                        </p>
-                    </div>
-                    <Link
-                        href="/settings/security"
-                        className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
-                    >
-                        <ShieldCheck className="h-4 w-4 text-emerald-300" />
-                        Keamanan akun
-                    </Link>
-                </div>
+            <div className="space-y-6">
+                <PageHeader
+                    eyebrow="Dashboard SSO"
+                    title={`Selamat datang, ${user.name}`}
+                    actions={
+                        <Link
+                            href="/settings/security"
+                            className="inline-flex w-fit items-center gap-2 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+                        >
+                            <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                            Keamanan akun
+                        </Link>
+                    }
+                />
 
-                <div className="mb-7 grid gap-4 md:grid-cols-3">
+                <div className="grid gap-3 md:grid-cols-3">
                     <div className="rounded-2xl border border-white/10 bg-slate-900 p-5">
                         <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                             Aplikasi tersedia
@@ -150,7 +143,7 @@ export default function Dashboard({
                     </div>
                 </div>
 
-                <div className="grid gap-7 lg:grid-cols-[1fr_320px]">
+                <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
                     <section className="min-w-0">
                         <div className="mb-4 flex items-center justify-between gap-4">
                             <div>
