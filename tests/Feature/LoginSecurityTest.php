@@ -172,6 +172,38 @@ class LoginSecurityTest extends TestCase
         $response->assertRedirect(route('two-factor.login'));
     }
 
+    public function test_trusted_device_with_long_expiry_but_inactive_for_more_than_seven_days_requires_two_factor(): void
+    {
+        $user = $this->createTwoFactorUser(lastLoginAt: now());
+        $headers = $this->deviceHeaders();
+        $token = str_repeat('b', 80);
+        $fingerprint = app(TrustedDeviceManager::class)->fingerprint($this->requestFromHeaders($headers));
+
+        TrustedDevice::create([
+            'user_id' => $user->id,
+            'device_fingerprint' => $fingerprint,
+            'token_hash' => hash('sha256', $token),
+            'user_agent' => $headers['User-Agent'],
+            'last_used_at' => now()->subDays(8),
+            'expires_at' => now()->addYear(),
+        ]);
+
+        $cookieValue = json_encode([
+            'user_id' => $user->id,
+            'token' => $token,
+        ], JSON_THROW_ON_ERROR);
+
+        $response = $this
+            ->withCookie(TrustedDeviceManager::COOKIE_NAME, $cookieValue)
+            ->withHeaders($headers)
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect(route('two-factor.login'));
+    }
+
     public function test_trusted_device_remains_valid_with_minor_user_agent_change(): void
     {
         $user = $this->createTwoFactorUser(lastLoginAt: now()->subDay());
