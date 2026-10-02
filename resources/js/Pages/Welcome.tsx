@@ -3,13 +3,14 @@ import { ArrowRight, LockKeyhole, ShieldCheck, UserPlus } from 'lucide-react';
 import { Head, Link } from '@inertiajs/react';
 
 import AppIcon from '@/Components/AppIcon';
+import ScrollArea from '@/Components/ScrollArea';
 
 export default function Welcome() {
     return (
         <>
             <Head title="SSO" />
-            <div className="flex min-h-screen flex-col bg-slate-950 text-white">
-                <header className="border-b border-white/10">
+            <div className="app-background flex h-dvh flex-col overflow-hidden text-white">
+                <header className="app-header-background shrink-0 border-b border-cyan-950/70">
                     <div className="mx-auto flex max-w-[1680px] items-center justify-between px-5 py-4 sm:px-8">
                         <div className="flex items-center gap-3">
                             <AppIcon className="h-9 w-9" />
@@ -39,7 +40,8 @@ export default function Welcome() {
                     </div>
                 </header>
 
-                <main className="flex flex-1 flex-col">
+                <ScrollArea className="min-h-0 flex-1" viewportClassName="pb-0">
+                    <main className="flex min-h-full flex-col">
                     <section className="mx-auto grid w-full max-w-[1680px] flex-1 items-center gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.08fr_0.92fr] lg:py-16">
                         <div>
                             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200">
@@ -73,7 +75,7 @@ export default function Welcome() {
                             </div>
                         </div>
 
-                        <div className="rounded-3xl border border-white/10 bg-slate-900 p-5 shadow-2xl shadow-black/20 sm:p-7">
+                        <div className="app-panel-background rounded-3xl border border-cyan-900/50 p-5 shadow-2xl shadow-black/20 sm:p-7">
                             <div className="flex items-center justify-between border-b border-white/10 pb-5">
                                 <div>
                                     <p className="text-sm font-semibold">
@@ -160,12 +162,13 @@ export default function Welcome() {
                             </div>
                         </div>
                     </section>
-                </main>
+                    </main>
 
                 <footer className="mx-auto flex w-full max-w-[1680px] shrink-0 flex-col gap-2 px-5 py-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
                     <span>© 2026 BPS Kota Sawahlunto</span>
                     <span>Single Sign-On untuk aplikasi internal</span>
                 </footer>
+                </ScrollArea>
             </div>
         </>
     );
