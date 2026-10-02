@@ -13,6 +13,7 @@ import { Head, router } from '@inertiajs/react';
 
 import PageHeader from '@/Components/PageHeader';
 import SectionTabs from '@/Components/SectionTabs';
+import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -213,7 +214,7 @@ export default function Sessions(props: SessionsProps) {
                             </div>
                         </div>
 
-                        <div className="max-h-[56vh] space-y-1 overflow-y-auto p-2 lg:max-h-[62vh]">
+                        <ScrollArea className="h-[56vh] max-h-[56vh] lg:h-[62vh] lg:max-h-[62vh]" viewportClassName="p-2" contentClassName="space-y-1">
                             {filteredUsers.map((user) => (
                                 <button
                                     key={user.id}
@@ -237,7 +238,7 @@ export default function Sessions(props: SessionsProps) {
                             {filteredUsers.length === 0 && (
                                 <div className="px-3 py-8 text-center text-sm text-slate-500">Pengguna tidak ditemukan.</div>
                             )}
-                        </div>
+                        </ScrollArea>
 
                         {users && users.last_page > 1 && (
                             <div className="border-t border-slate-800 p-3">
