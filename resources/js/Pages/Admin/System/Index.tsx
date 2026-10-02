@@ -27,6 +27,7 @@ import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import GlassSelect from '@/Components/GlassSelect';
 import PageHeader from '@/Components/PageHeader';
+import PageWorkspace from '@/Components/PageWorkspace';
 import SectionTabs from '@/Components/SectionTabs';
 import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
@@ -423,7 +424,10 @@ export default function Index({
         <AppLayout>
             <Head title="Sistem Admin" />
 
-            <div className="space-y-6">
+            <PageWorkspace
+                summary={
+                    <>
+
                 <PageHeader />
                 <SectionTabs
                     active={activeSection}
@@ -500,7 +504,10 @@ export default function Index({
                         </div>
                     </GlassCard>
                 </div>
-
+                    </>
+                }
+                contentClassName="space-y-4"
+            >
                 <div className={activeSection === 'overview' ? 'grid gap-4 xl:grid-cols-2' : 'hidden'}>
                     <GlassCard>
                         <h2 className="text-xl font-bold text-white">
@@ -1482,7 +1489,8 @@ export default function Index({
                     onCancel={closeModal}
                     onConfirm={modal.onConfirm}
                 />
-            </div>
+
+            </PageWorkspace>
         </AppLayout>
     );
 }
