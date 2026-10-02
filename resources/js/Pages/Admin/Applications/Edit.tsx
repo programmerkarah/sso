@@ -51,7 +51,7 @@ export default function Edit({
         <AppLayout>
             <Head title={`Edit - ${application.name}`} />
 
-            <div className="mx-auto max-w-4xl space-y-6">
+            <div className="space-y-6">
                 <PageHeader
                     title="Edit aplikasi"
                     description={`Perbarui konfigurasi ${application.name}.`}
