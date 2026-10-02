@@ -61,7 +61,7 @@ export default function Dashboard({
         <AppLayout>
             <Head title="Dashboard" />
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
                 <PageHeader
                     eyebrow="Dashboard SSO"
                     title={`Selamat datang, ${user.name}`}
@@ -76,9 +76,9 @@ export default function Dashboard({
                     }
                 />
 
-                <div className="grid gap-3 md:grid-cols-3">
-                    <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-5">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
+                    <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-3 sm:p-5">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider sm:text-xs text-[var(--bps-muted)]">
                             Aplikasi tersedia
                         </p>
                         <div className="mt-3 flex items-end justify-between gap-4">
@@ -101,8 +101,8 @@ export default function Dashboard({
                         </p>
                     </div>
 
-                    <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-5">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
+                    <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-3 sm:p-5">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider sm:text-xs text-[var(--bps-muted)]">
                             Akun
                         </p>
                         <p className="mt-3 truncate text-lg font-semibold text-[var(--bps-text)]">
@@ -116,13 +116,13 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-5">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
+                    <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-3 sm:p-5">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider sm:text-xs text-[var(--bps-muted)]">
                             {canManageUsers ? 'Perlu perhatian' : 'Akses akun'}
                         </p>
                         {canManageUsers ? (
                             <>
-                                <p className="mt-3 text-4xl font-semibold text-[var(--bps-text)]">
+                                <p className="mt-2 text-2xl font-semibold sm:mt-3 sm:text-4xl text-[var(--bps-text)]">
                                     {formatNumber(
                                         pendingVerificationUsers.length,
                                     )}
@@ -314,7 +314,7 @@ export default function Dashboard({
 
                         {canManageUsers &&
                             pendingVerificationUsers.length > 0 && (
-                                <div className="rounded-2xl border border-[#efd6ad] bg-[var(--bps-surface)] p-5">
+                                <div className="rounded-2xl border border-[#efd6ad] bg-[var(--bps-surface)] p-3 sm:p-5">
                                     <div className="flex items-center justify-between gap-3">
                                         <h2 className="text-sm font-semibold text-[var(--bps-text)]">
                                             Menunggu verifikasi
