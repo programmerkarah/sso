@@ -15,6 +15,7 @@ import { Link, usePage } from '@inertiajs/react';
 
 import AppIcon from '@/Components/AppIcon';
 import NavDropdown from '@/Components/NavDropdown';
+import ScrollArea from '@/Components/ScrollArea';
 import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import { PageProps } from '@/types';
 
@@ -116,7 +117,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
             : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100');
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-100">
+        <div className="app-background flex h-dvh flex-col overflow-hidden text-slate-100">
             <ToastViewport
                 items={toasts}
                 onDismiss={(id) => setToasts((current) => current.filter((item) => item.id !== id))}
@@ -145,7 +146,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
             )}
 
             {user && (
-                <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
+                <header className="app-header-background z-50 shrink-0 border-b border-cyan-950/70">
                     <div ref={navContainerRef} className="mx-auto max-w-[1680px] px-4 sm:px-6 lg:px-8 2xl:px-10">
                         <div className="flex h-16 items-center justify-between gap-4">
                             <Link href="/dashboard" className="flex min-w-0 items-center gap-3">
@@ -272,7 +273,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
                 </header>
             )}
 
-            <main className="mx-auto w-full max-w-[1680px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">{children}</main>
+            <ScrollArea className="min-h-0 flex-1" viewportClassName="px-4 py-5 sm:px-6 sm:py-6 lg:px-8 2xl:px-10">
+                <main className="mx-auto w-full max-w-[1680px]">{children}</main>
+            </ScrollArea>
         </div>
     );
 }
