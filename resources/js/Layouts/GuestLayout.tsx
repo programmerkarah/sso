@@ -5,6 +5,7 @@ import { Link, usePage } from '@inertiajs/react';
 import AppIcon from '@/Components/AppIcon';
 import ScrollArea from '@/Components/ScrollArea';
 import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
+import ThemeToggle from '@/Components/ThemeToggle';
 import { PageProps } from '@/types';
 
 export default function GuestLayout({ children }: PropsWithChildren) {
@@ -120,6 +121,9 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                 </aside>
 
                 <div className="relative grid h-full min-h-0 grid-rows-[minmax(0,1fr)_auto]">
+                    <div className="absolute right-4 top-5 z-20 sm:right-8">
+                        <ThemeToggle compact />
+                    </div>
                     <div className="absolute left-4 top-5 z-10 sm:left-8 lg:hidden">
                         <Link href="/" className="flex items-center gap-3">
                             <AppIcon className="h-9 w-9" />
