@@ -7,6 +7,7 @@ import { Head, Link } from '@inertiajs/react';
 import Button from '@/Components/Button';
 import GlassCard from '@/Components/GlassCard';
 import PageHeader from '@/Components/PageHeader';
+import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application } from '@/types';
 
@@ -52,9 +53,9 @@ function CodeBlock({
                     {copied === copyKey ? 'Tersalin!' : 'Salin'}
                 </button>
             </div>
-            <pre className="overflow-x-auto whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
+            <ScrollArea axis="horizontal" viewportClassName="pb-2"><pre className="whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
                 <code>{value}</code>
-            </pre>
+            </pre></ScrollArea>
         </div>
     );
 }
