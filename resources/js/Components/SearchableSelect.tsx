@@ -1,6 +1,7 @@
 import { Search, X } from 'lucide-react';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import ScrollArea from '@/Components/ScrollArea';
 
 export interface SearchableSelectOption {
     label: string;
@@ -96,7 +97,7 @@ export default function SearchableSelect({
             </div>
 
             {open && (
-                <div className="absolute z-[75] mt-1.5 max-h-72 w-full overflow-y-auto rounded-lg border border-slate-700 bg-slate-900 p-1.5 shadow-xl">
+                <ScrollArea className="absolute z-[75] mt-1.5 h-72 max-h-72 w-full rounded-lg border border-slate-700 bg-slate-900 shadow-xl" viewportClassName="p-1.5">
                     {filteredOptions.length === 0 ? (
                         <div className="px-3 py-4 text-sm text-slate-500">
                             Tidak ada hasil.
@@ -125,7 +126,7 @@ export default function SearchableSelect({
                             </button>
                         ))
                     )}
-                </div>
+                </ScrollArea>
             )}
         </div>
     );
