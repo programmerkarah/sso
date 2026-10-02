@@ -465,7 +465,6 @@ export default function Show({ application, appUrl }: ShowProps) {
                             </GlassCard>
                         </div>
                     </div>
-                </div>
             </div>
 
             <ConfirmationModal
