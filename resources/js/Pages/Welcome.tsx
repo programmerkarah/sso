@@ -4,6 +4,7 @@ import { Head, Link } from '@inertiajs/react';
 
 import AppIcon from '@/Components/AppIcon';
 import ScrollArea from '@/Components/ScrollArea';
+import ThemeToggle from '@/Components/ThemeToggle';
 
 export default function Welcome() {
     return (
@@ -24,6 +25,7 @@ export default function Welcome() {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
+                            <ThemeToggle compact />
                             <Link
                                 href="/login"
                                 className="rounded-lg px-4 py-2 text-sm font-semibold text-[#49657b] transition hover:bg-[#eaf2f7] hover:text-[#18324a]"
