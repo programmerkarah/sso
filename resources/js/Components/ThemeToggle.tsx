@@ -1,4 +1,5 @@
 import { Moon, Sun } from 'lucide-react';
+
 import { useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
@@ -8,7 +9,11 @@ const applyTheme = (theme: Theme) => {
     document.documentElement.classList.toggle('theme-dark', theme === 'dark');
 };
 
-export default function ThemeToggle({ compact = false }: { compact?: boolean }) {
+export default function ThemeToggle({
+    compact = false,
+}: {
+    compact?: boolean;
+}) {
     const [theme, setTheme] = useState<Theme>('light');
 
     useEffect(() => {

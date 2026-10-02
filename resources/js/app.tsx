@@ -18,7 +18,10 @@ const initialTheme =
           : 'light';
 
 document.documentElement.dataset.theme = initialTheme;
-document.documentElement.classList.toggle('theme-dark', initialTheme === 'dark');
+document.documentElement.classList.toggle(
+    'theme-dark',
+    initialTheme === 'dark',
+);
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

@@ -263,7 +263,8 @@ export default function Dashboard({
                                                 Kelola aplikasi
                                             </span>
                                             <span className="mt-0.5 block text-xs text-[#6f8495]">
-                                                Atur endpoint, akses, dan status.
+                                                Atur endpoint, akses, dan
+                                                status.
                                             </span>
                                         </span>
                                         <ArrowRight className="h-4 w-4 shrink-0 text-[#8aafc6] transition-transform group-hover:translate-x-0.5" />
@@ -283,7 +284,8 @@ export default function Dashboard({
                                                 Kelola pengguna
                                             </span>
                                             <span className="mt-0.5 block text-xs text-[#6f8495]">
-                                                Verifikasi, role, dan akses akun.
+                                                Verifikasi, role, dan akses
+                                                akun.
                                             </span>
                                         </span>
                                         <ArrowRight className="h-4 w-4 shrink-0 text-[#91b98c] transition-transform group-hover:translate-x-0.5" />

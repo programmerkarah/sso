@@ -24,8 +24,8 @@ import { Link, usePage } from '@inertiajs/react';
 import AppIcon from '@/Components/AppIcon';
 import NavDropdown from '@/Components/NavDropdown';
 import ScrollArea from '@/Components/ScrollArea';
-import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import ThemeToggle from '@/Components/ThemeToggle';
+import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import { PageProps } from '@/types';
 
 const iconFor = (icon?: string): ReactNode => {
