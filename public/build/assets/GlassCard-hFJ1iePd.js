@@ -1,1 +1,0 @@
-import{j as a}from"./app-DeWkLl96.js";function n({children:r,className:o="",hover:s=!1}){return a.jsx("div",{className:"app-panel-background min-w-0 w-full rounded-2xl border border-cyan-900/45 p-5 sm:p-6 "+(s?"transition-colors hover:border-cyan-800/70 hover:brightness-105 ":"")+o,children:r})}export{n as G};
