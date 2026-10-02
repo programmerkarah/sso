@@ -21,7 +21,7 @@ export default function PageWorkspace({
 
     if (layout.mode !== 'workspace' || !layout.content_scroll) {
         return (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
                 {summary}
                 <div className={contentClassName}>{children}</div>
             </div>
@@ -32,11 +32,11 @@ export default function PageWorkspace({
         <div className="flex h-full min-h-0 flex-col">
             <div
                 className={
-                    'shrink-0 pb-4 ' +
+                    'shrink-0 pb-3 sm:pb-4 ' +
                     (layout.sticky_summary ? 'relative z-20' : '')
                 }
             >
-                <div className="space-y-4">{summary}</div>
+                <div className="space-y-3 sm:space-y-4">{summary}</div>
             </div>
 
             {layout.content_strategy === 'panes' ? (
@@ -46,7 +46,7 @@ export default function PageWorkspace({
             ) : (
                 <ScrollArea
                     className="min-h-0 flex-1"
-                    viewportClassName="pb-6 pr-1"
+                    viewportClassName="pb-4 pr-1 sm:pb-6"
                     contentClassName={contentClassName}
                 >
                     {children}
