@@ -44,7 +44,7 @@ export default function Create({ availableOrganizationTypes }: CreateProps) {
         <AppLayout>
             <Head title="Tambah Aplikasi" />
 
-            <div className="mx-auto max-w-5xl space-y-6">
+            <div className="space-y-6">
                 <PageHeader
                     title="Tambah aplikasi"
                     description="Daftarkan aplikasi baru dan konfigurasi integrasi OAuth SSO."
@@ -55,7 +55,7 @@ export default function Create({ availableOrganizationTypes }: CreateProps) {
                     }
                 />
 
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
                     <GlassCard>
                         <form onSubmit={submit} className="space-y-6">
                             <div>
