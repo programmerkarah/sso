@@ -47,7 +47,7 @@ function ToastCard({
     return (
         <div
             className={
-                'pointer-events-auto rounded-xl border bg-slate-900 px-4 py-3 shadow-xl ' +
+                'pointer-events-auto rounded-xl border bg-[#08263b] px-4 py-3 shadow-xl ' +
                 toneClasses[item.tone]
             }
         >
@@ -66,7 +66,7 @@ function ToastCard({
                 <button
                     type="button"
                     onClick={() => onDismiss(item.id)}
-                    className="rounded p-1 text-slate-500 transition hover:bg-slate-800 hover:text-slate-200"
+                    className="rounded p-1 text-slate-500 transition hover:bg-[#11364f] hover:text-slate-200"
                 >
                     <X className="h-4 w-4" />
                 </button>
