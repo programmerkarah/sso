@@ -46,16 +46,30 @@ class HandleInertiaRequests extends Middleware
             default => $request->session()->get('status'),
         };
 
+        $pageLayout = [
+            'mode' => 'document',
+            'sticky_summary' => false,
+            'content_scroll' => false,
+        ];
+
+        if ($request->routeIs('admin.users.index', 'admin.system.index')) {
+            $pageLayout = [
+                'mode' => 'workspace',
+                'sticky_summary' => true,
+                'content_scroll' => true,
+            ];
+        }
+
         $pageMeta = match (true) {
-            $request->routeIs('dashboard') => ['title' => 'Dashboard', 'description' => 'Akses aplikasi dan kelola kebutuhan akun dari satu tempat.', 'section' => 'home'],
-            $request->routeIs('applications.*') => ['title' => 'Aplikasi SSO', 'description' => 'Aplikasi yang tersedia melalui akun Single Sign-On Anda.', 'section' => 'applications'],
-            $request->routeIs('settings.security') => ['title' => 'Keamanan Akun', 'description' => 'Kelola password, email, dan autentikasi dua faktor.', 'section' => 'account'],
-            $request->routeIs('settings.sessions') => ['title' => 'Sesi & Akses', 'description' => 'Kelola sesi web aktif dan akses OAuth yang terhubung.', 'section' => 'account'],
-            $request->routeIs('admin.applications.*') => ['title' => 'Aplikasi', 'description' => 'Kelola aplikasi yang terhubung ke SSO.', 'section' => 'admin'],
-            $request->routeIs('admin.organizations.*') => ['title' => 'Organisasi', 'description' => 'Kelola organisasi dan cakupan akses aplikasi.', 'section' => 'admin'],
-            $request->routeIs('admin.users.*') => ['title' => 'Pengguna', 'description' => 'Kelola identitas, akses, verifikasi, dan keamanan pengguna.', 'section' => 'admin'],
-            $request->routeIs('admin.system.*') => ['title' => 'Sistem', 'description' => 'Pantau layanan, database, backup, dan audit aktivitas.', 'section' => 'admin'],
-            default => ['title' => config('app.name', 'SSO BPS Kota Sawahlunto'), 'description' => 'Single Sign-On', 'section' => null],
+            $request->routeIs('dashboard') => ['title' => 'Dashboard', 'description' => 'Akses aplikasi dan kelola kebutuhan akun dari satu tempat.', 'section' => 'home', 'layout' => $pageLayout],
+            $request->routeIs('applications.*') => ['title' => 'Aplikasi SSO', 'description' => 'Aplikasi yang tersedia melalui akun Single Sign-On Anda.', 'section' => 'applications', 'layout' => $pageLayout],
+            $request->routeIs('settings.security') => ['title' => 'Keamanan Akun', 'description' => 'Kelola password, email, dan autentikasi dua faktor.', 'section' => 'account', 'layout' => $pageLayout],
+            $request->routeIs('settings.sessions') => ['title' => 'Sesi & Akses', 'description' => 'Kelola sesi web aktif dan akses OAuth yang terhubung.', 'section' => 'account', 'layout' => $pageLayout],
+            $request->routeIs('admin.applications.*') => ['title' => 'Aplikasi', 'description' => 'Kelola aplikasi yang terhubung ke SSO.', 'section' => 'admin', 'layout' => $pageLayout],
+            $request->routeIs('admin.organizations.*') => ['title' => 'Organisasi', 'description' => 'Kelola organisasi dan cakupan akses aplikasi.', 'section' => 'admin', 'layout' => $pageLayout],
+            $request->routeIs('admin.users.*') => ['title' => 'Pengguna', 'description' => 'Kelola identitas, akses, verifikasi, dan keamanan pengguna.', 'section' => 'admin', 'layout' => $pageLayout],
+            $request->routeIs('admin.system.*') => ['title' => 'Sistem', 'description' => 'Pantau layanan, database, backup, dan audit aktivitas.', 'section' => 'admin', 'layout' => $pageLayout],
+            default => ['title' => config('app.name', 'SSO BPS Kota Sawahlunto'), 'description' => 'Single Sign-On', 'section' => null, 'layout' => $pageLayout],
         };
 
         return [
