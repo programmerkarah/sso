@@ -1356,8 +1356,8 @@ export default function Index({
                                     </pre>
                                 </div>
                             </div>
-                        </div>
-                    </ScrollArea>
+                        </ScrollArea>
+                    </div>
                 )}
 
                 {editingBackup && (
