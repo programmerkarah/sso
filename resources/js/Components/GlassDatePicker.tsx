@@ -493,7 +493,7 @@ export default function GlassDatePicker({
     const popoverContent = open ? (
         <ScrollArea
             rootRef={popoverRef}
-            className="fixed z-[140] h-[min(32rem,calc(100vh-1rem))] max-h-[min(32rem,calc(100vh-1rem))] rounded-xl border border-slate-700 bg-slate-900"
+            className="ui-modal-surface fixed z-[140] max-h-[min(32rem,calc(100dvh-1rem))] rounded-xl"
             viewportClassName="p-3"
             style={{
                 top: popoverStyle.top,
@@ -517,11 +517,11 @@ export default function GlassDatePicker({
                                         ),
                                 )
                             }
-                            className="rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                            className="ui-icon-button rounded-lg p-2"
                         >
                             <ChevronLeft className="h-4 w-4" />
                         </button>
-                        <div className="text-sm font-semibold text-white">
+                        <div className="text-sm font-semibold text-[var(--bps-text)]">
                             {getMonthLabel(displayMonth)}
                         </div>
                         <button
@@ -536,13 +536,13 @@ export default function GlassDatePicker({
                                         ),
                                 )
                             }
-                            className="rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                            className="ui-icon-button rounded-lg p-2"
                         >
                             <ChevronRight className="h-4 w-4" />
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase tracking-wide text-[var(--bps-muted)]">
                         {WEEKDAY_LABELS.map((day) => (
                             <div key={day} className="py-1">
                                 {day}
@@ -565,7 +565,7 @@ export default function GlassDatePicker({
                                     key={day.toISOString()}
                                     type="button"
                                     onClick={() => applyDate(dayValue)}
-                                    className={`aspect-square rounded-lg text-sm transition ${isSelected ? 'bg-sky-600 font-bold text-white  ' : isToday ? 'border border-sky-500/30 bg-sky-500/10 text-sky-200' : isCurrentMonth ? 'text-slate-200 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-900/60'}`}
+                                    className={`aspect-square rounded-lg border border-transparent text-sm transition ${isSelected ? 'ui-selected font-bold' : isToday ? 'ui-success' : isCurrentMonth ? 'ui-hover text-[var(--bps-text)]' : 'ui-hover text-[var(--bps-muted)] opacity-70'}`}
                                 >
                                     {day.getDate()}
                                 </button>
@@ -579,12 +579,12 @@ export default function GlassDatePicker({
                 <div
                     className={
                         type !== 'time'
-                            ? 'mt-4 border-t border-slate-800 pt-4'
+                            ? 'mt-4 border-t border-[var(--bps-border)] pt-4'
                             : ''
                     }
                 >
                     <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-white">
-                        <Clock3 className="h-4 w-4 text-slate-400" />
+                        <Clock3 className="h-4 w-4 text-[var(--bps-muted)]" />
                         Waktu
                     </div>
                     <div className="grid grid-cols-3 gap-2">
@@ -616,11 +616,11 @@ export default function GlassDatePicker({
                 </div>
             )}
 
-            <div className="mt-4 flex items-center justify-between gap-2 border-t border-slate-800 pt-3">
+            <div className="mt-4 flex items-center justify-between gap-2 border-t border-[var(--bps-border)] pt-3">
                 <button
                     type="button"
                     onClick={clearValue}
-                    className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                    className="rounded-lg px-3 py-2 text-sm font-semibold text-[var(--bps-muted)] transition hover:bg-slate-800 hover:text-white"
                 >
                     Clear
                 </button>
@@ -635,7 +635,7 @@ export default function GlassDatePicker({
                     <button
                         type="button"
                         onClick={() => setOpen(false)}
-                        className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
+                        className="ui-selected rounded-lg border px-3 py-2 text-sm font-semibold"
                     >
                         Selesai
                     </button>
@@ -660,10 +660,10 @@ export default function GlassDatePicker({
                     type="button"
                     disabled={disabled}
                     onClick={() => setOpen((current) => !current)}
-                    className={`flex w-full items-center justify-between rounded-xl border border-slate-700 bg-slate-800 py-3 pl-10 pr-4 text-left text-sm text-white shadow-sm  transition focus:border-white/40 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/20 disabled:cursor-not-allowed disabled:opacity-60 ${error ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' : ''} ${className}`}
+                    className={`ui-field flex w-full items-center justify-between rounded-xl py-3 pl-10 pr-4 text-left text-sm shadow-sm transition ${disabled ? 'ui-disabled' : ''} ${error ? 'border-red-400 focus:border-red-400' : ''} ${className}`}
                 >
-                    <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                    <span className={value ? 'text-white' : 'text-slate-500'}>
+                    <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--bps-muted)]" />
+                    <span className={value ? 'text-white' : 'text-[var(--bps-muted)]'}>
                         {value
                             ? formatDisplayValue(value, type, valueFormat)
                             : (placeholder ??
@@ -673,13 +673,13 @@ export default function GlassDatePicker({
                                     ? 'Pilih waktu'
                                     : 'Pilih tanggal & waktu'))}
                     </span>
-                    <CalendarDays className="h-4 w-4 text-slate-500" />
+                    <CalendarDays className="h-4 w-4 text-[var(--bps-muted)]" />
                 </button>
             </div>
 
             {popoverContent && createPortal(popoverContent, document.body)}
 
-            {error && <p className="mt-2 text-sm text-red-300">{error}</p>}
+            {error && <p className="mt-2 text-sm text-[#b85d52]">{error}</p>}
         </div>
     );
 }
