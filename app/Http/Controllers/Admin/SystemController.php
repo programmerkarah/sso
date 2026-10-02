@@ -652,19 +652,43 @@ class SystemController extends Controller
                     'index_length',
                 ])
                 ->map(function (object $table) use ($databaseName) {
+                    // PDO/database drivers may return metadata column names with
+                    // different casing (for example ENGINE instead of engine).
+                    // Normalize once so the database browser behaves consistently
+                    // across MySQL/MariaDB environments.
+                    $metadata = array_change_key_case(
+                        get_object_vars($table),
+                        CASE_LOWER,
+                    );
+
+                    $name = (string) ($metadata['name'] ?? $metadata['table_name'] ?? '');
+
+                    if ($name === '') {
+                        return null;
+                    }
+
                     $columnCount = (int) DB::table('information_schema.columns')
                         ->where('table_schema', $databaseName)
-                        ->where('table_name', $table->name)
+                        ->where('table_name', $name)
                         ->count();
 
                     return [
-                        'name' => (string) $table->name,
-                        'engine' => $table->engine,
-                        'row_count' => (int) ($table->row_count ?? 0),
+                        'name' => $name,
+                        'engine' => isset($metadata['engine'])
+                            ? (string) $metadata['engine']
+                            : null,
+                        'row_count' => (int) ($metadata['row_count'] ?? $metadata['table_rows'] ?? 0),
                         'column_count' => $columnCount,
-                        'size_kb' => round(((int) ($table->data_length ?? 0) + (int) ($table->index_length ?? 0)) / 1024, 2),
+                        'size_kb' => round(
+                            (
+                                (int) ($metadata['data_length'] ?? 0)
+                                + (int) ($metadata['index_length'] ?? 0)
+                            ) / 1024,
+                            2,
+                        ),
                     ];
                 })
+                ->filter()
                 ->values()
                 ->all();
         }
