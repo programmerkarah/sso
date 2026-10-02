@@ -56,10 +56,10 @@ export default function Register() {
             <Head title="Daftar Akun" />
 
             <div className="mb-7">
-                <h2 className="text-2xl font-semibold tracking-tight text-white">
+                <h2 className="text-2xl font-semibold tracking-tight text-[#18324a]">
                     Daftar akun
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-slate-400">
+                <p className="mt-2 text-sm leading-6 text-[#6f8495]">
                     Isi data berikut untuk membuat akun SSO.
                 </p>
             </div>
@@ -69,7 +69,7 @@ export default function Register() {
                     <Label
                         htmlFor="name"
                         required
-                        className="text-slate-200 drop-shadow-none"
+                        className="text-[#29465f] drop-shadow-none"
                     >
                         Nama lengkap
                     </Label>
@@ -91,7 +91,7 @@ export default function Register() {
                         <Label
                             htmlFor="username"
                             required
-                            className="text-slate-200 drop-shadow-none"
+                            className="text-[#29465f] drop-shadow-none"
                         >
                             Username
                         </Label>
@@ -113,7 +113,7 @@ export default function Register() {
                         <Label
                             htmlFor="email"
                             required
-                            className="text-slate-200 drop-shadow-none"
+                            className="text-[#29465f] drop-shadow-none"
                         >
                             Email
                         </Label>
@@ -135,7 +135,7 @@ export default function Register() {
                     <div>
                         <Label
                             required
-                            className="text-slate-200 drop-shadow-none"
+                            className="text-[#29465f] drop-shadow-none"
                         >
                             Organisasi
                         </Label>
@@ -167,7 +167,7 @@ export default function Register() {
                         <Label
                             htmlFor="password"
                             required
-                            className="text-slate-200 drop-shadow-none"
+                            className="text-[#29465f] drop-shadow-none"
                         >
                             Password
                         </Label>
@@ -190,7 +190,7 @@ export default function Register() {
                         <Label
                             htmlFor="password_confirmation"
                             required
-                            className="text-slate-200 drop-shadow-none"
+                            className="text-[#29465f] drop-shadow-none"
                         >
                             Konfirmasi password
                         </Label>
@@ -210,7 +210,7 @@ export default function Register() {
                     </div>
                 </div>
 
-                <p className="text-xs leading-5 text-slate-500">
+                <p className="text-xs leading-5 text-[#8799a7]">
                     Akun baru dapat memerlukan verifikasi administrator sebelum
                     digunakan untuk mengakses aplikasi.
                 </p>
@@ -218,17 +218,17 @@ export default function Register() {
                 <button
                     type="submit"
                     disabled={processing}
-                    className="w-full rounded-lg bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-lg bg-sky-600 px-4 py-3 text-sm font-semibold text-[#18324a] transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     {processing ? 'Menyimpan...' : 'Daftar'}
                 </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-slate-500">
+            <p className="mt-6 text-center text-sm text-[#8799a7]">
                 Sudah memiliki akun?{' '}
                 <Link
                     href="/login"
-                    className="font-medium text-sky-300 transition hover:text-sky-200"
+                    className="font-medium text-[#4a9fd7] transition hover:text-[#347fae]"
                 >
                     Masuk
                 </Link>
