@@ -21,11 +21,11 @@ export default function NavDropdown({
 }: NavDropdownProps) {
     if (variant === 'mobile') {
         return (
-            <div className="overflow-hidden rounded-lg border border-cyan-950/70">
+            <div className="overflow-hidden rounded-lg border border-[#dbe5ec]">
                 <button
                     type="button"
                     onClick={onToggle}
-                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-slate-300"
+                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-[#49657b]"
                 >
                     <span className="inline-flex items-center gap-2">
                         {icon}
@@ -39,7 +39,7 @@ export default function NavDropdown({
                     />
                 </button>
                 {isOpen && (
-                    <div className="grid gap-1 border-t border-cyan-950/70 p-2">
+                    <div className="grid gap-1 border-t border-[#dbe5ec] p-2">
                         {children}
                     </div>
                 )}
@@ -55,8 +55,8 @@ export default function NavDropdown({
                 className={
                     'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ' +
                     (isOpen
-                        ? 'bg-[#11364f] text-white'
-                        : 'text-slate-400 hover:bg-[#0b2d46] hover:text-slate-100')
+                        ? 'bg-[#e7f3fb] text-[#2f6f98]'
+                        : 'text-[#6f8495] hover:bg-[#eef5f9] hover:text-[#18324a]')
                 }
             >
                 {icon}
@@ -69,7 +69,7 @@ export default function NavDropdown({
                 />
             </button>
             {isOpen && (
-                <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-lg border border-cyan-900/60 bg-[#08263b] p-1.5 shadow-xl">
+                <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-lg border border-[#d5e1e9] bg-white p-1.5 shadow-xl">
                     {children}
                 </div>
             )}
