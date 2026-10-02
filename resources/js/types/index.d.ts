@@ -55,6 +55,18 @@ export interface Organization {
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
+    app: {
+        name: string;
+        product_name: string;
+        product_short_name: string;
+        description: string;
+        locale: string;
+    };
+    navigation: {
+        primary: Array<{ label: string; href: string; icon?: string }>;
+        account: Array<{ label: string; href: string }>;
+        admin: Array<{ label: string; href: string }>;
+    };
     auth: {
         user: User | null;
         can: {
