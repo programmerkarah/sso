@@ -10,7 +10,7 @@ export default function Welcome() {
             <Head title="SSO" />
             <div className="flex min-h-screen flex-col bg-slate-950 text-white">
                 <header className="border-b border-white/10">
-                    <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
+                    <div className="mx-auto flex max-w-[1680px] items-center justify-between px-5 py-4 sm:px-8">
                         <div className="flex items-center gap-3">
                             <AppIcon className="h-9 w-9" />
                             <div>
@@ -40,7 +40,7 @@ export default function Welcome() {
                 </header>
 
                 <main className="flex flex-1 flex-col">
-                    <section className="mx-auto grid w-full max-w-7xl flex-1 items-center gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.08fr_0.92fr] lg:py-16">
+                    <section className="mx-auto grid w-full max-w-[1680px] flex-1 items-center gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.08fr_0.92fr] lg:py-16">
                         <div>
                             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200">
                                 <ShieldCheck className="h-4 w-4" />
@@ -130,7 +130,7 @@ export default function Welcome() {
                     </section>
 
                     <section className="border-y border-white/10 bg-white/[0.025]">
-                        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 md:grid-cols-3">
+                        <div className="mx-auto grid max-w-[1680px] gap-8 px-5 py-10 sm:px-8 md:grid-cols-3">
                             <div>
                                 <p className="text-sm font-semibold">
                                     Satu identitas
@@ -162,7 +162,7 @@ export default function Welcome() {
                     </section>
                 </main>
 
-                <footer className="mx-auto flex w-full max-w-7xl shrink-0 flex-col gap-2 px-5 py-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+                <footer className="mx-auto flex w-full max-w-[1680px] shrink-0 flex-col gap-2 px-5 py-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
                     <span>© 2026 BPS Kota Sawahlunto</span>
                     <span>Single Sign-On untuk aplikasi internal</span>
                 </footer>
