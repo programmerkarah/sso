@@ -3,6 +3,7 @@ import { PropsWithChildren, useEffect, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 
 import AppIcon from '@/Components/AppIcon';
+import ScrollArea from '@/Components/ScrollArea';
 import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import { PageProps } from '@/types';
 
@@ -49,7 +50,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
     }, [flash.error, flash.info, flash.status, flash.success]);
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white">
+        <div className="app-background h-dvh overflow-hidden text-white">
             <ToastViewport
                 items={toasts}
                 onDismiss={(id) =>
@@ -60,8 +61,8 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                 topClassName="top-4"
             />
 
-            <div className="mx-auto grid min-h-screen max-w-[1680px] lg:grid-cols-[0.9fr_1.1fr]">
-                <aside className="hidden border-r border-slate-800 px-10 py-9 lg:flex lg:flex-col xl:px-14">
+            <div className="mx-auto grid h-full max-w-[1680px] lg:grid-cols-[0.9fr_1.1fr]">
+                <aside className="hidden border-r border-cyan-950/70 bg-[#061f32]/55 px-10 py-9 lg:flex lg:flex-col xl:px-14">
                     <Link
                         href="/"
                         className="inline-flex w-fit items-center gap-3"
@@ -118,7 +119,8 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                     </p>
                 </aside>
 
-                <main className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-8 lg:px-12 xl:px-16">
+                <ScrollArea className="min-h-0 h-full" viewportClassName="px-4 py-6 sm:px-8 lg:px-12 xl:px-16">
+                    <main className="flex min-h-full items-center justify-center">
                     <div className="w-full max-w-lg">
                         <Link
                             href="/"
@@ -135,7 +137,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                             </div>
                         </Link>
 
-                        <div className="rounded-2xl border border-slate-800 bg-slate-900 px-6 py-7 sm:px-8 sm:py-8">
+                        <div className="app-panel-background rounded-2xl border border-cyan-900/50 px-6 py-7 shadow-2xl shadow-black/10 sm:px-8 sm:py-8">
                             {children}
                         </div>
 
@@ -149,7 +151,8 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                             <span>BPS Kota Sawahlunto</span>
                         </div>
                     </div>
-                </main>
+                    </main>
+                </ScrollArea>
             </div>
         </div>
     );
