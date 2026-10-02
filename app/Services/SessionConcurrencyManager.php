@@ -14,7 +14,7 @@ class SessionConcurrencyManager
     public function activateLatestSession(Request $request, int $userId, bool $forceTwoFactorOnNextLogin = false): void
     {
         $currentSessionId = $request->session()->getId();
-        $previousSessionId = $this->getActiveSessionId($userId);
+        $previousSessionId = $this->getLiveActiveSessionId($userId);
 
         Cache::forever($this->cacheKey($userId), $currentSessionId);
 
@@ -38,17 +38,16 @@ class SessionConcurrencyManager
 
     public function ensureSessionRegistered(Request $request, int $userId): void
     {
-        if (! is_string($this->getActiveSessionId($userId))) {
+        if (! is_string($this->getLiveActiveSessionId($userId))) {
             Cache::forever($this->cacheKey($userId), $request->session()->getId());
         }
     }
 
     public function isCurrentSessionActive(Request $request, int $userId): bool
     {
-        $activeSessionId = $this->getActiveSessionId($userId);
+        $activeSessionId = $this->getLiveActiveSessionId($userId);
 
         return is_string($activeSessionId)
-            && $activeSessionId !== ''
             && hash_equals($activeSessionId, $request->session()->getId());
     }
 
@@ -58,24 +57,15 @@ class SessionConcurrencyManager
      */
     public function hasOtherActiveSession(Request $request, int $userId): bool
     {
-        $activeSessionId = $this->getActiveSessionId($userId);
+        $activeSessionId = $this->getLiveActiveSessionId($userId);
 
         return is_string($activeSessionId)
-            && $activeSessionId !== ''
             && $activeSessionId !== $request->session()->getId();
     }
 
     public function hasActiveSessionRecord(int $userId): bool
     {
-        $activeSessionId = $this->getActiveSessionId($userId);
-
-        if (! is_string($activeSessionId) || $activeSessionId === '') {
-            return false;
-        }
-
-        return DB::table(config('session.table', 'sessions'))
-            ->where('id', $activeSessionId)
-            ->exists();
+        return is_string($this->getLiveActiveSessionId($userId));
     }
 
     public function forgetIfCurrentSession(Request $request, int $userId): void
@@ -107,6 +97,36 @@ class SessionConcurrencyManager
     public function clearForceTwoFactorFlag(int $userId): void
     {
         Cache::forget(self::FORCE_2FA_CACHE_PREFIX.$userId);
+    }
+
+    /**
+     * Resolve the registered session only when it is still alive according to
+     * Laravel's configured session lifetime. The cache entry itself is stored
+     * forever, so a timed-out session must not be treated as another device.
+     */
+    private function getLiveActiveSessionId(int $userId): ?string
+    {
+        $activeSessionId = $this->getActiveSessionId($userId);
+
+        if (! is_string($activeSessionId) || $activeSessionId === '') {
+            return null;
+        }
+
+        $lifetimeMinutes = max(1, (int) config('session.lifetime', 120));
+        $oldestAllowedActivity = now()->subMinutes($lifetimeMinutes)->getTimestamp();
+
+        $isAlive = DB::table(config('session.table', 'sessions'))
+            ->where('id', $activeSessionId)
+            ->where('last_activity', '>=', $oldestAllowedActivity)
+            ->exists();
+
+        if (! $isAlive) {
+            Cache::forget($this->cacheKey($userId));
+
+            return null;
+        }
+
+        return $activeSessionId;
     }
 
     private function getActiveSessionId(int $userId): mixed
