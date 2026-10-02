@@ -55,8 +55,8 @@ export default function Login({ status }: { status?: string }) {
         <GuestLayout>
             <Head title="Masuk" />
 
-            <div className="mb-7">
-                <h2 className="text-2xl font-semibold tracking-tight text-[#18324a]">
+            <div className="mb-5 sm:mb-7">
+                <h2 className="text-xl font-semibold tracking-tight sm:text-2xl text-[#18324a]">
                     Masuk
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-[#6f8495]">
@@ -80,7 +80,7 @@ export default function Login({ status }: { status?: string }) {
                 method="POST"
                 action="/login"
                 onSubmit={handleSubmit}
-                className="space-y-5"
+                className="space-y-4 sm:space-y-5"
             >
                 <input type="hidden" name="_token" value={csrfToken} />
 
@@ -155,13 +155,13 @@ export default function Login({ status }: { status?: string }) {
                 <button
                     type="submit"
                     disabled={processing}
-                    className="w-full rounded-lg bg-sky-600 px-4 py-3 text-sm font-semibold text-[#18324a] transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-lg bg-sky-600 px-4 py-2.5 text-sm sm:py-3 font-semibold text-[#18324a] transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     {processing ? 'Memproses...' : 'Masuk'}
                 </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-[#8799a7]">
+            <p className="mt-5 text-center text-sm sm:mt-6 text-[#8799a7]">
                 Belum memiliki akun?{' '}
                 <Link
                     href="/register"
