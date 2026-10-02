@@ -157,10 +157,10 @@ export default function AppLayout({ children }: PropsWithChildren) {
     }, [currentUrl]);
 
     const navLinkClass = (active: boolean) =>
-        'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ' +
+        'inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium ' +
         (active
-            ? 'bg-[#e7f3fb] text-[#2f6f98]'
-            : 'text-[#6f8495] hover:bg-white hover:text-[#18324a]');
+            ? 'ui-selected border-transparent'
+            : 'ui-hover border-transparent text-[var(--bps-muted)]');
 
     return (
         <div className="app-background flex h-dvh flex-col overflow-hidden text-[#18324a]">
@@ -257,8 +257,8 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                         currentUrl,
                                                         item.href,
                                                     )
-                                                        ? 'bg-[#e7f3fb] text-[#2f6f98]'
-                                                        : 'text-[#49657b] hover:bg-[#eef5f9] hover:text-[#18324a]')
+                                                        ? 'ui-selected'
+                                                        : 'ui-hover text-[var(--bps-muted)]')
                                                 }
                                             >
                                                 {item.label}
@@ -290,8 +290,8 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                         currentUrl,
                                                         item.href,
                                                     )
-                                                        ? 'bg-[#e7f3fb] text-[#2f6f98]'
-                                                        : 'text-[#49657b] hover:bg-[#eef5f9] hover:text-[#18324a]')
+                                                        ? 'ui-selected'
+                                                        : 'ui-hover text-[var(--bps-muted)]')
                                                 }
                                             >
                                                 {item.label}
@@ -322,7 +322,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                     href="/logout"
                                     method="post"
                                     as="button"
-                                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-[#fff0ee] hover:text-[#d06f62]"
+                                    className="ui-danger inline-flex h-9 w-9 items-center justify-center rounded-lg border border-transparent"
                                     title="Keluar"
                                 >
                                     <LogOut className="h-4 w-4" />
@@ -334,7 +334,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                 onClick={() =>
                                     setMobileMenuOpen((current) => !current)
                                 }
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#d5e1e9] text-[#49657b] md:hidden"
+                                className="ui-hover inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--bps-border)] text-[var(--bps-muted)] md:hidden"
                                 aria-label="Buka menu"
                             >
                                 {mobileMenuOpen ? (
