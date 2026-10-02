@@ -55,7 +55,7 @@ export default function GlassSelect({
             {label && (
                 <label
                     htmlFor={id}
-                    className="mb-1.5 block text-sm font-medium text-slate-300"
+                    className="mb-1.5 block text-sm font-medium text-[#49657b]"
                 >
                     {label}
                 </label>
@@ -66,7 +66,7 @@ export default function GlassSelect({
                 type="button"
                 onClick={() => setOpen((current) => !current)}
                 className={
-                    'flex w-full items-center justify-between rounded-lg border bg-[#041b2d]/85 px-3.5 py-2.5 text-left text-sm outline-none transition-colors focus:ring-2 ' +
+                    'flex w-full items-center justify-between rounded-lg border bg-white px-3.5 py-2.5 text-left text-sm outline-none transition-colors focus:ring-2 ' +
                     (error
                         ? 'border-red-500/60 focus:border-red-500 focus:ring-red-500/20'
                         : 'border-slate-700 focus:border-sky-500 focus:ring-sky-500/20')
@@ -74,21 +74,21 @@ export default function GlassSelect({
             >
                 <span
                     className={
-                        selectedOption ? 'text-slate-100' : 'text-slate-500'
+                        selectedOption ? 'text-[#18324a]' : 'text-[#8799a7]'
                     }
                 >
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
                 <ChevronDown
                     className={
-                        'h-4 w-4 text-slate-500 transition-transform ' +
+                        'h-4 w-4 text-[#8799a7] transition-transform ' +
                         (open ? 'rotate-180' : '')
                     }
                 />
             </button>
 
             {open && (
-                <ScrollArea className="absolute z-[80] mt-1.5 w-full rounded-lg border border-cyan-900/60 bg-[#08263b] shadow-xl" viewportClassName="max-h-64 p-1.5">
+                <ScrollArea className="absolute z-[80] mt-1.5 w-full rounded-lg border border-[#d5e1e9] bg-white shadow-xl" viewportClassName="max-h-64 p-1.5">
                     <button
                         type="button"
                         onClick={() => {
@@ -98,8 +98,8 @@ export default function GlassSelect({
                         className={
                             'flex w-full rounded-md px-3 py-2 text-left text-sm transition-colors ' +
                             (value === ''
-                                ? 'bg-[#11364f] text-white'
-                                : 'text-slate-400 hover:bg-[#11364f] hover:text-white')
+                                ? 'bg-[#e7f3fb] text-[#2f6f98]'
+                                : 'text-[#6f8495] hover:bg-[#eef5f9] hover:text-[#18324a]')
                         }
                     >
                         {placeholder}
@@ -116,13 +116,13 @@ export default function GlassSelect({
                             className={
                                 'flex w-full flex-col rounded-md px-3 py-2 text-left text-sm transition-colors ' +
                                 (value === option.value
-                                    ? 'bg-[#11364f] text-white'
-                                    : 'text-slate-400 hover:bg-[#11364f] hover:text-white')
+                                    ? 'bg-[#e7f3fb] text-[#2f6f98]'
+                                    : 'text-[#6f8495] hover:bg-[#eef5f9] hover:text-[#18324a]')
                             }
                         >
                             <span>{option.label}</span>
                             {option.description && (
-                                <span className="mt-0.5 text-xs text-slate-500">
+                                <span className="mt-0.5 text-xs text-[#8799a7]">
                                     {option.description}
                                 </span>
                             )}
