@@ -51,7 +51,7 @@ export default function Index({
                             <GlassCard
                                 key={application.id}
                                 hover
-                                className={`flex flex-col gap-5 ${!application.is_active ? 'opacity-60' : ''}`}
+                                className={`flex flex-col gap-5 ${!application.is_active ? 'ui-inactive-card' : ''}`}
                             >
                                 <div className="flex items-start gap-4">
                                     <div className="h-14 w-14 overflow-hidden rounded-2xl border border-[#dbe5ec] bg-[#f8fbfd] p-2">
@@ -62,14 +62,14 @@ export default function Index({
                                                 className="h-full w-full object-contain"
                                             />
                                         ) : (
-                                            <div className="flex h-full w-full items-center justify-center rounded-xl bg-slate-900/80 text-[#6f8495]">
+                                            <div className="flex h-full w-full items-center justify-center rounded-xl bg-slate-900/80 text-[var(--bps-muted)]">
                                                 <Globe className="h-6 w-6" />
                                             </div>
                                         )}
                                     </div>
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <h2 className="text-xl font-bold text-[#18324a]">
+                                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                                 {application.name}
                                             </h2>
                                             {isAdmin &&
@@ -79,14 +79,14 @@ export default function Index({
                                                     </span>
                                                 )}
                                         </div>
-                                        <p className="text-sm text-[#6f8495]">
+                                        <p className="text-sm text-[var(--bps-muted)]">
                                             {application.description ??
                                                 'Tidak ada deskripsi aplikasi.'}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="rounded-xl border border-[#dbe5ec] bg-[#f8fbfd] px-3 py-2 text-sm text-[#49657b]">
+                                <div className="ui-field rounded-xl px-3 py-2 text-sm">
                                     {application.landing_url}
                                 </div>
 
@@ -96,7 +96,7 @@ export default function Index({
                                             href={application.launch_url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 self-start rounded-xl border border-[#b8d9ee] bg-[#e7f3fb] px-4 py-2 text-sm font-semibold text-[#347fae] transition hover:bg-[#d9edf9]"
+                                            className="ui-selected inline-flex items-center gap-2 self-start rounded-xl border px-4 py-2 text-sm font-semibold"
                                         >
                                             Buka Aplikasi
                                             <ExternalLink className="h-4 w-4" />
@@ -113,8 +113,8 @@ export default function Index({
                                                 }
                                                 className={`inline-flex items-center gap-2 self-start rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                                                     application.is_active
-                                                        ? 'border-[#f1c7c1] bg-[#fff0ee] text-[#b85d52] hover:bg-[#fde4e0]'
-                                                        : 'border-[#cce4c7] bg-[#eef7ec] text-[#4f8a49] hover:bg-[#e2f1df]'
+                                                        ? 'ui-danger'
+                                                        : 'ui-success'
                                                 }`}
                                             >
                                                 <Power className="h-4 w-4" />
