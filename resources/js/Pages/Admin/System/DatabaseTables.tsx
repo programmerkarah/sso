@@ -350,7 +350,7 @@ export default function DatabaseTables({
                             }
                         />
 
-                        <div className="grid gap-3 md:grid-cols-3">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3">
                             <MetricCard
                                 label="Total tabel"
                                 value={formatNumber(tables.length)}
