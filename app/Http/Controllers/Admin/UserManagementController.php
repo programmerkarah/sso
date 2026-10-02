@@ -35,17 +35,13 @@ use Throwable;
 
 class UserManagementController extends Controller
 {
-    public function index(Request $request, EncryptedStateService $encryptedState): Response|RedirectResponse
+    public function index(Request $request, EncryptedStateService $encryptedState): Response
     {
-        // Canonicalize stateful navigation to GET so subsequent form actions
-        // using return back() preserve the exact page/filter in the browser URL.
-        if ($request->isMethod('post') && $request->filled('state')) {
-            return redirect()->route('admin.users.index', [
-                'state' => $request->string('state')->toString(),
-            ]);
-        }
+        $state = $this->resolveUsersState($request, $encryptedState);
 
-        $state = $this->resolveState($request, $encryptedState);
+        // Simpan state navigasi server-side agar aksi mutasi yang kembali ke
+        // /admin/users tetap membuka page/filter yang sama.
+        $request->session()->put('admin.users.state', $state);
 
         $selectedUserId = isset($state['user_id']) ? (int) $state['user_id'] : null;
         $pendingOnly = (bool) ($state['pending_only'] ?? false);
@@ -976,6 +972,35 @@ class UserManagementController extends Controller
         }
 
         return response()->json(['ok' => true]);
+    }
+
+    private function resolveUsersState(Request $request, EncryptedStateService $encryptedState): array
+    {
+        if ($request->filled('state')) {
+            return $encryptedState->decryptArray($request->string('state')->toString(), [
+                'page' => 1,
+                'user_id' => null,
+                'pending_only' => false,
+            ]);
+        }
+
+        $sessionState = $request->session()->get('admin.users.state');
+
+        if (is_array($sessionState)) {
+            return [
+                'page' => max(1, (int) ($sessionState['page'] ?? 1)),
+                'user_id' => isset($sessionState['user_id'])
+                    ? (int) $sessionState['user_id']
+                    : null,
+                'pending_only' => (bool) ($sessionState['pending_only'] ?? false),
+            ];
+        }
+
+        return [
+            'page' => 1,
+            'user_id' => null,
+            'pending_only' => false,
+        ];
     }
 
     private function resolveState(Request $request, EncryptedStateService $encryptedState): array
