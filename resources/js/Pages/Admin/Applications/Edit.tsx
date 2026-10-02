@@ -8,6 +8,7 @@ import Button from '@/Components/Button';
 import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application } from '@/types';
 
@@ -50,23 +51,16 @@ export default function Edit({
         <AppLayout>
             <Head title={`Edit - ${application.name}`} />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-3xl sm:px-6 lg:px-8">
-                    <div className="mb-6">
-                        <Link
-                            href={`/admin/applications/${application.route_key}`}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-white   transition hover:bg-slate-800"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                            Kembali ke detail
+            <div className="mx-auto max-w-4xl space-y-6">
+                <PageHeader
+                    title="Edit aplikasi"
+                    description={`Perbarui konfigurasi ${application.name}.`}
+                    actions={
+                        <Link href={`/admin/applications/${application.route_key}`} className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                            <ArrowLeft className="h-4 w-4" /> Detail aplikasi
                         </Link>
-                        <h1 className="mt-4  text-4xl font-semibold text-white  sm:text-5xl">
-                            Edit Aplikasi
-                        </h1>
-                        <p className="mt-2 text-white/75">
-                            Perbarui informasi aplikasi {application.name}
-                        </p>
-                    </div>
+                    }
+                />
 
                     <GlassCard>
                         <form onSubmit={submit} className="space-y-6">
@@ -233,7 +227,6 @@ export default function Edit({
                             </div>
                         </form>
                     </GlassCard>
-                </div>
             </div>
         </AppLayout>
     );
