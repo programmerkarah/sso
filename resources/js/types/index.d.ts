@@ -67,6 +67,11 @@ export type PageProps<
             title: string;
             description: string;
             section: string | null;
+            layout: {
+                mode: 'document' | 'workspace';
+                sticky_summary: boolean;
+                content_scroll: boolean;
+            };
         };
         container: string;
     };
