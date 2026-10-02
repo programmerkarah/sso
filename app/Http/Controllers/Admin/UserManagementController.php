@@ -35,8 +35,16 @@ use Throwable;
 
 class UserManagementController extends Controller
 {
-    public function index(Request $request, EncryptedStateService $encryptedState): Response
+    public function index(Request $request, EncryptedStateService $encryptedState): Response|RedirectResponse
     {
+        // Canonicalize stateful navigation to GET so subsequent form actions
+        // using return back() preserve the exact page/filter in the browser URL.
+        if ($request->isMethod('post') && $request->filled('state')) {
+            return redirect()->route('admin.users.index', [
+                'state' => $request->string('state')->toString(),
+            ]);
+        }
+
         $state = $this->resolveState($request, $encryptedState);
 
         $selectedUserId = isset($state['user_id']) ? (int) $state['user_id'] : null;
@@ -129,6 +137,11 @@ class UserManagementController extends Controller
                 'page' => 1,
                 'user_id' => null,
                 'pending_only' => false,
+            ]),
+            'currentStateToken' => $encryptedState->encryptArray([
+                'page' => $users->currentPage(),
+                'user_id' => $selectedUserId,
+                'pending_only' => $pendingOnly,
             ]),
             'exportStateToken' => $encryptedState->encryptArray([
                 'page' => 1,
