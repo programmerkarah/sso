@@ -14,8 +14,8 @@ import { Head, Link, router } from '@inertiajs/react';
 
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
-import PageHeader from '@/Components/PageHeader';
 import MetricCard from '@/Components/MetricCard';
+import PageHeader from '@/Components/PageHeader';
 import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application, PageProps } from '@/types';
@@ -100,15 +100,22 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                 />
 
                 <div className="grid gap-3 md:grid-cols-3">
-                    <MetricCard label="Total aplikasi" value={formatNumber(stats.total)} />
-                    <MetricCard label="Aplikasi aktif" value={formatNumber(stats.active)} />
+                    <MetricCard
+                        label="Total aplikasi"
+                        value={formatNumber(stats.total)}
+                    />
+                    <MetricCard
+                        label="Aplikasi aktif"
+                        value={formatNumber(stats.active)}
+                    />
                     <GlassCard>
                         <div className="flex items-center gap-3">
                             <div className="rounded-full bg-[var(--bps-selected-bg)] p-3">
                                 <Globe className="h-5 w-5 text-[#4a9fd7]" />
                             </div>
                             <p className="text-sm text-[var(--bps-muted)]">
-                                Pastikan setiap callback URL mengarah ke endpoint OAuth yang benar pada aplikasi tujuan.
+                                Pastikan setiap callback URL mengarah ke
+                                endpoint OAuth yang benar pada aplikasi tujuan.
                             </p>
                         </div>
                     </GlassCard>

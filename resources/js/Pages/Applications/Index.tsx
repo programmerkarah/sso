@@ -53,7 +53,9 @@ export default function Index({
                                 hover
                                 className={`flex flex-col gap-5 ${!application.is_active ? 'ui-inactive-card' : ''}`}
                             >
-                                <div className={`flex items-start gap-4 ${!application.is_active ? 'inactive-muted' : ''}`}>
+                                <div
+                                    className={`flex items-start gap-4 ${!application.is_active ? 'inactive-muted' : ''}`}
+                                >
                                     <div className="h-14 w-14 overflow-hidden rounded-2xl border border-[#dbe5ec] bg-[#f8fbfd] p-2">
                                         {application.logo_url ? (
                                             <img
@@ -86,7 +88,9 @@ export default function Index({
                                     </div>
                                 </div>
 
-                                <div className={`ui-field rounded-xl px-3 py-2 text-sm ${!application.is_active ? 'inactive-muted' : ''}`}>
+                                <div
+                                    className={`ui-field rounded-xl px-3 py-2 text-sm ${!application.is_active ? 'inactive-muted' : ''}`}
+                                >
                                     {application.landing_url}
                                 </div>
 

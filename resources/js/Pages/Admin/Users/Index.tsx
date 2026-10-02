@@ -593,21 +593,18 @@ export default function Index({
             user_ids: selectedUserIds,
         }));
 
-        batchAccessForm.post(
-            `/admin/users/access/batch`,
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setBatchAccessModalOpen(false);
+        batchAccessForm.post(`/admin/users/access/batch`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setBatchAccessModalOpen(false);
                 setSelectedUserIds([]);
-                    batchAccessForm.setData({
-                        user_ids: [],
-                        organization_id: '',
-                        role_ids: [],
-                    });
-                },
+                batchAccessForm.setData({
+                    user_ids: [],
+                    organization_id: '',
+                    role_ids: [],
+                });
             },
-        );
+        });
     };
 
     const submitBatchVerify = () => {

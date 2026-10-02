@@ -1,4 +1,5 @@
 import { ArrowLeft } from 'lucide-react';
+
 import { FormEventHandler } from 'react';
 
 import { Head, Link, useForm } from '@inertiajs/react';

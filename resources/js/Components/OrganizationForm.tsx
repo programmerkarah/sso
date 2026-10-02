@@ -1,5 +1,6 @@
-import { Link } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+
+import { Link } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
 import Input from '@/Components/Input';
@@ -115,7 +116,11 @@ export default function OrganizationForm({
 
             <div className="flex flex-col-reverse gap-2 border-t border-[var(--bps-border)] pt-5 sm:flex-row sm:justify-end">
                 <Link href="/admin/organizations" className="sm:w-auto">
-                    <Button type="button" variant="secondary" className="w-full">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        className="w-full"
+                    >
                         Batal
                     </Button>
                 </Link>
