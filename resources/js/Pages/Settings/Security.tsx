@@ -615,7 +615,6 @@ export default function Security({
                                     </div>
                                 </GlassCard>
                             )}
-                    </div>
                 </div>
             </div>
 
