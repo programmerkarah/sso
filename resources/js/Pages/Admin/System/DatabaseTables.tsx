@@ -902,7 +902,7 @@ export default function DatabaseTables({
                                         </>
                                     )}
                                 </GlassCard>
-                                </div>
+                                </ScrollArea>
                             </>
                         ) : (
                             <GlassCard>
@@ -911,7 +911,7 @@ export default function DatabaseTables({
                                 </div>
                             </GlassCard>
                         )}
-                    </ScrollArea>
+                    </div>
                 </div>
             </PageWorkspace>
 
