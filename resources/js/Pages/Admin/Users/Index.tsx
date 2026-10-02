@@ -101,6 +101,7 @@ interface AdminUsersIndexProps extends PageProps {
     roleOptions: RoleOption[];
     selectedUser?: Omit<SearchableSelectOption, 'state_token'> | null;
     clearFilterToken: string;
+    currentStateToken: string;
     exportStateToken: string;
     pendingOnlyActive: boolean;
     pendingOnlyFilterToken: string;
@@ -282,6 +283,7 @@ export default function Index({
     roleOptions,
     selectedUser,
     clearFilterToken,
+    currentStateToken,
     exportStateToken,
     pendingOnlyActive,
     pendingOnlyFilterToken,
@@ -561,7 +563,7 @@ export default function Index({
         }
 
         identityForm.post(
-            `/admin/users/${editIdentityModal.user.route_key}/identity`,
+            `/admin/users/${editIdentityModal.user.route_key}/identity?state=${encodeURIComponent(currentStateToken)}`,
             {
                 preserveScroll: true,
                 onSuccess: () => {
@@ -577,7 +579,7 @@ export default function Index({
         }
 
         accessForm.post(
-            `/admin/users/${editAccessModal.user.route_key}/access`,
+            `/admin/users/${editAccessModal.user.route_key}/access?state=${encodeURIComponent(currentStateToken)}`,
             {
                 preserveScroll: true,
                 onSuccess: () => {
@@ -593,23 +595,26 @@ export default function Index({
             user_ids: selectedUserIds,
         }));
 
-        batchAccessForm.post('/admin/users/access/batch', {
-            preserveScroll: true,
-            onSuccess: () => {
-                setBatchAccessModalOpen(false);
+        batchAccessForm.post(
+            `/admin/users/access/batch?state=${encodeURIComponent(currentStateToken)}`,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setBatchAccessModalOpen(false);
                 setSelectedUserIds([]);
-                batchAccessForm.setData({
-                    user_ids: [],
-                    organization_id: '',
-                    role_ids: [],
-                });
+                    batchAccessForm.setData({
+                        user_ids: [],
+                        organization_id: '',
+                        role_ids: [],
+                    });
+                },
             },
-        });
+        );
     };
 
     const submitBatchVerify = () => {
         router.post(
-            '/admin/users/verify/batch',
+            `/admin/users/verify/batch?state=${encodeURIComponent(currentStateToken)}`,
             { user_ids: selectedUserIds },
             {
                 preserveScroll: true,
@@ -645,10 +650,14 @@ export default function Index({
     };
 
     const visitState = (state: string) => {
-        router.post(
+        router.get(
             '/admin/users',
             { state },
-            { preserveScroll: true, preserveState: true },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                replace: true,
+            },
         );
     };
 
@@ -660,7 +669,7 @@ export default function Index({
             confirmVariant: 'amber',
             onConfirm: () => {
                 router.post(
-                    `/admin/users/${user.route_key}/reset-password`,
+                    `/admin/users/${user.route_key}/reset-password?state=${encodeURIComponent(currentStateToken)}`,
                     {},
                     { preserveScroll: true },
                 );
@@ -677,7 +686,7 @@ export default function Index({
             confirmVariant: 'red',
             onConfirm: () => {
                 router.post(
-                    `/admin/users/${user.route_key}/reset-two-factor`,
+                    `/admin/users/${user.route_key}/reset-two-factor?state=${encodeURIComponent(currentStateToken)}`,
                     {},
                     { preserveScroll: true },
                 );
@@ -694,7 +703,7 @@ export default function Index({
             confirmVariant: 'amber',
             onConfirm: () => {
                 router.post(
-                    `/admin/users/${user.route_key}/resend-verification-email`,
+                    `/admin/users/${user.route_key}/resend-verification-email?state=${encodeURIComponent(currentStateToken)}`,
                     {},
                     { preserveScroll: true },
                 );
@@ -710,7 +719,7 @@ export default function Index({
             confirmLabel: 'Ya, Hapus Pengguna',
             confirmVariant: 'red',
             onConfirm: () => {
-                router.delete(`/admin/users/${user.route_key}`, {
+                router.delete(`/admin/users/${user.route_key}?state=${encodeURIComponent(currentStateToken)}`, {
                     preserveScroll: true,
                 });
                 closeModal();
@@ -727,7 +736,7 @@ export default function Index({
                 confirmVariant: 'red',
                 onConfirm: () => {
                     router.post(
-                        `/admin/users/${user.route_key}/toggle-admin`,
+                        `/admin/users/${user.route_key}/toggle-admin?state=${encodeURIComponent(currentStateToken)}`,
                         {},
                         { preserveScroll: true },
                     );
@@ -742,7 +751,7 @@ export default function Index({
                 confirmVariant: 'emerald',
                 onConfirm: () => {
                     router.post(
-                        `/admin/users/${user.route_key}/toggle-admin`,
+                        `/admin/users/${user.route_key}/toggle-admin?state=${encodeURIComponent(currentStateToken)}`,
                         {},
                         { preserveScroll: true },
                     );
@@ -761,7 +770,7 @@ export default function Index({
                 confirmVariant: 'red',
                 onConfirm: () => {
                     router.post(
-                        `/admin/users/${user.route_key}/toggle-admin-verification`,
+                        `/admin/users/${user.route_key}/toggle-admin-verification?state=${encodeURIComponent(currentStateToken)}`,
                         {},
                         { preserveScroll: true },
                     );
@@ -779,7 +788,7 @@ export default function Index({
             confirmVariant: 'emerald',
             onConfirm: () => {
                 router.post(
-                    `/admin/users/${user.route_key}/toggle-admin-verification`,
+                    `/admin/users/${user.route_key}/toggle-admin-verification?state=${encodeURIComponent(currentStateToken)}`,
                     {},
                     { preserveScroll: true },
                 );
