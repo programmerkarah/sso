@@ -62,8 +62,8 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                 topClassName="top-4"
             />
 
-            <div className="mx-auto grid h-full max-w-[1680px] lg:grid-cols-[0.9fr_1.1fr]">
-                <aside className="hidden border-r border-[#dbe5ec] bg-white/55 px-10 py-9 lg:flex lg:flex-col xl:px-14">
+            <div className="mx-auto grid h-full max-w-[1680px] xl:grid-cols-[0.9fr_1.1fr]">
+                <aside className="hidden border-r border-[#dbe5ec] bg-white/55 px-10 py-9 xl:flex xl:flex-col xl:px-14">
                     <Link
                         href="/"
                         className="inline-flex w-fit items-center gap-3"
@@ -124,7 +124,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                     <div className="absolute right-4 top-5 z-20 sm:right-8">
                         <ThemeToggle compact />
                     </div>
-                    <div className="absolute left-4 top-5 z-10 sm:left-8 lg:hidden">
+                    <div className="absolute left-4 top-4 z-10 sm:left-8 xl:hidden">
                         <Link href="/" className="flex items-center gap-3">
                             <AppIcon className="h-9 w-9" />
                             <div>
@@ -140,17 +140,17 @@ export default function GuestLayout({ children }: PropsWithChildren) {
 
                     <ScrollArea
                         className="min-h-0"
-                        contentClassName="flex min-h-full items-center justify-center px-4 py-12 sm:px-8 sm:py-14 lg:px-12 xl:px-16"
+                        contentClassName="flex min-h-full items-center justify-center px-3 pb-4 pt-20 sm:px-6 sm:pb-6 sm:pt-24 md:px-8 xl:px-12 xl:py-10 2xl:px-16"
                     >
-                        <main className="w-full max-w-lg">
-                            <div className="app-panel-background rounded-2xl border border-[#dbe5ec] px-6 py-7 shadow-2xl shadow-black/10 sm:px-8 sm:py-8">
+                        <main className="w-full max-w-md sm:max-w-lg">
+                            <div className="app-panel-background rounded-2xl border border-[#dbe5ec] px-4 py-5 shadow-xl shadow-black/10 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
                                 {children}
                             </div>
                         </main>
                     </ScrollArea>
 
-                    <footer className="border-t border-[#dbe5ec] bg-white/75 px-4 py-3 sm:px-8 lg:px-12 xl:px-16">
-                        <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-4 text-xs text-[#8799a7]">
+                    <footer className="border-t border-[#dbe5ec] bg-white/75 px-3 py-2.5 sm:px-6 sm:py-3 xl:px-12 2xl:px-16">
+                        <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-3 text-[11px] text-[#8799a7] sm:text-xs">
                             <Link
                                 href="/"
                                 className="inline-flex items-center gap-2 rounded-lg border border-[#d5e1e9] bg-[#f8fbfd] px-3 py-2 font-medium text-[#6f8495] transition hover:border-[#b8d9ee] hover:bg-[#eef5f9] hover:text-[#347fae]"
