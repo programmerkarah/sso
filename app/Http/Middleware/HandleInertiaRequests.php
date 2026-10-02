@@ -48,6 +48,29 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
+            'app' => [
+                'name' => config('app.name', 'SSO BPS Kota Sawahlunto'),
+                'product_name' => 'SSO BPS Kota Sawahlunto',
+                'product_short_name' => 'SSO',
+                'description' => 'Single Sign-On',
+                'locale' => app()->getLocale(),
+            ],
+            'navigation' => [
+                'primary' => array_values(array_filter([
+                    ['label' => 'Dashboard', 'href' => '/dashboard', 'icon' => 'dashboard'],
+                    ['label' => 'Aplikasi', 'href' => '/applications', 'icon' => 'applications'],
+                ])),
+                'account' => [
+                    ['label' => 'Keamanan akun', 'href' => '/settings/security'],
+                    ['label' => 'Sesi & akses', 'href' => '/settings/sessions'],
+                ],
+                'admin' => array_values(array_filter([
+                    $isAdmin ? ['label' => 'Kelola aplikasi', 'href' => '/admin/applications'] : null,
+                    $isAdmin ? ['label' => 'Organisasi', 'href' => '/admin/organizations'] : null,
+                    $isAdmin ? ['label' => 'Pengguna', 'href' => '/admin/users'] : null,
+                    $isAdmin ? ['label' => 'Sistem', 'href' => '/admin/system'] : null,
+                ])),
+            ],
             'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,
