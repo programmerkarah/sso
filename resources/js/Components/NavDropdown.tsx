@@ -21,7 +21,7 @@ export default function NavDropdown({
 }: NavDropdownProps) {
     if (variant === 'mobile') {
         return (
-            <div className="overflow-hidden rounded-lg border border-slate-800">
+            <div className="overflow-hidden rounded-lg border border-cyan-950/70">
                 <button
                     type="button"
                     onClick={onToggle}
@@ -39,7 +39,7 @@ export default function NavDropdown({
                     />
                 </button>
                 {isOpen && (
-                    <div className="grid gap-1 border-t border-slate-800 p-2">
+                    <div className="grid gap-1 border-t border-cyan-950/70 p-2">
                         {children}
                     </div>
                 )}
@@ -55,8 +55,8 @@ export default function NavDropdown({
                 className={
                     'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ' +
                     (isOpen
-                        ? 'bg-slate-800 text-white'
-                        : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100')
+                        ? 'bg-[#11364f] text-white'
+                        : 'text-slate-400 hover:bg-[#0b2d46] hover:text-slate-100')
                 }
             >
                 {icon}
@@ -69,7 +69,7 @@ export default function NavDropdown({
                 />
             </button>
             {isOpen && (
-                <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-lg border border-slate-700 bg-slate-900 p-1.5 shadow-xl">
+                <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-lg border border-cyan-900/60 bg-[#08263b] p-1.5 shadow-xl">
                     {children}
                 </div>
             )}
