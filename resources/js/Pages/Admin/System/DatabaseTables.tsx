@@ -511,397 +511,406 @@ export default function DatabaseTables({
                                     viewportClassName="pr-1"
                                     contentClassName="pb-2"
                                 >
-
-                                <GlassCard className="overflow-hidden p-0">
-                                    <div className="border-b border-[var(--bps-border)] px-4 py-4 sm:px-6 sm:py-5">
-                                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                            <div className="min-w-0">
-                                                <h3 className="text-lg font-bold text-[var(--bps-text)]">
-                                                    Detail Tabel
-                                                </h3>
-                                                <p className="mt-1 text-sm text-[var(--bps-muted)]">
-                                                    Pindah tab untuk melihat
-                                                    struktur kolom atau preview
-                                                    data tabel.
-                                                </p>
-                                            </div>
-                                            <div className="flex w-full flex-col rounded-xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] p-1 sm:inline-flex sm:w-auto sm:flex-row">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        setActiveTab('columns')
-                                                    }
-                                                    className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                                                        activeTab === 'columns'
-                                                            ? 'ui-selected'
-                                                            : 'ui-hover text-[var(--bps-muted)]'
-                                                    }`}
-                                                >
-                                                    Struktur Kolom
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        setActiveTab('data')
-                                                    }
-                                                    className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                                                        activeTab === 'data'
-                                                            ? 'ui-selected'
-                                                            : 'ui-hover text-[var(--bps-muted)]'
-                                                    }`}
-                                                >
-                                                    Preview Data
-                                                </button>
+                                    <GlassCard className="overflow-hidden p-0">
+                                        <div className="border-b border-[var(--bps-border)] px-4 py-4 sm:px-6 sm:py-5">
+                                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                                <div className="min-w-0">
+                                                    <h3 className="text-lg font-bold text-[var(--bps-text)]">
+                                                        Detail Tabel
+                                                    </h3>
+                                                    <p className="mt-1 text-sm text-[var(--bps-muted)]">
+                                                        Pindah tab untuk melihat
+                                                        struktur kolom atau
+                                                        preview data tabel.
+                                                    </p>
+                                                </div>
+                                                <div className="flex w-full flex-col rounded-xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] p-1 sm:inline-flex sm:w-auto sm:flex-row">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setActiveTab(
+                                                                'columns',
+                                                            )
+                                                        }
+                                                        className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                                                            activeTab ===
+                                                            'columns'
+                                                                ? 'ui-selected'
+                                                                : 'ui-hover text-[var(--bps-muted)]'
+                                                        }`}
+                                                    >
+                                                        Struktur Kolom
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setActiveTab('data')
+                                                        }
+                                                        className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                                                            activeTab === 'data'
+                                                                ? 'ui-selected'
+                                                                : 'ui-hover text-[var(--bps-muted)]'
+                                                        }`}
+                                                    >
+                                                        Preview Data
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {activeTab === 'columns' ? (
-                                        <ScrollArea
-                                            axis="horizontal"
-                                            viewportClassName="pb-2"
-                                        >
-                                            <table className="min-w-full text-sm text-[var(--bps-text)]">
-                                                <thead className="bg-[var(--bps-surface-soft)] text-left text-xs uppercase tracking-wider text-[var(--bps-muted)]">
-                                                    <tr>
-                                                        <th className="px-5 py-3">
-                                                            Nama
-                                                        </th>
-                                                        <th className="px-5 py-3">
-                                                            Tipe
-                                                        </th>
-                                                        <th className="px-5 py-3">
-                                                            Null
-                                                        </th>
-                                                        <th className="px-5 py-3">
-                                                            Key
-                                                        </th>
-                                                        <th className="px-5 py-3">
-                                                            Default
-                                                        </th>
-                                                        <th className="px-5 py-3">
-                                                            Extra
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-white/8">
-                                                    {selectedTable.columns.map(
-                                                        (column) => (
-                                                            <tr
-                                                                key={
-                                                                    column.name
-                                                                }
-                                                            >
-                                                                <td className="px-5 py-4 font-semibold text-[var(--bps-text)]">
-                                                                    {
-                                                                        column.name
-                                                                    }
-                                                                </td>
-                                                                <td className="px-5 py-4">
-                                                                    {
-                                                                        column.type
-                                                                    }
-                                                                    {column
-                                                                        .enum_values
-                                                                        .length >
-                                                                        0 && (
-                                                                        <div className="mt-1 text-[11px] text-[var(--bps-muted)]">
-                                                                            {column.enum_values.join(
-                                                                                ', ',
-                                                                            )}
-                                                                        </div>
-                                                                    )}
-                                                                    {column.foreign_key && (
-                                                                        <div className="mt-1 text-[11px] text-[var(--bps-muted)]">
-                                                                            FK:{' '}
-                                                                            {
-                                                                                column
-                                                                                    .foreign_key
-                                                                                    .table
-                                                                            }
-                                                                            .
-                                                                            {
-                                                                                column
-                                                                                    .foreign_key
-                                                                                    .column
-                                                                            }
-                                                                        </div>
-                                                                    )}
-                                                                </td>
-                                                                <td className="px-5 py-4">
-                                                                    {column.nullable
-                                                                        ? 'YES'
-                                                                        : 'NO'}
-                                                                </td>
-                                                                <td className="px-5 py-4">
-                                                                    {column.key ||
-                                                                        '—'}
-                                                                </td>
-                                                                <td className="px-5 py-4">
-                                                                    {formatCellValue(
-                                                                        column.default,
-                                                                    )}
-                                                                </td>
-                                                                <td className="px-5 py-4">
-                                                                    {column.extra ||
-                                                                        '—'}
-                                                                </td>
-                                                            </tr>
-                                                        ),
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </ScrollArea>
-                                    ) : (
-                                        <>
-                                            <div className="border-b border-[var(--bps-border)] px-4 py-3 sm:px-6">
-                                                <p className="text-sm text-[var(--bps-muted)]">
-                                                    Menampilkan{' '}
-                                                    {formatNumber(
-                                                        selectedTable.rows
-                                                            .from ?? 0,
-                                                    )}{' '}
-                                                    sampai{' '}
-                                                    {formatNumber(
-                                                        selectedTable.rows.to ??
-                                                            0,
-                                                    )}{' '}
-                                                </p>
-                                            </div>
+                                        {activeTab === 'columns' ? (
                                             <ScrollArea
                                                 axis="horizontal"
                                                 viewportClassName="pb-2"
                                             >
-                                                <table className="w-full min-w-[1080px] table-fixed text-sm text-[var(--bps-text)]">
+                                                <table className="min-w-full text-sm text-[var(--bps-text)]">
                                                     <thead className="bg-[var(--bps-surface-soft)] text-left text-xs uppercase tracking-wider text-[var(--bps-muted)]">
                                                         <tr>
-                                                            {selectedTable.columns.map(
-                                                                (column) => (
-                                                                    <th
-                                                                        key={`head-${column.name}`}
-                                                                        className="px-4 py-3"
-                                                                    >
-                                                                        <div className="truncate">
-                                                                            {
-                                                                                column.name
-                                                                            }
-                                                                        </div>
-                                                                    </th>
-                                                                ),
-                                                            )}
-                                                            <th className="w-[110px] px-4 py-3 text-right">
-                                                                Aksi
+                                                            <th className="px-5 py-3">
+                                                                Nama
+                                                            </th>
+                                                            <th className="px-5 py-3">
+                                                                Tipe
+                                                            </th>
+                                                            <th className="px-5 py-3">
+                                                                Null
+                                                            </th>
+                                                            <th className="px-5 py-3">
+                                                                Key
+                                                            </th>
+                                                            <th className="px-5 py-3">
+                                                                Default
+                                                            </th>
+                                                            <th className="px-5 py-3">
+                                                                Extra
                                                             </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-white/8">
-                                                        {selectedTable.rows.data
-                                                            .length === 0 ? (
-                                                            <tr>
-                                                                <td
-                                                                    colSpan={
-                                                                        (selectedTable
-                                                                            .columns
-                                                                            .length ||
-                                                                            1) +
-                                                                        1
+                                                        {selectedTable.columns.map(
+                                                            (column) => (
+                                                                <tr
+                                                                    key={
+                                                                        column.name
                                                                     }
-                                                                    className="px-5 py-10 text-center text-[var(--bps-muted)]"
                                                                 >
-                                                                    Tabel tidak
-                                                                    memiliki
-                                                                    data.
-                                                                </td>
-                                                            </tr>
-                                                        ) : (
-                                                            selectedTable.rows.data.map(
-                                                                (
-                                                                    row,
-                                                                    rowIndex,
-                                                                ) => (
-                                                                    <tr
-                                                                        key={`row-${rowIndex}`}
-                                                                        className="align-top"
-                                                                    >
-                                                                        {selectedTable.columns.map(
-                                                                            (
-                                                                                column,
-                                                                            ) => (
-                                                                                <td
-                                                                                    key={`cell-${rowIndex}-${column.name}`}
-                                                                                    className="px-4 py-4 align-top"
-                                                                                >
-                                                                                    {(() => {
-                                                                                        const cellValue =
-                                                                                            formatCellValue(
-                                                                                                row[
-                                                                                                    column
-                                                                                                        .name
-                                                                                                ],
-                                                                                            );
-                                                                                        const isCollapsed =
-                                                                                            shouldCollapseCell(
-                                                                                                cellValue,
-                                                                                            );
-
-                                                                                        if (
-                                                                                            !isCollapsed
-                                                                                        ) {
-                                                                                            return (
-                                                                                                <div className="max-w-[160px] whitespace-pre-wrap break-all text-xs text-[var(--bps-text)]">
-                                                                                                    {
-                                                                                                        cellValue
-                                                                                                    }
-                                                                                                </div>
-                                                                                            );
-                                                                                        }
-
-                                                                                        return (
-                                                                                            <div className="max-w-[180px] space-y-2">
-                                                                                                <button
-                                                                                                    type="button"
-                                                                                                    onDoubleClick={() =>
-                                                                                                        setExpandedCell(
-                                                                                                            {
-                                                                                                                column: column.name,
-                                                                                                                value: cellValue,
-                                                                                                            },
-                                                                                                        )
-                                                                                                    }
-                                                                                                    onClick={() =>
-                                                                                                        setExpandedCell(
-                                                                                                            {
-                                                                                                                column: column.name,
-                                                                                                                value: cellValue,
-                                                                                                            },
-                                                                                                        )
-                                                                                                    }
-                                                                                                    className="ui-hover block w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] p-2 text-left"
-                                                                                                >
-                                                                                                    <div className="max-h-24 overflow-hidden whitespace-pre-wrap break-all text-xs leading-5 text-[var(--bps-text)]">
-                                                                                                        {
-                                                                                                            cellValue
-                                                                                                        }
-                                                                                                    </div>
-                                                                                                </button>
-                                                                                                <button
-                                                                                                    type="button"
-                                                                                                    onClick={() =>
-                                                                                                        setExpandedCell(
-                                                                                                            {
-                                                                                                                column: column.name,
-                                                                                                                value: cellValue,
-                                                                                                            },
-                                                                                                        )
-                                                                                                    }
-                                                                                                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#4a9fd7] transition hover:text-[var(--bps-blue-strong)]"
-                                                                                                >
-                                                                                                    <Expand className="h-3.5 w-3.5" />
-                                                                                                    Expand
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        );
-                                                                                    })()}
-                                                                                </td>
-                                                                            ),
+                                                                    <td className="px-5 py-4 font-semibold text-[var(--bps-text)]">
+                                                                        {
+                                                                            column.name
+                                                                        }
+                                                                    </td>
+                                                                    <td className="px-5 py-4">
+                                                                        {
+                                                                            column.type
+                                                                        }
+                                                                        {column
+                                                                            .enum_values
+                                                                            .length >
+                                                                            0 && (
+                                                                            <div className="mt-1 text-[11px] text-[var(--bps-muted)]">
+                                                                                {column.enum_values.join(
+                                                                                    ', ',
+                                                                                )}
+                                                                            </div>
                                                                         )}
-                                                                        <td className="px-4 py-4 text-right align-top">
-                                                                            {selectedTable.primary_key &&
-                                                                            row.__row_token ? (
-                                                                                <button
-                                                                                    type="button"
-                                                                                    onClick={() =>
-                                                                                        openEditRowModal(
-                                                                                            row,
-                                                                                        )
-                                                                                    }
-                                                                                    className="ui-warning inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-semibold"
-                                                                                >
-                                                                                    <SquarePen className="h-3.5 w-3.5" />
-                                                                                    Edit
-                                                                                </button>
-                                                                            ) : (
-                                                                                <span className="text-xs text-[var(--bps-muted)]">
-                                                                                    —
-                                                                                </span>
-                                                                            )}
-                                                                        </td>
-                                                                    </tr>
-                                                                ),
-                                                            )
+                                                                        {column.foreign_key && (
+                                                                            <div className="mt-1 text-[11px] text-[var(--bps-muted)]">
+                                                                                FK:{' '}
+                                                                                {
+                                                                                    column
+                                                                                        .foreign_key
+                                                                                        .table
+                                                                                }
+
+                                                                                .
+                                                                                {
+                                                                                    column
+                                                                                        .foreign_key
+                                                                                        .column
+                                                                                }
+                                                                            </div>
+                                                                        )}
+                                                                    </td>
+                                                                    <td className="px-5 py-4">
+                                                                        {column.nullable
+                                                                            ? 'YES'
+                                                                            : 'NO'}
+                                                                    </td>
+                                                                    <td className="px-5 py-4">
+                                                                        {column.key ||
+                                                                            '—'}
+                                                                    </td>
+                                                                    <td className="px-5 py-4">
+                                                                        {formatCellValue(
+                                                                            column.default,
+                                                                        )}
+                                                                    </td>
+                                                                    <td className="px-5 py-4">
+                                                                        {column.extra ||
+                                                                            '—'}
+                                                                    </td>
+                                                                </tr>
+                                                            ),
                                                         )}
                                                     </tbody>
                                                 </table>
                                             </ScrollArea>
-
-                                            {selectedTable.rows.last_page >
-                                                1 && (
-                                                <div className="flex flex-col gap-3 border-t border-[var(--bps-border)] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                                        ) : (
+                                            <>
+                                                <div className="border-b border-[var(--bps-border)] px-4 py-3 sm:px-6">
                                                     <p className="text-sm text-[var(--bps-muted)]">
-                                                        Halaman{' '}
-                                                        {
+                                                        Menampilkan{' '}
+                                                        {formatNumber(
                                                             selectedTable.rows
-                                                                .current_page
-                                                        }{' '}
-                                                        dari{' '}
-                                                        {
+                                                                .from ?? 0,
+                                                        )}{' '}
+                                                        sampai{' '}
+                                                        {formatNumber(
                                                             selectedTable.rows
-                                                                .last_page
-                                                        }
+                                                                .to ?? 0,
+                                                        )}{' '}
                                                     </p>
-                                                    <div className="flex items-center gap-2">
-                                                        <Button
-                                                            type="button"
-                                                            variant="secondary"
-                                                            disabled={
-                                                                !selectedTable
-                                                                    .rows
-                                                                    .prev_page_token
-                                                            }
-                                                            className="px-4 py-2"
-                                                            onClick={() =>
-                                                                selectedTable
-                                                                    .rows
-                                                                    .prev_page_token &&
-                                                                visitByToken(
-                                                                    selectedTable
-                                                                        .rows
-                                                                        .prev_page_token,
-                                                                )
-                                                            }
-                                                        >
-                                                            <ChevronLeft className="h-4 w-4" />
-                                                            Sebelumnya
-                                                        </Button>
-                                                        <Button
-                                                            type="button"
-                                                            variant="secondary"
-                                                            disabled={
-                                                                !selectedTable
-                                                                    .rows
-                                                                    .next_page_token
-                                                            }
-                                                            className="px-4 py-2"
-                                                            onClick={() =>
-                                                                selectedTable
-                                                                    .rows
-                                                                    .next_page_token &&
-                                                                visitByToken(
-                                                                    selectedTable
-                                                                        .rows
-                                                                        .next_page_token,
-                                                                )
-                                                            }
-                                                        >
-                                                            Berikutnya
-                                                            <ChevronRight className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
                                                 </div>
-                                            )}
-                                        </>
-                                    )}
-                                </GlassCard>
+                                                <ScrollArea
+                                                    axis="horizontal"
+                                                    viewportClassName="pb-2"
+                                                >
+                                                    <table className="w-full min-w-[1080px] table-fixed text-sm text-[var(--bps-text)]">
+                                                        <thead className="bg-[var(--bps-surface-soft)] text-left text-xs uppercase tracking-wider text-[var(--bps-muted)]">
+                                                            <tr>
+                                                                {selectedTable.columns.map(
+                                                                    (
+                                                                        column,
+                                                                    ) => (
+                                                                        <th
+                                                                            key={`head-${column.name}`}
+                                                                            className="px-4 py-3"
+                                                                        >
+                                                                            <div className="truncate">
+                                                                                {
+                                                                                    column.name
+                                                                                }
+                                                                            </div>
+                                                                        </th>
+                                                                    ),
+                                                                )}
+                                                                <th className="w-[110px] px-4 py-3 text-right">
+                                                                    Aksi
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-white/8">
+                                                            {selectedTable.rows
+                                                                .data.length ===
+                                                            0 ? (
+                                                                <tr>
+                                                                    <td
+                                                                        colSpan={
+                                                                            (selectedTable
+                                                                                .columns
+                                                                                .length ||
+                                                                                1) +
+                                                                            1
+                                                                        }
+                                                                        className="px-5 py-10 text-center text-[var(--bps-muted)]"
+                                                                    >
+                                                                        Tabel
+                                                                        tidak
+                                                                        memiliki
+                                                                        data.
+                                                                    </td>
+                                                                </tr>
+                                                            ) : (
+                                                                selectedTable.rows.data.map(
+                                                                    (
+                                                                        row,
+                                                                        rowIndex,
+                                                                    ) => (
+                                                                        <tr
+                                                                            key={`row-${rowIndex}`}
+                                                                            className="align-top"
+                                                                        >
+                                                                            {selectedTable.columns.map(
+                                                                                (
+                                                                                    column,
+                                                                                ) => (
+                                                                                    <td
+                                                                                        key={`cell-${rowIndex}-${column.name}`}
+                                                                                        className="px-4 py-4 align-top"
+                                                                                    >
+                                                                                        {(() => {
+                                                                                            const cellValue =
+                                                                                                formatCellValue(
+                                                                                                    row[
+                                                                                                        column
+                                                                                                            .name
+                                                                                                    ],
+                                                                                                );
+                                                                                            const isCollapsed =
+                                                                                                shouldCollapseCell(
+                                                                                                    cellValue,
+                                                                                                );
+
+                                                                                            if (
+                                                                                                !isCollapsed
+                                                                                            ) {
+                                                                                                return (
+                                                                                                    <div className="max-w-[160px] whitespace-pre-wrap break-all text-xs text-[var(--bps-text)]">
+                                                                                                        {
+                                                                                                            cellValue
+                                                                                                        }
+                                                                                                    </div>
+                                                                                                );
+                                                                                            }
+
+                                                                                            return (
+                                                                                                <div className="max-w-[180px] space-y-2">
+                                                                                                    <button
+                                                                                                        type="button"
+                                                                                                        onDoubleClick={() =>
+                                                                                                            setExpandedCell(
+                                                                                                                {
+                                                                                                                    column: column.name,
+                                                                                                                    value: cellValue,
+                                                                                                                },
+                                                                                                            )
+                                                                                                        }
+                                                                                                        onClick={() =>
+                                                                                                            setExpandedCell(
+                                                                                                                {
+                                                                                                                    column: column.name,
+                                                                                                                    value: cellValue,
+                                                                                                                },
+                                                                                                            )
+                                                                                                        }
+                                                                                                        className="ui-hover block w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] p-2 text-left"
+                                                                                                    >
+                                                                                                        <div className="max-h-24 overflow-hidden whitespace-pre-wrap break-all text-xs leading-5 text-[var(--bps-text)]">
+                                                                                                            {
+                                                                                                                cellValue
+                                                                                                            }
+                                                                                                        </div>
+                                                                                                    </button>
+                                                                                                    <button
+                                                                                                        type="button"
+                                                                                                        onClick={() =>
+                                                                                                            setExpandedCell(
+                                                                                                                {
+                                                                                                                    column: column.name,
+                                                                                                                    value: cellValue,
+                                                                                                                },
+                                                                                                            )
+                                                                                                        }
+                                                                                                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#4a9fd7] transition hover:text-[var(--bps-blue-strong)]"
+                                                                                                    >
+                                                                                                        <Expand className="h-3.5 w-3.5" />
+                                                                                                        Expand
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            );
+                                                                                        })()}
+                                                                                    </td>
+                                                                                ),
+                                                                            )}
+                                                                            <td className="px-4 py-4 text-right align-top">
+                                                                                {selectedTable.primary_key &&
+                                                                                row.__row_token ? (
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={() =>
+                                                                                            openEditRowModal(
+                                                                                                row,
+                                                                                            )
+                                                                                        }
+                                                                                        className="ui-warning inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-semibold"
+                                                                                    >
+                                                                                        <SquarePen className="h-3.5 w-3.5" />
+                                                                                        Edit
+                                                                                    </button>
+                                                                                ) : (
+                                                                                    <span className="text-xs text-[var(--bps-muted)]">
+                                                                                        —
+                                                                                    </span>
+                                                                                )}
+                                                                            </td>
+                                                                        </tr>
+                                                                    ),
+                                                                )
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </ScrollArea>
+
+                                                {selectedTable.rows.last_page >
+                                                    1 && (
+                                                    <div className="flex flex-col gap-3 border-t border-[var(--bps-border)] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                                                        <p className="text-sm text-[var(--bps-muted)]">
+                                                            Halaman{' '}
+                                                            {
+                                                                selectedTable
+                                                                    .rows
+                                                                    .current_page
+                                                            }{' '}
+                                                            dari{' '}
+                                                            {
+                                                                selectedTable
+                                                                    .rows
+                                                                    .last_page
+                                                            }
+                                                        </p>
+                                                        <div className="flex items-center gap-2">
+                                                            <Button
+                                                                type="button"
+                                                                variant="secondary"
+                                                                disabled={
+                                                                    !selectedTable
+                                                                        .rows
+                                                                        .prev_page_token
+                                                                }
+                                                                className="px-4 py-2"
+                                                                onClick={() =>
+                                                                    selectedTable
+                                                                        .rows
+                                                                        .prev_page_token &&
+                                                                    visitByToken(
+                                                                        selectedTable
+                                                                            .rows
+                                                                            .prev_page_token,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <ChevronLeft className="h-4 w-4" />
+                                                                Sebelumnya
+                                                            </Button>
+                                                            <Button
+                                                                type="button"
+                                                                variant="secondary"
+                                                                disabled={
+                                                                    !selectedTable
+                                                                        .rows
+                                                                        .next_page_token
+                                                                }
+                                                                className="px-4 py-2"
+                                                                onClick={() =>
+                                                                    selectedTable
+                                                                        .rows
+                                                                        .next_page_token &&
+                                                                    visitByToken(
+                                                                        selectedTable
+                                                                            .rows
+                                                                            .next_page_token,
+                                                                    )
+                                                                }
+                                                            >
+                                                                Berikutnya
+                                                                <ChevronRight className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    </GlassCard>
                                 </ScrollArea>
                             </>
                         ) : (
