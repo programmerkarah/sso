@@ -34,7 +34,7 @@ export default function PageWorkspace({
                 className={
                     'shrink-0 pb-4 ' +
                     (layout.sticky_summary
-                        ? 'relative z-20 bg-[linear-gradient(180deg,rgba(4,27,45,0.98),rgba(4,27,45,0.94)_88%,rgba(4,27,45,0))]'
+                        ? 'workspace-summary relative z-20'
                         : '')
                 }
             >
