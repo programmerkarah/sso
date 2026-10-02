@@ -730,3 +730,51 @@ html[data-theme='dark'] .ui-modal-surface {
 .ui-inactive-card .inactive-muted {
     color: var(--bps-disabled-text) !important;
 }
+
+
+/* Inactive application state: mute content, keep actions fully legible. */
+.ui-inactive-card {
+    background:
+        linear-gradient(
+            0deg,
+            color-mix(in srgb, var(--bps-disabled-bg) 58%, transparent),
+            color-mix(in srgb, var(--bps-disabled-bg) 58%, transparent)
+        ),
+        var(--bps-surface);
+    border-color: color-mix(in srgb, var(--bps-border) 76%, transparent);
+    box-shadow: none;
+}
+
+.ui-inactive-card .inactive-content {
+    opacity: 0.5;
+    filter: saturate(0.55);
+}
+
+.ui-inactive-card .inactive-badge {
+    background: color-mix(in srgb, var(--bps-orange) 16%, var(--bps-surface));
+    border-color: color-mix(in srgb, var(--bps-orange) 42%, var(--bps-border));
+    color: color-mix(in srgb, var(--bps-orange) 72%, var(--bps-text));
+    opacity: 0.9;
+}
+
+.ui-inactive-card > .flex:last-child {
+    opacity: 1;
+    filter: none;
+}
+
+.ui-inactive-card .ui-success,
+.ui-inactive-card .ui-danger,
+.ui-inactive-card .ui-selected {
+    opacity: 1;
+    filter: none;
+}
+
+html[data-theme='dark'] .ui-inactive-card {
+    background:
+        linear-gradient(
+            0deg,
+            color-mix(in srgb, var(--bps-disabled-bg) 68%, transparent),
+            color-mix(in srgb, var(--bps-disabled-bg) 68%, transparent)
+        ),
+        var(--bps-surface);
+}
