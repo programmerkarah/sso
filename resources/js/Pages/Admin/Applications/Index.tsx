@@ -132,108 +132,64 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                         <table className="min-w-full divide-y divide-white/10">
                             <thead className="bg-slate-900/50">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
-                                        Aplikasi
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
-                                        Domain
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
-                                        Status
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
-                                        Dibuat
-                                    </th>
-                                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
-                                        Aksi
-                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Aplikasi</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Domain</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Status</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Dibuat</th>
+                                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/10 bg-transparent">
                                 {applications.data.length === 0 ? (
                                     <tr>
-                                        <td
-                                            colSpan={5}
-                                            className="px-6 py-16 text-center text-white/70"
-                                        >
+                                        <td colSpan={5} className="px-6 py-16 text-center text-white/70">
                                             Belum ada aplikasi terdaftar
                                         </td>
                                     </tr>
                                 ) : (
                                     applications.data.map((app) => (
-                                        <tr
-                                            key={app.id}
-                                            className="transition hover:bg-slate-900/50"
-                                        >
+                                        <tr key={app.id} className="transition hover:bg-slate-900/50">
                                             <td className="whitespace-nowrap px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     {app.logo_url ? (
-                                                        <img
-                                                            src={app.logo_url}
-                                                            alt={app.name}
-                                                            className="h-10 w-10 rounded-lg object-cover"
-                                                        />
+                                                        <img src={app.logo_url} alt={app.name} className="h-10 w-10 rounded-lg object-cover" />
                                                     ) : (
                                                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900/80 text-lg font-bold text-white">
-                                                            {app.name
-                                                                .charAt(0)
-                                                                .toUpperCase()}
+                                                            {app.name.charAt(0).toUpperCase()}
                                                         </div>
                                                     )}
                                                     <div>
-                                                        <div className="font-medium text-white">
-                                                            {app.name}
-                                                        </div>
-                                                        <div className="text-sm text-white/50">
-                                                            {app.slug}
-                                                        </div>
+                                                        <div className="font-medium text-white">{app.name}</div>
+                                                        <div className="text-sm text-white/50">{app.slug}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-white/70">
-                                                {app.domain}
-                                            </td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-white/70">{app.domain}</td>
                                             <td className="whitespace-nowrap px-6 py-4">
                                                 {app.is_active ? (
                                                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">
-                                                        <CheckCircle className="h-3 w-3" />
-                                                        Aktif
+                                                        <CheckCircle className="h-3 w-3" /> Aktif
                                                     </span>
                                                 ) : (
                                                     <span className="inline-flex items-center gap-1 rounded-full bg-red-400/20 px-3 py-1 text-xs font-semibold text-red-100">
-                                                        <XCircle className="h-3 w-3" />
-                                                        Nonaktif
+                                                        <XCircle className="h-3 w-3" /> Nonaktif
                                                     </span>
                                                 )}
                                             </td>
                                             <td className="whitespace-nowrap px-6 py-4 text-sm text-white/70">
-                                                {new Date(
-                                                    app.created_at,
-                                                ).toLocaleDateString('id-ID')}
+                                                {new Date(app.created_at).toLocaleDateString('id-ID')}
                                             </td>
                                             <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                                                 <div className="flex justify-end gap-2">
-                                                    <Link
-                                                        href={`/admin/applications/${app.route_key}`}
-                                                        className="rounded-xl bg-slate-900/80 p-2 text-blue-100 transition hover:bg-slate-800"
-                                                    >
+                                                    <Link href={`/admin/applications/${app.route_key}`} className="rounded-xl bg-slate-900/80 p-2 text-blue-100 transition hover:bg-slate-800">
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
-                                                    <Link
-                                                        href={`/admin/applications/${app.route_key}/edit`}
-                                                        className="rounded-xl bg-slate-900/80 p-2 text-amber-100 transition hover:bg-slate-800"
-                                                    >
+                                                    <Link href={`/admin/applications/${app.route_key}/edit`} className="rounded-xl bg-slate-900/80 p-2 text-amber-100 transition hover:bg-slate-800">
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                     <button
                                                         type="button"
-                                                        onClick={() =>
-                                                            setDeleteModal({
-                                                                routeKey:
-                                                                    app.route_key,
-                                                                name: app.name,
-                                                            })
-                                                        }
+                                                        onClick={() => setDeleteModal({ routeKey: app.route_key, name: app.name })}
                                                         className="rounded-xl bg-red-500/15 p-2 text-red-100 transition hover:bg-red-500/25"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -245,66 +201,39 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                 )}
                             </tbody>
                         </table>
+                    </ScrollArea>
 
-                        {/* Pagination */}
-                        {applications.last_page > 1 && (
-                            <div className="border-t border-slate-800 px-4 py-4 sm:px-6">
-                                <div className="flex items-center justify-between gap-3">
-                                    <p className="text-sm text-white/60">
-                                        Menampilkan {applications.from ?? 0}–
-                                        {applications.to ?? 0} dari{' '}
-                                        {applications.total} aplikasi
-                                    </p>
-                                    <div className="flex gap-2">
-                                        {applications.prev_page_token && (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    visitPage(
-                                                        applications.prev_page_token!,
-                                                    )
-                                                }
-                                                className="rounded-md bg-slate-900/80 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
-                                            >
-                                                Sebelumnya
-                                            </button>
-                                        )}
-                                        {applications.pages.map(
-                                            (page, index) => (
-                                                <button
-                                                    key={index}
-                                                    type="button"
-                                                    onClick={() =>
-                                                        visitPage(page.token)
-                                                    }
-                                                    className={`rounded-md px-3 py-2 text-sm font-medium ${
-                                                        page.active
-                                                            ? 'bg-white text-slate-900'
-                                                            : 'bg-slate-900/80 text-white hover:bg-slate-800'
-                                                    }`}
-                                                >
-                                                    {page.label}
-                                                </button>
-                                            ),
-                                        )}
-                                        {applications.next_page_token && (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    visitPage(
-                                                        applications.next_page_token!,
-                                                    )
-                                                }
-                                                className="rounded-md bg-slate-900/80 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
-                                            >
-                                                Berikutnya
-                                            </button>
-                                        )}
-                                    </ScrollArea>
+                    {applications.last_page > 1 && (
+                        <div className="border-t border-slate-800 px-4 py-4 sm:px-6">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <p className="text-sm text-white/60">
+                                    Menampilkan {applications.from ?? 0}–{applications.to ?? 0} dari {applications.total} aplikasi
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    {applications.prev_page_token && (
+                                        <button type="button" onClick={() => visitPage(applications.prev_page_token!)} className="rounded-md bg-slate-900/80 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800">
+                                            Sebelumnya
+                                        </button>
+                                    )}
+                                    {applications.pages.map((page, index) => (
+                                        <button
+                                            key={index}
+                                            type="button"
+                                            onClick={() => visitPage(page.token)}
+                                            className={`rounded-md px-3 py-2 text-sm font-medium ${page.active ? 'bg-white text-slate-900' : 'bg-slate-900/80 text-white hover:bg-slate-800'}`}
+                                        >
+                                            {page.label}
+                                        </button>
+                                    ))}
+                                    {applications.next_page_token && (
+                                        <button type="button" onClick={() => visitPage(applications.next_page_token!)} className="rounded-md bg-slate-900/80 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800">
+                                            Berikutnya
+                                        </button>
+                                    )}
                                 </div>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </GlassCard>
             </div>
         </AppLayout>
