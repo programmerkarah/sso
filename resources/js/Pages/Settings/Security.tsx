@@ -176,445 +176,434 @@ export default function Security({
             <div className="space-y-6">
                 <PageHeader />
                 <div className="space-y-4">
-                        <GlassCard>
-                            <div className="flex flex-col items-start gap-4 sm:flex-row">
-                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
-                                    <LockKeyhole className="h-8 w-8 text-sky-300" />
-                                </div>
-                                <div className="flex-1 space-y-5">
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-white">
-                                            Ganti Password
-                                        </h2>
-                                        <p className="mt-2 text-white/80">
-                                            Perbarui password akun Anda secara
-                                            berkala agar akses tetap aman dan
-                                            mudah dikelola.
-                                        </p>
-                                    </div>
-
-                                    <form
-                                        onSubmit={updatePassword}
-                                        className="grid gap-4 md:grid-cols-2"
-                                    >
-                                        <div className="md:col-span-2">
-                                            <Label
-                                                htmlFor="current_password"
-                                                required
-                                            >
-                                                Password Saat Ini
-                                            </Label>
-                                            <Input
-                                                id="current_password"
-                                                type="password"
-                                                value={
-                                                    passwordForm.data
-                                                        .current_password
-                                                }
-                                                onChange={(e) =>
-                                                    passwordForm.setData(
-                                                        'current_password',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                error={
-                                                    passwordForm.errors
-                                                        .current_password
-                                                }
-                                                autoComplete="current-password"
-                                                placeholder="Masukkan password Anda saat ini"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <Label htmlFor="password" required>
-                                                Password Baru
-                                            </Label>
-                                            <Input
-                                                id="password"
-                                                type="password"
-                                                value={
-                                                    passwordForm.data.password
-                                                }
-                                                onChange={(e) =>
-                                                    passwordForm.setData(
-                                                        'password',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                error={
-                                                    passwordForm.errors.password
-                                                }
-                                                autoComplete="new-password"
-                                                placeholder="Minimal 8 karakter"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <Label
-                                                htmlFor="password_confirmation"
-                                                required
-                                            >
-                                                Konfirmasi Password Baru
-                                            </Label>
-                                            <Input
-                                                id="password_confirmation"
-                                                type="password"
-                                                value={
-                                                    passwordForm.data
-                                                        .password_confirmation
-                                                }
-                                                onChange={(e) =>
-                                                    passwordForm.setData(
-                                                        'password_confirmation',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                error={
-                                                    passwordForm.errors
-                                                        .password_confirmation
-                                                }
-                                                autoComplete="new-password"
-                                                placeholder="Ketik ulang password baru"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div className="md:col-span-2 flex justify-end">
-                                            <Button
-                                                type="submit"
-                                                disabled={
-                                                    passwordForm.processing
-                                                }
-                                            >
-                                                {passwordForm.processing
-                                                    ? 'Memperbarui...'
-                                                    : 'Simpan Password Baru'}
-                                            </Button>
-                                        </div>
-                                    </form>
-                                </div>
+                    <GlassCard>
+                        <div className="flex flex-col items-start gap-4 sm:flex-row">
+                            <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
+                                <LockKeyhole className="h-8 w-8 text-sky-300" />
                             </div>
-                        </GlassCard>
-
-                        <GlassCard>
-                            <div className="flex flex-col items-start gap-4 sm:flex-row">
-                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
-                                    <Mail className="h-8 w-8 text-blue-300" />
-                                </div>
-                                <div className="flex-1 space-y-5">
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-white">
-                                            Ganti Email
-                                        </h2>
-                                        <p className="mt-2 text-white/80">
-                                            Ubah alamat email akun Anda. Setelah
-                                            perubahan disimpan, email baru wajib
-                                            diverifikasi kembali.
-                                        </p>
-                                    </div>
-
-                                    <form
-                                        onSubmit={updateEmail}
-                                        className="grid gap-4 md:grid-cols-2"
-                                    >
-                                        <div>
-                                            <Label htmlFor="email" required>
-                                                Email Baru
-                                            </Label>
-                                            <Input
-                                                id="email"
-                                                type="email"
-                                                value={emailForm.data.email}
-                                                onChange={(e) =>
-                                                    emailForm.setData(
-                                                        'email',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                error={emailForm.errors.email}
-                                                placeholder="contoh@domain.go.id"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <Label
-                                                htmlFor="email_current_password"
-                                                required
-                                            >
-                                                Password Saat Ini
-                                            </Label>
-                                            <Input
-                                                id="email_current_password"
-                                                type="password"
-                                                value={
-                                                    emailForm.data
-                                                        .current_password
-                                                }
-                                                onChange={(e) =>
-                                                    emailForm.setData(
-                                                        'current_password',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                error={
-                                                    emailForm.errors
-                                                        .current_password
-                                                }
-                                                placeholder="Masukkan password saat ini"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div className="md:col-span-2 flex justify-end">
-                                            <Button
-                                                type="submit"
-                                                disabled={emailForm.processing}
-                                            >
-                                                {emailForm.processing
-                                                    ? 'Memperbarui...'
-                                                    : 'Simpan Email Baru'}
-                                            </Button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </GlassCard>
-
-                        {/* 2FA Status Card */}
-                        <GlassCard>
-                            <div className="flex flex-col items-start gap-4 sm:flex-row">
-                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
-                                    <Shield
-                                        className={`h-8 w-8 ${
-                                            twoFactorConfirmed
-                                                ? 'text-green-400'
-                                                : 'text-yellow-400'
-                                        }`}
-                                    />
-                                </div>
-                                <div className="flex-1">
+                            <div className="flex-1 space-y-5">
+                                <div>
                                     <h2 className="text-2xl font-bold text-white">
-                                        Autentikasi Dua Faktor (2FA)
+                                        Ganti Password
                                     </h2>
                                     <p className="mt-2 text-white/80">
-                                        {twoFactorConfirmed
-                                            ? 'Autentikasi dua faktor aktif dan melindungi akun Anda.'
-                                            : 'Tambahkan keamanan ekstra ke akun Anda dengan mengaktifkan autentikasi dua faktor.'}
+                                        Perbarui password akun Anda secara
+                                        berkala agar akses tetap aman dan mudah
+                                        dikelola.
                                     </p>
-
-                                    <div className="mt-4">
-                                        {twoFactorConfirmed ? (
-                                            <div className="flex flex-wrap gap-3">
-                                                <Button
-                                                    onClick={showRecoveryCodes}
-                                                    variant="secondary"
-                                                    className="w-full sm:w-auto"
-                                                >
-                                                    <Key className="mr-2 h-4 w-4" />
-                                                    Tampilkan Kode Pemulihan
-                                                </Button>
-                                                <Button
-                                                    onClick={
-                                                        regenerateRecoveryCodes
-                                                    }
-                                                    variant="secondary"
-                                                    className="w-full sm:w-auto"
-                                                >
-                                                    <RefreshCw className="mr-2 h-4 w-4" />
-                                                    Regenerasi Kode
-                                                </Button>
-                                                <Button
-                                                    onClick={disable2FA}
-                                                    variant="danger"
-                                                    className="w-full sm:w-auto"
-                                                >
-                                                    <X className="mr-2 h-4 w-4" />
-                                                    Nonaktifkan 2FA
-                                                </Button>
-                                            </div>
-                                        ) : (
-                                            <Button onClick={enable2FA}>
-                                                <KeyRound className="mr-2 h-4 w-4" />
-                                                Aktifkan 2FA
-                                            </Button>
-                                        )}
-                                    </div>
                                 </div>
-                            </div>
-                        </GlassCard>
 
-                        {/* QR Code Card */}
-                        {showingQrCode && (qrCodeSvg || twoFactorSecretKey) && (
-                            <GlassCard>
-                                <div className="space-y-4">
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div>
-                                            <h3 className="text-xl font-bold text-white">
-                                                {showCodeView
-                                                    ? 'Kode Setup Manual'
-                                                    : 'Scan QR Code'}
-                                            </h3>
-                                            <p className="mt-2 text-white/80">
-                                                {showCodeView
-                                                    ? 'Masukkan kode rahasia ini secara manual ke aplikasi autentikator seperti Google Authenticator atau Authy.'
-                                                    : 'Scan kode QR berikut menggunakan aplikasi autentikator seperti Google Authenticator atau Authy.'}
-                                            </p>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setShowCodeView((v) => !v)
-                                            }
-                                            className="flex shrink-0 items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-white  transition hover:bg-slate-800"
+                                <form
+                                    onSubmit={updatePassword}
+                                    className="grid gap-4 md:grid-cols-2"
+                                >
+                                    <div className="md:col-span-2">
+                                        <Label
+                                            htmlFor="current_password"
+                                            required
                                         >
-                                            {showCodeView ? (
-                                                <>
-                                                    <QrCode className="h-4 w-4" />{' '}
-                                                    Tampilkan QR
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Type className="h-4 w-4" />{' '}
-                                                    Tampilkan Kode
-                                                </>
-                                            )}
-                                        </button>
+                                            Password Saat Ini
+                                        </Label>
+                                        <Input
+                                            id="current_password"
+                                            type="password"
+                                            value={
+                                                passwordForm.data
+                                                    .current_password
+                                            }
+                                            onChange={(e) =>
+                                                passwordForm.setData(
+                                                    'current_password',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            error={
+                                                passwordForm.errors
+                                                    .current_password
+                                            }
+                                            autoComplete="current-password"
+                                            placeholder="Masukkan password Anda saat ini"
+                                            required
+                                        />
                                     </div>
 
-                                    {showCodeView ? (
-                                        <div className="space-y-3">
-                                            <div className="rounded-xl border border-sky-400/30 bg-sky-400/10 p-4 text-sm text-sky-200 ">
-                                                Buka aplikasi autentikator,
-                                                pilih{' '}
-                                                <strong>
-                                                    "Masukkan kode secara
-                                                    manual"
-                                                </strong>
-                                                , lalu ketik kode rahasia di
-                                                bawah ini.
-                                            </div>
-                                            <div className="flex items-center gap-3 rounded-xl bg-black/40 p-4 font-mono">
-                                                <span className="flex-1 break-all text-lg tracking-widest text-white">
-                                                    {twoFactorSecretKey}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={copySecretKey}
-                                                    title="Salin kode"
-                                                    className="shrink-0 rounded-lg border border-slate-800 bg-slate-900/80 p-2 text-white transition hover:bg-slate-800"
-                                                >
-                                                    <Copy className="h-4 w-4" />
-                                                </button>
-                                            </div>
-                                            {copiedSecret && (
-                                                <p className="text-sm text-green-400">
-                                                    Kode berhasil disalin!
-                                                </p>
-                                            )}
+                                    <div>
+                                        <Label htmlFor="password" required>
+                                            Password Baru
+                                        </Label>
+                                        <Input
+                                            id="password"
+                                            type="password"
+                                            value={passwordForm.data.password}
+                                            onChange={(e) =>
+                                                passwordForm.setData(
+                                                    'password',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            error={passwordForm.errors.password}
+                                            autoComplete="new-password"
+                                            placeholder="Minimal 8 karakter"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <Label
+                                            htmlFor="password_confirmation"
+                                            required
+                                        >
+                                            Konfirmasi Password Baru
+                                        </Label>
+                                        <Input
+                                            id="password_confirmation"
+                                            type="password"
+                                            value={
+                                                passwordForm.data
+                                                    .password_confirmation
+                                            }
+                                            onChange={(e) =>
+                                                passwordForm.setData(
+                                                    'password_confirmation',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            error={
+                                                passwordForm.errors
+                                                    .password_confirmation
+                                            }
+                                            autoComplete="new-password"
+                                            placeholder="Ketik ulang password baru"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="md:col-span-2 flex justify-end">
+                                        <Button
+                                            type="submit"
+                                            disabled={passwordForm.processing}
+                                        >
+                                            {passwordForm.processing
+                                                ? 'Memperbarui...'
+                                                : 'Simpan Password Baru'}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </GlassCard>
+
+                    <GlassCard>
+                        <div className="flex flex-col items-start gap-4 sm:flex-row">
+                            <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
+                                <Mail className="h-8 w-8 text-blue-300" />
+                            </div>
+                            <div className="flex-1 space-y-5">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-white">
+                                        Ganti Email
+                                    </h2>
+                                    <p className="mt-2 text-white/80">
+                                        Ubah alamat email akun Anda. Setelah
+                                        perubahan disimpan, email baru wajib
+                                        diverifikasi kembali.
+                                    </p>
+                                </div>
+
+                                <form
+                                    onSubmit={updateEmail}
+                                    className="grid gap-4 md:grid-cols-2"
+                                >
+                                    <div>
+                                        <Label htmlFor="email" required>
+                                            Email Baru
+                                        </Label>
+                                        <Input
+                                            id="email"
+                                            type="email"
+                                            value={emailForm.data.email}
+                                            onChange={(e) =>
+                                                emailForm.setData(
+                                                    'email',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            error={emailForm.errors.email}
+                                            placeholder="contoh@domain.go.id"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <Label
+                                            htmlFor="email_current_password"
+                                            required
+                                        >
+                                            Password Saat Ini
+                                        </Label>
+                                        <Input
+                                            id="email_current_password"
+                                            type="password"
+                                            value={
+                                                emailForm.data.current_password
+                                            }
+                                            onChange={(e) =>
+                                                emailForm.setData(
+                                                    'current_password',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            error={
+                                                emailForm.errors
+                                                    .current_password
+                                            }
+                                            placeholder="Masukkan password saat ini"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="md:col-span-2 flex justify-end">
+                                        <Button
+                                            type="submit"
+                                            disabled={emailForm.processing}
+                                        >
+                                            {emailForm.processing
+                                                ? 'Memperbarui...'
+                                                : 'Simpan Email Baru'}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </GlassCard>
+
+                    {/* 2FA Status Card */}
+                    <GlassCard>
+                        <div className="flex flex-col items-start gap-4 sm:flex-row">
+                            <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
+                                <Shield
+                                    className={`h-8 w-8 ${
+                                        twoFactorConfirmed
+                                            ? 'text-green-400'
+                                            : 'text-yellow-400'
+                                    }`}
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <h2 className="text-2xl font-bold text-white">
+                                    Autentikasi Dua Faktor (2FA)
+                                </h2>
+                                <p className="mt-2 text-white/80">
+                                    {twoFactorConfirmed
+                                        ? 'Autentikasi dua faktor aktif dan melindungi akun Anda.'
+                                        : 'Tambahkan keamanan ekstra ke akun Anda dengan mengaktifkan autentikasi dua faktor.'}
+                                </p>
+
+                                <div className="mt-4">
+                                    {twoFactorConfirmed ? (
+                                        <div className="flex flex-wrap gap-3">
+                                            <Button
+                                                onClick={showRecoveryCodes}
+                                                variant="secondary"
+                                                className="w-full sm:w-auto"
+                                            >
+                                                <Key className="mr-2 h-4 w-4" />
+                                                Tampilkan Kode Pemulihan
+                                            </Button>
+                                            <Button
+                                                onClick={
+                                                    regenerateRecoveryCodes
+                                                }
+                                                variant="secondary"
+                                                className="w-full sm:w-auto"
+                                            >
+                                                <RefreshCw className="mr-2 h-4 w-4" />
+                                                Regenerasi Kode
+                                            </Button>
+                                            <Button
+                                                onClick={disable2FA}
+                                                variant="danger"
+                                                className="w-full sm:w-auto"
+                                            >
+                                                <X className="mr-2 h-4 w-4" />
+                                                Nonaktifkan 2FA
+                                            </Button>
                                         </div>
                                     ) : (
-                                        qrCodeSvg && (
-                                            <div
-                                                className="flex justify-center rounded-xl bg-white p-6"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: qrCodeSvg,
-                                                }}
-                                            />
-                                        )
+                                        <Button onClick={enable2FA}>
+                                            <KeyRound className="mr-2 h-4 w-4" />
+                                            Aktifkan 2FA
+                                        </Button>
                                     )}
+                                </div>
+                            </div>
+                        </div>
+                    </GlassCard>
 
-                                    {showingConfirmation && (
-                                        <form
-                                            onSubmit={confirmTwoFactor}
-                                            className="space-y-4"
-                                        >
-                                            <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-sm text-yellow-200 ">
-                                                {showCodeView
-                                                    ? 'Setelah menambahkan kode ke aplikasi autentikator, masukkan kode 6 digit yang dihasilkan untuk mengonfirmasi setup.'
-                                                    : 'Setelah scan QR code, masukkan kode 6 digit dari aplikasi autentikator Anda untuk mengonfirmasi setup.'}
-                                            </div>
+                    {/* QR Code Card */}
+                    {showingQrCode && (qrCodeSvg || twoFactorSecretKey) && (
+                        <GlassCard>
+                            <div className="space-y-4">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white">
+                                            {showCodeView
+                                                ? 'Kode Setup Manual'
+                                                : 'Scan QR Code'}
+                                        </h3>
+                                        <p className="mt-2 text-white/80">
+                                            {showCodeView
+                                                ? 'Masukkan kode rahasia ini secara manual ke aplikasi autentikator seperti Google Authenticator atau Authy.'
+                                                : 'Scan kode QR berikut menggunakan aplikasi autentikator seperti Google Authenticator atau Authy.'}
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowCodeView((v) => !v)
+                                        }
+                                        className="flex shrink-0 items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-white  transition hover:bg-slate-800"
+                                    >
+                                        {showCodeView ? (
+                                            <>
+                                                <QrCode className="h-4 w-4" />{' '}
+                                                Tampilkan QR
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Type className="h-4 w-4" />{' '}
+                                                Tampilkan Kode
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
 
-                                            <div>
-                                                <Label htmlFor="code" required>
-                                                    Kode Verifikasi
-                                                </Label>
-                                                <Input
-                                                    id="code"
-                                                    type="text"
-                                                    value={data.code}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            'code',
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    error={errors.code}
-                                                    placeholder="123456"
-                                                    maxLength={6}
-                                                    autoFocus
-                                                    required
-                                                />
-                                            </div>
-
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                                className="w-full"
+                                {showCodeView ? (
+                                    <div className="space-y-3">
+                                        <div className="rounded-xl border border-sky-400/30 bg-sky-400/10 p-4 text-sm text-sky-200 ">
+                                            Buka aplikasi autentikator, pilih{' '}
+                                            <strong>
+                                                "Masukkan kode secara manual"
+                                            </strong>
+                                            , lalu ketik kode rahasia di bawah
+                                            ini.
+                                        </div>
+                                        <div className="flex items-center gap-3 rounded-xl bg-black/40 p-4 font-mono">
+                                            <span className="flex-1 break-all text-lg tracking-widest text-white">
+                                                {twoFactorSecretKey}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={copySecretKey}
+                                                title="Salin kode"
+                                                className="shrink-0 rounded-lg border border-slate-800 bg-slate-900/80 p-2 text-white transition hover:bg-slate-800"
                                             >
-                                                {processing
-                                                    ? 'Memverifikasi...'
-                                                    : 'Konfirmasi & Aktifkan 2FA'}
-                                            </Button>
-                                        </form>
-                                    )}
+                                                <Copy className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                        {copiedSecret && (
+                                            <p className="text-sm text-green-400">
+                                                Kode berhasil disalin!
+                                            </p>
+                                        )}
+                                    </div>
+                                ) : (
+                                    qrCodeSvg && (
+                                        <div
+                                            className="flex justify-center rounded-xl bg-white p-6"
+                                            dangerouslySetInnerHTML={{
+                                                __html: qrCodeSvg,
+                                            }}
+                                        />
+                                    )
+                                )}
+
+                                {showingConfirmation && (
+                                    <form
+                                        onSubmit={confirmTwoFactor}
+                                        className="space-y-4"
+                                    >
+                                        <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-sm text-yellow-200 ">
+                                            {showCodeView
+                                                ? 'Setelah menambahkan kode ke aplikasi autentikator, masukkan kode 6 digit yang dihasilkan untuk mengonfirmasi setup.'
+                                                : 'Setelah scan QR code, masukkan kode 6 digit dari aplikasi autentikator Anda untuk mengonfirmasi setup.'}
+                                        </div>
+
+                                        <div>
+                                            <Label htmlFor="code" required>
+                                                Kode Verifikasi
+                                            </Label>
+                                            <Input
+                                                id="code"
+                                                type="text"
+                                                value={data.code}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'code',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                error={errors.code}
+                                                placeholder="123456"
+                                                maxLength={6}
+                                                autoFocus
+                                                required
+                                            />
+                                        </div>
+
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                            className="w-full"
+                                        >
+                                            {processing
+                                                ? 'Memverifikasi...'
+                                                : 'Konfirmasi & Aktifkan 2FA'}
+                                        </Button>
+                                    </form>
+                                )}
+                            </div>
+                        </GlassCard>
+                    )}
+
+                    {/* Recovery Codes Card */}
+                    {showingRecoveryCodes &&
+                        recoveryCodes &&
+                        recoveryCodes.length > 0 && (
+                            <GlassCard>
+                                <div className="space-y-4">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white">
+                                            Kode Pemulihan
+                                        </h3>
+                                        <p className="mt-2 text-white/80">
+                                            Berikut adalah kode pemulihan aktif
+                                            milik akun Anda. Gunakan hanya saat
+                                            Anda tidak bisa mengakses aplikasi
+                                            autentikator.
+                                        </p>
+                                    </div>
+
+                                    <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200 ">
+                                        <strong>Penting:</strong> Simpan kode
+                                        ini di password manager atau tempat aman
+                                        lainnya. Setiap kode hanya bisa dipakai
+                                        satu kali.
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3 rounded-xl bg-black/30 p-6 font-mono text-sm">
+                                        {recoveryCodes!.map((code, index) => (
+                                            <div
+                                                key={index}
+                                                className="rounded bg-slate-900/80 px-4 py-2 text-center text-white "
+                                            >
+                                                {code}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </GlassCard>
                         )}
-
-                        {/* Recovery Codes Card */}
-                        {showingRecoveryCodes &&
-                            recoveryCodes &&
-                            recoveryCodes.length > 0 && (
-                                <GlassCard>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <h3 className="text-xl font-bold text-white">
-                                                Kode Pemulihan
-                                            </h3>
-                                            <p className="mt-2 text-white/80">
-                                                Berikut adalah kode pemulihan
-                                                aktif milik akun Anda. Gunakan
-                                                hanya saat Anda tidak bisa
-                                                mengakses aplikasi autentikator.
-                                            </p>
-                                        </div>
-
-                                        <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200 ">
-                                            <strong>Penting:</strong> Simpan
-                                            kode ini di password manager atau
-                                            tempat aman lainnya. Setiap kode
-                                            hanya bisa dipakai satu kali.
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-3 rounded-xl bg-black/30 p-6 font-mono text-sm">
-                                            {recoveryCodes!.map(
-                                                (code, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="rounded bg-slate-900/80 px-4 py-2 text-center text-white "
-                                                    >
-                                                        {code}
-                                                    </div>
-                                                ),
-                                            )}
-                                        </div>
-                                    </div>
-                                </GlassCard>
-                            )}
                 </div>
             </div>
 

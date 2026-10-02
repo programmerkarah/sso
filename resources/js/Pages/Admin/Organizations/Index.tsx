@@ -46,7 +46,11 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                             <p className="text-sm">Belum ada organisasi</p>
                         </div>
                     ) : (
-                        <ScrollArea axis="horizontal" className="w-full" viewportClassName="pb-2">
+                        <ScrollArea
+                            axis="horizontal"
+                            className="w-full"
+                            viewportClassName="pb-2"
+                        >
                             <table className="w-full text-sm text-white/80">
                                 <thead>
                                     <tr className="border-b border-slate-800 text-left text-white/50">
@@ -91,7 +95,9 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                                             <td className="py-3 pr-4">
                                                 <div className="space-y-2">
                                                     <div className="text-xs text-white/60">
-                                                        {formatNumber(org.eligible_applications_count)}{' '}
+                                                        {formatNumber(
+                                                            org.eligible_applications_count,
+                                                        )}{' '}
                                                         aplikasi aktif
                                                     </div>
                                                     {org.eligible_applications
@@ -123,7 +129,8 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                                                 </div>
                                             </td>
                                             <td className="py-3 pr-4 text-white/60">
-                                                {formatNumber(org.users_count)} pengguna
+                                                {formatNumber(org.users_count)}{' '}
+                                                pengguna
                                             </td>
                                             <td className="py-3 pr-4">
                                                 {org.is_active ? (

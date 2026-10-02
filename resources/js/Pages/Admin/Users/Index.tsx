@@ -1302,87 +1302,102 @@ export default function Index({
             <PageWorkspace
                 summary={
                     <>
-
-                <PageHeader
-                    actions={
-                        <>
-                            {selectedUserIds.length > 0 && (
+                        <PageHeader
+                            actions={
                                 <>
-                                    <button
-                                        type="button"
-                                        onClick={() => setBatchVerifyModalOpen(true)}
-                                        className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-200 transition hover:bg-emerald-500/20"
+                                    {selectedUserIds.length > 0 && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setBatchVerifyModalOpen(
+                                                        true,
+                                                    )
+                                                }
+                                                className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-200 transition hover:bg-emerald-500/20"
+                                            >
+                                                <CheckSquare className="h-4 w-4" />
+                                                Verifikasi (
+                                                {selectedUserIds.length})
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setBatchAccessModalOpen(
+                                                        true,
+                                                    )
+                                                }
+                                                className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-700"
+                                            >
+                                                <Settings2 className="h-4 w-4" />
+                                                Atur akses (
+                                                {selectedUserIds.length})
+                                            </button>
+                                        </>
+                                    )}
+                                    <a
+                                        href={excelExportUrl}
+                                        className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                                     >
-                                        <CheckSquare className="h-4 w-4" />
-                                        Verifikasi ({selectedUserIds.length})
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setBatchAccessModalOpen(true)}
-                                        className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-700"
+                                        <Download className="h-4 w-4" /> Excel
+                                    </a>
+                                    <a
+                                        href={pdfExportUrl}
+                                        className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                                     >
-                                        <Settings2 className="h-4 w-4" />
-                                        Atur akses ({selectedUserIds.length})
-                                    </button>
+                                        <Download className="h-4 w-4" /> PDF
+                                    </a>
                                 </>
-                            )}
-                            <a href={excelExportUrl} className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800">
-                                <Download className="h-4 w-4" /> Excel
-                            </a>
-                            <a href={pdfExportUrl} className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800">
-                                <Download className="h-4 w-4" /> PDF
-                            </a>
-                        </>
-                    }
-                />
+                            }
+                        />
 
-                <div className="grid gap-3 sm:grid-cols-3">
-                    <GlassCard>
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-blue-400/20 p-3">
-                                <UserCog className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-white/70">
-                                    Total akun
+                        <div className="grid gap-3 sm:grid-cols-3">
+                            <GlassCard>
+                                <div className="flex items-center gap-3">
+                                    <div className="rounded-full bg-blue-400/20 p-3">
+                                        <UserCog className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm text-white/70">
+                                            Total akun
+                                        </div>
+                                        <div className="text-3xl font-semibold text-white">
+                                            {formatNumber(users.total)}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="text-3xl font-semibold text-white">
-                                    {formatNumber(users.total)}
+                            </GlassCard>
+                            <GlassCard>
+                                <div className="flex items-center gap-3">
+                                    <div className="rounded-full bg-emerald-400/20 p-3">
+                                        <ShieldCheck className="h-6 w-6 text-emerald-200" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm text-white/70">
+                                            2FA aktif (halaman ini)
+                                        </div>
+                                        <div className="text-3xl font-semibold text-white">
+                                            {formatNumber(twoFactorCount)}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </GlassCard>
+                            <GlassCard>
+                                <div className="flex items-center gap-3">
+                                    <div className="rounded-full bg-purple-400/20 p-3">
+                                        <Shield className="h-6 w-6 text-purple-200" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm text-white/70">
+                                            Admin (halaman ini)
+                                        </div>
+                                        <div className="text-3xl font-semibold text-white">
+                                            {formatNumber(adminCount)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </GlassCard>
                         </div>
-                    </GlassCard>
-                    <GlassCard>
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-emerald-400/20 p-3">
-                                <ShieldCheck className="h-6 w-6 text-emerald-200" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-white/70">
-                                    2FA aktif (halaman ini)
-                                </div>
-                                <div className="text-3xl font-semibold text-white">
-                                    {formatNumber(twoFactorCount)}
-                                </div>
-                            </div>
-                        </div>
-                    </GlassCard>
-                    <GlassCard>
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-purple-400/20 p-3">
-                                <Shield className="h-6 w-6 text-purple-200" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-white/70">
-                                    Admin (halaman ini)
-                                </div>
-                                <div className="text-3xl font-semibold text-white">
-                                    {formatNumber(adminCount)}
-                                </div>
-                            </div>
-                        </div>
-                    </GlassCard>
-                </div>
                     </>
                 }
             >
@@ -1394,8 +1409,9 @@ export default function Index({
                                     Daftar Pengguna
                                 </h2>
                                 <p className="mt-1 text-sm text-white/60">
-                                    Halaman {formatNumber(users.current_page)} dari{' '}
-                                    {formatNumber(users.last_page)} — {formatNumber(users.total)} pengguna
+                                    Halaman {formatNumber(users.current_page)}{' '}
+                                    dari {formatNumber(users.last_page)} —{' '}
+                                    {formatNumber(users.total)} pengguna
                                     {selectedUser ? ' cocok dengan filter' : ''}
                                 </p>
                             </div>
@@ -1441,7 +1457,11 @@ export default function Index({
                     </div>
 
                     {/* Table */}
-                    <ScrollArea axis="horizontal" className="w-full" viewportClassName="pb-2">
+                    <ScrollArea
+                        axis="horizontal"
+                        className="w-full"
+                        viewportClassName="pb-2"
+                    >
                         <table className="w-full min-w-[900px]">
                             <thead className="sticky top-0 z-10 bg-slate-950">
                                 <tr className="border-b border-slate-800 bg-black/20">
@@ -1662,7 +1682,9 @@ export default function Index({
                                                         title="Kelola pengguna"
                                                     >
                                                         <Settings2 className="h-3.5 w-3.5" />
-                                                        <span className="hidden xl:inline">Kelola</span>
+                                                        <span className="hidden xl:inline">
+                                                            Kelola
+                                                        </span>
                                                     </button>
                                                 </div>
                                             </td>
@@ -1677,8 +1699,9 @@ export default function Index({
                     {users.last_page > 1 && (
                         <div className="flex items-center justify-between border-t border-slate-800 bg-black/10 px-6 py-4">
                             <p className="text-sm text-white/60">
-                                Menampilkan {formatNumber(users.from ?? 0)}–{formatNumber(users.to ?? 0)}{' '}
-                                dari {formatNumber(users.total)} pengguna
+                                Menampilkan {formatNumber(users.from ?? 0)}–
+                                {formatNumber(users.to ?? 0)} dari{' '}
+                                {formatNumber(users.total)} pengguna
                             </p>
                             <div className="flex items-center gap-1">
                                 {users.prev_page_token ? (
@@ -1733,92 +1756,263 @@ export default function Index({
                 </GlassCard>
             </PageWorkspace>
 
-                {actionMenu && actionMenuUser && (
-                    <div className="fixed inset-0 z-[70]">
-                        <button
-                            type="button"
-                            aria-label="Tutup menu aksi"
-                            onClick={() => setActionMenu(null)}
-                            className="absolute inset-0 bg-black/55"
-                        />
-                        <aside ref={actionMenuRef} className="absolute bottom-0 right-0 top-0 flex w-full max-w-sm flex-col border-l border-slate-800 bg-slate-950 shadow-2xl">
-                            <div className="flex items-start justify-between gap-4 border-b border-slate-800 p-5">
-                                <div className="min-w-0">
-                                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Kelola pengguna</p>
-                                    <h3 className="mt-1 truncate text-lg font-semibold text-white">{actionMenuUser.name}</h3>
-                                    <p className="mt-0.5 truncate text-sm text-slate-500">@{actionMenuUser.username}</p>
+            {actionMenu && actionMenuUser && (
+                <div className="fixed inset-0 z-[70]">
+                    <button
+                        type="button"
+                        aria-label="Tutup menu aksi"
+                        onClick={() => setActionMenu(null)}
+                        className="absolute inset-0 bg-black/55"
+                    />
+                    <aside
+                        ref={actionMenuRef}
+                        className="absolute bottom-0 right-0 top-0 flex w-full max-w-sm flex-col border-l border-slate-800 bg-slate-950 shadow-2xl"
+                    >
+                        <div className="flex items-start justify-between gap-4 border-b border-slate-800 p-5">
+                            <div className="min-w-0">
+                                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                                    Kelola pengguna
+                                </p>
+                                <h3 className="mt-1 truncate text-lg font-semibold text-white">
+                                    {actionMenuUser.name}
+                                </h3>
+                                <p className="mt-0.5 truncate text-sm text-slate-500">
+                                    @{actionMenuUser.username}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setActionMenu(null)}
+                                className="rounded-lg border border-slate-800 p-2 text-slate-400 transition hover:bg-slate-900 hover:text-white"
+                            >
+                                <XCircle className="h-4 w-4" />
+                            </button>
+                        </div>
+
+                        <ScrollArea
+                            className="flex-1 min-h-0"
+                            viewportClassName="p-4"
+                            contentClassName="space-y-5"
+                        >
+                            <div>
+                                <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">
+                                    Akun & akses
+                                </p>
+                                <div className="space-y-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            openEditIdentityModal(
+                                                actionMenuUser,
+                                            );
+                                            setActionMenu(null);
+                                        }}
+                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                    >
+                                        <Pencil className="h-4 w-4 text-sky-300" />
+                                        <span>
+                                            <span className="block font-medium">
+                                                Ubah identitas
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                                Username dan email pengguna
+                                            </span>
+                                        </span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            openEditAccessModal(actionMenuUser);
+                                            setActionMenu(null);
+                                        }}
+                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                    >
+                                        <Settings2 className="h-4 w-4 text-indigo-300" />
+                                        <span>
+                                            <span className="block font-medium">
+                                                Organisasi & role
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                                Atur cakupan dan kewenangan akun
+                                            </span>
+                                        </span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            handleToggleAdminVerification(
+                                                actionMenuUser,
+                                            );
+                                            setActionMenu(null);
+                                        }}
+                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                    >
+                                        {actionMenuUser.is_admin_verified ? (
+                                            <ShieldOff className="h-4 w-4 text-amber-300" />
+                                        ) : (
+                                            <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                                        )}
+                                        <span>
+                                            <span className="block font-medium">
+                                                {actionMenuUser.is_admin_verified
+                                                    ? 'Cabut verifikasi'
+                                                    : 'Verifikasi pengguna'}
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                                Status validasi administrator
+                                                SSO
+                                            </span>
+                                        </span>
+                                    </button>
+                                    {actionMenuUser.id !== currentUserId && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                handleToggleAdmin(
+                                                    actionMenuUser,
+                                                );
+                                                setActionMenu(null);
+                                            }}
+                                            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                        >
+                                            {actionMenuUser.is_admin ? (
+                                                <ShieldOff className="h-4 w-4 text-amber-300" />
+                                            ) : (
+                                                <ShieldPlus className="h-4 w-4 text-purple-300" />
+                                            )}
+                                            <span>
+                                                <span className="block font-medium">
+                                                    {actionMenuUser.is_admin
+                                                        ? 'Cabut administrator'
+                                                        : 'Jadikan administrator'}
+                                                </span>
+                                                <span className="mt-0.5 block text-xs text-slate-500">
+                                                    Hak akses administrasi SSO
+                                                </span>
+                                            </span>
+                                        </button>
+                                    )}
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setActionMenu(null)}
-                                    className="rounded-lg border border-slate-800 p-2 text-slate-400 transition hover:bg-slate-900 hover:text-white"
-                                >
-                                    <XCircle className="h-4 w-4" />
-                                </button>
                             </div>
 
-                            <ScrollArea className="flex-1 min-h-0" viewportClassName="p-4" contentClassName="space-y-5">
-                                <div>
-                                    <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">Akun & akses</p>
-                                    <div className="space-y-1">
-                                        <button type="button" onClick={() => { openEditIdentityModal(actionMenuUser); setActionMenu(null); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900">
-                                            <Pencil className="h-4 w-4 text-sky-300" />
-                                            <span><span className="block font-medium">Ubah identitas</span><span className="mt-0.5 block text-xs text-slate-500">Username dan email pengguna</span></span>
+                            <div className="border-t border-slate-800 pt-4">
+                                <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">
+                                    Keamanan
+                                </p>
+                                <div className="space-y-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            openUserSecurity(actionMenuUser);
+                                            setActionMenu(null);
+                                        }}
+                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                    >
+                                        <Monitor className="h-4 w-4 text-teal-300" />
+                                        <span>
+                                            <span className="block font-medium">
+                                                Sesi & perangkat
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                                Periksa sesi, OAuth, dan
+                                                perangkat tepercaya
+                                            </span>
+                                        </span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            handleResetPassword(actionMenuUser);
+                                            setActionMenu(null);
+                                        }}
+                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                    >
+                                        <KeyRound className="h-4 w-4 text-amber-300" />
+                                        <span>
+                                            <span className="block font-medium">
+                                                Reset password
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                                Buat password sementara baru
+                                            </span>
+                                        </span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            handleResetTwoFactor(
+                                                actionMenuUser,
+                                            );
+                                            setActionMenu(null);
+                                        }}
+                                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                    >
+                                        <RotateCcw className="h-4 w-4 text-red-300" />
+                                        <span>
+                                            <span className="block font-medium">
+                                                Reset autentikasi 2FA
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-slate-500">
+                                                Wajibkan pengguna mengatur ulang
+                                                2FA
+                                            </span>
+                                        </span>
+                                    </button>
+                                    {!actionMenuUser.email_verified_at && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                handleResendVerificationEmail(
+                                                    actionMenuUser,
+                                                );
+                                                setActionMenu(null);
+                                            }}
+                                            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900"
+                                        >
+                                            <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                                            <span>
+                                                <span className="block font-medium">
+                                                    Kirim ulang verifikasi email
+                                                </span>
+                                                <span className="mt-0.5 block text-xs text-slate-500">
+                                                    Kirim tautan verifikasi ke
+                                                    email akun
+                                                </span>
+                                            </span>
                                         </button>
-                                        <button type="button" onClick={() => { openEditAccessModal(actionMenuUser); setActionMenu(null); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900">
-                                            <Settings2 className="h-4 w-4 text-indigo-300" />
-                                            <span><span className="block font-medium">Organisasi & role</span><span className="mt-0.5 block text-xs text-slate-500">Atur cakupan dan kewenangan akun</span></span>
-                                        </button>
-                                        <button type="button" onClick={() => { handleToggleAdminVerification(actionMenuUser); setActionMenu(null); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900">
-                                            {actionMenuUser.is_admin_verified ? <ShieldOff className="h-4 w-4 text-amber-300" /> : <ShieldCheck className="h-4 w-4 text-emerald-300" />}
-                                            <span><span className="block font-medium">{actionMenuUser.is_admin_verified ? 'Cabut verifikasi' : 'Verifikasi pengguna'}</span><span className="mt-0.5 block text-xs text-slate-500">Status validasi administrator SSO</span></span>
-                                        </button>
-                                        {actionMenuUser.id !== currentUserId && (
-                                            <button type="button" onClick={() => { handleToggleAdmin(actionMenuUser); setActionMenu(null); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900">
-                                                {actionMenuUser.is_admin ? <ShieldOff className="h-4 w-4 text-amber-300" /> : <ShieldPlus className="h-4 w-4 text-purple-300" />}
-                                                <span><span className="block font-medium">{actionMenuUser.is_admin ? 'Cabut administrator' : 'Jadikan administrator'}</span><span className="mt-0.5 block text-xs text-slate-500">Hak akses administrasi SSO</span></span>
-                                            </button>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
+                            </div>
 
+                            {actionMenuUser.id !== currentUserId && (
                                 <div className="border-t border-slate-800 pt-4">
-                                    <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">Keamanan</p>
-                                    <div className="space-y-1">
-                                        <button type="button" onClick={() => { openUserSecurity(actionMenuUser); setActionMenu(null); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900">
-                                            <Monitor className="h-4 w-4 text-teal-300" />
-                                            <span><span className="block font-medium">Sesi & perangkat</span><span className="mt-0.5 block text-xs text-slate-500">Periksa sesi, OAuth, dan perangkat tepercaya</span></span>
-                                        </button>
-                                        <button type="button" onClick={() => { handleResetPassword(actionMenuUser); setActionMenu(null); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900">
-                                            <KeyRound className="h-4 w-4 text-amber-300" />
-                                            <span><span className="block font-medium">Reset password</span><span className="mt-0.5 block text-xs text-slate-500">Buat password sementara baru</span></span>
-                                        </button>
-                                        <button type="button" onClick={() => { handleResetTwoFactor(actionMenuUser); setActionMenu(null); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900">
-                                            <RotateCcw className="h-4 w-4 text-red-300" />
-                                            <span><span className="block font-medium">Reset autentikasi 2FA</span><span className="mt-0.5 block text-xs text-slate-500">Wajibkan pengguna mengatur ulang 2FA</span></span>
-                                        </button>
-                                        {!actionMenuUser.email_verified_at && (
-                                            <button type="button" onClick={() => { handleResendVerificationEmail(actionMenuUser); setActionMenu(null); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-200 transition hover:bg-slate-900">
-                                                <ShieldCheck className="h-4 w-4 text-emerald-300" />
-                                                <span><span className="block font-medium">Kirim ulang verifikasi email</span><span className="mt-0.5 block text-xs text-slate-500">Kirim tautan verifikasi ke email akun</span></span>
-                                            </button>
-                                        )}
-                                    </div>
+                                    <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-red-500/70">
+                                        Zona berbahaya
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            handleDeleteUser(actionMenuUser);
+                                            setActionMenu(null);
+                                        }}
+                                        className="flex w-full items-center gap-3 rounded-xl border border-red-500/15 px-3 py-3 text-left text-sm text-red-200 transition hover:bg-red-500/10"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                        <span>
+                                            <span className="block font-medium">
+                                                Hapus pengguna
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-red-300/60">
+                                                Cabut sesi dan nonaktifkan akun
+                                            </span>
+                                        </span>
+                                    </button>
                                 </div>
-
-                                {actionMenuUser.id !== currentUserId && (
-                                    <div className="border-t border-slate-800 pt-4">
-                                        <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-red-500/70">Zona berbahaya</p>
-                                        <button type="button" onClick={() => { handleDeleteUser(actionMenuUser); setActionMenu(null); }} className="flex w-full items-center gap-3 rounded-xl border border-red-500/15 px-3 py-3 text-left text-sm text-red-200 transition hover:bg-red-500/10">
-                                            <Trash2 className="h-4 w-4" />
-                                            <span><span className="block font-medium">Hapus pengguna</span><span className="mt-0.5 block text-xs text-red-300/60">Cabut sesi dan nonaktifkan akun</span></span>
-                                        </button>
-                                    </div>
-                                )}
-                            </ScrollArea>
-                        </aside>
-                    </div>
-                )}
+                            )}
+                        </ScrollArea>
+                    </aside>
+                </div>
+            )}
 
             {/* Modal Sesi & Perangkat */}
             {userSecurityModal.isOpen && (
@@ -1917,7 +2111,10 @@ export default function Index({
                         </div>
 
                         {/* Content */}
-                        <ScrollArea className="h-[60vh] max-h-[60vh]" viewportClassName="p-5">
+                        <ScrollArea
+                            className="h-[60vh] max-h-[60vh]"
+                            viewportClassName="p-5"
+                        >
                             {userSecurityModal.loading ? (
                                 <div className="flex flex-col items-center justify-center gap-2 py-12 text-white/40">
                                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-800 border-t-teal-400" />

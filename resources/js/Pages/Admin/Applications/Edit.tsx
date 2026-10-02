@@ -56,177 +56,173 @@ export default function Edit({
                     title="Edit aplikasi"
                     description={`Perbarui konfigurasi ${application.name}.`}
                     actions={
-                        <Link href={`/admin/applications/${application.route_key}`} className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                        <Link
+                            href={`/admin/applications/${application.route_key}`}
+                            className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                        >
                             <ArrowLeft className="h-4 w-4" /> Detail aplikasi
                         </Link>
                     }
                 />
 
-                    <GlassCard>
-                        <form onSubmit={submit} className="space-y-6">
-                            <div>
-                                <Label htmlFor="name" required>
-                                    Nama Aplikasi
-                                </Label>
-                                <Input
-                                    id="name"
-                                    name="name"
-                                    value={data.name}
-                                    onChange={(e) =>
-                                        setData('name', e.target.value)
-                                    }
-                                    error={errors.name}
-                                    required
-                                />
-                            </div>
+                <GlassCard>
+                    <form onSubmit={submit} className="space-y-6">
+                        <div>
+                            <Label htmlFor="name" required>
+                                Nama Aplikasi
+                            </Label>
+                            <Input
+                                id="name"
+                                name="name"
+                                value={data.name}
+                                onChange={(e) =>
+                                    setData('name', e.target.value)
+                                }
+                                error={errors.name}
+                                required
+                            />
+                        </div>
 
-                            <div>
-                                <Label htmlFor="description">Deskripsi</Label>
-                                <textarea
-                                    id="description"
-                                    name="description"
-                                    value={data.description}
-                                    onChange={(e) =>
-                                        setData('description', e.target.value)
-                                    }
-                                    rows={3}
-                                    className={`w-full rounded-xl border bg-slate-900/80 px-4 py-3 text-sm text-white shadow-sm  transition focus:outline-none focus:ring-2 ${
-                                        errors.description
-                                            ? 'border-red-400 focus:border-red-400 focus:ring-red-400/30'
-                                            : 'border-white/25 focus:border-white/40 focus:ring-white/20'
-                                    }`}
-                                />
-                                {errors.description && (
-                                    <p className="mt-1 text-sm text-red-300">
-                                        {errors.description}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div>
-                                <Label htmlFor="domain" required>
-                                    Domain
-                                </Label>
-                                <Input
-                                    id="domain"
-                                    name="domain"
-                                    value={data.domain}
-                                    onChange={(e) =>
-                                        setData('domain', e.target.value)
-                                    }
-                                    error={errors.domain}
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="callback_url" required>
-                                    Callback URL
-                                </Label>
-                                <Input
-                                    id="callback_url"
-                                    name="callback_url"
-                                    value={data.callback_url}
-                                    onChange={(e) =>
-                                        setData('callback_url', e.target.value)
-                                    }
-                                    error={errors.callback_url}
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="logo_url">Logo URL</Label>
-                                <Input
-                                    id="logo_url"
-                                    name="logo_url"
-                                    value={data.logo_url}
-                                    onChange={(e) =>
-                                        setData('logo_url', e.target.value)
-                                    }
-                                    error={errors.logo_url}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        name="is_active"
-                                        checked={data.is_active}
-                                        onChange={(e) =>
-                                            setData(
-                                                'is_active',
-                                                e.target.checked,
-                                            )
-                                        }
-                                        className="rounded border-white/30 bg-slate-900/80 text-blue-500 shadow-sm focus:ring-white/30"
-                                    />
-                                    <span className="ml-2 text-sm text-white/85">
-                                        Aplikasi Aktif
-                                    </span>
-                                </label>
-                                <p className="mt-1 text-sm text-white/55">
-                                    Nonaktifkan untuk mencegah aplikasi ini
-                                    menggunakan SSO
+                        <div>
+                            <Label htmlFor="description">Deskripsi</Label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                value={data.description}
+                                onChange={(e) =>
+                                    setData('description', e.target.value)
+                                }
+                                rows={3}
+                                className={`w-full rounded-xl border bg-slate-900/80 px-4 py-3 text-sm text-white shadow-sm  transition focus:outline-none focus:ring-2 ${
+                                    errors.description
+                                        ? 'border-red-400 focus:border-red-400 focus:ring-red-400/30'
+                                        : 'border-white/25 focus:border-white/40 focus:ring-white/20'
+                                }`}
+                            />
+                            {errors.description && (
+                                <p className="mt-1 text-sm text-red-300">
+                                    {errors.description}
                                 </p>
-                            </div>
-
-                            {availableOrganizationTypes.length > 0 && (
-                                <div>
-                                    <Label>
-                                        Tipe Organisasi yang Diizinkan
-                                    </Label>
-                                    <p className="mb-2 text-sm text-white/55">
-                                        Hanya pengguna dari tipe organisasi yang
-                                        dipilih yang dapat mengakses aplikasi
-                                        ini. Kosongkan untuk izinkan semua.
-                                    </p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {availableOrganizationTypes.map(
-                                            (type) => {
-                                                const isSelected =
-                                                    data.allowed_organization_types.includes(
-                                                        type,
-                                                    );
-                                                return (
-                                                    <button
-                                                        key={type}
-                                                        type="button"
-                                                        onClick={() =>
-                                                            toggleOrgType(type)
-                                                        }
-                                                        className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-                                                            isSelected
-                                                                ? 'bg-blue-500 text-white shadow'
-                                                                : 'border border-slate-800 bg-slate-900/80 text-white/70 hover:bg-slate-800'
-                                                        }`}
-                                                    >
-                                                        {type}
-                                                    </button>
-                                                );
-                                            },
-                                        )}
-                                    </div>
-                                </div>
                             )}
+                        </div>
 
-                            <div className="flex items-center justify-end gap-3 border-t pt-6">
-                                <Link
-                                    href={`/admin/applications/${application.route_key}`}
-                                >
-                                    <Button type="button" variant="secondary">
-                                        Batal
-                                    </Button>
-                                </Link>
-                                <Button type="submit" disabled={processing}>
-                                    {processing
-                                        ? 'Menyimpan...'
-                                        : 'Simpan Perubahan'}
-                                </Button>
+                        <div>
+                            <Label htmlFor="domain" required>
+                                Domain
+                            </Label>
+                            <Input
+                                id="domain"
+                                name="domain"
+                                value={data.domain}
+                                onChange={(e) =>
+                                    setData('domain', e.target.value)
+                                }
+                                error={errors.domain}
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <Label htmlFor="callback_url" required>
+                                Callback URL
+                            </Label>
+                            <Input
+                                id="callback_url"
+                                name="callback_url"
+                                value={data.callback_url}
+                                onChange={(e) =>
+                                    setData('callback_url', e.target.value)
+                                }
+                                error={errors.callback_url}
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <Label htmlFor="logo_url">Logo URL</Label>
+                            <Input
+                                id="logo_url"
+                                name="logo_url"
+                                value={data.logo_url}
+                                onChange={(e) =>
+                                    setData('logo_url', e.target.value)
+                                }
+                                error={errors.logo_url}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    name="is_active"
+                                    checked={data.is_active}
+                                    onChange={(e) =>
+                                        setData('is_active', e.target.checked)
+                                    }
+                                    className="rounded border-white/30 bg-slate-900/80 text-blue-500 shadow-sm focus:ring-white/30"
+                                />
+                                <span className="ml-2 text-sm text-white/85">
+                                    Aplikasi Aktif
+                                </span>
+                            </label>
+                            <p className="mt-1 text-sm text-white/55">
+                                Nonaktifkan untuk mencegah aplikasi ini
+                                menggunakan SSO
+                            </p>
+                        </div>
+
+                        {availableOrganizationTypes.length > 0 && (
+                            <div>
+                                <Label>Tipe Organisasi yang Diizinkan</Label>
+                                <p className="mb-2 text-sm text-white/55">
+                                    Hanya pengguna dari tipe organisasi yang
+                                    dipilih yang dapat mengakses aplikasi ini.
+                                    Kosongkan untuk izinkan semua.
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    {availableOrganizationTypes.map((type) => {
+                                        const isSelected =
+                                            data.allowed_organization_types.includes(
+                                                type,
+                                            );
+                                        return (
+                                            <button
+                                                key={type}
+                                                type="button"
+                                                onClick={() =>
+                                                    toggleOrgType(type)
+                                                }
+                                                className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                                                    isSelected
+                                                        ? 'bg-blue-500 text-white shadow'
+                                                        : 'border border-slate-800 bg-slate-900/80 text-white/70 hover:bg-slate-800'
+                                                }`}
+                                            >
+                                                {type}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </form>
-                    </GlassCard>
+                        )}
+
+                        <div className="flex items-center justify-end gap-3 border-t pt-6">
+                            <Link
+                                href={`/admin/applications/${application.route_key}`}
+                            >
+                                <Button type="button" variant="secondary">
+                                    Batal
+                                </Button>
+                            </Link>
+                            <Button type="submit" disabled={processing}>
+                                {processing
+                                    ? 'Menyimpan...'
+                                    : 'Simpan Perubahan'}
+                            </Button>
+                        </div>
+                    </form>
+                </GlassCard>
             </div>
         </AppLayout>
     );

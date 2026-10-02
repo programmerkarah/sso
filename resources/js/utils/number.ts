@@ -7,7 +7,9 @@ export function formatNumber(
     }
 
     const numericValue =
-        typeof value === 'number' ? value : Number(String(value).replace(/,/g, ''));
+        typeof value === 'number'
+            ? value
+            : Number(String(value).replace(/,/g, ''));
 
     if (!Number.isFinite(numericValue)) {
         return String(value);

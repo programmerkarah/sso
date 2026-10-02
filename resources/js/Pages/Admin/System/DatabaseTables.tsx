@@ -18,11 +18,11 @@ import { Head, Link, router } from '@inertiajs/react';
 import Button from '@/Components/Button';
 import GlassCard from '@/Components/GlassCard';
 import GlassDatePicker from '@/Components/GlassDatePicker';
+import PageHeader from '@/Components/PageHeader';
+import ScrollArea from '@/Components/ScrollArea';
 import SearchableSelect, {
     SearchableSelectOption,
 } from '@/Components/SearchableSelect';
-import PageHeader from '@/Components/PageHeader';
-import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 import { formatNumber } from '@/utils/number';
@@ -422,7 +422,11 @@ export default function DatabaseTables({
                             </div>
                         </form>
 
-                        <ScrollArea className="mt-4 h-[70vh] max-h-[70vh]" viewportClassName="pr-2" contentClassName="space-y-2">
+                        <ScrollArea
+                            className="mt-4 h-[70vh] max-h-[70vh]"
+                            viewportClassName="pr-2"
+                            contentClassName="space-y-2"
+                        >
                             {tables.length === 0 ? (
                                 <div className="rounded-xl border border-slate-800 bg-black/20 p-4 text-sm text-white/60">
                                     Tidak ada tabel yang cocok dengan pencarian.
@@ -451,10 +455,15 @@ export default function DatabaseTables({
                                                         {table.name}
                                                     </div>
                                                     <div className="mt-1 text-xs text-white/55">
-                                                        {formatNumber(table.column_count)}{' '}
+                                                        {formatNumber(
+                                                            table.column_count,
+                                                        )}{' '}
                                                         kolom
                                                         {' • '}
-                                                        {formatNumber(table.row_count)} baris
+                                                        {formatNumber(
+                                                            table.row_count,
+                                                        )}{' '}
+                                                        baris
                                                     </div>
                                                 </div>
                                                 <span className="rounded-full bg-slate-900/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white/65">
@@ -499,7 +508,10 @@ export default function DatabaseTables({
                                                     Preview
                                                 </div>
                                                 <div className="mt-1 text-xl font-bold text-white">
-                                                    {formatNumber(selectedTable.rows.total)}
+                                                    {formatNumber(
+                                                        selectedTable.rows
+                                                            .total,
+                                                    )}
                                                 </div>
                                             </div>
                                             <div className="rounded-xl border border-slate-800 bg-black/20 px-4 py-3 text-sm text-white/80">
@@ -559,7 +571,10 @@ export default function DatabaseTables({
                                     </div>
 
                                     {activeTab === 'columns' ? (
-                                        <ScrollArea axis="horizontal" viewportClassName="pb-2">
+                                        <ScrollArea
+                                            axis="horizontal"
+                                            viewportClassName="pb-2"
+                                        >
                                             <table className="min-w-full text-sm text-white/80">
                                                 <thead className="bg-black/20 text-left text-xs uppercase tracking-wider text-white/55">
                                                     <tr>
@@ -656,12 +671,21 @@ export default function DatabaseTables({
                                             <div className="border-b border-slate-800 px-4 py-3 sm:px-6">
                                                 <p className="text-sm text-white/65">
                                                     Menampilkan{' '}
-                                                    {formatNumber(selectedTable.rows.from ?? 0)}{' '}
+                                                    {formatNumber(
+                                                        selectedTable.rows
+                                                            .from ?? 0,
+                                                    )}{' '}
                                                     sampai{' '}
-                                                    {formatNumber(selectedTable.rows.to ?? 0)}{' '}
+                                                    {formatNumber(
+                                                        selectedTable.rows.to ??
+                                                            0,
+                                                    )}{' '}
                                                 </p>
                                             </div>
-                                            <ScrollArea axis="horizontal" viewportClassName="pb-2">
+                                            <ScrollArea
+                                                axis="horizontal"
+                                                viewportClassName="pb-2"
+                                            >
                                                 <table className="w-full min-w-[1080px] table-fixed text-sm text-white/80">
                                                     <thead className="bg-black/20 text-left text-xs uppercase tracking-wider text-white/55">
                                                         <tr>
@@ -909,7 +933,10 @@ export default function DatabaseTables({
                             className="absolute inset-0 bg-slate-950/70 "
                             onClick={() => setExpandedCell(null)}
                         />
-                        <ScrollArea className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-slate-800 bg-slate-900/80" viewportClassName="p-6">
+                        <ScrollArea
+                            className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-slate-800 bg-slate-900/80"
+                            viewportClassName="p-6"
+                        >
                             <div className="mb-4 flex items-start justify-between gap-4">
                                 <div>
                                     <h3 className="text-xl font-bold text-white">
@@ -941,7 +968,10 @@ export default function DatabaseTables({
                             className="absolute inset-0 bg-slate-950/70 "
                             onClick={closeEditRowModal}
                         />
-                        <ScrollArea className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-slate-800 bg-slate-900/80" viewportClassName="p-6">
+                        <ScrollArea
+                            className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-slate-800 bg-slate-900/80"
+                            viewportClassName="p-6"
+                        >
                             <div className="mb-4 flex items-start justify-between gap-4">
                                 <div>
                                     <h3 className="text-xl font-bold text-white">

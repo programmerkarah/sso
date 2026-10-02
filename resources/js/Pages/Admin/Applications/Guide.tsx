@@ -53,9 +53,11 @@ function CodeBlock({
                     {copied === copyKey ? 'Tersalin!' : 'Salin'}
                 </button>
             </div>
-            <ScrollArea axis="horizontal" viewportClassName="pb-2"><pre className="whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
-                <code>{value}</code>
-            </pre></ScrollArea>
+            <ScrollArea axis="horizontal" viewportClassName="pb-2">
+                <pre className="whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
+                    <code>{value}</code>
+                </pre>
+            </ScrollArea>
         </div>
     );
 }
@@ -137,10 +139,17 @@ export default function Guide({ application, appUrl }: GuideProps) {
                     description={`Panduan OAuth2 dan sinkronisasi pengguna untuk ${application.name}.`}
                     actions={
                         <>
-                            <Link href={`/admin/applications/${application.route_key}`} className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
-                                <ArrowLeft className="h-4 w-4" /> Detail aplikasi
+                            <Link
+                                href={`/admin/applications/${application.route_key}`}
+                                className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                            >
+                                <ArrowLeft className="h-4 w-4" /> Detail
+                                aplikasi
                             </Link>
-                            <a href={`/admin/applications/${application.route_key}/guide/export-pdf`} className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                            <a
+                                href={`/admin/applications/${application.route_key}/guide/export-pdf`}
+                                className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                            >
                                 <Download className="h-4 w-4" /> PDF
                             </a>
                         </>

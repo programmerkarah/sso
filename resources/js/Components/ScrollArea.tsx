@@ -1,7 +1,7 @@
 import {
     HTMLAttributes,
-    PointerEvent as ReactPointerEvent,
     ReactNode,
+    PointerEvent as ReactPointerEvent,
     Ref,
     useCallback,
     useEffect,
@@ -51,11 +51,20 @@ export default function ScrollArea({
         const el = viewportRef.current;
         if (!el) return;
 
-        const showV = axis !== 'horizontal' && el.scrollHeight > el.clientHeight + 1;
-        const showH = axis !== 'vertical' && el.scrollWidth > el.clientWidth + 1;
+        const showV =
+            axis !== 'horizontal' && el.scrollHeight > el.clientHeight + 1;
+        const showH =
+            axis !== 'vertical' && el.scrollWidth > el.clientWidth + 1;
 
-        const vSize = showV ? Math.max(36, (el.clientHeight / el.scrollHeight) * el.clientHeight) : 0;
-        const hSize = showH ? Math.max(36, (el.clientWidth / el.scrollWidth) * el.clientWidth) : 0;
+        const vSize = showV
+            ? Math.max(
+                  36,
+                  (el.clientHeight / el.scrollHeight) * el.clientHeight,
+              )
+            : 0;
+        const hSize = showH
+            ? Math.max(36, (el.clientWidth / el.scrollWidth) * el.clientWidth)
+            : 0;
         const vTravel = Math.max(0, el.clientHeight - vSize);
         const hTravel = Math.max(0, el.clientWidth - hSize);
         const vOffset =
@@ -97,18 +106,25 @@ export default function ScrollArea({
         const el = viewportRef.current;
         if (!el) return;
 
-        const startPointer = orientation === 'vertical' ? event.clientY : event.clientX;
-        const startScroll = orientation === 'vertical' ? el.scrollTop : el.scrollLeft;
+        const startPointer =
+            orientation === 'vertical' ? event.clientY : event.clientX;
+        const startScroll =
+            orientation === 'vertical' ? el.scrollTop : el.scrollLeft;
         const maxScroll =
             orientation === 'vertical'
                 ? el.scrollHeight - el.clientHeight
                 : el.scrollWidth - el.clientWidth;
-        const trackLength = orientation === 'vertical' ? el.clientHeight : el.clientWidth;
-        const thumbLength = orientation === 'vertical' ? metrics.vSize : metrics.hSize;
+        const trackLength =
+            orientation === 'vertical' ? el.clientHeight : el.clientWidth;
+        const thumbLength =
+            orientation === 'vertical' ? metrics.vSize : metrics.hSize;
         const maxTravel = Math.max(1, trackLength - thumbLength);
 
         const move = (moveEvent: PointerEvent) => {
-            const current = orientation === 'vertical' ? moveEvent.clientY : moveEvent.clientX;
+            const current =
+                orientation === 'vertical'
+                    ? moveEvent.clientY
+                    : moveEvent.clientX;
             const delta = current - startPointer;
             const next = startScroll + (delta / maxTravel) * maxScroll;
             if (orientation === 'vertical') el.scrollTop = next;
@@ -131,7 +147,8 @@ export default function ScrollArea({
               ? 'overflow-x-auto overflow-y-hidden'
               : 'overflow-auto';
 
-    const hasExplicitPosition = /(^|\s)(static|fixed|absolute|relative|sticky)(\s|$)/.test(className);
+    const hasExplicitPosition =
+        /(^|\s)(static|fixed|absolute|relative|sticky)(\s|$)/.test(className);
     const rootClassName = `${hasExplicitPosition ? '' : 'relative '}${className}`;
 
     return (
@@ -148,7 +165,10 @@ export default function ScrollArea({
                     <div
                         onPointerDown={(event) => drag(event, 'vertical')}
                         className="pointer-events-auto absolute right-0 w-1.5 cursor-grab rounded-full bg-slate-500/65 transition hover:bg-slate-400/80 active:cursor-grabbing"
-                        style={{ height: metrics.vSize, transform: `translateY(${metrics.vOffset}px)` }}
+                        style={{
+                            height: metrics.vSize,
+                            transform: `translateY(${metrics.vOffset}px)`,
+                        }}
                     />
                 </div>
             )}
@@ -158,7 +178,10 @@ export default function ScrollArea({
                     <div
                         onPointerDown={(event) => drag(event, 'horizontal')}
                         className="pointer-events-auto absolute bottom-0 h-1.5 cursor-grab rounded-full bg-slate-500/65 transition hover:bg-slate-400/80 active:cursor-grabbing"
-                        style={{ width: metrics.hSize, transform: `translateX(${metrics.hOffset}px)` }}
+                        style={{
+                            width: metrics.hSize,
+                            transform: `translateX(${metrics.hOffset}px)`,
+                        }}
                     />
                 </div>
             )}

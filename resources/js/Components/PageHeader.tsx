@@ -1,5 +1,7 @@
 import { PropsWithChildren, ReactNode } from 'react';
+
 import { usePage } from '@inertiajs/react';
+
 import { PageProps } from '@/types';
 
 interface PageHeaderProps extends PropsWithChildren {
@@ -36,7 +38,11 @@ export default function PageHeader({
                     </p>
                 )}
             </div>
-            {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
+            {actions && (
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    {actions}
+                </div>
+            )}
         </header>
     );
 }

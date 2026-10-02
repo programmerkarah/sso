@@ -1,6 +1,7 @@
 import { ChevronDown } from 'lucide-react';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+
 import ScrollArea from '@/Components/ScrollArea';
 
 interface GlassSelectOption {
@@ -88,7 +89,10 @@ export default function GlassSelect({
             </button>
 
             {open && (
-                <ScrollArea className="absolute z-[80] mt-1.5 w-full rounded-lg border border-[#d5e1e9] bg-white shadow-xl" viewportClassName="max-h-64 p-1.5">
+                <ScrollArea
+                    className="absolute z-[80] mt-1.5 w-full rounded-lg border border-[#d5e1e9] bg-white shadow-xl"
+                    viewportClassName="max-h-64 p-1.5"
+                >
                     <button
                         type="button"
                         onClick={() => {

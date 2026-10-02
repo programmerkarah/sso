@@ -49,7 +49,10 @@ export default function Create({ availableOrganizationTypes }: CreateProps) {
                     title="Tambah aplikasi"
                     description="Daftarkan aplikasi baru dan konfigurasi integrasi OAuth SSO."
                     actions={
-                        <Link href="/admin/applications" className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                        <Link
+                            href="/admin/applications"
+                            className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                        >
                             <ArrowLeft className="h-4 w-4" /> Daftar aplikasi
                         </Link>
                     }

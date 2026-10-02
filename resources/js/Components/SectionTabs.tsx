@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+
 import ScrollArea from '@/Components/ScrollArea';
 
 export interface SectionTab<T extends string> {
@@ -14,7 +15,11 @@ interface SectionTabsProps<T extends string> {
     onChange: (id: T) => void;
 }
 
-export default function SectionTabs<T extends string>({ items, active, onChange }: SectionTabsProps<T>) {
+export default function SectionTabs<T extends string>({
+    items,
+    active,
+    onChange,
+}: SectionTabsProps<T>) {
     return (
         <ScrollArea axis="horizontal">
             <div className="inline-flex min-w-full gap-1 rounded-xl border border-slate-800 bg-slate-900/60 p-1 sm:min-w-0">

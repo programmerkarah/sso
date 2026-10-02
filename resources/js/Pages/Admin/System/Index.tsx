@@ -28,8 +28,8 @@ import GlassCard from '@/Components/GlassCard';
 import GlassSelect from '@/Components/GlassSelect';
 import PageHeader from '@/Components/PageHeader';
 import PageWorkspace from '@/Components/PageWorkspace';
-import SectionTabs from '@/Components/SectionTabs';
 import ScrollArea from '@/Components/ScrollArea';
+import SectionTabs from '@/Components/SectionTabs';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 import { formatNumber } from '@/utils/number';
@@ -218,7 +218,9 @@ export default function Index({
     server,
     backups,
 }: AdminSystemPageProps) {
-    const [activeSection, setActiveSection] = useState<'overview' | 'backups' | 'logs'>('overview');
+    const [activeSection, setActiveSection] = useState<
+        'overview' | 'backups' | 'logs'
+    >('overview');
     const [selectedLog, setSelectedLog] = useState<SystemLog | null>(null);
     const [copied, setCopied] = useState(false);
     const [editingBackup, setEditingBackup] = useState<BackupFile | null>(null);
@@ -427,88 +429,106 @@ export default function Index({
             <PageWorkspace
                 summary={
                     <>
+                        <PageHeader />
+                        <SectionTabs
+                            active={activeSection}
+                            onChange={setActiveSection}
+                            items={[
+                                {
+                                    id: 'overview',
+                                    label: 'Ringkasan',
+                                    icon: <Server className="h-4 w-4" />,
+                                },
+                                {
+                                    id: 'backups',
+                                    label: 'Backup & Restore',
+                                    icon: <HardDrive className="h-4 w-4" />,
+                                },
+                                {
+                                    id: 'logs',
+                                    label: 'Log Aktivitas',
+                                    icon: <Activity className="h-4 w-4" />,
+                                },
+                            ]}
+                        />
 
-                <PageHeader />
-                <SectionTabs
-                    active={activeSection}
-                    onChange={setActiveSection}
-                    items={[
-                        { id: 'overview', label: 'Ringkasan', icon: <Server className="h-4 w-4" /> },
-                        { id: 'backups', label: 'Backup & Restore', icon: <HardDrive className="h-4 w-4" /> },
-                        { id: 'logs', label: 'Log Aktivitas', icon: <Activity className="h-4 w-4" /> },
-                    ]}
-                />
+                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            <GlassCard>
+                                <div className="flex items-center gap-3">
+                                    <div className="rounded-full bg-blue-400/20 p-3">
+                                        <Database className="h-5 w-5 text-blue-100" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm text-white/70">
+                                            Jumlah tabel
+                                        </div>
+                                        <div className="text-3xl font-semibold text-white">
+                                            {formatNumber(database.table_count)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </GlassCard>
 
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    <GlassCard>
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-blue-400/20 p-3">
-                                <Database className="h-5 w-5 text-blue-100" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-white/70">
-                                    Jumlah tabel
+                            <GlassCard>
+                                <div className="flex items-center gap-3">
+                                    <div className="rounded-full bg-emerald-400/20 p-3">
+                                        <User className="h-5 w-5 text-emerald-100" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm text-white/70">
+                                            Total pengguna
+                                        </div>
+                                        <div className="text-3xl font-semibold text-white">
+                                            {formatNumber(database.user_count)}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="text-3xl font-semibold text-white">
-                                    {formatNumber(database.table_count)}
+                            </GlassCard>
+
+                            <GlassCard>
+                                <div className="flex items-center gap-3">
+                                    <div className="rounded-full bg-purple-400/20 p-3">
+                                        <Activity className="h-5 w-5 text-purple-100" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm text-white/70">
+                                            Total log ditampilkan
+                                        </div>
+                                        <div className="text-3xl font-semibold text-white">
+                                            {formatNumber(logs.total)}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </GlassCard>
+
+                            <GlassCard>
+                                <div className="flex items-center gap-3">
+                                    <div className="rounded-full bg-amber-400/20 p-3">
+                                        <HardDrive className="h-5 w-5 text-amber-100" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm text-white/70">
+                                            Disk bebas
+                                        </div>
+                                        <div className="text-3xl font-semibold text-white">
+                                            {formatNumber(server.disk_free_gb)}{' '}
+                                            GB
+                                        </div>
+                                    </div>
+                                </div>
+                            </GlassCard>
                         </div>
-                    </GlassCard>
-
-                    <GlassCard>
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-emerald-400/20 p-3">
-                                <User className="h-5 w-5 text-emerald-100" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-white/70">
-                                    Total pengguna
-                                </div>
-                                <div className="text-3xl font-semibold text-white">
-                                    {formatNumber(database.user_count)}
-                                </div>
-                            </div>
-                        </div>
-                    </GlassCard>
-
-                    <GlassCard>
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-purple-400/20 p-3">
-                                <Activity className="h-5 w-5 text-purple-100" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-white/70">
-                                    Total log ditampilkan
-                                </div>
-                                <div className="text-3xl font-semibold text-white">
-                                    {formatNumber(logs.total)}
-                                </div>
-                            </div>
-                        </div>
-                    </GlassCard>
-
-                    <GlassCard>
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-amber-400/20 p-3">
-                                <HardDrive className="h-5 w-5 text-amber-100" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-white/70">
-                                    Disk bebas
-                                </div>
-                                <div className="text-3xl font-semibold text-white">
-                                    {formatNumber(server.disk_free_gb)} GB
-                                </div>
-                            </div>
-                        </div>
-                    </GlassCard>
-                </div>
                     </>
                 }
                 contentClassName="space-y-4"
             >
-                <div className={activeSection === 'overview' ? 'grid gap-4 xl:grid-cols-2' : 'hidden'}>
+                <div
+                    className={
+                        activeSection === 'overview'
+                            ? 'grid gap-4 xl:grid-cols-2'
+                            : 'hidden'
+                    }
+                >
                     <GlassCard>
                         <h2 className="text-xl font-bold text-white">
                             Informasi Database
@@ -625,7 +645,13 @@ export default function Index({
                     </GlassCard>
                 </div>
 
-                <div className={activeSection === 'backups' ? 'grid gap-4 xl:grid-cols-2' : 'hidden'}>
+                <div
+                    className={
+                        activeSection === 'backups'
+                            ? 'grid gap-4 xl:grid-cols-2'
+                            : 'hidden'
+                    }
+                >
                     <GlassCard>
                         <h2 className="text-xl font-bold text-white">
                             Backup Database
@@ -735,7 +761,10 @@ export default function Index({
                                             </p>
                                         )}
                                         <div className="mt-2 flex items-center justify-between text-xs text-white/70">
-                                            <span>{formatNumber(backup.size_kb)} KB</span>
+                                            <span>
+                                                {formatNumber(backup.size_kb)}{' '}
+                                                KB
+                                            </span>
                                             <span>
                                                 {formatDateTime(
                                                     backup.modified_at,
@@ -783,7 +812,11 @@ export default function Index({
                             )}
                         </div>
 
-                        <ScrollArea axis="horizontal" className="mt-5 hidden md:block" viewportClassName="pb-2">
+                        <ScrollArea
+                            axis="horizontal"
+                            className="mt-5 hidden md:block"
+                            viewportClassName="pb-2"
+                        >
                             <table className="w-full min-w-[420px]">
                                 <thead>
                                     <tr className="border-b border-slate-800 text-left text-xs uppercase tracking-wider text-white/55">
@@ -824,7 +857,10 @@ export default function Index({
                                                     {backup.description || '—'}
                                                 </td>
                                                 <td className="py-3 pr-2">
-                                                    {formatNumber(backup.size_kb)} KB
+                                                    {formatNumber(
+                                                        backup.size_kb,
+                                                    )}{' '}
+                                                    KB
                                                 </td>
                                                 <td className="py-3 pr-2">
                                                     {formatDateTime(
@@ -951,7 +987,13 @@ export default function Index({
                     </GlassCard>
                 </div>
 
-                <GlassCard className={activeSection === 'logs' ? 'overflow-hidden p-0' : 'hidden'}>
+                <GlassCard
+                    className={
+                        activeSection === 'logs'
+                            ? 'overflow-hidden p-0'
+                            : 'hidden'
+                    }
+                >
                     <div className="border-b border-slate-800 px-4 py-4 sm:px-6 sm:py-5">
                         <h2 className="flex items-center gap-2 text-xl font-bold text-white">
                             <Server className="h-5 w-5" />
@@ -959,7 +1001,8 @@ export default function Index({
                         </h2>
                         <p className="mt-1 text-sm text-white/65">
                             Menampilkan {logs.from ?? 0} sampai {logs.to ?? 0}{' '}
-                            dari {formatNumber(logs.total)} log aktivitas terbaru.
+                            dari {formatNumber(logs.total)} log aktivitas
+                            terbaru.
                         </p>
 
                         <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_220px]">
@@ -1052,7 +1095,11 @@ export default function Index({
                         )}
                     </div>
 
-                    <ScrollArea axis="horizontal" className="hidden md:block" viewportClassName="pb-2">
+                    <ScrollArea
+                        axis="horizontal"
+                        className="hidden md:block"
+                        viewportClassName="pb-2"
+                    >
                         <table className="w-full min-w-[1080px]">
                             <thead>
                                 <tr className="border-b border-slate-800 bg-black/20 text-left text-xs uppercase tracking-wider text-white/60">
@@ -1251,7 +1298,10 @@ export default function Index({
                             className="absolute inset-0 bg-slate-950/70 "
                             onClick={() => setSelectedLog(null)}
                         />
-                        <ScrollArea className="relative h-[100dvh] w-full rounded-none border-0 bg-slate-900/80 sm:h-[85vh] sm:max-h-[85vh] sm:max-w-3xl sm:rounded-2xl sm:border sm:border-slate-800" viewportClassName="p-4 sm:p-6">
+                        <ScrollArea
+                            className="relative h-[100dvh] w-full rounded-none border-0 bg-slate-900/80 sm:h-[85vh] sm:max-h-[85vh] sm:max-w-3xl sm:rounded-2xl sm:border sm:border-slate-800"
+                            viewportClassName="p-4 sm:p-6"
+                        >
                             <div className="sticky top-0 z-10 -mx-4 mb-4 flex items-start justify-between gap-4 border-b border-slate-800 bg-slate-900/45 px-4 py-3  sm:static sm:mx-0 sm:mb-4 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
                                 <div>
                                     <h3 className="text-lg font-bold text-white sm:text-xl">
@@ -1489,7 +1539,6 @@ export default function Index({
                     onCancel={closeModal}
                     onConfirm={modal.onConfirm}
                 />
-
             </PageWorkspace>
         </AppLayout>
     );

@@ -33,7 +33,10 @@ export default function Create() {
                     title="Tambah organisasi"
                     description="Buat organisasi baru untuk menentukan cakupan pengguna dan akses aplikasi."
                     actions={
-                        <Link href="/admin/organizations" className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                        <Link
+                            href="/admin/organizations"
+                            className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                        >
                             <ArrowLeft className="h-4 w-4" /> Daftar organisasi
                         </Link>
                     }

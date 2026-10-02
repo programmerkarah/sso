@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+
 import { usePage } from '@inertiajs/react';
 
 import ScrollArea from '@/Components/ScrollArea';

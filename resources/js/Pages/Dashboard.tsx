@@ -123,7 +123,9 @@ export default function Dashboard({
                         {canManageUsers ? (
                             <>
                                 <p className="mt-3 text-4xl font-semibold text-white">
-                                    {formatNumber(pendingVerificationUsers.length)}
+                                    {formatNumber(
+                                        pendingVerificationUsers.length,
+                                    )}
                                 </p>
                                 <p className="mt-3 text-sm text-slate-400">
                                     Pengguna menunggu verifikasi dari
@@ -265,7 +267,9 @@ export default function Dashboard({
                                             Menunggu verifikasi
                                         </h2>
                                         <span className="rounded-full bg-amber-400/10 px-2 py-1 text-xs font-bold text-amber-200">
-                                            {formatNumber(pendingVerificationUsers.length)}
+                                            {formatNumber(
+                                                pendingVerificationUsers.length,
+                                            )}
                                         </span>
                                     </div>
                                     <div className="mt-4 divide-y divide-white/8">

@@ -18,14 +18,22 @@ export default function Welcome() {
                                 <p className="text-sm font-bold leading-tight text-[#18324a]">
                                     SSO BPS Kota Sawahlunto
                                 </p>
-                                <p className="text-xs text-[#7d909f]">Single Sign-On</p>
+                                <p className="text-xs text-[#7d909f]">
+                                    Single Sign-On
+                                </p>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Link href="/login" className="rounded-lg px-4 py-2 text-sm font-semibold text-[#49657b] transition hover:bg-[#eaf2f7] hover:text-[#18324a]">
+                            <Link
+                                href="/login"
+                                className="rounded-lg px-4 py-2 text-sm font-semibold text-[#49657b] transition hover:bg-[#eaf2f7] hover:text-[#18324a]"
+                            >
                                 Masuk
                             </Link>
-                            <Link href="/register" className="hidden rounded-lg border border-[#d5e1e9] bg-white px-4 py-2 text-sm font-semibold text-[#29465f] transition hover:bg-[#eef5f9] sm:inline-flex">
+                            <Link
+                                href="/register"
+                                className="hidden rounded-lg border border-[#d5e1e9] bg-white px-4 py-2 text-sm font-semibold text-[#29465f] transition hover:bg-[#eef5f9] sm:inline-flex"
+                            >
                                 Daftar
                             </Link>
                         </div>
@@ -44,14 +52,23 @@ export default function Welcome() {
                                     Pusat akses aplikasi BPS Kota Sawahlunto.
                                 </h1>
                                 <p className="mt-6 max-w-2xl text-base leading-7 text-[#6f8495] sm:text-lg">
-                                    Gunakan satu identitas untuk masuk ke aplikasi internal yang terhubung dengan SSO. Lebih sederhana untuk pengguna, lebih mudah dikelola oleh administrator.
+                                    Gunakan satu identitas untuk masuk ke
+                                    aplikasi internal yang terhubung dengan SSO.
+                                    Lebih sederhana untuk pengguna, lebih mudah
+                                    dikelola oleh administrator.
                                 </p>
                                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                                    <Link href="/login" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5aaee8] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4aa3de]">
+                                    <Link
+                                        href="/login"
+                                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5aaee8] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4aa3de]"
+                                    >
                                         Masuk ke SSO
                                         <ArrowRight className="h-4 w-4" />
                                     </Link>
-                                    <Link href="/register" className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#d5e1e9] bg-white px-5 py-3 text-sm font-semibold text-[#29465f] transition hover:bg-[#eef5f9]">
+                                    <Link
+                                        href="/register"
+                                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#d5e1e9] bg-white px-5 py-3 text-sm font-semibold text-[#29465f] transition hover:bg-[#eef5f9]"
+                                    >
                                         <UserPlus className="h-4 w-4" />
                                         Buat akun
                                     </Link>
@@ -61,8 +78,12 @@ export default function Welcome() {
                             <div className="rounded-3xl border border-[#d7e5ed] bg-white/90 p-5 shadow-[0_18px_40px_rgba(67,96,116,0.08)] sm:p-7">
                                 <div className="flex items-center justify-between border-b border-[#e2ebf1] pb-5">
                                     <div>
-                                        <p className="text-sm font-semibold text-[#18324a]">Akses terpusat</p>
-                                        <p className="mt-1 text-xs text-[#8799a7]">SSO BPS Kota Sawahlunto</p>
+                                        <p className="text-sm font-semibold text-[#18324a]">
+                                            Akses terpusat
+                                        </p>
+                                        <p className="mt-1 text-xs text-[#8799a7]">
+                                            SSO BPS Kota Sawahlunto
+                                        </p>
                                     </div>
                                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e7f3fb]">
                                         <LockKeyhole className="h-5 w-5 text-[#4a9fd7]" />
@@ -70,18 +91,49 @@ export default function Welcome() {
                                 </div>
                                 <div className="space-y-3 py-5">
                                     {[
-                                        ['01', 'Masuk sekali', 'Gunakan akun SSO untuk aplikasi yang telah terintegrasi.', 'bg-[#eaf4fb]'],
-                                        ['02', 'Akses sesuai hak pengguna', 'Aplikasi ditampilkan sesuai organisasi dan kewenangan akun.', 'bg-[#eef7ec]'],
-                                        ['03', 'Kelola keamanan', 'Pantau sesi aktif dan gunakan verifikasi dua langkah.', 'bg-[#fff4e8]'],
-                                    ].map(([number, title, description, tone]) => (
-                                        <div key={number} className={`flex gap-4 rounded-xl border border-[#e1eaf0] ${tone} p-4`}>
-                                            <span className="text-xs font-bold text-[#4a9fd7]">{number}</span>
-                                            <div>
-                                                <p className="text-sm font-semibold text-[#18324a]">{title}</p>
-                                                <p className="mt-1 text-sm leading-6 text-[#6f8495]">{description}</p>
+                                        [
+                                            '01',
+                                            'Masuk sekali',
+                                            'Gunakan akun SSO untuk aplikasi yang telah terintegrasi.',
+                                            'bg-[#eaf4fb]',
+                                        ],
+                                        [
+                                            '02',
+                                            'Akses sesuai hak pengguna',
+                                            'Aplikasi ditampilkan sesuai organisasi dan kewenangan akun.',
+                                            'bg-[#eef7ec]',
+                                        ],
+                                        [
+                                            '03',
+                                            'Kelola keamanan',
+                                            'Pantau sesi aktif dan gunakan verifikasi dua langkah.',
+                                            'bg-[#fff4e8]',
+                                        ],
+                                    ].map(
+                                        ([
+                                            number,
+                                            title,
+                                            description,
+                                            tone,
+                                        ]) => (
+                                            <div
+                                                key={number}
+                                                className={`flex gap-4 rounded-xl border border-[#e1eaf0] ${tone} p-4`}
+                                            >
+                                                <span className="text-xs font-bold text-[#4a9fd7]">
+                                                    {number}
+                                                </span>
+                                                <div>
+                                                    <p className="text-sm font-semibold text-[#18324a]">
+                                                        {title}
+                                                    </p>
+                                                    <p className="mt-1 text-sm leading-6 text-[#6f8495]">
+                                                        {description}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ),
+                                    )}
                                 </div>
                                 <div className="border-t border-[#e2ebf1] pt-5 text-xs text-[#8799a7]">
                                     OAuth2 • 2FA • Single active session
@@ -92,13 +144,32 @@ export default function Welcome() {
                         <section className="border-t border-[#dbe5ec] bg-white/55">
                             <div className="mx-auto grid max-w-[1680px] gap-8 px-5 py-8 sm:px-8 md:grid-cols-3">
                                 {[
-                                    ['Satu identitas', 'Kurangi akun terpisah dan gunakan identitas yang sama untuk layanan terhubung.', 'bg-[#eaf4fb]'],
-                                    ['Kontrol akses', 'Hak akses aplikasi mengikuti organisasi dan kewenangan pengguna.', 'bg-[#eef7ec]'],
-                                    ['Keamanan terpadu', 'Pengelolaan 2FA, perangkat, dan sesi dilakukan dari pusat SSO.', 'bg-[#fff4e8]'],
+                                    [
+                                        'Satu identitas',
+                                        'Kurangi akun terpisah dan gunakan identitas yang sama untuk layanan terhubung.',
+                                        'bg-[#eaf4fb]',
+                                    ],
+                                    [
+                                        'Kontrol akses',
+                                        'Hak akses aplikasi mengikuti organisasi dan kewenangan pengguna.',
+                                        'bg-[#eef7ec]',
+                                    ],
+                                    [
+                                        'Keamanan terpadu',
+                                        'Pengelolaan 2FA, perangkat, dan sesi dilakukan dari pusat SSO.',
+                                        'bg-[#fff4e8]',
+                                    ],
                                 ].map(([title, text, tone]) => (
-                                    <div key={title} className={`rounded-2xl ${tone} px-5 py-4`}>
-                                        <p className="text-sm font-semibold text-[#18324a]">{title}</p>
-                                        <p className="mt-2 text-sm leading-6 text-[#6f8495]">{text}</p>
+                                    <div
+                                        key={title}
+                                        className={`rounded-2xl ${tone} px-5 py-4`}
+                                    >
+                                        <p className="text-sm font-semibold text-[#18324a]">
+                                            {title}
+                                        </p>
+                                        <p className="mt-2 text-sm leading-6 text-[#6f8495]">
+                                            {text}
+                                        </p>
                                     </div>
                                 ))}
                             </div>

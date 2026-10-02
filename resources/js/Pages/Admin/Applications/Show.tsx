@@ -19,9 +19,9 @@ import { Head, Link, router } from '@inertiajs/react';
 import Button from '@/Components/Button';
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
-import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import PageHeader from '@/Components/PageHeader';
 import ScrollArea from '@/Components/ScrollArea';
+import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application } from '@/types';
 
@@ -111,178 +111,225 @@ export default function Show({ application, appUrl }: ShowProps) {
                     description="Detail aplikasi, endpoint, dan kredensial OAuth yang digunakan."
                     actions={
                         <>
-                            <Link href="/admin/applications" className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                            <Link
+                                href="/admin/applications"
+                                className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                            >
                                 <ArrowLeft className="h-4 w-4" /> Daftar
                             </Link>
-                            <Link href={`/admin/applications/${application.route_key}/edit`}>
-                                <Button><Edit className="h-4 w-4" /> Edit</Button>
+                            <Link
+                                href={`/admin/applications/${application.route_key}/edit`}
+                            >
+                                <Button>
+                                    <Edit className="h-4 w-4" /> Edit
+                                </Button>
                             </Link>
                         </>
                     }
                 />
 
                 <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(380px,0.75fr)]">
-                        <GlassCard className="p-4 sm:p-6">
-                            <h2 className="mb-4 text-lg font-bold text-white sm:text-xl">
-                                Informasi Aplikasi
-                            </h2>
-                            <div className="space-y-4">
+                    <GlassCard className="p-4 sm:p-6">
+                        <h2 className="mb-4 text-lg font-bold text-white sm:text-xl">
+                            Informasi Aplikasi
+                        </h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-sm font-medium text-white/55">
+                                    Nama
+                                </label>
+                                <p className="mt-1 text-white">
+                                    {application.name}
+                                </p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-white/55">
+                                    Slug
+                                </label>
+                                <p className="mt-1 break-words text-white">
+                                    {application.slug}
+                                </p>
+                            </div>
+                            {application.description && (
                                 <div>
                                     <label className="text-sm font-medium text-white/55">
-                                        Nama
+                                        Deskripsi
                                     </label>
-                                    <p className="mt-1 text-white">
-                                        {application.name}
+                                    <p className="mt-1 break-words leading-7 text-white/85">
+                                        {application.description}
                                     </p>
                                 </div>
-                                <div>
-                                    <label className="text-sm font-medium text-white/55">
-                                        Slug
-                                    </label>
-                                    <p className="mt-1 break-words text-white">
-                                        {application.slug}
-                                    </p>
-                                </div>
-                                {application.description && (
-                                    <div>
-                                        <label className="text-sm font-medium text-white/55">
-                                            Deskripsi
-                                        </label>
-                                        <p className="mt-1 break-words leading-7 text-white/85">
-                                            {application.description}
-                                        </p>
-                                    </div>
-                                )}
-                                <div>
-                                    <label className="text-sm font-medium text-white/55">
-                                        Domain
-                                    </label>
-                                    <p className="mt-1 break-all text-white">
-                                        {application.domain}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-white/55">
-                                        Callback URL
-                                    </label>
-                                    <p className="mt-1 break-all text-white">
-                                        {application.callback_url}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-white/55">
-                                        Status
-                                    </label>
-                                    <div className="mt-1">
-                                        {application.is_active ? (
-                                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-2.5 py-0.5 text-xs font-medium text-emerald-100">
-                                                <CheckCircle className="h-3 w-3" />
-                                                Aktif
-                                            </span>
-                                        ) : (
-                                            <span className="inline-flex items-center gap-1 rounded-full bg-red-400/20 px-2.5 py-0.5 text-xs font-medium text-red-100">
-                                                <XCircle className="h-3 w-3" />
-                                                Nonaktif
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-white/55">
-                                        Tipe Organisasi Diizinkan
-                                    </label>
-                                    <div className="mt-2 flex flex-wrap gap-2">
-                                        {application.allowed_organization_types
-                                            ?.length ? (
-                                            application.allowed_organization_types.map(
-                                                (type) => (
-                                                    <span
-                                                        key={type}
-                                                        className="inline-flex rounded-full border border-blue-300/30 bg-blue-500/20 px-2.5 py-1 text-xs font-semibold text-blue-100"
-                                                    >
-                                                        {type}
-                                                    </span>
-                                                ),
-                                            )
-                                        ) : (
-                                            <span className="inline-flex rounded-full border border-slate-800 bg-slate-900/80 px-2.5 py-1 text-xs font-semibold text-white/75">
-                                                Semua tipe organisasi
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-white/55">
-                                        Dibuat
-                                    </label>
-                                    <p className="mt-1 text-white/85">
-                                        {new Date(
-                                            application.created_at,
-                                        ).toLocaleString('id-ID', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}
-                                    </p>
+                            )}
+                            <div>
+                                <label className="text-sm font-medium text-white/55">
+                                    Domain
+                                </label>
+                                <p className="mt-1 break-all text-white">
+                                    {application.domain}
+                                </p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-white/55">
+                                    Callback URL
+                                </label>
+                                <p className="mt-1 break-all text-white">
+                                    {application.callback_url}
+                                </p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-white/55">
+                                    Status
+                                </label>
+                                <div className="mt-1">
+                                    {application.is_active ? (
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-2.5 py-0.5 text-xs font-medium text-emerald-100">
+                                            <CheckCircle className="h-3 w-3" />
+                                            Aktif
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-red-400/20 px-2.5 py-0.5 text-xs font-medium text-red-100">
+                                            <XCircle className="h-3 w-3" />
+                                            Nonaktif
+                                        </span>
+                                    )}
                                 </div>
                             </div>
-                        </GlassCard>
+                            <div>
+                                <label className="text-sm font-medium text-white/55">
+                                    Tipe Organisasi Diizinkan
+                                </label>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {application.allowed_organization_types
+                                        ?.length ? (
+                                        application.allowed_organization_types.map(
+                                            (type) => (
+                                                <span
+                                                    key={type}
+                                                    className="inline-flex rounded-full border border-blue-300/30 bg-blue-500/20 px-2.5 py-1 text-xs font-semibold text-blue-100"
+                                                >
+                                                    {type}
+                                                </span>
+                                            ),
+                                        )
+                                    ) : (
+                                        <span className="inline-flex rounded-full border border-slate-800 bg-slate-900/80 px-2.5 py-1 text-xs font-semibold text-white/75">
+                                            Semua tipe organisasi
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-white/55">
+                                    Dibuat
+                                </label>
+                                <p className="mt-1 text-white/85">
+                                    {new Date(
+                                        application.created_at,
+                                    ).toLocaleString('id-ID', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })}
+                                </p>
+                            </div>
+                        </div>
+                    </GlassCard>
 
-                        <div className="space-y-6">
-                            <GlassCard className="p-4 sm:p-6">
-                                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                                    <div>
-                                        <h2 className="text-lg font-bold text-white sm:text-xl">
-                                            Kredensial OAuth2
-                                        </h2>
-                                        <p className="mt-1 text-sm text-white/65">
-                                            Simpan kredensial ini hanya di
-                                            server aplikasi tujuan.
+                    <div className="space-y-6">
+                        <GlassCard className="p-4 sm:p-6">
+                            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                                <div>
+                                    <h2 className="text-lg font-bold text-white sm:text-xl">
+                                        Kredensial OAuth2
+                                    </h2>
+                                    <p className="mt-1 text-sm text-white/65">
+                                        Simpan kredensial ini hanya di server
+                                        aplikasi tujuan.
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowRegenerateModal(true)}
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
+                                >
+                                    <RefreshCw className="h-4 w-4" />
+                                    Regenerasi Secret
+                                </button>
+                            </div>
+
+                            <div className="mb-4 rounded-xl border border-yellow-400/30 bg-yellow-400/10 p-4">
+                                <div className="flex items-start gap-3">
+                                    <AlertTriangle className="h-5 w-5 flex-shrink-0 text-yellow-300" />
+                                    <div className="text-sm text-yellow-100">
+                                        <p className="font-semibold">
+                                            Simpan di tempat aman
+                                        </p>
+                                        <p className="mt-1 leading-6 text-yellow-100/85">
+                                            Client secret hanya boleh dipakai
+                                            oleh aplikasi Anda. Jangan dibagikan
+                                            di chat, screenshot, atau
+                                            repository.
                                         </p>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setShowRegenerateModal(true)
-                                        }
-                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
-                                    >
-                                        <RefreshCw className="h-4 w-4" />
-                                        Regenerasi Secret
-                                    </button>
                                 </div>
+                            </div>
 
-                                <div className="mb-4 rounded-xl border border-yellow-400/30 bg-yellow-400/10 p-4">
-                                    <div className="flex items-start gap-3">
-                                        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-yellow-300" />
-                                        <div className="text-sm text-yellow-100">
-                                            <p className="font-semibold">
-                                                Simpan di tempat aman
-                                            </p>
-                                            <p className="mt-1 leading-6 text-yellow-100/85">
-                                                Client secret hanya boleh
-                                                dipakai oleh aplikasi Anda.
-                                                Jangan dibagikan di chat,
-                                                screenshot, atau repository.
-                                            </p>
+                            {application.oauth_client ? (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-sm font-medium text-white/55">
+                                            Client ID
+                                        </label>
+                                        <div className="mt-1 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
+                                            <input
+                                                type="text"
+                                                value={
+                                                    application.oauth_client.id
+                                                }
+                                                readOnly
+                                                className="min-w-0 flex-1 rounded-xl border border-slate-800 bg-black/20 px-4 py-3 text-sm text-white"
+                                            />
+                                            <div className="flex items-center gap-2 self-end sm:self-auto">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        copyToClipboard(
+                                                            application
+                                                                .oauth_client!
+                                                                .id,
+                                                            'id',
+                                                        )
+                                                    }
+                                                    className="rounded-xl bg-slate-900/80 p-3 text-white transition hover:bg-slate-800"
+                                                    title="Copy Client ID"
+                                                >
+                                                    {copied === 'id' ? (
+                                                        <CheckCircle className="h-4 w-4 text-emerald-300" />
+                                                    ) : (
+                                                        <Copy className="h-4 w-4" />
+                                                    )}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {application.oauth_client ? (
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="text-sm font-medium text-white/55">
-                                                Client ID
-                                            </label>
+                                    <div>
+                                        <label className="text-sm font-medium text-white/55">
+                                            Client Secret
+                                        </label>
+                                        {application.oauth_client.secret ? (
                                             <div className="mt-1 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
                                                 <input
-                                                    type="text"
+                                                    type={
+                                                        showSecret
+                                                            ? 'text'
+                                                            : 'password'
+                                                    }
                                                     value={
                                                         application.oauth_client
-                                                            .id
+                                                            .secret
                                                     }
                                                     readOnly
                                                     className="min-w-0 flex-1 rounded-xl border border-slate-800 bg-black/20 px-4 py-3 text-sm text-white"
@@ -291,17 +338,31 @@ export default function Show({ application, appUrl }: ShowProps) {
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            copyToClipboard(
-                                                                application
-                                                                    .oauth_client!
-                                                                    .id,
-                                                                'id',
+                                                            setShowSecret(
+                                                                !showSecret,
                                                             )
                                                         }
                                                         className="rounded-xl bg-slate-900/80 p-3 text-white transition hover:bg-slate-800"
-                                                        title="Copy Client ID"
                                                     >
-                                                        {copied === 'id' ? (
+                                                        {showSecret ? (
+                                                            <EyeOff className="h-4 w-4" />
+                                                        ) : (
+                                                            <Eye className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            copyToClipboard(
+                                                                application
+                                                                    .oauth_client!
+                                                                    .secret!,
+                                                                'secret',
+                                                            )
+                                                        }
+                                                        className="rounded-xl bg-slate-900/80 p-3 text-white transition hover:bg-slate-800"
+                                                    >
+                                                        {copied === 'secret' ? (
                                                             <CheckCircle className="h-4 w-4 text-emerald-300" />
                                                         ) : (
                                                             <Copy className="h-4 w-4" />
@@ -309,163 +370,107 @@ export default function Show({ application, appUrl }: ShowProps) {
                                                     </button>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div>
-                                            <label className="text-sm font-medium text-white/55">
-                                                Client Secret
-                                            </label>
-                                            {application.oauth_client.secret ? (
-                                                <div className="mt-1 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
-                                                    <input
-                                                        type={
-                                                            showSecret
-                                                                ? 'text'
-                                                                : 'password'
-                                                        }
-                                                        value={
-                                                            application
-                                                                .oauth_client
-                                                                .secret
-                                                        }
-                                                        readOnly
-                                                        className="min-w-0 flex-1 rounded-xl border border-slate-800 bg-black/20 px-4 py-3 text-sm text-white"
-                                                    />
-                                                    <div className="flex items-center gap-2 self-end sm:self-auto">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                setShowSecret(
-                                                                    !showSecret,
-                                                                )
-                                                            }
-                                                            className="rounded-xl bg-slate-900/80 p-3 text-white transition hover:bg-slate-800"
-                                                        >
-                                                            {showSecret ? (
-                                                                <EyeOff className="h-4 w-4" />
-                                                            ) : (
-                                                                <Eye className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                copyToClipboard(
-                                                                    application
-                                                                        .oauth_client!
-                                                                        .secret!,
-                                                                    'secret',
-                                                                )
-                                                            }
-                                                            className="rounded-xl bg-slate-900/80 p-3 text-white transition hover:bg-slate-800"
-                                                        >
-                                                            {copied ===
-                                                            'secret' ? (
-                                                                <CheckCircle className="h-4 w-4 text-emerald-300" />
-                                                            ) : (
-                                                                <Copy className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="mt-2 rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm text-white/70">
-                                                    Secret lama tidak bisa
-                                                    ditampilkan ulang karena
-                                                    disimpan secara aman.
-                                                    Gunakan tombol regenerasi di
-                                                    atas untuk membuat secret
-                                                    baru yang bisa langsung
-                                                    disalin.
-                                                </div>
-                                            )}
-                                        </div>
+                                        ) : (
+                                            <div className="mt-2 rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm text-white/70">
+                                                Secret lama tidak bisa
+                                                ditampilkan ulang karena
+                                                disimpan secara aman. Gunakan
+                                                tombol regenerasi di atas untuk
+                                                membuat secret baru yang bisa
+                                                langsung disalin.
+                                            </div>
+                                        )}
                                     </div>
-                                ) : (
-                                    <p className="text-sm text-white/55">
-                                        Kredensial OAuth2 belum dibuat.
+                                </div>
+                            ) : (
+                                <p className="text-sm text-white/55">
+                                    Kredensial OAuth2 belum dibuat.
+                                </p>
+                            )}
+                        </GlassCard>
+
+                        <GlassCard className="p-4 sm:p-6">
+                            <h2 className="mb-4 text-lg font-bold text-white sm:text-xl">
+                                Panduan Integrasi
+                            </h2>
+                            <div className="rounded-xl bg-black/40 p-4">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
+                                        .ENV EXAMPLE
                                     </p>
-                                )}
-                            </GlassCard>
-
-                            <GlassCard className="p-4 sm:p-6">
-                                <h2 className="mb-4 text-lg font-bold text-white sm:text-xl">
-                                    Panduan Integrasi
-                                </h2>
-                                <div className="rounded-xl bg-black/40 p-4">
-                                    <div className="mb-2 flex items-center justify-between">
-                                        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
-                                            .ENV EXAMPLE
-                                        </p>
-                                        <button
-                                            onClick={() =>
-                                                copyToClipboard(
-                                                    `SSO_CLIENT_ID=${application.oauth_client?.id || 'your-client-id'}\nSSO_CLIENT_SECRET=${application.oauth_client?.secret || 'regenerate-secret-first'}\nSSO_REDIRECT_URI=${application.callback_url}\nSSO_REGISTER_URL=${appUrl}/register\nSSO_BASE_URL=${appUrl}\nSSO_USER_ENDPOINT=/api/user`,
-                                                    'env',
-                                                )
-                                            }
-                                            className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-white/70 transition hover:bg-slate-800 hover:text-white"
-                                        >
-                                            <Copy className="h-3.5 w-3.5" />
-                                            {copied === 'env'
-                                                ? 'Tersalin!'
-                                                : 'Salin'}
-                                        </button>
-                                    </div>
-                                    <ScrollArea axis="horizontal" viewportClassName="pb-2"><pre className="whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
+                                    <button
+                                        onClick={() =>
+                                            copyToClipboard(
+                                                `SSO_CLIENT_ID=${application.oauth_client?.id || 'your-client-id'}\nSSO_CLIENT_SECRET=${application.oauth_client?.secret || 'regenerate-secret-first'}\nSSO_REDIRECT_URI=${application.callback_url}\nSSO_REGISTER_URL=${appUrl}/register\nSSO_BASE_URL=${appUrl}\nSSO_USER_ENDPOINT=/api/user`,
+                                                'env',
+                                            )
+                                        }
+                                        className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-white/70 transition hover:bg-slate-800 hover:text-white"
+                                    >
+                                        <Copy className="h-3.5 w-3.5" />
+                                        {copied === 'env'
+                                            ? 'Tersalin!'
+                                            : 'Salin'}
+                                    </button>
+                                </div>
+                                <ScrollArea
+                                    axis="horizontal"
+                                    viewportClassName="pb-2"
+                                >
+                                    <pre className="whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
                                         <code>
                                             {`SSO_CLIENT_ID=${application.oauth_client?.id || 'your-client-id'}\nSSO_CLIENT_SECRET=${application.oauth_client?.secret || 'regenerate-secret-first'}\nSSO_REDIRECT_URI=${application.callback_url}\nSSO_REGISTER_URL=${appUrl}/register\nSSO_BASE_URL=${appUrl}\nSSO_USER_ENDPOINT=/api/user`}
                                         </code>
-                                    </pre></ScrollArea>
-                                </div>
+                                    </pre>
+                                </ScrollArea>
+                            </div>
 
-                                <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm leading-7 text-white/70">
-                                    <p>
-                                        Kalau secret belum tersedia, lakukan
-                                        regenerasi sekali lalu simpan di server
-                                        aplikasi tujuan. Setelah itu jangan
-                                        tampilkan lagi ke pengguna umum.
+                            <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm leading-7 text-white/70">
+                                <p>
+                                    Kalau secret belum tersedia, lakukan
+                                    regenerasi sekali lalu simpan di server
+                                    aplikasi tujuan. Setelah itu jangan
+                                    tampilkan lagi ke pengguna umum.
+                                </p>
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard className="p-4 sm:p-6">
+                            <div className="flex items-start gap-3">
+                                <div className="rounded-full bg-blue-400/15 p-3">
+                                    <KeyRound className="h-5 w-5 text-blue-100" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-white">
+                                        Panduan Penggunaan Singkat
+                                    </h2>
+                                    <p className="mt-2 text-sm leading-7 text-white/70">
+                                        Gunakan halaman ini untuk validasi
+                                        callback URL, menyalin kredensial, dan
+                                        mengecek pembatasan tipe organisasi
+                                        aplikasi.
                                     </p>
+                                    <p className="mt-2 text-xs text-white/60">
+                                        Tipe organisasi diizinkan:{' '}
+                                        {application.allowed_organization_types
+                                            ?.length
+                                            ? application.allowed_organization_types.join(
+                                                  ', ',
+                                              )
+                                            : 'Semua tipe'}
+                                    </p>
+                                    <Link
+                                        href={`/admin/applications/${application.route_key}/guide`}
+                                        className="mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-800"
+                                    >
+                                        <BookOpen className="h-4 w-4" />
+                                        Lihat Panduan Integrasi Lengkap
+                                    </Link>
                                 </div>
-                            </GlassCard>
-
-                            <GlassCard className="p-4 sm:p-6">
-                                <div className="flex items-start gap-3">
-                                    <div className="rounded-full bg-blue-400/15 p-3">
-                                        <KeyRound className="h-5 w-5 text-blue-100" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-lg font-bold text-white">
-                                            Panduan Penggunaan Singkat
-                                        </h2>
-                                        <p className="mt-2 text-sm leading-7 text-white/70">
-                                            Gunakan halaman ini untuk validasi
-                                            callback URL, menyalin kredensial,
-                                            dan mengecek pembatasan tipe
-                                            organisasi aplikasi.
-                                        </p>
-                                        <p className="mt-2 text-xs text-white/60">
-                                            Tipe organisasi diizinkan:{' '}
-                                            {application
-                                                .allowed_organization_types
-                                                ?.length
-                                                ? application.allowed_organization_types.join(
-                                                      ', ',
-                                                  )
-                                                : 'Semua tipe'}
-                                        </p>
-                                        <Link
-                                            href={`/admin/applications/${application.route_key}/guide`}
-                                            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-800"
-                                        >
-                                            <BookOpen className="h-4 w-4" />
-                                            Lihat Panduan Integrasi Lengkap
-                                        </Link>
-                                    </div>
-                                </div>
-                            </GlassCard>
-                        </div>
+                            </div>
+                        </GlassCard>
                     </div>
+                </div>
             </div>
 
             <ConfirmationModal

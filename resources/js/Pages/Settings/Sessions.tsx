@@ -8,12 +8,14 @@ import {
     Trash2,
     UserRound,
 } from 'lucide-react';
+
 import { useMemo, useState } from 'react';
+
 import { Head, router } from '@inertiajs/react';
 
 import PageHeader from '@/Components/PageHeader';
-import SectionTabs from '@/Components/SectionTabs';
 import ScrollArea from '@/Components/ScrollArea';
+import SectionTabs from '@/Components/SectionTabs';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 import { formatNumber } from '@/utils/number';
@@ -118,7 +120,9 @@ export default function Sessions(props: SessionsProps) {
     } = props;
 
     const [query, setQuery] = useState('');
-    const [activeTab, setActiveTab] = useState<'sessions' | 'oauth'>('sessions');
+    const [activeTab, setActiveTab] = useState<'sessions' | 'oauth'>(
+        'sessions',
+    );
 
     const currentUserList = users?.data ?? [];
     const selectedUserId = selectedUser?.id ?? null;
@@ -135,7 +139,11 @@ export default function Sessions(props: SessionsProps) {
 
     const visitState = (state?: string | null) => {
         if (!state) return;
-        router.post('/settings/sessions', { state }, { preserveScroll: true, preserveState: true });
+        router.post(
+            '/settings/sessions',
+            { state },
+            { preserveScroll: true, preserveState: true },
+        );
     };
 
     const revokeSession = (sessionId: string) => {
@@ -177,11 +185,23 @@ export default function Sessions(props: SessionsProps) {
     }) =>
         pages > 1 ? (
             <div className="flex items-center justify-between border-t border-slate-800 pt-4 text-xs text-slate-500">
-                <button type="button" onClick={() => visitState(previous)} disabled={!previous} className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30">
+                <button
+                    type="button"
+                    onClick={() => visitState(previous)}
+                    disabled={!previous}
+                    className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30"
+                >
                     <ChevronLeft className="h-3.5 w-3.5" /> Sebelumnya
                 </button>
-                <span>{formatNumber(page)} / {formatNumber(pages)}</span>
-                <button type="button" onClick={() => visitState(next)} disabled={!next} className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30">
+                <span>
+                    {formatNumber(page)} / {formatNumber(pages)}
+                </span>
+                <button
+                    type="button"
+                    onClick={() => visitState(next)}
+                    disabled={!next}
+                    className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30"
+                >
                     Berikutnya <ChevronRight className="h-3.5 w-3.5" />
                 </button>
             </div>
@@ -199,8 +219,16 @@ export default function Sessions(props: SessionsProps) {
                         <div className="border-b border-slate-800 p-4">
                             <div className="flex items-center justify-between gap-3">
                                 <div>
-                                    <h2 className="font-semibold text-white">Pengguna</h2>
-                                    <p className="mt-0.5 text-xs text-slate-500">{formatNumber(users?.total ?? currentUserList.length)} akun</p>
+                                    <h2 className="font-semibold text-white">
+                                        Pengguna
+                                    </h2>
+                                    <p className="mt-0.5 text-xs text-slate-500">
+                                        {formatNumber(
+                                            users?.total ??
+                                                currentUserList.length,
+                                        )}{' '}
+                                        akun
+                                    </p>
                                 </div>
                                 <UserRound className="h-5 w-5 text-slate-500" />
                             </div>
@@ -208,14 +236,20 @@ export default function Sessions(props: SessionsProps) {
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600" />
                                 <input
                                     value={query}
-                                    onChange={(event) => setQuery(event.target.value)}
+                                    onChange={(event) =>
+                                        setQuery(event.target.value)
+                                    }
                                     placeholder="Cari pengguna…"
                                     className="h-10 w-full rounded-lg border border-cyan-900/60 bg-[#041b2d]/85 pl-9 pr-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-slate-600"
                                 />
                             </div>
                         </div>
 
-                        <ScrollArea className="h-[56vh] max-h-[56vh] lg:h-[62vh] lg:max-h-[62vh]" viewportClassName="p-2" contentClassName="space-y-1">
+                        <ScrollArea
+                            className="h-[56vh] max-h-[56vh] lg:h-[62vh] lg:max-h-[62vh]"
+                            viewportClassName="p-2"
+                            contentClassName="space-y-1"
+                        >
                             {filteredUsers.map((user) => (
                                 <button
                                     key={user.id}
@@ -228,22 +262,39 @@ export default function Sessions(props: SessionsProps) {
                                             : 'text-slate-300 hover:bg-slate-800/60')
                                     }
                                 >
-                                    <div className="truncate text-sm font-medium">{user.name}</div>
-                                    <div className="mt-0.5 truncate text-xs text-slate-500">@{user.username}</div>
+                                    <div className="truncate text-sm font-medium">
+                                        {user.name}
+                                    </div>
+                                    <div className="mt-0.5 truncate text-xs text-slate-500">
+                                        @{user.username}
+                                    </div>
                                     <div className="mt-2 flex gap-3 text-[11px] text-slate-500">
-                                        <span>{formatNumber(user.session_count)} sesi</span>
-                                        <span>{formatNumber(user.oauth_count)} aplikasi</span>
+                                        <span>
+                                            {formatNumber(user.session_count)}{' '}
+                                            sesi
+                                        </span>
+                                        <span>
+                                            {formatNumber(user.oauth_count)}{' '}
+                                            aplikasi
+                                        </span>
                                     </div>
                                 </button>
                             ))}
                             {filteredUsers.length === 0 && (
-                                <div className="px-3 py-8 text-center text-sm text-slate-500">Pengguna tidak ditemukan.</div>
+                                <div className="px-3 py-8 text-center text-sm text-slate-500">
+                                    Pengguna tidak ditemukan.
+                                </div>
                             )}
                         </ScrollArea>
 
                         {users && users.last_page > 1 && (
                             <div className="border-t border-slate-800 p-3">
-                                <Pager page={users.current_page} pages={users.last_page} previous={users.prev_page_token} next={users.next_page_token} />
+                                <Pager
+                                    page={users.current_page}
+                                    pages={users.last_page}
+                                    previous={users.prev_page_token}
+                                    next={users.next_page_token}
+                                />
                             </div>
                         )}
                     </aside>
@@ -253,23 +304,42 @@ export default function Sessions(props: SessionsProps) {
                             {selectedUser ? (
                                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div className="min-w-0">
-                                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Akun dipilih</p>
-                                        <h2 className="mt-1 truncate text-xl font-semibold text-white">{selectedUser.name}</h2>
-                                        <p className="mt-1 truncate text-sm text-slate-400">{selectedUser.email}</p>
+                                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                                            Akun dipilih
+                                        </p>
+                                        <h2 className="mt-1 truncate text-xl font-semibold text-white">
+                                            {selectedUser.name}
+                                        </h2>
+                                        <p className="mt-1 truncate text-sm text-slate-400">
+                                            {selectedUser.email}
+                                        </p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
-                                            <div className="text-xl font-semibold text-white">{formatNumber(sessionMeta.total)}</div>
-                                            <div className="text-xs text-slate-500">Sesi web</div>
+                                            <div className="text-xl font-semibold text-white">
+                                                {formatNumber(
+                                                    sessionMeta.total,
+                                                )}
+                                            </div>
+                                            <div className="text-xs text-slate-500">
+                                                Sesi web
+                                            </div>
                                         </div>
                                         <div className="rounded-xl bg-[#041b2d]/70 px-4 py-3">
-                                            <div className="text-xl font-semibold text-white">{formatNumber(oauthMeta.total)}</div>
-                                            <div className="text-xs text-slate-500">Akses OAuth</div>
+                                            <div className="text-xl font-semibold text-white">
+                                                {formatNumber(oauthMeta.total)}
+                                            </div>
+                                            <div className="text-xs text-slate-500">
+                                                Akses OAuth
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="py-4 text-sm text-slate-500">Pilih pengguna untuk melihat sesi dan akses aplikasinya.</div>
+                                <div className="py-4 text-sm text-slate-500">
+                                    Pilih pengguna untuk melihat sesi dan akses
+                                    aplikasinya.
+                                </div>
                             )}
                         </div>
 
@@ -277,63 +347,149 @@ export default function Sessions(props: SessionsProps) {
                             active={activeTab}
                             onChange={setActiveTab}
                             items={[
-                                { id: 'sessions', label: 'Sesi web', icon: <Monitor className="h-4 w-4" /> },
-                                { id: 'oauth', label: 'Akses OAuth', icon: <ShieldCheck className="h-4 w-4" /> },
+                                {
+                                    id: 'sessions',
+                                    label: 'Sesi web',
+                                    icon: <Monitor className="h-4 w-4" />,
+                                },
+                                {
+                                    id: 'oauth',
+                                    label: 'Akses OAuth',
+                                    icon: <ShieldCheck className="h-4 w-4" />,
+                                },
                             ]}
                         />
 
                         {activeTab === 'sessions' ? (
                             <div className="rounded-2xl border border-slate-800 bg-slate-900/50">
                                 <div className="border-b border-slate-800 px-4 py-4 sm:px-5">
-                                    <h3 className="font-semibold text-white">Sesi web aktif</h3>
-                                    <p className="mt-1 text-xs text-slate-500">Perangkat yang memiliki sesi login aktif pada akun ini.</p>
+                                    <h3 className="font-semibold text-white">
+                                        Sesi web aktif
+                                    </h3>
+                                    <p className="mt-1 text-xs text-slate-500">
+                                        Perangkat yang memiliki sesi login aktif
+                                        pada akun ini.
+                                    </p>
                                 </div>
                                 <div className="space-y-2 p-3 sm:p-4">
                                     {sessions.length === 0 ? (
-                                        <div className="rounded-xl border border-dashed border-slate-800 px-4 py-10 text-center text-sm text-slate-500">Tidak ada sesi aktif.</div>
-                                    ) : sessions.map((session) => (
-                                        <div key={session.id} className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between">
-                                            <div className="min-w-0">
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <span className="font-medium text-white">{deviceLabel(session.user_agent)}</span>
-                                                    {session.is_current && <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-300">Sesi saat ini</span>}
-                                                </div>
-                                                <p className="mt-1 truncate text-xs text-slate-500">{session.ip_address ?? 'IP tidak diketahui'} · Aktif {formatDate(session.last_activity_at)}</p>
-                                            </div>
-                                            {!session.is_current && (
-                                                <button type="button" onClick={() => revokeSession(session.id)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-500/10">
-                                                    <Trash2 className="h-3.5 w-3.5" /> Akhiri sesi
-                                                </button>
-                                            )}
+                                        <div className="rounded-xl border border-dashed border-slate-800 px-4 py-10 text-center text-sm text-slate-500">
+                                            Tidak ada sesi aktif.
                                         </div>
-                                    ))}
-                                    <Pager page={sessionMeta.current_page} pages={sessionMeta.last_page} previous={session_prev_page_token} next={session_next_page_token} />
+                                    ) : (
+                                        sessions.map((session) => (
+                                            <div
+                                                key={session.id}
+                                                className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between"
+                                            >
+                                                <div className="min-w-0">
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <span className="font-medium text-white">
+                                                            {deviceLabel(
+                                                                session.user_agent,
+                                                            )}
+                                                        </span>
+                                                        {session.is_current && (
+                                                            <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-300">
+                                                                Sesi saat ini
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="mt-1 truncate text-xs text-slate-500">
+                                                        {session.ip_address ??
+                                                            'IP tidak diketahui'}{' '}
+                                                        · Aktif{' '}
+                                                        {formatDate(
+                                                            session.last_activity_at,
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                {!session.is_current && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            revokeSession(
+                                                                session.id,
+                                                            )
+                                                        }
+                                                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-500/10"
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5" />{' '}
+                                                        Akhiri sesi
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))
+                                    )}
+                                    <Pager
+                                        page={sessionMeta.current_page}
+                                        pages={sessionMeta.last_page}
+                                        previous={session_prev_page_token}
+                                        next={session_next_page_token}
+                                    />
                                 </div>
                             </div>
                         ) : (
                             <div className="rounded-2xl border border-slate-800 bg-slate-900/50">
                                 <div className="border-b border-slate-800 px-4 py-4 sm:px-5">
-                                    <h3 className="font-semibold text-white">Akses aplikasi OAuth</h3>
-                                    <p className="mt-1 text-xs text-slate-500">Aplikasi yang masih memiliki izin menggunakan akun SSO ini.</p>
+                                    <h3 className="font-semibold text-white">
+                                        Akses aplikasi OAuth
+                                    </h3>
+                                    <p className="mt-1 text-xs text-slate-500">
+                                        Aplikasi yang masih memiliki izin
+                                        menggunakan akun SSO ini.
+                                    </p>
                                 </div>
                                 <div className="space-y-2 p-3 sm:p-4">
                                     {oauthApplications.length === 0 ? (
-                                        <div className="rounded-xl border border-dashed border-slate-800 px-4 py-10 text-center text-sm text-slate-500">Tidak ada aplikasi OAuth aktif.</div>
-                                    ) : oauthApplications.map((app) => (
-                                        <div key={app.id} className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between">
-                                            <div className="min-w-0">
-                                                <div className="flex items-center gap-2">
-                                                    <KeyRound className="h-4 w-4 text-slate-500" />
-                                                    <span className="truncate font-medium text-white">{app.client_name}</span>
-                                                </div>
-                                                <p className="mt-1 text-xs text-slate-500">Diberikan {formatDate(app.created_at)} · Kedaluwarsa {formatDate(app.expires_at)}</p>
-                                            </div>
-                                            <button type="button" onClick={() => revokeOauthAccess(app.id)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-500/10">
-                                                <Trash2 className="h-3.5 w-3.5" /> Cabut akses
-                                            </button>
+                                        <div className="rounded-xl border border-dashed border-slate-800 px-4 py-10 text-center text-sm text-slate-500">
+                                            Tidak ada aplikasi OAuth aktif.
                                         </div>
-                                    ))}
-                                    <Pager page={oauthMeta.current_page} pages={oauthMeta.last_page} previous={oauth_prev_page_token} next={oauth_next_page_token} />
+                                    ) : (
+                                        oauthApplications.map((app) => (
+                                            <div
+                                                key={app.id}
+                                                className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between"
+                                            >
+                                                <div className="min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <KeyRound className="h-4 w-4 text-slate-500" />
+                                                        <span className="truncate font-medium text-white">
+                                                            {app.client_name}
+                                                        </span>
+                                                    </div>
+                                                    <p className="mt-1 text-xs text-slate-500">
+                                                        Diberikan{' '}
+                                                        {formatDate(
+                                                            app.created_at,
+                                                        )}{' '}
+                                                        · Kedaluwarsa{' '}
+                                                        {formatDate(
+                                                            app.expires_at,
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        revokeOauthAccess(
+                                                            app.id,
+                                                        )
+                                                    }
+                                                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-500/10"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />{' '}
+                                                    Cabut akses
+                                                </button>
+                                            </div>
+                                        ))
+                                    )}
+                                    <Pager
+                                        page={oauthMeta.current_page}
+                                        pages={oauthMeta.last_page}
+                                        previous={oauth_prev_page_token}
+                                        next={oauth_next_page_token}
+                                    />
                                 </div>
                             </div>
                         )}
