@@ -134,11 +134,6 @@ class UserManagementController extends Controller
                 'user_id' => null,
                 'pending_only' => false,
             ]),
-            'currentStateToken' => $encryptedState->encryptArray([
-                'page' => $users->currentPage(),
-                'user_id' => $selectedUserId,
-                'pending_only' => $pendingOnly,
-            ]),
             'exportStateToken' => $encryptedState->encryptArray([
                 'page' => 1,
                 'user_id' => $selectedUserId,
