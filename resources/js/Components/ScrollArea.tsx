@@ -131,8 +131,11 @@ export default function ScrollArea({
               ? 'overflow-x-auto overflow-y-hidden'
               : 'overflow-auto';
 
+    const hasExplicitPosition = /(^|\s)(static|fixed|absolute|relative|sticky)(\s|$)/.test(className);
+    const rootClassName = `${hasExplicitPosition ? '' : 'relative '}${className}`;
+
     return (
-        <div ref={rootRef} className={`relative ${className}`} {...props}>
+        <div ref={rootRef} className={rootClassName} {...props}>
             <div
                 ref={viewportRef}
                 className={`react-scroll-area-viewport h-full w-full ${overflowClass} ${viewportClassName}`}
