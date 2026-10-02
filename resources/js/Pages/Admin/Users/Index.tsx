@@ -958,14 +958,14 @@ export default function Index({
             {editIdentityModal.isOpen && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-black/60 "
+                        className="ui-modal-overlay absolute inset-0"
                         onClick={closeEditIdentityModal}
                     />
-                    <div className="relative w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
-                        <h3 className="text-lg font-bold text-white">
+                    <div className="ui-modal-surface relative w-full max-w-lg rounded-2xl p-6">
+                        <h3 className="text-lg font-bold text-[var(--bps-text)]">
                             Ubah Email dan Username
                         </h3>
-                        <p className="mt-1 text-sm text-white/75">
+                        <p className="mt-1 text-sm text-[var(--bps-muted)]">
                             Perbarui identitas akun untuk{' '}
                             {editIdentityModal.user?.name}.
                         </p>
@@ -1032,14 +1032,14 @@ export default function Index({
             {editAccessModal.isOpen && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-black/60 "
+                        className="ui-modal-overlay absolute inset-0"
                         onClick={closeEditAccessModal}
                     />
-                    <div className="relative w-full max-w-xl rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
-                        <h3 className="text-lg font-bold text-white">
+                    <div className="ui-modal-surface relative w-full max-w-xl rounded-2xl p-6">
+                        <h3 className="text-lg font-bold text-[var(--bps-text)]">
                             Atur Organisasi & Role
                         </h3>
-                        <p className="mt-1 text-sm text-white/75">
+                        <p className="mt-1 text-sm text-[var(--bps-muted)]">
                             Perbarui akses untuk {editAccessModal.user?.name}.
                         </p>
 
@@ -1092,8 +1092,8 @@ export default function Index({
                                                 key={role.id}
                                                 className={`flex cursor-pointer items-start gap-2 rounded-xl border px-3 py-2 text-sm transition ${
                                                     checked
-                                                        ? 'border-blue-300/50 bg-blue-500/20 text-white'
-                                                        : 'border-slate-800 bg-slate-900/50 text-white/80 hover:bg-slate-900/80'
+                                                        ? 'border-blue-300/50 bg-blue-500/20 text-[var(--bps-text)]'
+                                                        : 'border-slate-800 bg-slate-900/50 text-[var(--bps-text)]/80 hover:bg-slate-900/80'
                                                 }`}
                                             >
                                                 <input
@@ -1111,7 +1111,7 @@ export default function Index({
                                                         {role.name}
                                                     </span>
                                                     {role.description && (
-                                                        <span className="block text-xs text-white/55">
+                                                        <span className="block text-xs text-[var(--bps-text)]/55">
                                                             {role.description}
                                                         </span>
                                                     )}
@@ -1152,14 +1152,14 @@ export default function Index({
             {batchAccessModalOpen && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-black/60 "
+                        className="ui-modal-overlay absolute inset-0"
                         onClick={() => setBatchAccessModalOpen(false)}
                     />
                     <div className="relative w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
-                        <h3 className="text-lg font-bold text-white">
+                        <h3 className="text-lg font-bold text-[var(--bps-text)]">
                             Atur Organisasi & Role (Batch)
                         </h3>
-                        <p className="mt-1 text-sm text-white/75">
+                        <p className="mt-1 text-sm text-[var(--bps-muted)]">
                             Terapkan perubahan ke {selectedUserIds.length}{' '}
                             pengguna terpilih.
                         </p>
@@ -1201,7 +1201,7 @@ export default function Index({
 
                             <div>
                                 <Label>Role (opsional)</Label>
-                                <p className="mb-2 text-xs text-white/55">
+                                <p className="mb-2 text-xs text-[var(--bps-text)]/55">
                                     Pilih role jika ingin menimpa role pengguna
                                     terpilih.
                                 </p>
@@ -1217,8 +1217,8 @@ export default function Index({
                                                 key={role.id}
                                                 className={`flex cursor-pointer items-start gap-2 rounded-xl border px-3 py-2 text-sm transition ${
                                                     checked
-                                                        ? 'border-blue-300/50 bg-blue-500/20 text-white'
-                                                        : 'border-slate-800 bg-slate-900/50 text-white/80 hover:bg-slate-900/80'
+                                                        ? 'border-blue-300/50 bg-blue-500/20 text-[var(--bps-text)]'
+                                                        : 'border-slate-800 bg-slate-900/50 text-[var(--bps-text)]/80 hover:bg-slate-900/80'
                                                 }`}
                                             >
                                                 <input
@@ -1269,16 +1269,16 @@ export default function Index({
             {batchVerifyModalOpen && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-black/60 "
+                        className="ui-modal-overlay absolute inset-0"
                         onClick={() => setBatchVerifyModalOpen(false)}
                     />
                     <div className="relative w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
-                        <h3 className="text-lg font-bold text-white">
+                        <h3 className="text-lg font-bold text-[var(--bps-text)]">
                             Verifikasi Pengguna (Batch)
                         </h3>
-                        <p className="mt-2 text-sm text-white/75">
+                        <p className="mt-2 text-sm text-[var(--bps-muted)]">
                             Verifikasi{' '}
-                            <span className="font-semibold text-white">
+                            <span className="font-semibold text-[var(--bps-text)]">
                                 {selectedUserIds.length}
                             </span>{' '}
                             pengguna terpilih? Hanya pengguna yang belum
@@ -1379,13 +1379,13 @@ export default function Index({
                 }
             >
                 <GlassCard className="overflow-hidden p-0">
-                    <div className="border-b border-slate-800 px-6 py-5">
+                    <div className="border-b border-[var(--bps-border)] px-6 py-5">
                         <div className="flex flex-col gap-4 rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
                             <div>
-                                <h2 className="text-xl font-bold text-white">
+                                <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                     Daftar Pengguna
                                 </h2>
-                                <p className="mt-1 text-sm text-white/60">
+                                <p className="mt-1 text-sm text-[var(--bps-muted)]">
                                     Halaman {formatNumber(users.current_page)}{' '}
                                     dari {formatNumber(users.last_page)} —{' '}
                                     {formatNumber(users.total)} pengguna
@@ -1442,7 +1442,7 @@ export default function Index({
                         <table className="w-full min-w-[900px]">
                             <thead className="sticky top-0 z-10 bg-[var(--bps-surface-soft)]">
                                 <tr className="border-b border-[var(--bps-border)] bg-[var(--bps-surface-soft)]">
-                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
                                         <input
                                             type="checkbox"
                                             checked={allSelectedOnCurrentPage}
@@ -1452,28 +1452,28 @@ export default function Index({
                                             className="rounded border-white/30 bg-transparent text-blue-400 focus:ring-blue-300/40"
                                         />
                                     </th>
-                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
                                         Pengguna
                                     </th>
-                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
                                         Email
                                     </th>
-                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
                                         Role
                                     </th>
-                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
                                         Organisasi
                                     </th>
-                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
                                         Terdaftar
                                     </th>
-                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
                                         Login Terakhir
                                     </th>
-                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
+                                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
                                         Status
                                     </th>
-                                    <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-white/60">
+                                    <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-[var(--bps-muted)]">
                                         Aksi
                                     </th>
                                 </tr>
@@ -1483,7 +1483,7 @@ export default function Index({
                                     <tr>
                                         <td
                                             colSpan={9}
-                                            className="px-5 py-14 text-center text-white/50"
+                                            className="px-5 py-14 text-center text-[var(--bps-muted)]"
                                         >
                                             Tidak ada data yang dapat
                                             ditampilkan atau belum ada pengguna
@@ -1513,17 +1513,17 @@ export default function Index({
                                             {/* Pengguna */}
                                             <td className="px-5 py-4">
                                                 <div className="flex flex-col gap-1">
-                                                    <span className="font-semibold text-white">
+                                                    <span className="font-semibold text-[var(--bps-text)]">
                                                         {user.name}
                                                     </span>
-                                                    <span className="text-xs text-white/50">
+                                                    <span className="text-xs text-[var(--bps-muted)]">
                                                         @{user.username}
                                                     </span>
                                                 </div>
                                             </td>
 
                                             {/* Email */}
-                                            <td className="px-5 py-4 text-sm text-white/80">
+                                            <td className="px-5 py-4 text-sm text-[var(--bps-text)]/80">
                                                 {user.email}
                                             </td>
 
@@ -1536,7 +1536,7 @@ export default function Index({
                                                             className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                                                                 role === 'admin'
                                                                     ? 'bg-purple-400/25 text-purple-100'
-                                                                    : 'bg-slate-900/80 text-white/70'
+                                                                    : 'ui-surface-soft'
                                                             }`}
                                                         >
                                                             {role}
@@ -1549,14 +1549,14 @@ export default function Index({
                                             <td className="px-5 py-4">
                                                 {user.organization ? (
                                                     <div className="flex flex-col gap-1">
-                                                        <span className="text-sm font-semibold text-white">
+                                                        <span className="text-sm font-semibold text-[var(--bps-text)]">
                                                             {
                                                                 user
                                                                     .organization
                                                                     .name
                                                             }
                                                         </span>
-                                                        <span className="text-xs text-white/55">
+                                                        <span className="text-xs text-[var(--bps-text)]/55">
                                                             {
                                                                 user
                                                                     .organization
@@ -1565,21 +1565,21 @@ export default function Index({
                                                         </span>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-sm text-white/45">
+                                                    <span className="text-sm text-[var(--bps-text)]/45">
                                                         Belum diatur
                                                     </span>
                                                 )}
                                             </td>
 
                                             {/* Terdaftar */}
-                                            <td className="px-5 py-4 text-sm text-white/70">
+                                            <td className="px-5 py-4 text-sm text-[var(--bps-muted)]">
                                                 {formatDateTime(
                                                     user.created_at,
                                                 )}
                                             </td>
 
                                             {/* Login Terakhir */}
-                                            <td className="px-5 py-4 text-sm text-white/70">
+                                            <td className="px-5 py-4 text-sm text-[var(--bps-muted)]">
                                                 {formatDateTime(
                                                     user.last_login_at,
                                                 )}
@@ -1624,7 +1624,7 @@ export default function Index({
                                                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
                                                             user.two_factor_confirmed_at
                                                                 ? 'bg-blue-400/20 text-blue-100'
-                                                                : 'bg-slate-900/80 text-white/60'
+                                                                : 'ui-surface-soft'
                                                         }`}
                                                     >
                                                         {user.two_factor_confirmed_at ? (
@@ -1675,7 +1675,7 @@ export default function Index({
                     {/* Pagination */}
                     {users.last_page > 1 && (
                         <div className="flex items-center justify-between border-t border-[var(--bps-border)] bg-[var(--bps-surface-soft)] px-6 py-4">
-                            <p className="text-sm text-white/60">
+                            <p className="text-sm text-[var(--bps-muted)]">
                                 Menampilkan {formatNumber(users.from ?? 0)}–
                                 {formatNumber(users.to ?? 0)} dari{' '}
                                 {formatNumber(users.total)} pengguna
@@ -1692,7 +1692,7 @@ export default function Index({
                                         <ChevronLeft className="h-4 w-4" />
                                     </button>
                                 ) : (
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/30">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-[var(--bps-muted)]">
                                         <ChevronLeft className="h-4 w-4" />
                                     </span>
                                 )}
@@ -1704,8 +1704,8 @@ export default function Index({
                                         onClick={() => visitState(page.token)}
                                         className={`flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium transition ${
                                             page.active
-                                                ? 'border-white/40 bg-white/20 text-white'
-                                                : 'border-slate-800 text-white/70 hover:bg-slate-900/80 hover:text-white'
+                                                ? 'border-white/40 bg-white/20 text-[var(--bps-text)]'
+                                                : 'border-slate-800 text-[var(--bps-muted)] hover:bg-slate-900/80 hover:text-[var(--bps-text)]'
                                         }`}
                                     >
                                         {page.label}
@@ -1723,7 +1723,7 @@ export default function Index({
                                         <ChevronRight className="h-4 w-4" />
                                     </button>
                                 ) : (
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/30">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-[var(--bps-muted)]">
                                         <ChevronRight className="h-4 w-4" />
                                     </span>
                                 )}
@@ -1745,12 +1745,12 @@ export default function Index({
                         ref={actionMenuRef}
                         className="absolute bottom-0 right-0 top-0 flex w-full max-w-sm flex-col border-l border-slate-800 bg-slate-950 shadow-2xl"
                     >
-                        <div className="flex items-start justify-between gap-4 border-b border-slate-800 p-5">
+                        <div className="flex items-start justify-between gap-4 border-b border-[var(--bps-border)] p-5">
                             <div className="min-w-0">
                                 <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                                     Kelola pengguna
                                 </p>
-                                <h3 className="mt-1 truncate text-lg font-semibold text-white">
+                                <h3 className="mt-1 truncate text-lg font-semibold text-[var(--bps-text)]">
                                     {actionMenuUser.name}
                                 </h3>
                                 <p className="mt-0.5 truncate text-sm text-slate-500">
@@ -1872,7 +1872,7 @@ export default function Index({
                                 </div>
                             </div>
 
-                            <div className="border-t border-slate-800 pt-4">
+                            <div className="border-t border-[var(--bps-border)] pt-4">
                                 <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">
                                     Keamanan
                                 </p>
@@ -1962,7 +1962,7 @@ export default function Index({
                             </div>
 
                             {actionMenuUser.id !== currentUserId && (
-                                <div className="border-t border-slate-800 pt-4">
+                                <div className="border-t border-[var(--bps-border)] pt-4">
                                     <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-red-500/70">
                                         Zona berbahaya
                                     </p>
@@ -1995,21 +1995,21 @@ export default function Index({
             {userSecurityModal.isOpen && (
                 <div className="fixed inset-0 z-[80] flex items-start justify-center p-4 pt-12">
                     <div
-                        className="absolute inset-0 bg-black/60 "
+                        className="ui-modal-overlay absolute inset-0"
                         onClick={closeUserSecurity}
                     />
-                    <div className="relative w-full max-w-xl rounded-2xl border border-slate-800 bg-gradient-to-b from-white/15 to-white/8  ">
+                    <div className="ui-modal-surface relative w-full max-w-xl overflow-hidden rounded-2xl">
                         {/* Header */}
-                        <div className="flex items-start justify-between gap-3 border-b border-slate-800 px-5 py-4">
+                        <div className="flex items-start justify-between gap-3 border-b border-[var(--bps-border)] px-5 py-4">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/20">
                                     <Monitor className="h-4.5 w-4.5 text-teal-300" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-white">
+                                    <h3 className="text-sm font-bold text-[var(--bps-text)]">
                                         Sesi &amp; Perangkat
                                     </h3>
-                                    <p className="text-xs text-white/50">
+                                    <p className="text-xs text-[var(--bps-muted)]">
                                         {userSecurityModal.user?.name}
                                     </p>
                                 </div>
@@ -2024,22 +2024,22 @@ export default function Index({
                         </div>
 
                         {/* Tabs */}
-                        <div className="flex border-b border-slate-800 px-5">
+                        <div className="flex border-b border-[var(--bps-border)] px-5">
                             <button
                                 type="button"
                                 onClick={() => setSecurityTab('sessions')}
                                 className={`-mb-px border-b-2 px-1 py-3 text-xs font-semibold transition ${
                                     securityTab === 'sessions'
-                                        ? 'border-teal-400 text-teal-300'
-                                        : 'border-transparent text-white/40 hover:text-white/70'
+                                        ? 'border-[var(--bps-blue)] text-[var(--bps-blue)]'
+                                        : 'border-transparent text-[var(--bps-muted)] hover:text-[var(--bps-text)]'
                                 }`}
                             >
                                 Sesi Login
                                 <span
                                     className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
                                         securityTab === 'sessions'
-                                            ? 'bg-teal-500/20 text-teal-300'
-                                            : 'bg-slate-900/80 text-white/40'
+                                            ? 'ui-selected'
+                                            : 'ui-surface-soft'
                                     }`}
                                 >
                                     {userSecurityModal.sessions.length}
@@ -2050,16 +2050,16 @@ export default function Index({
                                 onClick={() => setSecurityTab('oauth')}
                                 className={`-mb-px ml-5 border-b-2 px-1 py-3 text-xs font-semibold transition ${
                                     securityTab === 'oauth'
-                                        ? 'border-teal-400 text-teal-300'
-                                        : 'border-transparent text-white/40 hover:text-white/70'
+                                        ? 'border-[var(--bps-blue)] text-[var(--bps-blue)]'
+                                        : 'border-transparent text-[var(--bps-muted)] hover:text-[var(--bps-text)]'
                                 }`}
                             >
                                 OAuth Terhubung
                                 <span
                                     className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
                                         securityTab === 'oauth'
-                                            ? 'bg-teal-500/20 text-teal-300'
-                                            : 'bg-slate-900/80 text-white/40'
+                                            ? 'ui-selected'
+                                            : 'ui-surface-soft'
                                     }`}
                                 >
                                     {userSecurityModal.oauthTokens.length}
@@ -2070,16 +2070,16 @@ export default function Index({
                                 onClick={() => setSecurityTab('devices')}
                                 className={`-mb-px ml-5 border-b-2 px-1 py-3 text-xs font-semibold transition ${
                                     securityTab === 'devices'
-                                        ? 'border-teal-400 text-teal-300'
-                                        : 'border-transparent text-white/40 hover:text-white/70'
+                                        ? 'border-[var(--bps-blue)] text-[var(--bps-blue)]'
+                                        : 'border-transparent text-[var(--bps-muted)] hover:text-[var(--bps-text)]'
                                 }`}
                             >
                                 Perangkat Tepercaya 2FA
                                 <span
                                     className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
                                         securityTab === 'devices'
-                                            ? 'bg-teal-500/20 text-teal-300'
-                                            : 'bg-slate-900/80 text-white/40'
+                                            ? 'ui-selected'
+                                            : 'ui-surface-soft'
                                     }`}
                                 >
                                     {userSecurityModal.trustedDevices.length}
@@ -2093,7 +2093,7 @@ export default function Index({
                             viewportClassName="p-5"
                         >
                             {userSecurityModal.loading ? (
-                                <div className="flex flex-col items-center justify-center gap-2 py-12 text-white/40">
+                                <div className="flex flex-col items-center justify-center gap-2 py-12 text-[var(--bps-muted)]">
                                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-800 border-t-teal-400" />
                                     <span className="text-xs">
                                         Memuat data...
@@ -2102,7 +2102,7 @@ export default function Index({
                             ) : securityTab === 'sessions' ? (
                                 <>
                                     {userSecurityModal.sessions.length === 0 ? (
-                                        <div className="flex flex-col items-center justify-center gap-2 py-10 text-white/30">
+                                        <div className="flex flex-col items-center justify-center gap-2 py-10 text-[var(--bps-muted)]">
                                             <Monitor className="h-8 w-8" />
                                             <p className="text-xs">
                                                 Tidak ada sesi aktif.
@@ -2128,31 +2128,31 @@ export default function Index({
                                                         className={`group flex items-center gap-3 rounded-xl border px-4 py-3 transition ${
                                                             session.is_active
                                                                 ? 'border-emerald-500/30 bg-emerald-500/10'
-                                                                : 'border-white/8 bg-slate-900/50 hover:bg-white/8'
+                                                                : 'ui-hover border-[var(--bps-border)] bg-[var(--bps-surface)]'
                                                         }`}
                                                     >
                                                         <div
                                                             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
                                                                 session.is_active
                                                                     ? 'bg-emerald-500/20'
-                                                                    : 'bg-slate-900/80'
+                                                                    : 'ui-surface-soft'
                                                             }`}
                                                         >
                                                             <DeviceIcon
-                                                                className={`h-4 w-4 ${session.is_active ? 'text-emerald-300' : 'text-white/50'}`}
+                                                                className={`h-4 w-4 ${session.is_active ? 'text-emerald-300' : 'text-[var(--bps-muted)]'}`}
                                                             />
                                                         </div>
                                                         <div className="min-w-0 flex-1">
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-semibold text-white/90">
+                                                                <span className="text-xs font-semibold text-[var(--bps-text)]">
                                                                     {
                                                                         parsed.browser
                                                                     }
                                                                 </span>
-                                                                <span className="text-white/30">
+                                                                <span className="text-[var(--bps-muted)]">
                                                                     ·
                                                                 </span>
-                                                                <span className="text-xs text-white/55">
+                                                                <span className="text-xs text-[var(--bps-text)]/55">
                                                                     {parsed.os}
                                                                 </span>
                                                                 {session.is_active && (
@@ -2161,7 +2161,7 @@ export default function Index({
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <div className="mt-0.5 flex items-center gap-3 text-[11px] text-white/35">
+                                                            <div className="mt-0.5 flex items-center gap-3 text-[11px] text-[var(--bps-muted)]">
                                                                 <span>
                                                                     IP:{' '}
                                                                     {session.ip_address ??
@@ -2214,7 +2214,7 @@ export default function Index({
                                                 );
                                             })}
                                             {sessionTotalPages > 1 && (
-                                                <div className="mt-3 flex items-center justify-between gap-3 pt-2 text-xs text-white/60">
+                                                <div className="mt-3 flex items-center justify-between gap-3 pt-2 text-xs text-[var(--bps-muted)]">
                                                     <button
                                                         type="button"
                                                         onClick={() =>
@@ -2267,7 +2267,7 @@ export default function Index({
                                 <>
                                     {userSecurityModal.oauthTokens.length ===
                                     0 ? (
-                                        <div className="flex flex-col items-center justify-center gap-2 py-10 text-white/30">
+                                        <div className="flex flex-col items-center justify-center gap-2 py-10 text-[var(--bps-muted)]">
                                             <ShieldCheck className="h-8 w-8" />
                                             <p className="text-xs">
                                                 Tidak ada aplikasi OAuth yang
@@ -2284,12 +2284,12 @@ export default function Index({
                                                     >
                                                         <div className="flex items-center justify-between gap-3">
                                                             <div>
-                                                                <p className="text-sm font-semibold text-white">
+                                                                <p className="text-sm font-semibold text-[var(--bps-text)]">
                                                                     {
                                                                         token.client_name
                                                                     }
                                                                 </p>
-                                                                <p className="text-[11px] text-white/50">
+                                                                <p className="text-[11px] text-[var(--bps-muted)]">
                                                                     {token.token_name ??
                                                                         'Akses SSO'}
                                                                 </p>
@@ -2298,7 +2298,7 @@ export default function Index({
                                                                 OAuth
                                                             </span>
                                                         </div>
-                                                        <div className="mt-2 space-y-1 text-[11px] text-white/45">
+                                                        <div className="mt-2 space-y-1 text-[11px] text-[var(--bps-text)]/45">
                                                             <div>
                                                                 Dibuat:{' '}
                                                                 {formatDateTime(
@@ -2322,7 +2322,7 @@ export default function Index({
                                 <>
                                     {userSecurityModal.trustedDevices.length ===
                                     0 ? (
-                                        <div className="flex flex-col items-center justify-center gap-2 py-10 text-white/30">
+                                        <div className="flex flex-col items-center justify-center gap-2 py-10 text-[var(--bps-muted)]">
                                             <ShieldCheck className="h-8 w-8" />
                                             <p className="text-xs">
                                                 Tidak ada perangkat tepercaya.
@@ -2358,34 +2358,34 @@ export default function Index({
                                                             className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition ${
                                                                 isExpired
                                                                     ? 'border-white/5 bg-white/3 opacity-60'
-                                                                    : 'border-white/8 bg-slate-900/50 hover:bg-white/8'
+                                                                    : 'ui-hover border-[var(--bps-border)] bg-[var(--bps-surface)]'
                                                             }`}
                                                         >
                                                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900/80">
-                                                                <DeviceIcon className="h-4 w-4 text-white/50" />
+                                                                <DeviceIcon className="h-4 w-4 text-[var(--bps-muted)]" />
                                                             </div>
                                                             <div className="min-w-0 flex-1">
                                                                 <div className="flex items-center gap-2">
-                                                                    <span className="text-xs font-semibold text-white/90">
+                                                                    <span className="text-xs font-semibold text-[var(--bps-text)]">
                                                                         {
                                                                             parsed.browser
                                                                         }
                                                                     </span>
-                                                                    <span className="text-white/30">
+                                                                    <span className="text-[var(--bps-muted)]">
                                                                         ·
                                                                     </span>
-                                                                    <span className="text-xs text-white/55">
+                                                                    <span className="text-xs text-[var(--bps-text)]/55">
                                                                         {
                                                                             parsed.os
                                                                         }
                                                                     </span>
                                                                     {isExpired && (
-                                                                        <span className="rounded-full bg-slate-900/80 px-1.5 py-0.5 text-[10px] text-white/40">
+                                                                        <span className="rounded-full bg-slate-900/80 px-1.5 py-0.5 text-[10px] text-[var(--bps-muted)]">
                                                                             Kadaluarsa
                                                                         </span>
                                                                     )}
                                                                 </div>
-                                                                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0 text-[11px] text-white/35">
+                                                                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0 text-[11px] text-[var(--bps-muted)]">
                                                                     <span>
                                                                         Digunakan:{' '}
                                                                         {device.last_used_at
