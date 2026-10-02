@@ -22,7 +22,7 @@ import { PageProps } from '@/types';
 
 export default function AppLayout({ children }: PropsWithChildren) {
     const page = usePage<PageProps>();
-    const { auth, flash } = page.props;
+    const { app, auth, flash, navigation } = page.props;
     const currentUrl = page.url;
     const user = auth?.user;
     const canManageApplications = auth?.can.manageApplications ?? false;
@@ -208,10 +208,10 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                 <AppIcon className="h-8 w-8 shrink-0" />
                                 <div className="min-w-0">
                                     <div className="truncate text-sm font-semibold text-white">
-                                        SSO BPS Kota Sawahlunto
+                                        {app.product_name}
                                     </div>
                                     <div className="hidden text-xs text-slate-500 sm:block">
-                                        Single Sign-On
+                                        {app.description}
                                     </div>
                                 </div>
                             </Link>
@@ -252,18 +252,15 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                         )
                                     }
                                 >
-                                    <Link
-                                        href="/settings/security"
-                                        className="block rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
-                                    >
-                                        Keamanan akun
-                                    </Link>
-                                    <Link
-                                        href="/settings/sessions"
-                                        className="block rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
-                                    >
-                                        Sesi & akses
-                                    </Link>
+{navigation.account.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            className="block rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    ))}
                                 </NavDropdown>
 
                                 {(canManageApplications ||
