@@ -1440,8 +1440,8 @@ export default function Index({
                         viewportClassName="pb-2"
                     >
                         <table className="w-full min-w-[900px]">
-                            <thead className="sticky top-0 z-10 bg-slate-950">
-                                <tr className="border-b border-slate-800 bg-black/20">
+                            <thead className="sticky top-0 z-10 bg-[var(--bps-surface-soft)]">
+                                <tr className="border-b border-[var(--bps-border)] bg-[var(--bps-surface-soft)]">
                                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
                                         <input
                                             type="checkbox"
@@ -1494,7 +1494,7 @@ export default function Index({
                                     users.data.map((user) => (
                                         <tr
                                             key={user.id}
-                                            className="ui-hover transition-colors"
+                                            className="ui-row-hover"
                                         >
                                             <td className="px-5 py-4">
                                                 <input
@@ -1674,7 +1674,7 @@ export default function Index({
 
                     {/* Pagination */}
                     {users.last_page > 1 && (
-                        <div className="flex items-center justify-between border-t border-slate-800 bg-black/10 px-6 py-4">
+                        <div className="flex items-center justify-between border-t border-[var(--bps-border)] bg-[var(--bps-surface-soft)] px-6 py-4">
                             <p className="text-sm text-white/60">
                                 Menampilkan {formatNumber(users.from ?? 0)}–
                                 {formatNumber(users.to ?? 0)} dari{' '}
