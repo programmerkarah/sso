@@ -50,13 +50,24 @@ class HandleInertiaRequests extends Middleware
             'mode' => 'document',
             'sticky_summary' => false,
             'content_scroll' => false,
+            'content_strategy' => 'document',
         ];
 
-        if ($request->routeIs('admin.users.index', 'admin.system.index', 'admin.system.database-tables')) {
+        if ($request->routeIs('admin.users.index', 'admin.system.index')) {
             $pageLayout = [
                 'mode' => 'workspace',
                 'sticky_summary' => true,
                 'content_scroll' => true,
+                'content_strategy' => 'scroll',
+            ];
+        }
+
+        if ($request->routeIs('admin.system.database-tables')) {
+            $pageLayout = [
+                'mode' => 'workspace',
+                'sticky_summary' => true,
+                'content_scroll' => true,
+                'content_strategy' => 'panes',
             ];
         }
 
