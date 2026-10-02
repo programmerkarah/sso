@@ -8,6 +8,7 @@ import Button from '@/Components/Button';
 import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { Organization, PageProps } from '@/types';
 
@@ -32,19 +33,16 @@ export default function Edit({ organization }: EditProps) {
         <AppLayout>
             <Head title={`Edit - ${organization.name}`} />
 
-            <div className="mx-auto max-w-2xl space-y-8">
-                <div>
-                    <Link
-                        href="/admin/organizations"
-                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-white   transition hover:bg-slate-800"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        Kembali ke daftar
-                    </Link>
-                    <h1 className="mt-5  text-4xl font-semibold text-white  sm:text-5xl">
-                        Edit Organisasi
-                    </h1>
-                </div>
+            <div className="mx-auto max-w-3xl space-y-6">
+                <PageHeader
+                    title="Edit organisasi"
+                    description={`Perbarui konfigurasi ${organization.name}.`}
+                    actions={
+                        <Link href="/admin/organizations" className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                            <ArrowLeft className="h-4 w-4" /> Daftar organisasi
+                        </Link>
+                    }
+                />
 
                 <GlassCard>
                     <form onSubmit={submit} className="space-y-6">
