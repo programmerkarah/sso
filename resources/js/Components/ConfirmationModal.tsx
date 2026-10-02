@@ -63,7 +63,9 @@ export default function ConfirmationModal({
                     />
                 </div>
 
-                <h3 className="text-lg font-semibold text-[var(--bps-text)]">{title}</h3>
+                <h3 className="text-lg font-semibold text-[var(--bps-text)]">
+                    {title}
+                </h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--bps-muted)]">
                     {description}
                 </p>

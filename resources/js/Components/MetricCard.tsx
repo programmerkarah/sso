@@ -29,7 +29,9 @@ export default function MetricCard({
                         {value}
                     </div>
                     {hint && (
-                        <p className="mt-1 text-xs text-[var(--bps-muted)]">{hint}</p>
+                        <p className="mt-1 text-xs text-[var(--bps-muted)]">
+                            {hint}
+                        </p>
                     )}
                 </div>
             </div>
