@@ -1732,7 +1732,7 @@ export default function Index({
                             onClick={() => setActionMenu(null)}
                             className="absolute inset-0 bg-black/55"
                         />
-                        <aside className="absolute bottom-0 right-0 top-0 flex w-full max-w-sm flex-col border-l border-slate-800 bg-slate-950 shadow-2xl">
+                        <aside ref={actionMenuRef} className="absolute bottom-0 right-0 top-0 flex w-full max-w-sm flex-col border-l border-slate-800 bg-slate-950 shadow-2xl">
                             <div className="flex items-start justify-between gap-4 border-b border-slate-800 p-5">
                                 <div className="min-w-0">
                                     <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Kelola pengguna</p>
