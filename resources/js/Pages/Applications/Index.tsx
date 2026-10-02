@@ -3,6 +3,7 @@ import { ExternalLink, Globe, Power, Server } from 'lucide-react';
 import { Head, router } from '@inertiajs/react';
 
 import GlassCard from '@/Components/GlassCard';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -34,19 +35,10 @@ export default function Index({
         <AppLayout>
             <Head title="Aplikasi SSO" />
 
-            <div className="mx-auto max-w-9xl space-y-8">
-                <div>
-                    <h1 className=" text-4xl font-semibold text-white  sm:text-5xl">
-                        Aplikasi SSO
-                    </h1>
-                    <p className="mt-2 max-w-3xl text-white/80">
-                        Daftar aplikasi yang dapat diakses menggunakan akun
-                        Single Sign-On Anda. Halaman ini hanya menampilkan
-                        informasi publik aplikasi.
-                    </p>
-                </div>
+            <div className="space-y-6">
+                <PageHeader description="Pilih aplikasi yang tersedia untuk akun Anda dan buka tanpa login ulang." />
 
-                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {applications.length === 0 ? (
                         <GlassCard className="md:col-span-2 xl:col-span-3">
                             <div className="flex items-center gap-3 text-white/80">
