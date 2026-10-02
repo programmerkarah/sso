@@ -741,7 +741,7 @@ export default function Index({
                                                 onClick={() =>
                                                     openEditBackupModal(backup)
                                                 }
-                                                className="inline-flex items-center justify-center gap-1 rounded-lg border border-amber-300/25 bg-amber-500/15 px-3 py-2 text-xs font-semibold text-amber-50 transition hover:bg-amber-500/25"
+                                                className="ui-warning inline-flex items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-semibold"
                                             >
                                                 <SquarePen className="h-3.5 w-3.5" />
                                                 Edit
@@ -755,7 +755,7 @@ export default function Index({
                                                     deletingBackupName ===
                                                     backup.name
                                                 }
-                                                className="inline-flex items-center justify-center gap-1 rounded-lg border border-rose-300/25 bg-rose-500/15 px-3 py-2 text-xs font-semibold text-rose-50 transition hover:bg-rose-500/25 disabled:opacity-60"
+                                                className="ui-danger inline-flex items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-semibold disabled:opacity-60"
                                             >
                                                 <Trash2 className="h-3.5 w-3.5" />
                                                 {deletingBackupName ===
@@ -833,7 +833,7 @@ export default function Index({
                                                                     backup,
                                                                 )
                                                             }
-                                                            className="inline-flex items-center gap-1 rounded-lg border border-amber-300/25 bg-amber-500/15 px-3 py-1.5 text-xs font-semibold text-amber-50 transition hover:bg-amber-500/25"
+                                                            className="ui-warning inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-semibold"
                                                         >
                                                             <SquarePen className="h-3.5 w-3.5" />
                                                             Edit
@@ -849,7 +849,7 @@ export default function Index({
                                                                 deletingBackupName ===
                                                                 backup.name
                                                             }
-                                                            className="inline-flex items-center gap-1 rounded-lg border border-rose-300/25 bg-rose-500/15 px-3 py-1.5 text-xs font-semibold text-rose-50 transition hover:bg-rose-500/25 disabled:opacity-60"
+                                                            className="ui-danger inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
                                                         >
                                                             <Trash2 className="h-3.5 w-3.5" />
                                                             {deletingBackupName ===
@@ -861,7 +861,7 @@ export default function Index({
                                                             href={
                                                                 backup.download_url
                                                             }
-                                                            className="inline-flex items-center gap-1 rounded-lg border border-blue-300/25 bg-blue-500/15 px-3 py-1.5 text-xs font-semibold text-blue-50 transition hover:bg-blue-500/25"
+                                                            className="ui-selected inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-semibold"
                                                         >
                                                             <Download className="h-3.5 w-3.5" />
                                                             Unduh
@@ -1041,7 +1041,7 @@ export default function Index({
                                         <button
                                             type="button"
                                             onClick={() => setSelectedLog(log)}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/80 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-slate-800"
+                                            className="ui-hover inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] px-2.5 py-1 text-xs font-semibold text-[var(--bps-text)]"
                                         >
                                             <Eye className="h-3.5 w-3.5" />
                                             Detail
@@ -1088,7 +1088,7 @@ export default function Index({
                                     logs.data.map((log) => (
                                         <tr
                                             key={log.id}
-                                            className="align-top transition hover:bg-slate-900/50"
+                                            className="ui-hover align-top"
                                         >
                                             <td className="px-5 py-4">
                                                 {formatDateTime(
@@ -1150,7 +1150,7 @@ export default function Index({
                                                     onClick={() =>
                                                         setSelectedLog(log)
                                                     }
-                                                    className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-800"
+                                                    className="ui-hover inline-flex items-center gap-1 rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--bps-text)]"
                                                 >
                                                     <Eye className="h-3.5 w-3.5" />
                                                     Lihat Detail
@@ -1171,7 +1171,7 @@ export default function Index({
                                     onClick={() =>
                                         visitState(logs.prev_page_token!)
                                     }
-                                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/70 transition hover:bg-slate-900/80 hover:text-white"
+                                    className="ui-icon-button flex h-8 w-8 items-center justify-center rounded-lg"
                                 >
                                     <ChevronLeft className="h-4 w-4" />
                                 </button>
@@ -1222,7 +1222,7 @@ export default function Index({
                                     onClick={() =>
                                         visitState(logs.next_page_token!)
                                     }
-                                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/70 transition hover:bg-slate-900/80 hover:text-white"
+                                    className="ui-icon-button flex h-8 w-8 items-center justify-center rounded-lg"
                                 >
                                     <ChevronRight className="h-4 w-4" />
                                 </button>
@@ -1278,7 +1278,7 @@ export default function Index({
                                 <button
                                     type="button"
                                     onClick={() => setSelectedLog(null)}
-                                    className="rounded-lg border border-slate-800 p-2 text-white/80 transition hover:bg-slate-900/80 hover:text-white"
+                                    className="ui-icon-button rounded-lg p-2"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -1394,7 +1394,7 @@ export default function Index({
                                 <button
                                     type="button"
                                     onClick={closeEditBackupModal}
-                                    className="rounded-lg border border-slate-800 p-2 text-white/80 transition hover:bg-slate-900/80 hover:text-white"
+                                    className="ui-icon-button rounded-lg p-2"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
