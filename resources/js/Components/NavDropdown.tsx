@@ -1,5 +1,4 @@
 import { ChevronDown } from 'lucide-react';
-
 import { ReactNode } from 'react';
 
 interface NavDropdownProps {
@@ -21,22 +20,25 @@ export default function NavDropdown({
 }: NavDropdownProps) {
     if (variant === 'mobile') {
         return (
-            <div className="overflow-hidden rounded-xl border border-white/15 bg-white/5">
+            <div className="overflow-hidden rounded-lg border border-slate-800">
                 <button
                     type="button"
                     onClick={onToggle}
-                    className="flex w-full items-center justify-between px-4 py-2 text-sm font-semibold text-white/90"
+                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-slate-300"
                 >
-                    <span className="inline-flex items-center gap-1.5">
+                    <span className="inline-flex items-center gap-2">
                         {icon}
                         {title}
                     </span>
                     <ChevronDown
-                        className={`h-4 w-4 transition ${isOpen ? 'rotate-180' : ''}`}
+                        className={
+                            'h-4 w-4 transition-transform ' +
+                            (isOpen ? 'rotate-180' : '')
+                        }
                     />
                 </button>
                 {isOpen && (
-                    <div className="flex flex-col gap-1 border-t border-white/10 px-2 py-2">
+                    <div className="grid gap-1 border-t border-slate-800 p-2">
                         {children}
                     </div>
                 )}
@@ -49,18 +51,24 @@ export default function NavDropdown({
             <button
                 type="button"
                 onClick={onToggle}
-                className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
+                className={
+                    'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ' +
+                    (isOpen
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100')
+                }
             >
-                <span className="inline-flex items-center gap-1.5">
-                    {icon}
-                    {title}
-                    <ChevronDown
-                        className={`h-4 w-4 transition ${isOpen ? 'rotate-180' : ''}`}
-                    />
-                </span>
+                {icon}
+                {title}
+                <ChevronDown
+                    className={
+                        'h-3.5 w-3.5 transition-transform ' +
+                        (isOpen ? 'rotate-180' : '')
+                    }
+                />
             </button>
             {isOpen && (
-                <div className="absolute left-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-white/20 bg-slate-900/95 p-2 shadow-2xl backdrop-blur-xl">
+                <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-lg border border-slate-700 bg-slate-900 p-1.5 shadow-xl">
                     {children}
                 </div>
             )}

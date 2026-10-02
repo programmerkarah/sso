@@ -12,11 +12,13 @@ export default function GlassCard({
 }: PropsWithChildren<GlassCardProps>) {
     return (
         <div
-            className={`min-w-0 w-full rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 ${
-                hover
-                    ? 'lg:hover:scale-[1.02] lg:hover:border-white/30 lg:hover:bg-white/20 lg:hover:shadow-2xl'
-                    : ''
-            } ${className}`}
+            className={
+                'min-w-0 w-full rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:p-6 ' +
+                (hover
+                    ? 'transition-colors hover:border-slate-700 hover:bg-slate-900/80 '
+                    : '') +
+                className
+            }
         >
             {children}
         </div>

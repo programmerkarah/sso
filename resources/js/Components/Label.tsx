@@ -13,10 +13,12 @@ export default function Label({
     return (
         <label
             {...props}
-            className={`mb-2 block text-sm font-semibold text-white drop-shadow-lg ${className}`}
+            className={
+                'mb-1.5 block text-sm font-medium text-slate-300 ' + className
+            }
         >
             {children}
-            {required && <span className="ml-1 text-red-300">*</span>}
+            {required && <span className="ml-1 text-red-400">*</span>}
         </label>
     );
 }

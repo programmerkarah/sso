@@ -1,4 +1,3 @@
-import Echo from 'laravel-echo';
 import {
     AppWindow,
     Database,
@@ -8,78 +7,78 @@ import {
     MonitorX,
     Shield,
     User,
+    Users,
     X,
 } from 'lucide-react';
-import Pusher from 'pusher-js';
 
 import { PropsWithChildren, useEffect, useRef, useState } from 'react';
 
 import { Link, usePage } from '@inertiajs/react';
 
-import AnimatedBackground from '@/Components/AnimatedBackground';
 import AppIcon from '@/Components/AppIcon';
 import NavDropdown from '@/Components/NavDropdown';
 import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import { PageProps } from '@/types';
 
 export default function AppLayout({ children }: PropsWithChildren) {
-    const { auth, flash } = usePage<PageProps>().props;
+    const page = usePage<PageProps>();
+    const { auth, flash } = page.props;
+    const currentUrl = page.url;
     const user = auth?.user;
     const canManageApplications = auth?.can.manageApplications ?? false;
     const canManageUsers = auth?.can.manageUsers ?? false;
     const canManageSystem = auth?.can.manageSystem ?? false;
 
-    const navRef = useRef<HTMLElement | null>(null);
-    const dropdownContainerRef = useRef<HTMLDivElement | null>(null);
-
+    const navContainerRef = useRef<HTMLDivElement | null>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [desktopDropdown, setDesktopDropdown] = useState<
         'account' | 'applications' | null
     >(null);
-    const [mobileDropdown, setMobileDropdown] = useState<
-        'account' | 'applications' | null
-    >(null);
-    const [mainPaddingTop, setMainPaddingTop] = useState(120);
     const [toasts, setToasts] = useState<ToastItem[]>([]);
     const [sessionDisplaced, setSessionDisplaced] = useState(false);
 
-    // Dengarkan event session.displaced via Pusher (real-time, menggantikan polling)
     useEffect(() => {
         if (!user) return;
 
-        const pusherKey = String(
-            import.meta.env.VITE_PUSHER_APP_KEY ?? '',
-        ).trim();
+        const pusherKey = String(import.meta.env.VITE_PUSHER_APP_KEY ?? '').trim();
         const pusherCluster = String(
             import.meta.env.VITE_PUSHER_APP_CLUSTER ?? '',
         ).trim();
 
-        if (!pusherKey || !pusherCluster) {
-            if (import.meta.env.DEV) {
-                // Hindari crash jika env realtime belum disediakan.
-                console.warn(
-                    '[Realtime] Pusher tidak diinisialisasi karena VITE_PUSHER_APP_KEY/VITE_PUSHER_APP_CLUSTER belum diatur.',
-                );
-            }
+        if (!pusherKey || !pusherCluster) return;
 
-            return;
-        }
+        let disconnect: (() => void) | undefined;
+        let cancelled = false;
 
-        (window as Window & { Pusher?: typeof Pusher }).Pusher = Pusher;
+        const connectRealtime = async () => {
+            const [{ default: Echo }, { default: Pusher }] = await Promise.all([
+                import('laravel-echo'),
+                import('pusher-js'),
+            ]);
 
-        const echo = new Echo({
-            broadcaster: 'pusher',
-            key: pusherKey,
-            cluster: pusherCluster,
-            forceTLS: true,
-        });
+            if (cancelled) return;
 
-        echo.private(`session.${user.id}`).listen('.session.displaced', () => {
-            setSessionDisplaced(true);
-        });
+            (window as Window & { Pusher?: typeof Pusher }).Pusher = Pusher;
+
+            const echo = new Echo({
+                broadcaster: 'pusher',
+                key: pusherKey,
+                cluster: pusherCluster,
+                forceTLS: true,
+            });
+
+            echo.private('session.' + user.id).listen('.session.displaced', () => {
+                setSessionDisplaced(true);
+            });
+
+            disconnect = () => echo.disconnect();
+        };
+
+        void connectRealtime();
 
         return () => {
-            echo.disconnect();
+            cancelled = true;
+            disconnect?.();
         };
     }, [user?.id]);
 
@@ -88,7 +87,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
         if (flash.success) {
             nextToasts.push({
-                id: `success-${flash.success}`,
+                id: 'success-' + flash.success,
                 tone: 'success',
                 title: 'Berhasil',
                 message: flash.success,
@@ -97,7 +96,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
         if (flash.info) {
             nextToasts.push({
-                id: `info-${flash.info}`,
+                id: 'info-' + flash.info,
                 tone: 'info',
                 title: 'Informasi',
                 message: flash.info,
@@ -106,7 +105,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
         if (flash.error) {
             nextToasts.push({
-                id: `error-${flash.error}`,
+                id: 'error-' + flash.error,
                 tone: 'error',
                 title: 'Terjadi Kendala',
                 message: flash.error,
@@ -115,7 +114,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
         if (flash.status) {
             nextToasts.push({
-                id: `status-${flash.status}`,
+                id: 'status-' + flash.status,
                 tone: 'status',
                 title: 'Pembaruan Status',
                 message: flash.status,
@@ -126,55 +125,35 @@ export default function AppLayout({ children }: PropsWithChildren) {
     }, [flash.error, flash.info, flash.status, flash.success]);
 
     useEffect(() => {
-        const updateMainPadding = () => {
-            const navHeight = navRef.current?.offsetHeight ?? 100;
-            setMainPaddingTop(navHeight + 16);
-        };
-
-        updateMainPadding();
-        window.addEventListener('resize', updateMainPadding);
-
-        return () => {
-            window.removeEventListener('resize', updateMainPadding);
-        };
-    }, [mobileMenuOpen, desktopDropdown, mobileDropdown]);
-
-    useEffect(() => {
         const handleOutsideClick = (event: MouseEvent) => {
             const target = event.target as Node;
 
             if (
-                dropdownContainerRef.current &&
-                !dropdownContainerRef.current.contains(target)
+                navContainerRef.current &&
+                !navContainerRef.current.contains(target)
             ) {
                 setDesktopDropdown(null);
-                setMobileDropdown(null);
                 setMobileMenuOpen(false);
             }
         };
 
         document.addEventListener('mousedown', handleOutsideClick);
-
-        return () => {
-            document.removeEventListener('mousedown', handleOutsideClick);
-        };
+        return () => document.removeEventListener('mousedown', handleOutsideClick);
     }, []);
 
-    const toggleDesktopDropdown = (dropdown: 'account' | 'applications') => {
-        setDesktopDropdown((current) =>
-            current === dropdown ? null : dropdown,
-        );
-    };
+    useEffect(() => {
+        setDesktopDropdown(null);
+        setMobileMenuOpen(false);
+    }, [currentUrl]);
 
-    const toggleMobileDropdown = (dropdown: 'account' | 'applications') => {
-        setMobileDropdown((current) =>
-            current === dropdown ? null : dropdown,
-        );
-    };
+    const navLinkClass = (active: boolean) =>
+        'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ' +
+        (active
+            ? 'bg-slate-800 text-white'
+            : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100');
 
     return (
-        <>
-            <AnimatedBackground />
+        <div className="min-h-screen bg-slate-950 text-slate-100">
             <ToastViewport
                 items={toasts}
                 onDismiss={(id) =>
@@ -182,385 +161,325 @@ export default function AppLayout({ children }: PropsWithChildren) {
                         current.filter((item) => item.id !== id),
                     )
                 }
+                topClassName="top-20"
             />
 
-            {/* Modal: sesi digusur perangkat lain */}
             {sessionDisplaced && (
-                <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-                    <div className="relative w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-400/40 bg-red-500/10">
-                            <MonitorX className="h-6 w-6 text-red-400" />
+                <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 p-4">
+                    <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
+                        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/10 text-red-300">
+                            <MonitorX className="h-5 w-5" />
                         </div>
-                        <h3 className="mb-2 text-lg font-bold text-white">
-                            Sesi Berakhir
+                        <h3 className="text-lg font-semibold text-white">
+                            Sesi berakhir
                         </h3>
-                        <p className="mb-6 text-sm leading-6 text-white/75">
-                            Akun Anda masuk dari perangkat lain sehingga sesi
-                            ini otomatis diakhiri. Silakan login kembali untuk
-                            melanjutkan.
+                        <p className="mt-2 text-sm leading-6 text-slate-400">
+                            Akun ini telah digunakan untuk masuk dari perangkat
+                            lain. Silakan masuk kembali untuk melanjutkan.
                         </p>
                         <button
                             type="button"
                             onClick={() => (window.location.href = '/login')}
-                            className="w-full rounded-xl bg-red-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-600"
+                            className="mt-6 w-full rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-500"
                         >
-                            Ke Halaman Login
+                            Masuk kembali
                         </button>
                     </div>
                 </div>
             )}
-            <div className="relative min-h-screen">
-                {user && (
-                    <nav
-                        ref={navRef}
-                        className="fixed left-0 right-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4"
+
+            {user && (
+                <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95">
+                    <div
+                        ref={navContainerRef}
+                        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
                     >
-                        <div className="mx-auto max-w-9xl">
-                            <div
-                                ref={dropdownContainerRef}
-                                className="rounded-2xl border border-white/20 bg-white/10 px-3 py-3 shadow-2xl backdrop-blur-xl sm:px-6 sm:py-4"
+                        <div className="flex h-16 items-center justify-between gap-4">
+                            <Link
+                                href="/dashboard"
+                                className="flex min-w-0 items-center gap-3"
                             >
-                                <div className="flex items-center justify-between">
-                                    {/* Logo */}
-                                    <div className="flex items-center gap-3">
-                                        <Link
-                                            href="/dashboard"
-                                            className="rounded-xl bg-white/10 p-1.5 backdrop-blur-sm transition hover:bg-white/20 sm:p-2"
-                                        >
-                                            <AppIcon className="h-7 w-7 sm:h-8 sm:w-8" />
-                                        </Link>
-                                        <Link
-                                            href="/dashboard"
-                                            className="max-w-[11rem] truncate bg-gradient-to-r from-white to-blue-100 bg-clip-text text-lg font-black text-transparent drop-shadow-lg transition hover:from-blue-100 hover:to-purple-100 sm:max-w-none sm:text-2xl"
-                                        >
-                                            Single Sign-On
-                                        </Link>
+                                <AppIcon className="h-8 w-8 shrink-0" />
+                                <div className="min-w-0">
+                                    <div className="truncate text-sm font-semibold text-white">
+                                        SSO BPS Kota Sawahlunto
                                     </div>
+                                    <div className="hidden text-xs text-slate-500 sm:block">
+                                        Single Sign-On
+                                    </div>
+                                </div>
+                            </Link>
 
-                                    {/* Desktop Navigation */}
-                                    <div className="hidden items-center gap-6 md:flex">
-                                        <Link
-                                            href="/dashboard"
-                                            className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
-                                        >
-                                            <LayoutDashboard className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                            Dashboard
-                                        </Link>
-                                        {canManageUsers ||
-                                        canManageApplications ? (
-                                            <>
-                                                <NavDropdown
-                                                    title="Akun & Keamanan"
-                                                    icon={
-                                                        <Shield className="h-4 w-4" />
-                                                    }
-                                                    isOpen={
-                                                        desktopDropdown ===
-                                                        'account'
-                                                    }
-                                                    onToggle={() =>
-                                                        toggleDesktopDropdown(
-                                                            'account',
-                                                        )
-                                                    }
-                                                >
-                                                    <Link
-                                                        href="/settings/security"
-                                                        className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
-                                                    >
-                                                        Keamanan
-                                                    </Link>
-                                                    <Link
-                                                        href="/settings/sessions"
-                                                        className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
-                                                    >
-                                                        Kelola Sesi
-                                                    </Link>
-                                                    {canManageUsers && (
-                                                        <Link
-                                                            href="/admin/users"
-                                                            className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
-                                                        >
-                                                            Kelola Pengguna
-                                                        </Link>
-                                                    )}
-                                                </NavDropdown>
+                            <nav className="hidden items-center gap-1 md:flex">
+                                <Link
+                                    href="/dashboard"
+                                    className={navLinkClass(
+                                        currentUrl.startsWith('/dashboard'),
+                                    )}
+                                >
+                                    <LayoutDashboard className="h-4 w-4" />
+                                    Dashboard
+                                </Link>
 
-                                                <NavDropdown
-                                                    title="Aplikasi"
-                                                    icon={
-                                                        <AppWindow className="h-4 w-4" />
-                                                    }
-                                                    isOpen={
-                                                        desktopDropdown ===
-                                                        'applications'
-                                                    }
-                                                    onToggle={() =>
-                                                        toggleDesktopDropdown(
-                                                            'applications',
-                                                        )
-                                                    }
-                                                >
-                                                    <Link
-                                                        href="/applications"
-                                                        className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
-                                                    >
-                                                        Aplikasi SSO
-                                                    </Link>
-                                                    {canManageApplications && (
-                                                        <>
-                                                            <Link
-                                                                href="/admin/applications"
-                                                                className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
-                                                            >
-                                                                Daftar Aplikasi
-                                                            </Link>
-                                                            <Link
-                                                                href="/admin/organizations"
-                                                                className="block rounded-lg px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/10 hover:text-white"
-                                                            >
-                                                                Kelola
-                                                                Organisasi
-                                                            </Link>
-                                                        </>
-                                                    )}
-                                                </NavDropdown>
-                                            </>
-                                        ) : (
+                                <Link
+                                    href="/applications"
+                                    className={navLinkClass(
+                                        currentUrl === '/applications' ||
+                                            currentUrl.startsWith('/applications?'),
+                                    )}
+                                >
+                                    <AppWindow className="h-4 w-4" />
+                                    Aplikasi
+                                </Link>
+
+                                <NavDropdown
+                                    title="Akun"
+                                    icon={<Shield className="h-4 w-4" />}
+                                    isOpen={desktopDropdown === 'account'}
+                                    onToggle={() =>
+                                        setDesktopDropdown((current) =>
+                                            current === 'account'
+                                                ? null
+                                                : 'account',
+                                        )
+                                    }
+                                >
+                                    <Link
+                                        href="/settings/security"
+                                        className="block rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                                    >
+                                        Keamanan akun
+                                    </Link>
+                                    <Link
+                                        href="/settings/sessions"
+                                        className="block rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                                    >
+                                        Sesi & akses
+                                    </Link>
+                                </NavDropdown>
+
+                                {(canManageApplications ||
+                                    canManageUsers ||
+                                    canManageSystem) && (
+                                    <NavDropdown
+                                        title="Admin"
+                                        icon={<Database className="h-4 w-4" />}
+                                        isOpen={
+                                            desktopDropdown === 'applications'
+                                        }
+                                        onToggle={() =>
+                                            setDesktopDropdown((current) =>
+                                                current === 'applications'
+                                                    ? null
+                                                    : 'applications',
+                                            )
+                                        }
+                                    >
+                                        {canManageApplications && (
                                             <>
                                                 <Link
-                                                    href="/settings/security"
-                                                    className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                    href="/admin/applications"
+                                                    className="block rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
                                                 >
-                                                    <Shield className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                    Keamanan
+                                                    Kelola aplikasi
                                                 </Link>
                                                 <Link
-                                                    href="/applications"
-                                                    className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                    href="/admin/organizations"
+                                                    className="block rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
                                                 >
-                                                    <AppWindow className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                    Aplikasi SSO
+                                                    Organisasi
                                                 </Link>
                                             </>
+                                        )}
+                                        {canManageUsers && (
+                                            <Link
+                                                href="/admin/users"
+                                                className="block rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                                            >
+                                                Pengguna
+                                            </Link>
                                         )}
                                         {canManageSystem && (
                                             <Link
                                                 href="/admin/system"
-                                                className="rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 hover:text-white"
+                                                className="block rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
                                             >
-                                                <Database className="inline h-4 w-4 mr-1.5 align-text-bottom" />
                                                 Sistem
                                             </Link>
                                         )}
+                                    </NavDropdown>
+                                )}
+                            </nav>
 
-                                        <div className="ml-4 flex items-center gap-4 border-l border-white/20 pl-4">
-                                            <div className="flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 backdrop-blur-sm">
-                                                <User className="h-4 w-4 text-white/80" />
-                                                <span className="text-sm font-medium text-white">
-                                                    {user.name}
-                                                </span>
-                                                <span
-                                                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${canManageApplications ? 'bg-emerald-400/20 text-emerald-100' : 'bg-white/15 text-white/80'}`}
-                                                >
-                                                    {canManageApplications
-                                                        ? 'Admin'
-                                                        : 'User'}
-                                                </span>
-                                            </div>
-                                            <Link
-                                                href="/logout"
-                                                method="post"
-                                                as="button"
-                                                className="flex items-center gap-2 rounded-xl bg-red-500/80 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-red-600"
-                                            >
-                                                <LogOut className="h-4 w-4" />
-                                                Keluar
-                                            </Link>
+                            <div className="hidden items-center gap-3 md:flex">
+                                <div className="flex items-center gap-2 border-l border-slate-800 pl-4">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-slate-300">
+                                        <User className="h-4 w-4" />
+                                    </div>
+                                    <div className="max-w-40">
+                                        <div className="truncate text-sm font-medium text-slate-200">
+                                            {user.name}
+                                        </div>
+                                        <div className="text-[11px] text-slate-500">
+                                            {canManageApplications
+                                                ? 'Administrator'
+                                                : 'Pengguna'}
                                         </div>
                                     </div>
+                                </div>
+                                <Link
+                                    href="/logout"
+                                    method="post"
+                                    as="button"
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-900 hover:text-red-300"
+                                    title="Keluar"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                </Link>
+                            </div>
 
-                                    {/* Mobile Menu Button */}
-                                    <button
-                                        onClick={() =>
-                                            setMobileMenuOpen((current) => {
-                                                const nextState = !current;
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setMobileMenuOpen((current) => !current)
+                                }
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-800 text-slate-300 md:hidden"
+                                aria-label="Buka menu"
+                            >
+                                {mobileMenuOpen ? (
+                                    <X className="h-5 w-5" />
+                                ) : (
+                                    <Menu className="h-5 w-5" />
+                                )}
+                            </button>
+                        </div>
 
-                                                if (!nextState) {
-                                                    setMobileDropdown(null);
-                                                }
-
-                                                return nextState;
-                                            })
-                                        }
-                                        className="rounded-xl bg-white/10 p-2 text-white backdrop-blur-sm transition hover:bg-white/20 md:hidden"
-                                    >
-                                        {mobileMenuOpen ? (
-                                            <X className="h-6 w-6" />
-                                        ) : (
-                                            <Menu className="h-6 w-6" />
+                        {mobileMenuOpen && (
+                            <div className="border-t border-slate-800 py-3 md:hidden">
+                                <div className="grid gap-1">
+                                    <Link
+                                        href="/dashboard"
+                                        className={navLinkClass(
+                                            currentUrl.startsWith('/dashboard'),
                                         )}
-                                    </button>
+                                    >
+                                        <LayoutDashboard className="h-4 w-4" />
+                                        Dashboard
+                                    </Link>
+                                    <Link
+                                        href="/applications"
+                                        className={navLinkClass(
+                                            currentUrl.startsWith('/applications'),
+                                        )}
+                                    >
+                                        <AppWindow className="h-4 w-4" />
+                                        Aplikasi
+                                    </Link>
+                                    <Link
+                                        href="/settings/security"
+                                        className={navLinkClass(
+                                            currentUrl.startsWith(
+                                                '/settings/security',
+                                            ),
+                                        )}
+                                    >
+                                        <Shield className="h-4 w-4" />
+                                        Keamanan akun
+                                    </Link>
+                                    <Link
+                                        href="/settings/sessions"
+                                        className={navLinkClass(
+                                            currentUrl.startsWith(
+                                                '/settings/sessions',
+                                            ),
+                                        )}
+                                    >
+                                        <User className="h-4 w-4" />
+                                        Sesi & akses
+                                    </Link>
+
+                                    {canManageApplications && (
+                                        <Link
+                                            href="/admin/applications"
+                                            className={navLinkClass(
+                                                currentUrl.startsWith(
+                                                    '/admin/applications',
+                                                ),
+                                            )}
+                                        >
+                                            <AppWindow className="h-4 w-4" />
+                                            Kelola aplikasi
+                                        </Link>
+                                    )}
+                                    {canManageApplications && (
+                                        <Link
+                                            href="/admin/organizations"
+                                            className={navLinkClass(
+                                                currentUrl.startsWith(
+                                                    '/admin/organizations',
+                                                ),
+                                            )}
+                                        >
+                                            <Database className="h-4 w-4" />
+                                            Organisasi
+                                        </Link>
+                                    )}
+                                    {canManageUsers && (
+                                        <Link
+                                            href="/admin/users"
+                                            className={navLinkClass(
+                                                currentUrl.startsWith(
+                                                    '/admin/users',
+                                                ),
+                                            )}
+                                        >
+                                            <Users className="h-4 w-4" />
+                                            Pengguna
+                                        </Link>
+                                    )}
+                                    {canManageSystem && (
+                                        <Link
+                                            href="/admin/system"
+                                            className={navLinkClass(
+                                                currentUrl.startsWith(
+                                                    '/admin/system',
+                                                ),
+                                            )}
+                                        >
+                                            <Database className="h-4 w-4" />
+                                            Sistem
+                                        </Link>
+                                    )}
                                 </div>
 
-                                {/* Mobile Menu */}
-                                {mobileMenuOpen && (
-                                    <div className="mt-4 max-h-[70vh] space-y-2 overflow-y-auto border-t border-white/20 pt-4 md:hidden">
-                                        <Link
-                                            href="/dashboard"
-                                            className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
-                                        >
-                                            <LayoutDashboard className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                            Dashboard
-                                        </Link>
-                                        {canManageUsers ||
-                                        canManageApplications ? (
-                                            <>
-                                                <NavDropdown
-                                                    title="Keamanan"
-                                                    icon={
-                                                        <Shield className="h-4 w-4" />
-                                                    }
-                                                    isOpen={
-                                                        mobileDropdown ===
-                                                        'account'
-                                                    }
-                                                    onToggle={() =>
-                                                        toggleMobileDropdown(
-                                                            'account',
-                                                        )
-                                                    }
-                                                    variant="mobile"
-                                                >
-                                                    <Link
-                                                        href="/settings/security"
-                                                        className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
-                                                    >
-                                                        Keamanan
-                                                    </Link>
-                                                    <Link
-                                                        href="/settings/sessions"
-                                                        className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
-                                                    >
-                                                        Kelola Sesi
-                                                    </Link>
-                                                    {canManageUsers && (
-                                                        <Link
-                                                            href="/admin/users"
-                                                            className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
-                                                        >
-                                                            Kelola Pengguna
-                                                        </Link>
-                                                    )}
-                                                </NavDropdown>
-
-                                                <NavDropdown
-                                                    title="Aplikasi SSO"
-                                                    icon={
-                                                        <AppWindow className="h-4 w-4" />
-                                                    }
-                                                    isOpen={
-                                                        mobileDropdown ===
-                                                        'applications'
-                                                    }
-                                                    onToggle={() =>
-                                                        toggleMobileDropdown(
-                                                            'applications',
-                                                        )
-                                                    }
-                                                    variant="mobile"
-                                                >
-                                                    <Link
-                                                        href="/applications"
-                                                        className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
-                                                    >
-                                                        Aplikasi SSO
-                                                    </Link>
-                                                    {canManageApplications && (
-                                                        <>
-                                                            <Link
-                                                                href="/admin/applications"
-                                                                className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
-                                                            >
-                                                                Kelola Aplikasi
-                                                            </Link>
-                                                            <Link
-                                                                href="/admin/organizations"
-                                                                className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
-                                                            >
-                                                                Kelola
-                                                                Organisasi
-                                                            </Link>
-                                                        </>
-                                                    )}
-                                                </NavDropdown>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Link
-                                                    href="/settings/security"
-                                                    className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
-                                                >
-                                                    <Shield className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                    Keamanan
-                                                </Link>
-                                                <Link
-                                                    href="/applications"
-                                                    className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
-                                                >
-                                                    <AppWindow className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                    Aplikasi SSO
-                                                </Link>
-                                            </>
-                                        )}
-                                        {canManageSystem && (
-                                            <Link
-                                                href="/admin/system"
-                                                className="block rounded-xl px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
-                                            >
-                                                <Database className="inline h-4 w-4 mr-1.5 align-text-bottom" />
-                                                Sistem
-                                            </Link>
-                                        )}
-                                        <div className="flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2">
-                                            <User className="h-4 w-4 text-white/80" />
-                                            <span className="text-sm font-medium text-white">
-                                                {user.name}
-                                            </span>
-                                            <span
-                                                className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${canManageApplications ? 'bg-emerald-400/20 text-emerald-100' : 'bg-white/15 text-white/80'}`}
-                                            >
-                                                {canManageApplications
-                                                    ? 'Admin'
-                                                    : 'User'}
-                                            </span>
-                                        </div>
-                                        <Link
-                                            href="/logout"
-                                            method="post"
-                                            as="button"
-                                            className="flex w-full items-center gap-2 rounded-xl bg-red-500/80 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-red-600"
-                                        >
-                                            <LogOut className="h-4 w-4" />
-                                            Keluar
-                                        </Link>
+                                <div className="mt-3 flex items-center justify-between border-t border-slate-800 pt-3">
+                                    <div className="min-w-0">
+                                        <p className="truncate text-sm font-medium text-slate-200">
+                                            {user.name}
+                                        </p>
+                                        <p className="truncate text-xs text-slate-500">
+                                            {user.email}
+                                        </p>
                                     </div>
-                                )}
+                                    <Link
+                                        href="/logout"
+                                        method="post"
+                                        as="button"
+                                        className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-300 transition hover:bg-red-500/10"
+                                    >
+                                        <LogOut className="h-4 w-4" />
+                                        Keluar
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                    </nav>
-                )}
+                        )}
+                    </div>
+                </header>
+            )}
 
-                <main
-                    className="overflow-x-hidden px-4 pb-12"
-                    style={
-                        user ? { paddingTop: `${mainPaddingTop}px` } : undefined
-                    }
-                >
-                    {children}
-                </main>
-            </div>
-        </>
+            <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+                {children}
+            </main>
+        </div>
     );
 }
