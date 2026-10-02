@@ -175,6 +175,8 @@ class TrustedDeviceManager
         $device = $user->trustedDevices()
             ->where('token_hash', $tokenHash)
             ->where('expires_at', '>', now())
+            ->whereNotNull('last_used_at')
+            ->where('last_used_at', '>', now()->subDays(self::TRUST_DAYS))
             ->first();
 
         if (! $device) {
