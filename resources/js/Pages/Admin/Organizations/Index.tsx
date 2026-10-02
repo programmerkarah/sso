@@ -3,6 +3,7 @@ import { Building2, CheckCircle, Edit, Plus, XCircle } from 'lucide-react';
 import { Head, Link, router } from '@inertiajs/react';
 
 import GlassCard from '@/Components/GlassCard';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { Organization, PageProps } from '@/types';
 
@@ -23,25 +24,18 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
         <AppLayout>
             <Head title="Manajemen Organisasi" />
 
-            <div className="mx-auto max-w-5xl space-y-8">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <h1 className=" text-4xl font-semibold text-white  sm:text-5xl">
-                            Organisasi
-                        </h1>
-                        <p className="mt-2 text-white/70">
-                            Kelola daftar organisasi yang dapat digunakan saat
-                            mendaftar
-                        </p>
-                    </div>
-                    <Link
-                        href="/admin/organizations/create"
-                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-5 py-2.5 text-sm font-semibold text-white   transition hover:bg-slate-800"
-                    >
-                        <Plus className="h-4 w-4" />
-                        Tambah Organisasi
-                    </Link>
-                </div>
+            <div className="space-y-6">
+                <PageHeader
+                    actions={
+                        <Link
+                            href="/admin/organizations/create"
+                            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Tambah organisasi
+                        </Link>
+                    }
+                />
 
                 <GlassCard>
                     {organizations.length === 0 ? (
