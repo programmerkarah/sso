@@ -1,129 +1,112 @@
-import { Database, LogIn, Shield, UserPlus, Zap } from 'lucide-react';
+import { ArrowRight, LockKeyhole, ShieldCheck, UserPlus } from 'lucide-react';
 
 import { Head, Link } from '@inertiajs/react';
 
-import AnimatedBackground from '@/Components/AnimatedBackground';
 import AppIcon from '@/Components/AppIcon';
-import FeatureCard from '@/Components/FeatureCard';
 
 export default function Welcome() {
     return (
         <>
             <Head title="SSO" />
-
-            <AnimatedBackground />
-
-            <div className="relative min-h-screen">
-                <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-                    <div className="w-full max-w-6xl">
-                        {/* Header Section */}
-                        <div className="mb-12 text-center">
-                            <div className="mb-6 inline-block">
-                                <div className="relative">
-                                    {/* Icon Logo */}
-                                    <div className="mb-6 flex justify-center">
-                                        <div className="rounded-3xl bg-white/10 p-6 backdrop-blur-xl border border-white/20 shadow-2xl">
-                                            <AppIcon className="h-16 w-16 sm:h-20 sm:w-20" />
-                                        </div>
-                                    </div>
-                                    {/* Title */}
-                                    <div className="absolute -inset-4 animate-pulse rounded-full bg-gradient-to-r from-blue-400 to-purple-400 opacity-30 blur-2xl"></div>
-                                    <h1 className="relative bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-6xl font-black text-transparent drop-shadow-2xl sm:text-9xl md:text-8xl">
-                                        Single Sign-On
-                                    </h1>
-                                </div>
-                            </div>
-                            <p className="mx-auto max-w-2xl text-xl text-white/90 drop-shadow-lg sm:text-2xl">
-                                Sistem Single Sign-On untuk BPS Kota Sawahlunto
-                            </p>
-                            <div className="mt-4 flex items-center justify-center gap-2 text-sm text-white/70">
-                                <Shield className="h-4 w-4" />
-                                <span>Aman</span>
-                                <span className="text-white/40">•</span>
-                                <Zap className="h-4 w-4" />
-                                <span>Cepat</span>
-                                <span className="text-white/40">•</span>
-                                <Database className="h-4 w-4" />
-                                <span>Terpusat</span>
+            <div className="min-h-screen bg-slate-950 text-white">
+                <header className="border-b border-white/10">
+                    <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
+                        <div className="flex items-center gap-3">
+                            <AppIcon className="h-9 w-9" />
+                            <div>
+                                <p className="text-sm font-bold leading-tight">SSO BPS Kota Sawahlunto</p>
+                                <p className="text-xs text-slate-500">Single Sign-On</p>
                             </div>
                         </div>
-
-                        {/* Action Buttons */}
-                        <div className="mb-16 grid gap-6 sm:grid-cols-2">
-                            <Link
-                                href="/login"
-                                className="group relative overflow-hidden rounded-2xl"
-                            >
-                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-blue-600 opacity-0 blur transition duration-500 group-hover:opacity-100"></div>
-                                <div className="relative flex items-center justify-center gap-4 rounded-2xl border border-white/30 bg-gradient-to-br from-blue-500/80 to-blue-600/80 px-8 py-6 backdrop-blur-xl transition-all duration-300 group-hover:scale-[1.02] group-hover:border-white/50">
-                                    <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm transition-transform group-hover:scale-110">
-                                        <LogIn className="h-7 w-7 text-white" />
-                                    </div>
-                                    <div className="text-left">
-                                        <div className="text-2xl font-bold text-white">
-                                            Masuk
-                                        </div>
-                                        <div className="text-sm text-white/90">
-                                            Login ke akun Anda
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="flex items-center gap-2">
+                            <Link href="/login" className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-white/5 hover:text-white">
+                                Masuk
                             </Link>
-
-                            <Link
-                                href="/register"
-                                className="group relative overflow-hidden rounded-2xl"
-                            >
-                                <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 blur transition duration-500 group-hover:opacity-100"></div>
-                                <div className="relative flex items-center justify-center gap-4 rounded-2xl border border-white/30 bg-gradient-to-br from-amber-500/80 to-orange-500/80 px-8 py-6 backdrop-blur-xl transition-all duration-300 group-hover:scale-[1.02] group-hover:border-white/50">
-                                    <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm transition-transform group-hover:scale-110">
-                                        <UserPlus className="h-7 w-7 text-white" />
-                                    </div>
-                                    <div className="text-left">
-                                        <div className="text-2xl font-bold text-white">
-                                            Daftar
-                                        </div>
-                                        <div className="text-sm text-white/90">
-                                            Buat akun baru
-                                        </div>
-                                    </div>
-                                </div>
+                            <Link href="/register" className="hidden rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 sm:inline-flex">
+                                Daftar
                             </Link>
-                        </div>
-
-                        {/* Features Grid */}
-                        <div className="grid gap-6 md:grid-cols-3">
-                            <FeatureCard
-                                icon={Shield}
-                                title="Aman"
-                                description="Menggunakan protokol OAuth2 untuk keamanan maksimal"
-                                iconColor="text-blue-300"
-                            />
-                            <FeatureCard
-                                icon={Zap}
-                                title="Cepat"
-                                description="Login sekali untuk akses semua aplikasi"
-                                iconColor="text-yellow-300"
-                            />
-                            <FeatureCard
-                                icon={Database}
-                                title="Terpusat"
-                                description="Kelola semua akses aplikasi dari satu tempat"
-                                iconColor="text-green-300"
-                            />
-                        </div>
-
-                        {/* Footer */}
-                        <div className="mt-16">
-                            <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-center backdrop-blur-xl">
-                                <p className="text-sm text-white/60">
-                                    © 2026 BPS Kota Sawahlunto. All rights
-                                    reserved.
-                                </p>
-                            </div>
                         </div>
                     </div>
-                </div>
+                </header>
+
+                <main>
+                    <section className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[1.08fr_0.92fr] lg:py-28">
+                        <div>
+                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200">
+                                <ShieldCheck className="h-4 w-4" />
+                                Akses aplikasi dalam satu akun
+                            </div>
+                            <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+                                Pusat akses aplikasi BPS Kota Sawahlunto.
+                            </h1>
+                            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg">
+                                Gunakan satu identitas untuk masuk ke aplikasi internal yang terhubung dengan SSO. Lebih sederhana untuk pengguna, lebih mudah dikelola oleh administrator.
+                            </p>
+                            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                                <Link href="/login" className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-500">
+                                    Masuk ke SSO
+                                    <ArrowRight className="h-4 w-4" />
+                                </Link>
+                                <Link href="/register" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10">
+                                    <UserPlus className="h-4 w-4" />
+                                    Buat akun
+                                </Link>
+                            </div>
+                        </div>
+
+                        <div className="rounded-3xl border border-white/10 bg-slate-900 p-5 shadow-2xl shadow-black/20 sm:p-7">
+                            <div className="flex items-center justify-between border-b border-white/10 pb-5">
+                                <div>
+                                    <p className="text-sm font-semibold">Akses terpusat</p>
+                                    <p className="mt-1 text-xs text-slate-500">SSO BPS Kota Sawahlunto</p>
+                                </div>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10">
+                                    <LockKeyhole className="h-5 w-5 text-sky-300" />
+                                </div>
+                            </div>
+                            <div className="space-y-3 py-5">
+                                {[
+                                    ['01', 'Masuk sekali', 'Gunakan akun SSO untuk aplikasi yang telah terintegrasi.'],
+                                    ['02', 'Akses sesuai hak pengguna', 'Aplikasi ditampilkan sesuai organisasi dan kewenangan akun.'],
+                                    ['03', 'Kelola keamanan', 'Pantau sesi aktif dan gunakan verifikasi dua langkah.'],
+                                ].map(([number, title, description]) => (
+                                    <div key={number} className="flex gap-4 rounded-xl border border-white/8 bg-white/[0.025] p-4">
+                                        <span className="text-xs font-bold text-sky-300">{number}</span>
+                                        <div>
+                                            <p className="text-sm font-semibold">{title}</p>
+                                            <p className="mt-1 text-sm leading-6 text-slate-400">{description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="border-t border-white/10 pt-5 text-xs text-slate-500">
+                                OAuth2 • 2FA • Single active session
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="border-y border-white/10 bg-white/[0.025]">
+                        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 md:grid-cols-3">
+                            <div>
+                                <p className="text-sm font-semibold">Satu identitas</p>
+                                <p className="mt-2 text-sm leading-6 text-slate-400">Kurangi akun terpisah dan gunakan identitas yang sama untuk layanan terhubung.</p>
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold">Kontrol akses</p>
+                                <p className="mt-2 text-sm leading-6 text-slate-400">Hak akses aplikasi mengikuti organisasi dan kewenangan pengguna.</p>
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold">Keamanan terpadu</p>
+                                <p className="mt-2 text-sm leading-6 text-slate-400">Pengelolaan 2FA, perangkat, dan sesi dilakukan dari pusat SSO.</p>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+
+                <footer className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-7 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+                    <span>© 2026 BPS Kota Sawahlunto</span>
+                    <span>Single Sign-On untuk aplikasi internal</span>
+                </footer>
             </div>
         </>
     );

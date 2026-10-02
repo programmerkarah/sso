@@ -3,140 +3,84 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <title>Persetujuan Akses Aplikasi</title>
     <style>
+        * { box-sizing: border-box; }
         body {
             margin: 0;
-            font-family: "Instrument Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #ecfeff 100%);
-            color: #0f172a;
+            font-family: "Instrument Sans", "Segoe UI", sans-serif;
+            background: #020617;
+            color: #f8fafc;
         }
-
-        .container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 720px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-            padding: 2rem;
-        }
-
-        .title {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-            line-height: 1.25;
-        }
-
-        .subtitle {
-            margin: 0.5rem 0 0;
-            color: #475569;
-            font-size: 0.95rem;
-        }
-
-        .meta {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            background: #f8fafc;
-        }
-
-        .meta-item {
-            margin: 0.5rem 0;
-            font-size: 0.95rem;
-        }
-
-        .scope-list {
-            margin: 0.75rem 0 0;
-            padding-left: 1.25rem;
-        }
-
-        .scope-list li {
-            margin: 0.35rem 0;
-        }
-
-        .actions {
-            margin-top: 1.75rem;
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .button {
-            border: 0;
-            border-radius: 10px;
-            padding: 0.7rem 1.25rem;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .button-approve {
-            background: #2563eb;
-            color: #fff;
-        }
-
-        .button-deny {
-            background: #e2e8f0;
-            color: #0f172a;
-        }
-
-        .footer-note {
-            margin-top: 1rem;
-            font-size: 0.8rem;
-            color: #64748b;
-        }
+        .page { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; }
+        .shell { width: 100%; max-width: 560px; }
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; color: #cbd5e1; }
+        .brand img { width: 40px; height: 40px; object-fit: contain; }
+        .brand strong { display: block; color: #fff; font-size: 14px; }
+        .brand span { display: block; margin-top: 2px; font-size: 12px; color: #64748b; }
+        .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; padding: 28px; box-shadow: 0 24px 60px rgba(0,0,0,.24); }
+        h1 { margin: 0; font-size: 24px; line-height: 1.3; }
+        .subtitle { margin: 8px 0 0; color: #94a3b8; font-size: 14px; line-height: 1.6; }
+        .meta { margin-top: 24px; border: 1px solid #1e293b; border-radius: 14px; overflow: hidden; }
+        .meta-item { margin: 0; padding: 14px 16px; border-bottom: 1px solid #1e293b; font-size: 14px; color: #cbd5e1; }
+        .meta-item:last-child { border-bottom: 0; }
+        .meta-item strong { color: #fff; }
+        .scope-list { margin: 0; padding: 0 16px 14px 34px; color: #94a3b8; font-size: 14px; }
+        .scope-list li { margin: 6px 0; }
+        .actions { margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .button { width: 100%; border: 0; border-radius: 11px; padding: 12px 16px; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .button-approve { background: #0284c7; color: #fff; }
+        .button-approve:hover { background: #0ea5e9; }
+        .button-deny { background: #1e293b; color: #cbd5e1; }
+        .button-deny:hover { background: #334155; }
+        .footer-note { margin: 18px 0 0; font-size: 12px; line-height: 1.6; color: #64748b; }
+        @media (max-width: 520px) { .card { padding: 22px; } .actions { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="card">
-        <h1 class="title">Persetujuan Akses Aplikasi</h1>
-        <p class="subtitle">Aplikasi berikut meminta akses ke akun SSO Anda.</p>
-
-        <div class="meta">
-            <p class="meta-item"><strong>Aplikasi:</strong> {{ $client->name }}</p>
-            <p class="meta-item"><strong>Pengguna:</strong> {{ $user->name }}</p>
-            @if (!empty($scopes))
-                <p class="meta-item"><strong>Scope yang diminta:</strong></p>
-                <ul class="scope-list">
-                    @foreach ($scopes as $scope)
-                        <li>{{ $scope->description ?: $scope->id }}</li>
-                    @endforeach
-                </ul>
-            @endif
+<div class="page">
+    <div class="shell">
+        <div class="brand">
+            <img src="/favicon.svg" alt="SSO BPS Kota Sawahlunto">
+            <div><strong>SSO BPS Kota Sawahlunto</strong><span>Persetujuan akses aplikasi</span></div>
         </div>
+        <div class="card">
+            <h1>Izinkan akses ke akun Anda?</h1>
+            <p class="subtitle">Periksa aplikasi dan akses yang diminta sebelum melanjutkan.</p>
 
-        <div class="actions">
-            <form method="post" action="{{ route('passport.authorizations.approve') }}">
-                @csrf
-                <input type="hidden" name="state" value="{{ $request->state }}">
-                <input type="hidden" name="client_id" value="{{ $client->getKey() }}">
-                <input type="hidden" name="auth_token" value="{{ $authToken }}">
-                <button type="submit" class="button button-approve">Setujui</button>
-            </form>
+            <div class="meta">
+                <p class="meta-item"><strong>Aplikasi:</strong> {{ $client->name }}</p>
+                <p class="meta-item"><strong>Pengguna:</strong> {{ $user->name }}</p>
+                @if (!empty($scopes))
+                    <p class="meta-item"><strong>Akses yang diminta</strong></p>
+                    <ul class="scope-list">
+                        @foreach ($scopes as $scope)
+                            <li>{{ $scope->description ?: $scope->id }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
 
-            <form method="post" action="{{ route('passport.authorizations.deny') }}">
-                @csrf
-                @method('DELETE')
-                <input type="hidden" name="state" value="{{ $request->state }}">
-                <input type="hidden" name="client_id" value="{{ $client->getKey() }}">
-                <input type="hidden" name="auth_token" value="{{ $authToken }}">
-                <button type="submit" class="button button-deny">Tolak</button>
-            </form>
+            <div class="actions">
+                <form method="post" action="{{ route('passport.authorizations.approve') }}">
+                    @csrf
+                    <input type="hidden" name="state" value="{{ $request->state }}">
+                    <input type="hidden" name="client_id" value="{{ $client->getKey() }}">
+                    <input type="hidden" name="auth_token" value="{{ $authToken }}">
+                    <button type="submit" class="button button-approve">Izinkan akses</button>
+                </form>
+                <form method="post" action="{{ route('passport.authorizations.deny') }}">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="state" value="{{ $request->state }}">
+                    <input type="hidden" name="client_id" value="{{ $client->getKey() }}">
+                    <input type="hidden" name="auth_token" value="{{ $authToken }}">
+                    <button type="submit" class="button button-deny">Batalkan</button>
+                </form>
+            </div>
+            <p class="footer-note">Hanya izinkan aplikasi yang Anda kenal dan gunakan untuk pekerjaan.</p>
         </div>
-
-        <p class="footer-note">Pastikan Anda hanya menyetujui aplikasi yang Anda percaya.</p>
     </div>
 </div>
 </body>
