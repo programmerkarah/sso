@@ -30,6 +30,7 @@ import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
+import MetricCard from '@/Components/MetricCard';
 import PageHeader from '@/Components/PageHeader';
 import PageWorkspace from '@/Components/PageWorkspace';
 import ScrollArea from '@/Components/ScrollArea';
@@ -1352,58 +1353,28 @@ export default function Index({
                         />
 
                         <div className="grid gap-3 sm:grid-cols-3">
-                            <GlassCard>
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-full bg-blue-400/20 p-3">
-                                        <UserCog className="h-6 w-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm text-white/70">
-                                            Total akun
-                                        </div>
-                                        <div className="text-3xl font-semibold text-white">
-                                            {formatNumber(users.total)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </GlassCard>
-                            <GlassCard>
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-full bg-emerald-400/20 p-3">
-                                        <ShieldCheck className="h-6 w-6 text-emerald-200" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm text-white/70">
-                                            2FA aktif (halaman ini)
-                                        </div>
-                                        <div className="text-3xl font-semibold text-white">
-                                            {formatNumber(twoFactorCount)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </GlassCard>
-                            <GlassCard>
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-full bg-purple-400/20 p-3">
-                                        <Shield className="h-6 w-6 text-purple-200" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm text-white/70">
-                                            Admin (halaman ini)
-                                        </div>
-                                        <div className="text-3xl font-semibold text-white">
-                                            {formatNumber(adminCount)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </GlassCard>
+                            <MetricCard
+                                label="Total akun"
+                                value={formatNumber(users.total)}
+                                icon={<UserCog className="h-5 w-5 text-[#4a9fd7]" />}
+                            />
+                            <MetricCard
+                                label="2FA aktif (halaman ini)"
+                                value={formatNumber(twoFactorCount)}
+                                icon={<ShieldCheck className="h-5 w-5 text-[#69a662]" />}
+                            />
+                            <MetricCard
+                                label="Admin (halaman ini)"
+                                value={formatNumber(adminCount)}
+                                icon={<Shield className="h-5 w-5 text-[#8b76bd]" />}
+                            />
                         </div>
                     </>
                 }
             >
                 <GlassCard className="overflow-hidden p-0">
                     <div className="border-b border-slate-800 px-6 py-5">
-                        <div className="flex flex-col gap-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="flex flex-col gap-4 rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
                             <div>
                                 <h2 className="text-xl font-bold text-white">
                                     Daftar Pengguna
@@ -1436,8 +1407,8 @@ export default function Index({
                                 }
                                 className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
                                     pendingOnlyActive
-                                        ? 'border-amber-300/40 bg-amber-500/20 text-amber-100'
-                                        : 'border-slate-800 bg-slate-900/80 text-white/75 hover:bg-slate-800'
+                                        ? 'ui-warning'
+                                        : 'ui-hover border-[var(--bps-border)] bg-[var(--bps-surface)] text-[var(--bps-muted)]'
                                 }`}
                             >
                                 Menunggu verifikasi
@@ -1447,8 +1418,8 @@ export default function Index({
                                 onClick={() => visitState(allUsersFilterToken)}
                                 className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
                                     !pendingOnlyActive
-                                        ? 'border-blue-300/40 bg-blue-500/20 text-blue-100'
-                                        : 'border-slate-800 bg-slate-900/80 text-white/75 hover:bg-slate-800'
+                                        ? 'ui-selected'
+                                        : 'ui-hover border-[var(--bps-border)] bg-[var(--bps-surface)] text-[var(--bps-muted)]'
                                 }`}
                             >
                                 Semua pengguna
