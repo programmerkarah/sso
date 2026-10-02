@@ -62,6 +62,14 @@ export type PageProps<
         description: string;
         locale: string;
     };
+    ui: {
+        page: {
+            title: string;
+            description: string;
+            section: string | null;
+        };
+        container: string;
+    };
     navigation: {
         primary: Array<{ label: string; href: string; icon?: string }>;
         account: Array<{ label: string; href: string }>;
