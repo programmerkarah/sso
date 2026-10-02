@@ -11,9 +11,9 @@ export default function Button({
     ...props
 }: ButtonProps) {
     const variants = {
-        primary: 'bg-[#0077b6] text-white hover:bg-[#008dcc] focus:ring-[#00aeef]/30',
+        primary: 'bg-[#5aaee8] text-white hover:bg-[#4aa3de] focus:ring-[#5aaee8]/30',
         secondary:
-            'border border-cyan-900/60 bg-[#0b2d46] text-slate-200 hover:bg-[#11364f] focus:ring-[#00aeef]/20',
+            'border border-[#d5e1e9] bg-white text-[#29465f] hover:bg-[#eef5f9] focus:ring-[#5aaee8]/20',
         danger: 'bg-red-600 text-white hover:bg-red-500 focus:ring-red-500/30',
     };
 
