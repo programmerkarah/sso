@@ -60,7 +60,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                 topClassName="top-4"
             />
 
-            <div className="mx-auto grid min-h-screen max-w-7xl lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="mx-auto grid min-h-screen max-w-[1680px] lg:grid-cols-[0.9fr_1.1fr]">
                 <aside className="hidden border-r border-slate-800 px-10 py-9 lg:flex lg:flex-col xl:px-14">
                     <Link
                         href="/"
