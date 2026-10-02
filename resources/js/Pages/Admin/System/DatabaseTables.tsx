@@ -22,6 +22,7 @@ import SearchableSelect, {
     SearchableSelectOption,
 } from '@/Components/SearchableSelect';
 import PageHeader from '@/Components/PageHeader';
+import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -420,7 +421,7 @@ export default function DatabaseTables({
                             </div>
                         </form>
 
-                        <div className="mt-4 max-h-[70vh] space-y-2 overflow-y-auto pr-1">
+                        <ScrollArea className="mt-4 h-[70vh] max-h-[70vh]" viewportClassName="pr-2" contentClassName="space-y-2">
                             {tables.length === 0 ? (
                                 <div className="rounded-xl border border-slate-800 bg-black/20 p-4 text-sm text-white/60">
                                     Tidak ada tabel yang cocok dengan pencarian.
@@ -463,7 +464,7 @@ export default function DatabaseTables({
                                     );
                                 })
                             )}
-                        </div>
+                        </ScrollArea>
                     </GlassCard>
 
                     <div className="min-w-0 space-y-6">
@@ -557,7 +558,7 @@ export default function DatabaseTables({
                                     </div>
 
                                     {activeTab === 'columns' ? (
-                                        <div className="overflow-x-auto">
+                                        <ScrollArea axis="horizontal" viewportClassName="pb-2">
                                             <table className="min-w-full text-sm text-white/80">
                                                 <thead className="bg-black/20 text-left text-xs uppercase tracking-wider text-white/55">
                                                     <tr>
@@ -648,7 +649,7 @@ export default function DatabaseTables({
                                                     )}
                                                 </tbody>
                                             </table>
-                                        </div>
+                                        </ScrollArea>
                                     ) : (
                                         <>
                                             <div className="border-b border-slate-800 px-4 py-3 sm:px-6">
@@ -661,7 +662,7 @@ export default function DatabaseTables({
                                                         0}{' '}
                                                 </p>
                                             </div>
-                                            <div className="overflow-x-auto">
+                                            <ScrollArea axis="horizontal" viewportClassName="pb-2">
                                                 <table className="w-full min-w-[1080px] table-fixed text-sm text-white/80">
                                                     <thead className="bg-black/20 text-left text-xs uppercase tracking-wider text-white/55">
                                                         <tr>
@@ -822,7 +823,7 @@ export default function DatabaseTables({
                                                         )}
                                                     </tbody>
                                                 </table>
-                                            </div>
+                                            </ScrollArea>
 
                                             {selectedTable.rows.last_page >
                                                 1 && (
@@ -909,7 +910,7 @@ export default function DatabaseTables({
                             className="absolute inset-0 bg-slate-950/70 "
                             onClick={() => setExpandedCell(null)}
                         />
-                        <div className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
+                        <ScrollArea className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-slate-800 bg-slate-900/80" viewportClassName="p-6">
                             <div className="mb-4 flex items-start justify-between gap-4">
                                 <div>
                                     <h3 className="text-xl font-bold text-white">
@@ -1155,7 +1156,7 @@ export default function DatabaseTables({
                                     </Button>
                                 </div>
                             </form>
-                        </div>
+                        </ScrollArea>
                     </div>
                 )}
             </div>
