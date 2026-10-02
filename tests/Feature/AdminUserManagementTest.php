@@ -546,6 +546,56 @@ class AdminUserManagementTest extends TestCase
             );
     }
 
+    public function test_admin_session_search_filters_all_users_before_pagination(): void
+    {
+        $this->seed(RoleSeeder::class);
+
+        $admin = User::factory()->create([
+            'name' => 'Administrator',
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+        $admin->roles()->attach(Role::where('name', 'admin')->value('id'));
+
+        foreach (range(1, 12) as $index) {
+            User::factory()->create([
+                'name' => sprintf('Pengguna %02d', $index),
+                'username' => sprintf('pengguna%02d', $index),
+                'email' => sprintf('pengguna%02d@example.test', $index),
+                'admin_verified_at' => now(),
+                'email_verified_at' => now(),
+                'two_factor_confirmed_at' => now(),
+            ]);
+        }
+
+        User::factory()->create([
+            'name' => 'Zeta Global Search',
+            'username' => 'zeta.global',
+            'email' => 'zeta.global@example.test',
+            'admin_verified_at' => now(),
+            'email_verified_at' => now(),
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->post(route('settings.sessions'), [
+                'search' => 'zeta.global',
+            ]);
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Settings/Sessions')
+                ->where('search', 'zeta.global')
+                ->where('users.total', 1)
+                ->where('users.current_page', 1)
+                ->where('users.last_page', 1)
+                ->where('users.data.0.username', 'zeta.global')
+            );
+    }
+
     public function test_session_page_rejects_user_id_query_parameter_as_unauthorized(): void
     {
         $this->seed(RoleSeeder::class);
