@@ -101,7 +101,6 @@ interface AdminUsersIndexProps extends PageProps {
     roleOptions: RoleOption[];
     selectedUser?: Omit<SearchableSelectOption, 'state_token'> | null;
     clearFilterToken: string;
-    currentStateToken: string;
     exportStateToken: string;
     pendingOnlyActive: boolean;
     pendingOnlyFilterToken: string;
@@ -283,7 +282,6 @@ export default function Index({
     roleOptions,
     selectedUser,
     clearFilterToken,
-    currentStateToken,
     exportStateToken,
     pendingOnlyActive,
     pendingOnlyFilterToken,
