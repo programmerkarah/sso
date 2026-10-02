@@ -34,7 +34,7 @@ export default function PageWorkspace({
                 className={
                     'shrink-0 pb-4 ' +
                     (layout.sticky_summary
-                        ? 'workspace-summary relative z-20'
+                        ? 'relative z-20'
                         : '')
                 }
             >
