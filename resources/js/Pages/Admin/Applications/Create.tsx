@@ -8,6 +8,7 @@ import Button from '@/Components/Button';
 import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 
 interface CreateProps {
@@ -43,25 +44,18 @@ export default function Create({ availableOrganizationTypes }: CreateProps) {
         <AppLayout>
             <Head title="Tambah Aplikasi" />
 
-            <div className="mx-auto max-w-5xl space-y-8">
-                <div>
-                    <Link
-                        href="/admin/applications"
-                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-white   transition hover:bg-slate-800"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        Kembali ke daftar
-                    </Link>
-                    <h1 className="mt-5  text-4xl font-semibold text-white  sm:text-5xl">
-                        Tambah Aplikasi Baru
-                    </h1>
-                    <p className="mt-2 max-w-2xl text-white/80">
-                        Daftarkan aplikasi baru agar bisa memakai Single Sign-On
-                        BPS Kota Sawahlunto dengan konfigurasi OAuth yang tepat.
-                    </p>
-                </div>
+            <div className="mx-auto max-w-5xl space-y-6">
+                <PageHeader
+                    title="Tambah aplikasi"
+                    description="Daftarkan aplikasi baru dan konfigurasi integrasi OAuth SSO."
+                    actions={
+                        <Link href="/admin/applications" className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white">
+                            <ArrowLeft className="h-4 w-4" /> Daftar aplikasi
+                        </Link>
+                    }
+                />
 
-                <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
                     <GlassCard>
                         <form onSubmit={submit} className="space-y-6">
                             <div>
