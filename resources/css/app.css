@@ -711,3 +711,22 @@ html[data-theme='dark'] .ui-modal-surface {
     background: var(--bps-bg);
     border-bottom: 1px solid color-mix(in srgb, var(--bps-border) 65%, transparent);
 }
+
+
+/* Consistent keyboard focus without browser-default black outlines. */
+.app-background :is(button, a, input, textarea, select):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--bps-blue) 20%, transparent);
+}
+
+.app-background :is(button, a):focus-visible {
+    border-color: color-mix(in srgb, var(--bps-border) 45%, var(--bps-blue));
+}
+
+.react-scroll-thumb {
+    background: color-mix(in srgb, var(--bps-muted) 58%, transparent);
+}
+
+.react-scroll-thumb:hover {
+    background: color-mix(in srgb, var(--bps-muted) 78%, transparent);
+}
