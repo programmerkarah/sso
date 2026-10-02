@@ -45,3 +45,13 @@ textarea {
         animation-iteration-count: 1 !important;
     }
 }
+
+
+.react-scroll-area-viewport {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.react-scroll-area-viewport::-webkit-scrollbar {
+    display: none;
+}
