@@ -9,7 +9,7 @@ import {
     UserRound,
 } from 'lucide-react';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Head, router } from '@inertiajs/react';
 
@@ -77,6 +77,7 @@ interface SessionsProps extends PageProps {
     sessionMeta: PaginationMeta;
     session_prev_page_token?: string | null;
     session_next_page_token?: string | null;
+    search: string;
     oauthApplications: OauthApplicationEntry[];
     oauthMeta: PaginationMeta;
     oauth_prev_page_token?: string | null;
@@ -113,13 +114,14 @@ export default function Sessions(props: SessionsProps) {
         sessionMeta,
         session_prev_page_token,
         session_next_page_token,
+        search,
         oauthApplications,
         oauthMeta,
         oauth_prev_page_token,
         oauth_next_page_token,
     } = props;
 
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useState(search ?? '');
     const [activeTab, setActiveTab] = useState<'sessions' | 'oauth'>(
         'sessions',
     );
@@ -127,15 +129,32 @@ export default function Sessions(props: SessionsProps) {
     const currentUserList = users?.data ?? [];
     const selectedUserId = selectedUser?.id ?? null;
 
-    const filteredUsers = useMemo(() => {
-        const needle = query.trim().toLowerCase();
-        if (!needle) return currentUserList;
-        return currentUserList.filter((user) =>
-            [user.name, user.username, user.email].some((value) =>
-                value.toLowerCase().includes(needle),
-            ),
-        );
-    }, [currentUserList, query]);
+    useEffect(() => {
+        setQuery(search ?? '');
+    }, [search]);
+
+    useEffect(() => {
+        const normalizedQuery = query.trim();
+        const normalizedServerSearch = (search ?? '').trim();
+
+        if (normalizedQuery === normalizedServerSearch) {
+            return;
+        }
+
+        const timeout = window.setTimeout(() => {
+            router.post(
+                '/settings/sessions',
+                { search: normalizedQuery },
+                {
+                    preserveScroll: true,
+                    preserveState: true,
+                    replace: true,
+                },
+            );
+        }, 350);
+
+        return () => window.clearTimeout(timeout);
+    }, [query, search]);
 
     const visitState = (state?: string | null) => {
         if (!state) return;
@@ -154,6 +173,7 @@ export default function Sessions(props: SessionsProps) {
                 page: users?.current_page ?? 1,
                 session_page: sessionMeta.current_page,
                 oauth_page: oauthMeta.current_page,
+                search,
             },
             { preserveScroll: true },
         );
@@ -167,6 +187,7 @@ export default function Sessions(props: SessionsProps) {
                 page: users?.current_page ?? 1,
                 session_page: sessionMeta.current_page,
                 oauth_page: oauthMeta.current_page,
+                search,
             },
             { preserveScroll: true },
         );
@@ -227,7 +248,7 @@ export default function Sessions(props: SessionsProps) {
                                             users?.total ??
                                                 currentUserList.length,
                                         )}{' '}
-                                        akun
+                                        akun{search ? ' ditemukan' : ''}
                                     </p>
                                 </div>
                                 <UserRound className="h-5 w-5 text-[var(--bps-muted)]" />
@@ -250,7 +271,7 @@ export default function Sessions(props: SessionsProps) {
                             viewportClassName="p-2"
                             contentClassName="space-y-1"
                         >
-                            {filteredUsers.map((user) => (
+                            {currentUserList.map((user) => (
                                 <button
                                     key={user.id}
                                     type="button"
@@ -280,7 +301,7 @@ export default function Sessions(props: SessionsProps) {
                                     </div>
                                 </button>
                             ))}
-                            {filteredUsers.length === 0 && (
+                            {currentUserList.length === 0 && (
                                 <div className="px-3 py-8 text-center text-sm text-[var(--bps-muted)]">
                                     Pengguna tidak ditemukan.
                                 </div>
