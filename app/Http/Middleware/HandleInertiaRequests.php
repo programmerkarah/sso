@@ -46,6 +46,18 @@ class HandleInertiaRequests extends Middleware
             default => $request->session()->get('status'),
         };
 
+        $pageMeta = match (true) {
+            $request->routeIs('dashboard') => ['title' => 'Dashboard', 'description' => 'Akses aplikasi dan kelola kebutuhan akun dari satu tempat.', 'section' => 'home'],
+            $request->routeIs('applications.*') => ['title' => 'Aplikasi SSO', 'description' => 'Aplikasi yang tersedia melalui akun Single Sign-On Anda.', 'section' => 'applications'],
+            $request->routeIs('settings.security') => ['title' => 'Keamanan Akun', 'description' => 'Kelola password, email, dan autentikasi dua faktor.', 'section' => 'account'],
+            $request->routeIs('settings.sessions') => ['title' => 'Sesi & Akses', 'description' => 'Kelola sesi web aktif dan akses OAuth yang terhubung.', 'section' => 'account'],
+            $request->routeIs('admin.applications.*') => ['title' => 'Aplikasi', 'description' => 'Kelola aplikasi yang terhubung ke SSO.', 'section' => 'admin'],
+            $request->routeIs('admin.organizations.*') => ['title' => 'Organisasi', 'description' => 'Kelola organisasi dan cakupan akses aplikasi.', 'section' => 'admin'],
+            $request->routeIs('admin.users.*') => ['title' => 'Pengguna', 'description' => 'Kelola identitas, akses, verifikasi, dan keamanan pengguna.', 'section' => 'admin'],
+            $request->routeIs('admin.system.*') => ['title' => 'Sistem', 'description' => 'Pantau layanan, database, backup, dan audit aktivitas.', 'section' => 'admin'],
+            default => ['title' => config('app.name', 'SSO BPS Kota Sawahlunto'), 'description' => 'Single Sign-On', 'section' => null],
+        };
+
         return [
             ...parent::share($request),
             'app' => [
@@ -54,6 +66,10 @@ class HandleInertiaRequests extends Middleware
                 'product_short_name' => 'SSO',
                 'description' => 'Single Sign-On',
                 'locale' => app()->getLocale(),
+            ],
+            'ui' => [
+                'page' => $pageMeta,
+                'container' => 'max-w-7xl',
             ],
             'navigation' => [
                 'primary' => array_values(array_filter([
