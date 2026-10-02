@@ -26,6 +26,7 @@ import Button from '@/Components/Button';
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import GlassSelect from '@/Components/GlassSelect';
+import MetricCard from '@/Components/MetricCard';
 import PageHeader from '@/Components/PageHeader';
 import PageWorkspace from '@/Components/PageWorkspace';
 import ScrollArea from '@/Components/ScrollArea';
@@ -453,70 +454,26 @@ export default function Index({
                         />
 
                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                            <GlassCard>
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-full bg-blue-400/20 p-3">
-                                        <Database className="h-5 w-5 text-blue-100" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm text-white/70">
-                                            Jumlah tabel
-                                        </div>
-                                        <div className="text-3xl font-semibold text-white">
-                                            {formatNumber(database.table_count)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </GlassCard>
-
-                            <GlassCard>
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-full bg-emerald-400/20 p-3">
-                                        <User className="h-5 w-5 text-emerald-100" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm text-white/70">
-                                            Total pengguna
-                                        </div>
-                                        <div className="text-3xl font-semibold text-white">
-                                            {formatNumber(database.user_count)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </GlassCard>
-
-                            <GlassCard>
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-full bg-purple-400/20 p-3">
-                                        <Activity className="h-5 w-5 text-purple-100" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm text-white/70">
-                                            Total log ditampilkan
-                                        </div>
-                                        <div className="text-3xl font-semibold text-white">
-                                            {formatNumber(logs.total)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </GlassCard>
-
-                            <GlassCard>
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-full bg-amber-400/20 p-3">
-                                        <HardDrive className="h-5 w-5 text-amber-100" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm text-white/70">
-                                            Disk bebas
-                                        </div>
-                                        <div className="text-3xl font-semibold text-white">
-                                            {formatNumber(server.disk_free_gb)}{' '}
-                                            GB
-                                        </div>
-                                    </div>
-                                </div>
-                            </GlassCard>
+                            <MetricCard
+                                label="Jumlah tabel"
+                                value={formatNumber(database.table_count)}
+                                icon={<Database className="h-5 w-5 text-[#4a9fd7]" />}
+                            />
+                            <MetricCard
+                                label="Total pengguna"
+                                value={formatNumber(database.user_count)}
+                                icon={<User className="h-5 w-5 text-[#69a662]" />}
+                            />
+                            <MetricCard
+                                label="Total log ditampilkan"
+                                value={formatNumber(logs.total)}
+                                icon={<Activity className="h-5 w-5 text-[#8b76bd]" />}
+                            />
+                            <MetricCard
+                                label="Disk bebas"
+                                value={<>{formatNumber(server.disk_free_gb)} GB</>}
+                                icon={<HardDrive className="h-5 w-5 text-[#bd8549]" />}
+                            />
                         </div>
                     </>
                 }
@@ -567,7 +524,7 @@ export default function Index({
                             <div className="pt-2">
                                 <Link
                                     href="/admin/system/database-tables"
-                                    className="inline-flex items-center gap-2 rounded-xl border border-cyan-300/25 bg-cyan-500/15 px-4 py-2 text-sm font-semibold text-cyan-50 transition hover:bg-cyan-500/25"
+                                    className="ui-selected ui-hover inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold"
                                 >
                                     <Database className="h-4 w-4" />
                                     Lihat Tabel Database
