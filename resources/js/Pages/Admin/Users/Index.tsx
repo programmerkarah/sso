@@ -31,6 +31,7 @@ import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
 import PageHeader from '@/Components/PageHeader';
+import PageWorkspace from '@/Components/PageWorkspace';
 import ScrollArea from '@/Components/ScrollArea';
 import SearchableSelect, {
     SearchableSelectOption,
@@ -1298,7 +1299,10 @@ export default function Index({
                 </div>
             )}
 
-            <div className="space-y-6">
+            <PageWorkspace
+                summary={
+                    <>
+
                 <PageHeader
                     actions={
                         <>
@@ -1379,7 +1383,9 @@ export default function Index({
                         </div>
                     </GlassCard>
                 </div>
-
+                    </>
+                }
+            >
                 <GlassCard className="overflow-hidden p-0">
                     <div className="border-b border-slate-800 px-6 py-5">
                         <div className="flex flex-col gap-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
@@ -1722,7 +1728,8 @@ export default function Index({
                                     </span>
                                 )}
                             </div>
-                        </div>
+            
+            </PageWorkspace>
                     )}
                 </GlassCard>
 
