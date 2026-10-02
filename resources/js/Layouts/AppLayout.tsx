@@ -204,12 +204,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
                         ref={navContainerRef}
                         className="mx-auto max-w-[1680px] px-4 sm:px-6 lg:px-8 2xl:px-10"
                     >
-                        <div className="flex h-16 items-center justify-between gap-4">
+                        <div className="flex h-14 items-center justify-between gap-3 sm:h-16 sm:gap-4">
                             <Link
                                 href="/dashboard"
                                 className="flex min-w-0 items-center gap-3"
                             >
-                                <AppIcon className="h-8 w-8 shrink-0" />
+                                <AppIcon className="h-7 w-7 shrink-0 sm:h-8 sm:w-8" />
                                 <div className="min-w-0">
                                     <div className="truncate text-sm font-semibold text-[#18324a]">
                                         {app.product_name}
@@ -419,13 +419,13 @@ export default function AppLayout({ children }: PropsWithChildren) {
             )}
 
             {ui.page.layout.content_scroll ? (
-                <main className="mx-auto flex min-h-0 w-full max-w-[1680px] flex-1 flex-col px-4 py-5 sm:px-6 sm:py-6 lg:px-8 2xl:px-10">
+                <main className="mx-auto flex min-h-0 w-full max-w-[1680px] flex-1 flex-col px-3 py-3 sm:px-6 sm:py-5 lg:px-8 lg:py-6 2xl:px-10">
                     {children}
                 </main>
             ) : (
                 <ScrollArea
                     className="min-h-0 flex-1"
-                    viewportClassName="px-4 py-5 sm:px-6 sm:py-6 lg:px-8 2xl:px-10"
+                    viewportClassName="px-3 py-3 sm:px-6 sm:py-5 lg:px-8 lg:py-6 2xl:px-10"
                 >
                     <main className="mx-auto w-full max-w-[1680px]">
                         {children}
