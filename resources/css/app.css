@@ -273,3 +273,187 @@ html[data-theme='dark'] .app-background .bg-white\/80,
 html[data-theme='dark'] .app-background .bg-white\/85 {
     background-color: rgba(34, 54, 66, 0.92);
 }
+
+
+/* Semantic compatibility for legacy utility colors. */
+.app-background .text-white\/95,
+.app-background .text-white\/90,
+.app-background .text-white\/85 { color: #29465f; }
+.app-background .text-white\/80,
+.app-background .text-white\/75,
+.app-background .text-white\/70,
+.app-background .text-white\/65 { color: #49657b; }
+.app-background .text-white\/60,
+.app-background .text-white\/55,
+.app-background .text-white\/50 { color: #6f8495; }
+.app-background .text-white\/40,
+.app-background .text-white\/30 { color: #8799a7; }
+
+.app-background .text-sky-100,
+.app-background .text-sky-200,
+.app-background .text-sky-300,
+.app-background .text-blue-100,
+.app-background .text-blue-200,
+.app-background .text-blue-300 { color: #347fae; }
+
+.app-background .text-emerald-100,
+.app-background .text-emerald-200,
+.app-background .text-emerald-300 { color: #4f8a49; }
+
+.app-background .text-amber-50,
+.app-background .text-amber-100,
+.app-background .text-amber-200,
+.app-background .text-amber-300,
+.app-background .text-yellow-100,
+.app-background .text-yellow-200,
+.app-background .text-yellow-300 { color: #9b6a2f; }
+
+.app-background .text-red-100,
+.app-background .text-red-200,
+.app-background .text-rose-100 { color: #b85d52; }
+
+.app-background .bg-yellow-400\/10,
+.app-background .bg-amber-400\/10,
+.app-background .bg-amber-500\/10,
+.app-background .bg-amber-500\/15,
+.app-background .bg-amber-500\/20 { background-color: #fff4e8; }
+
+.app-background .bg-emerald-400\/10,
+.app-background .bg-emerald-400\/20,
+.app-background .bg-emerald-500\/10,
+.app-background .bg-emerald-500\/15,
+.app-background .bg-emerald-500\/20 { background-color: #eef7ec; }
+
+.app-background .bg-sky-500\/10,
+.app-background .bg-sky-500\/15,
+.app-background .bg-blue-500\/20 { background-color: #eaf4fb; }
+
+.app-background .border-white\/8,
+.app-background .border-white\/10,
+.app-background .border-white\/15,
+.app-background .border-white\/20,
+.app-background .border-white\/25,
+.app-background .border-white\/30,
+.app-background .border-white\/40 {
+    border-color: #dbe5ec;
+}
+
+html[data-theme='dark'] .app-background .bg-slate-950,
+html[data-theme='dark'] .app-background .bg-slate-950\/70,
+html[data-theme='dark'] .app-background .bg-slate-950\/45 {
+    background-color: #172731;
+}
+
+html[data-theme='dark'] .app-background .bg-slate-900,
+html[data-theme='dark'] .app-background .bg-slate-900\/80,
+html[data-theme='dark'] .app-background .bg-slate-900\/70,
+html[data-theme='dark'] .app-background .bg-slate-900\/60,
+html[data-theme='dark'] .app-background .bg-slate-900\/50,
+html[data-theme='dark'] .app-background .bg-slate-900\/40,
+html[data-theme='dark'] .app-background .bg-\[\#f8fbfd\] {
+    background-color: #1c2d38;
+}
+
+html[data-theme='dark'] .app-background .bg-slate-800,
+html[data-theme='dark'] .app-background .bg-\[\#eef5f9\] {
+    background-color: #223642;
+}
+
+html[data-theme='dark'] .app-background .bg-black\/20,
+html[data-theme='dark'] .app-background .bg-black\/30 {
+    background-color: #13232d;
+}
+
+html[data-theme='dark'] .app-background .border-slate-800,
+html[data-theme='dark'] .app-background .border-slate-700,
+html[data-theme='dark'] .app-background .border-white\/8,
+html[data-theme='dark'] .app-background .border-white\/10,
+html[data-theme='dark'] .app-background .border-white\/15,
+html[data-theme='dark'] .app-background .border-white\/20,
+html[data-theme='dark'] .app-background .border-white\/25,
+html[data-theme='dark'] .app-background .border-white\/30,
+html[data-theme='dark'] .app-background .border-white\/40 {
+    border-color: #35505f;
+}
+
+html[data-theme='dark'] .app-background .text-white\/95,
+html[data-theme='dark'] .app-background .text-white\/90,
+html[data-theme='dark'] .app-background .text-white\/85 { color: #edf5f8; }
+html[data-theme='dark'] .app-background .text-white\/80,
+html[data-theme='dark'] .app-background .text-white\/75,
+html[data-theme='dark'] .app-background .text-white\/70,
+html[data-theme='dark'] .app-background .text-white\/65 { color: #c8d7df; }
+html[data-theme='dark'] .app-background .text-white\/60,
+html[data-theme='dark'] .app-background .text-white\/55,
+html[data-theme='dark'] .app-background .text-white\/50 { color: #a7bac5; }
+html[data-theme='dark'] .app-background .text-white\/40,
+html[data-theme='dark'] .app-background .text-white\/30 { color: #8fa4b0; }
+
+html[data-theme='dark'] .app-background .text-sky-100,
+html[data-theme='dark'] .app-background .text-sky-200,
+html[data-theme='dark'] .app-background .text-sky-300,
+html[data-theme='dark'] .app-background .text-blue-100,
+html[data-theme='dark'] .app-background .text-blue-200,
+html[data-theme='dark'] .app-background .text-blue-300 { color: #9bd3f3; }
+
+html[data-theme='dark'] .app-background .text-emerald-100,
+html[data-theme='dark'] .app-background .text-emerald-200,
+html[data-theme='dark'] .app-background .text-emerald-300 { color: #b8deb3; }
+
+html[data-theme='dark'] .app-background .text-amber-50,
+html[data-theme='dark'] .app-background .text-amber-100,
+html[data-theme='dark'] .app-background .text-amber-200,
+html[data-theme='dark'] .app-background .text-amber-300,
+html[data-theme='dark'] .app-background .text-yellow-100,
+html[data-theme='dark'] .app-background .text-yellow-200,
+html[data-theme='dark'] .app-background .text-yellow-300 { color: #f6d5aa; }
+
+html[data-theme='dark'] .app-background .text-red-100,
+html[data-theme='dark'] .app-background .text-red-200,
+html[data-theme='dark'] .app-background .text-rose-100 { color: #f2aaa1; }
+
+html[data-theme='dark'] .app-background .bg-yellow-400\/10,
+html[data-theme='dark'] .app-background .bg-amber-400\/10,
+html[data-theme='dark'] .app-background .bg-amber-500\/10,
+html[data-theme='dark'] .app-background .bg-amber-500\/15,
+html[data-theme='dark'] .app-background .bg-amber-500\/20 {
+    background-color: rgba(246, 201, 149, 0.13);
+}
+
+html[data-theme='dark'] .app-background .bg-emerald-400\/10,
+html[data-theme='dark'] .app-background .bg-emerald-400\/20,
+html[data-theme='dark'] .app-background .bg-emerald-500\/10,
+html[data-theme='dark'] .app-background .bg-emerald-500\/15,
+html[data-theme='dark'] .app-background .bg-emerald-500\/20 {
+    background-color: rgba(169, 214, 163, 0.13);
+}
+
+html[data-theme='dark'] .app-background .bg-sky-500\/10,
+html[data-theme='dark'] .app-background .bg-sky-500\/15,
+html[data-theme='dark'] .app-background .bg-blue-500\/20 {
+    background-color: rgba(126, 197, 239, 0.13);
+}
+
+.theme-code {
+    background: #eef3f6;
+    border: 1px solid #dbe5ec;
+    color: #29465f;
+}
+
+.theme-warning {
+    background: #fff8ed;
+    border: 1px solid #efd6ad;
+    color: #805a2d;
+}
+
+html[data-theme='dark'] .theme-code {
+    background: #101d25;
+    border-color: #35505f;
+    color: #dbe8ee;
+}
+
+html[data-theme='dark'] .theme-warning {
+    background: rgba(246, 201, 149, 0.11);
+    border-color: rgba(246, 201, 149, 0.34);
+    color: #f6d5aa;
+}
