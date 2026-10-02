@@ -22,7 +22,7 @@ export default function SectionTabs<T extends string>({
 }: SectionTabsProps<T>) {
     return (
         <ScrollArea axis="horizontal">
-            <div className="inline-flex min-w-full gap-1 rounded-xl border border-slate-800 bg-slate-900/60 p-1 sm:min-w-0">
+            <div className="inline-flex min-w-full gap-1 rounded-xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] p-1 sm:min-w-0">
                 {items.map((item) => (
                     <button
                         key={item.id}
@@ -31,8 +31,8 @@ export default function SectionTabs<T extends string>({
                         className={
                             'inline-flex min-w-max items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ' +
                             (active === item.id
-                                ? 'bg-slate-700 text-white shadow-sm'
-                                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200')
+                                ? 'bg-[var(--bps-surface)] text-[var(--bps-text)] shadow-sm'
+                                : 'text-[var(--bps-muted)] hover:bg-[var(--bps-surface)] hover:text-[var(--bps-text)]')
                         }
                     >
                         {item.icon}
