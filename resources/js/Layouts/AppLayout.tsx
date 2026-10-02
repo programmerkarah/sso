@@ -113,11 +113,11 @@ export default function AppLayout({ children }: PropsWithChildren) {
     const navLinkClass = (active: boolean) =>
         'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ' +
         (active
-            ? 'bg-slate-800 text-white'
-            : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100');
+            ? 'bg-[#e7f3fb] text-[#2f6f98]'
+            : 'text-[#6f8495] hover:bg-white hover:text-[#18324a]');
 
     return (
-        <div className="app-background flex h-dvh flex-col overflow-hidden text-slate-100">
+        <div className="app-background flex h-dvh flex-col overflow-hidden text-[#18324a]">
             <ToastViewport
                 items={toasts}
                 onDismiss={(id) => setToasts((current) => current.filter((item) => item.id !== id))}
@@ -146,13 +146,13 @@ export default function AppLayout({ children }: PropsWithChildren) {
             )}
 
             {user && (
-                <header className="app-header-background z-50 shrink-0 border-b border-cyan-950/70">
+                <header className="app-header-background z-50 shrink-0 border-b border-[#dbe5ec]">
                     <div ref={navContainerRef} className="mx-auto max-w-[1680px] px-4 sm:px-6 lg:px-8 2xl:px-10">
                         <div className="flex h-16 items-center justify-between gap-4">
                             <Link href="/dashboard" className="flex min-w-0 items-center gap-3">
                                 <AppIcon className="h-8 w-8 shrink-0" />
                                 <div className="min-w-0">
-                                    <div className="truncate text-sm font-semibold text-white">{app.product_name}</div>
+                                    <div className="truncate text-sm font-semibold text-[#18324a]">{app.product_name}</div>
                                     <div className="hidden text-xs text-slate-500 sm:block">{app.description}</div>
                                 </div>
                             </Link>
@@ -179,8 +179,8 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                 className={
                                                     'block rounded-md px-3 py-2 text-sm transition ' +
                                                     (isActive(currentUrl, item.href)
-                                                        ? 'bg-slate-800 text-white'
-                                                        : 'text-slate-300 hover:bg-slate-800 hover:text-white')
+                                                        ? 'bg-[#e7f3fb] text-[#2f6f98]'
+                                                        : 'text-[#49657b] hover:bg-[#eef5f9] hover:text-[#18324a]')
                                                 }
                                             >
                                                 {item.label}
@@ -203,8 +203,8 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                                 className={
                                                     'block rounded-md px-3 py-2 text-sm transition ' +
                                                     (isActive(currentUrl, item.href)
-                                                        ? 'bg-slate-800 text-white'
-                                                        : 'text-slate-300 hover:bg-slate-800 hover:text-white')
+                                                        ? 'bg-[#e7f3fb] text-[#2f6f98]'
+                                                        : 'text-[#49657b] hover:bg-[#eef5f9] hover:text-[#18324a]')
                                                 }
                                             >
                                                 {item.label}
@@ -215,27 +215,27 @@ export default function AppLayout({ children }: PropsWithChildren) {
                             </nav>
 
                             <div className="hidden items-center gap-3 md:flex">
-                                <div className="flex items-center gap-2 border-l border-slate-800 pl-4">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-slate-300">
+                                <div className="flex items-center gap-2 border-l border-[#dbe5ec] pl-4">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#eaf4fb] text-[#4a9fd7]">
                                         <User className="h-4 w-4" />
                                     </div>
                                     <div className="max-w-40">
-                                        <div className="truncate text-sm font-medium text-slate-200">{user.name}</div>
+                                        <div className="truncate text-sm font-medium text-[#29465f]">{user.name}</div>
                                         <div className="text-[11px] text-slate-500">{user.isAdmin ? 'Administrator' : 'Pengguna'}</div>
                                     </div>
                                 </div>
-                                <Link href="/logout" method="post" as="button" className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-900 hover:text-red-300" title="Keluar">
+                                <Link href="/logout" method="post" as="button" className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-[#fff0ee] hover:text-[#d06f62]" title="Keluar">
                                     <LogOut className="h-4 w-4" />
                                 </Link>
                             </div>
 
-                            <button type="button" onClick={() => setMobileMenuOpen((current) => !current)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-800 text-slate-300 md:hidden" aria-label="Buka menu">
+                            <button type="button" onClick={() => setMobileMenuOpen((current) => !current)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#d5e1e9] text-[#49657b] md:hidden" aria-label="Buka menu">
                                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                             </button>
                         </div>
 
                         {mobileMenuOpen && (
-                            <div className="border-t border-slate-800 py-3 md:hidden">
+                            <div className="border-t border-[#dbe5ec] py-3 md:hidden">
                                 <div className="grid gap-1">
                                     {navigation.primary.map((item) => (
                                         <Link key={item.href} href={item.href} className={navLinkClass(isActive(currentUrl, item.href))}>
@@ -257,9 +257,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                     ))}
                                 </div>
 
-                                <div className="mt-3 flex items-center justify-between border-t border-slate-800 pt-3">
+                                <div className="mt-3 flex items-center justify-between border-t border-[#dbe5ec] pt-3">
                                     <div className="min-w-0">
-                                        <p className="truncate text-sm font-medium text-slate-200">{user.name}</p>
+                                        <p className="truncate text-sm font-medium text-[#29465f]">{user.name}</p>
                                         <p className="truncate text-xs text-slate-500">{user.email}</p>
                                     </div>
                                     <Link href="/logout" method="post" as="button" className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-300 transition hover:bg-red-500/10">
