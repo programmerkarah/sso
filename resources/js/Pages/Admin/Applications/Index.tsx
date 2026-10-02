@@ -18,6 +18,7 @@ import PageHeader from '@/Components/PageHeader';
 import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application, PageProps } from '@/types';
+import { formatNumber } from '@/utils/number';
 
 interface ApplicationsIndexProps extends PageProps {
     applications: {
@@ -103,7 +104,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                             Total aplikasi
                         </div>
                         <div className="mt-2 text-4xl font-semibold text-white">
-                            {stats.total}
+                            {formatNumber(stats.total)}
                         </div>
                     </GlassCard>
                     <GlassCard>
@@ -111,7 +112,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                             Aplikasi aktif
                         </div>
                         <div className="mt-2 text-4xl font-semibold text-white">
-                            {stats.active}
+                            {formatNumber(stats.active)}
                         </div>
                     </GlassCard>
                     <GlassCard>
@@ -207,7 +208,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                         <div className="border-t border-slate-800 px-4 py-4 sm:px-6">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                 <p className="text-sm text-white/60">
-                                    Menampilkan {applications.from ?? 0}–{applications.to ?? 0} dari {applications.total} aplikasi
+                                    Menampilkan {formatNumber(applications.from ?? 0)}–{formatNumber(applications.to ?? 0)} dari {formatNumber(applications.total)} aplikasi
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                     {applications.prev_page_token && (
