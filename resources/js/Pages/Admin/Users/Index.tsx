@@ -1749,7 +1749,7 @@ export default function Index({
                                 </button>
                             </div>
 
-                            <div className="flex-1 space-y-5 overflow-y-auto p-4">
+                            <ScrollArea className="flex-1 min-h-0" viewportClassName="p-4" contentClassName="space-y-5">
                                 <div>
                                     <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">Akun & akses</p>
                                     <div className="space-y-1">
@@ -1807,7 +1807,7 @@ export default function Index({
                                         </button>
                                     </div>
                                 )}
-                            </div>
+                            </ScrollArea>
                         </aside>
                     </div>
                 )}
