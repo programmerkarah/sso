@@ -66,7 +66,7 @@ export default function GlassSelect({
                 type="button"
                 onClick={() => setOpen((current) => !current)}
                 className={
-                    'flex w-full items-center justify-between rounded-lg border bg-slate-950 px-3.5 py-2.5 text-left text-sm outline-none transition-colors focus:ring-2 ' +
+                    'flex w-full items-center justify-between rounded-lg border bg-[#041b2d]/85 px-3.5 py-2.5 text-left text-sm outline-none transition-colors focus:ring-2 ' +
                     (error
                         ? 'border-red-500/60 focus:border-red-500 focus:ring-red-500/20'
                         : 'border-slate-700 focus:border-sky-500 focus:ring-sky-500/20')
@@ -88,7 +88,7 @@ export default function GlassSelect({
             </button>
 
             {open && (
-                <ScrollArea className="absolute z-[80] mt-1.5 h-64 max-h-64 w-full rounded-lg border border-slate-700 bg-slate-900 shadow-xl" viewportClassName="p-1.5">
+                <ScrollArea className="absolute z-[80] mt-1.5 h-64 max-h-64 w-full rounded-lg border border-cyan-900/60 bg-[#08263b] shadow-xl" viewportClassName="p-1.5">
                     <button
                         type="button"
                         onClick={() => {
@@ -98,8 +98,8 @@ export default function GlassSelect({
                         className={
                             'flex w-full rounded-md px-3 py-2 text-left text-sm transition-colors ' +
                             (value === ''
-                                ? 'bg-slate-800 text-white'
-                                : 'text-slate-400 hover:bg-slate-800 hover:text-white')
+                                ? 'bg-[#11364f] text-white'
+                                : 'text-slate-400 hover:bg-[#11364f] hover:text-white')
                         }
                     >
                         {placeholder}
@@ -116,8 +116,8 @@ export default function GlassSelect({
                             className={
                                 'flex w-full flex-col rounded-md px-3 py-2 text-left text-sm transition-colors ' +
                                 (value === option.value
-                                    ? 'bg-slate-800 text-white'
-                                    : 'text-slate-400 hover:bg-slate-800 hover:text-white')
+                                    ? 'bg-[#11364f] text-white'
+                                    : 'text-slate-400 hover:bg-[#11364f] hover:text-white')
                             }
                         >
                             <span>{option.label}</span>
