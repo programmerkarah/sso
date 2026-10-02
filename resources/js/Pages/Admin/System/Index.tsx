@@ -26,6 +26,8 @@ import Button from '@/Components/Button';
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import GlassSelect from '@/Components/GlassSelect';
+import PageHeader from '@/Components/PageHeader';
+import SectionTabs from '@/Components/SectionTabs';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -213,6 +215,7 @@ export default function Index({
     server,
     backups,
 }: AdminSystemPageProps) {
+    const [activeSection, setActiveSection] = useState<'overview' | 'backups' | 'logs'>('overview');
     const [selectedLog, setSelectedLog] = useState<SystemLog | null>(null);
     const [copied, setCopied] = useState(false);
     const [editingBackup, setEditingBackup] = useState<BackupFile | null>(null);
@@ -418,20 +421,19 @@ export default function Index({
         <AppLayout>
             <Head title="Sistem Admin" />
 
-            <div className="mx-auto max-w-9xl space-y-8 px-1 sm:px-0">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <h1 className="bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-3xl font-semibold text-white  sm:text-5xl">
-                            Sistem Admin
-                        </h1>
-                        <p className="mt-2 max-w-3xl text-white/80">
-                            Pantau kesehatan server, status database, backup dan
-                            restore, serta audit log aktivitas penting aplikasi.
-                        </p>
-                    </div>
-                </div>
+            <div className="space-y-6">
+                <PageHeader />
+                <SectionTabs
+                    active={activeSection}
+                    onChange={setActiveSection}
+                    items={[
+                        { id: 'overview', label: 'Ringkasan', icon: <Server className="h-4 w-4" /> },
+                        { id: 'backups', label: 'Backup & Restore', icon: <HardDrive className="h-4 w-4" /> },
+                        { id: 'logs', label: 'Log Aktivitas', icon: <Activity className="h-4 w-4" /> },
+                    ]}
+                />
 
-                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     <GlassCard>
                         <div className="flex items-center gap-3">
                             <div className="rounded-full bg-blue-400/20 p-3">
@@ -497,7 +499,7 @@ export default function Index({
                     </GlassCard>
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-2">
+                <div className={activeSection === 'overview' ? 'grid gap-4 xl:grid-cols-2' : 'hidden'}>
                     <GlassCard>
                         <h2 className="text-xl font-bold text-white">
                             Informasi Database
@@ -614,7 +616,7 @@ export default function Index({
                     </GlassCard>
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-2">
+                <div className={activeSection === 'backups' ? 'grid gap-4 xl:grid-cols-2' : 'hidden'}>
                     <GlassCard>
                         <h2 className="text-xl font-bold text-white">
                             Backup Database
@@ -940,8 +942,8 @@ export default function Index({
                     </GlassCard>
                 </div>
 
-                <GlassCard className="overflow-hidden p-0">
-                    <div className="border-b border-slate-800 px-6 py-5">
+                <GlassCard className={activeSection === 'logs' ? 'overflow-hidden p-0' : 'hidden'}>
+                    <div className="border-b border-slate-800 px-4 py-4 sm:px-6 sm:py-5">
                         <h2 className="flex items-center gap-2 text-xl font-bold text-white">
                             <Server className="h-5 w-5" />
                             Log Aktivitas
