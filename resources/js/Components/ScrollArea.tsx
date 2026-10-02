@@ -2,6 +2,7 @@ import {
     HTMLAttributes,
     PointerEvent as ReactPointerEvent,
     ReactNode,
+    Ref,
     useCallback,
     useEffect,
     useRef,
@@ -15,6 +16,7 @@ interface ScrollAreaProps extends HTMLAttributes<HTMLDivElement> {
     axis?: Axis;
     viewportClassName?: string;
     contentClassName?: string;
+    rootRef?: Ref<HTMLDivElement>;
 }
 
 interface Metrics {
@@ -32,6 +34,7 @@ export default function ScrollArea({
     className = '',
     viewportClassName = '',
     contentClassName = '',
+    rootRef,
     ...props
 }: ScrollAreaProps) {
     const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -129,7 +132,7 @@ export default function ScrollArea({
               : 'overflow-auto';
 
     return (
-        <div className={`relative ${className}`} {...props}>
+        <div ref={rootRef} className={`relative ${className}`} {...props}>
             <div
                 ref={viewportRef}
                 className={`react-scroll-area-viewport h-full w-full ${overflowClass} ${viewportClassName}`}
