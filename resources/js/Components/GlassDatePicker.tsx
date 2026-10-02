@@ -8,6 +8,7 @@ import {
     useRef,
     useState,
 } from 'react';
+import ScrollArea from '@/Components/ScrollArea';
 import { createPortal } from 'react-dom';
 
 import GlassSelect from '@/Components/GlassSelect';
@@ -490,9 +491,9 @@ export default function GlassDatePicker({
     const clearValue = () => onChange('');
 
     const popoverContent = open ? (
-        <div
-            ref={popoverRef}
-            className="fixed z-[140] max-h-[min(32rem,calc(100vh-1rem))] overflow-y-auto rounded-xl border border-slate-700 bg-slate-900 p-3  "
+        <ScrollArea
+            className="fixed z-[140] h-[min(32rem,calc(100vh-1rem))] max-h-[min(32rem,calc(100vh-1rem))] rounded-xl border border-slate-700 bg-slate-900"
+            viewportClassName="p-3"
             style={{
                 top: popoverStyle.top,
                 left: popoverStyle.left,
@@ -639,7 +640,7 @@ export default function GlassDatePicker({
                     </button>
                 </div>
             </div>
-        </div>
+        </ScrollArea>
     ) : null;
 
     return (
