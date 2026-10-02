@@ -41,11 +41,11 @@ export default function ConfirmationModal({
 
     return (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4">
-            <div className="relative w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
+            <div className="relative w-full max-w-md rounded-2xl border border-cyan-900/60 bg-[#08263b] p-6 shadow-xl">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="absolute right-4 top-4 rounded-md p-1 text-slate-500 transition hover:bg-slate-800 hover:text-slate-200"
+                    className="absolute right-4 top-4 rounded-md p-1 text-slate-500 transition hover:bg-[#11364f] hover:text-slate-200"
                 >
                     <X className="h-5 w-5" />
                 </button>
@@ -72,7 +72,7 @@ export default function ConfirmationModal({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800"
+                        className="rounded-lg border border-cyan-900/60 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-[#11364f]"
                     >
                         Batal
                     </button>
