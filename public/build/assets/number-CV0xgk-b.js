@@ -1,0 +1,1 @@
+function n(r,i={}){if(r==null||r==="")return"0";const t=typeof r=="number"?r:Number(String(r).replace(/,/g,""));return Number.isFinite(t)?new Intl.NumberFormat("id-ID",{maximumFractionDigits:20,...i}).format(t):String(r)}export{n as f};
