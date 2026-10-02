@@ -88,7 +88,7 @@ export default function GlassSelect({
             </button>
 
             {open && (
-                <ScrollArea className="absolute z-[80] mt-1.5 h-64 max-h-64 w-full rounded-lg border border-cyan-900/60 bg-[#08263b] shadow-xl" viewportClassName="p-1.5">
+                <ScrollArea className="absolute z-[80] mt-1.5 w-full rounded-lg border border-cyan-900/60 bg-[#08263b] shadow-xl" viewportClassName="max-h-64 p-1.5">
                     <button
                         type="button"
                         onClick={() => {
