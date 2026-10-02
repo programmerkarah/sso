@@ -215,46 +215,97 @@ export default function Dashboard({
                     </section>
 
                     <aside className="space-y-4">
-                        <div className="rounded-2xl border border-white/10 bg-slate-900 p-5">
-                            <h2 className="text-sm font-semibold text-white">
-                                {canManageApplications
-                                    ? 'Aksi administrator'
-                                    : 'Akun & keamanan'}
-                            </h2>
-                            <div className="mt-4 space-y-2">
+                        <div className="rounded-2xl border border-[#dbe5ec] bg-white/85 p-5 shadow-sm">
+                            <div>
+                                <h2 className="text-sm font-semibold text-[#18324a]">
+                                    {canManageApplications
+                                        ? 'Aksi administrator'
+                                        : 'Akun & keamanan'}
+                                </h2>
+                                <p className="mt-1 text-xs leading-5 text-[#8799a7]">
+                                    {canManageApplications
+                                        ? 'Akses cepat ke pengelolaan utama SSO.'
+                                        : 'Kelola pengaturan dan keamanan akun Anda.'}
+                                </p>
+                            </div>
+
+                            <div className="mt-4 grid gap-2">
                                 {canManageApplications && (
                                     <Link
                                         href="/admin/applications/create"
-                                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white"
+                                        className="group flex items-center gap-3 rounded-xl border border-[#cfe5f3] bg-[#eaf4fb] p-3 transition hover:border-[#a9d3ec] hover:bg-[#dff0fa]"
                                     >
-                                        <Plus className="h-4 w-4 text-sky-300" />{' '}
-                                        Tambah aplikasi
+                                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/80 text-[#4a9fd7] shadow-sm">
+                                            <Plus className="h-4 w-4" />
+                                        </span>
+                                        <span className="min-w-0 flex-1">
+                                            <span className="block text-sm font-semibold text-[#18324a]">
+                                                Tambah aplikasi
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-[#6f8495]">
+                                                Daftarkan integrasi SSO baru.
+                                            </span>
+                                        </span>
+                                        <ArrowRight className="h-4 w-4 shrink-0 text-[#8aafc6] transition-transform group-hover:translate-x-0.5" />
                                     </Link>
                                 )}
+
                                 {canManageApplications && (
                                     <Link
                                         href="/admin/applications"
-                                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white"
+                                        className="group flex items-center gap-3 rounded-xl border border-[#cfe5f3] bg-[#f2f8fc] p-3 transition hover:border-[#a9d3ec] hover:bg-[#e8f4fb]"
                                     >
-                                        <Globe className="h-4 w-4 text-sky-300" />{' '}
-                                        Kelola aplikasi
+                                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/80 text-[#4a9fd7] shadow-sm">
+                                            <Globe className="h-4 w-4" />
+                                        </span>
+                                        <span className="min-w-0 flex-1">
+                                            <span className="block text-sm font-semibold text-[#18324a]">
+                                                Kelola aplikasi
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-[#6f8495]">
+                                                Atur endpoint, akses, dan status.
+                                            </span>
+                                        </span>
+                                        <ArrowRight className="h-4 w-4 shrink-0 text-[#8aafc6] transition-transform group-hover:translate-x-0.5" />
                                     </Link>
                                 )}
+
                                 {canManageUsers && (
                                     <Link
                                         href="/admin/users"
-                                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white"
+                                        className="group flex items-center gap-3 rounded-xl border border-[#d7e9d3] bg-[#eef7ec] p-3 transition hover:border-[#bdddb8] hover:bg-[#e5f2e2]"
                                     >
-                                        <UserCog className="h-4 w-4 text-violet-300" />{' '}
-                                        Kelola pengguna
+                                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/80 text-[#69a662] shadow-sm">
+                                            <UserCog className="h-4 w-4" />
+                                        </span>
+                                        <span className="min-w-0 flex-1">
+                                            <span className="block text-sm font-semibold text-[#18324a]">
+                                                Kelola pengguna
+                                            </span>
+                                            <span className="mt-0.5 block text-xs text-[#6f8495]">
+                                                Verifikasi, role, dan akses akun.
+                                            </span>
+                                        </span>
+                                        <ArrowRight className="h-4 w-4 shrink-0 text-[#91b98c] transition-transform group-hover:translate-x-0.5" />
                                     </Link>
                                 )}
+
                                 <Link
                                     href="/settings/security"
-                                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white"
+                                    className="group flex items-center gap-3 rounded-xl border border-[#f1dfc8] bg-[#fff4e8] p-3 transition hover:border-[#e7cba8] hover:bg-[#fceddc]"
                                 >
-                                    <ShieldCheck className="h-4 w-4 text-emerald-300" />{' '}
-                                    Keamanan akun
+                                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/80 text-[#bd8549] shadow-sm">
+                                        <ShieldCheck className="h-4 w-4" />
+                                    </span>
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block text-sm font-semibold text-[#18324a]">
+                                            Keamanan akun
+                                        </span>
+                                        <span className="mt-0.5 block text-xs text-[#6f8495]">
+                                            Password, 2FA, sesi, dan perangkat.
+                                        </span>
+                                    </span>
+                                    <ArrowRight className="h-4 w-4 shrink-0 text-[#c4a37f] transition-transform group-hover:translate-x-0.5" />
                                 </Link>
                             </div>
                         </div>
