@@ -7,6 +7,7 @@ import PageHeader from '@/Components/PageHeader';
 import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { Organization, PageProps } from '@/types';
+import { formatNumber } from '@/utils/number';
 
 interface OrganizationsIndexProps extends PageProps {
     organizations: Organization[];
@@ -90,9 +91,7 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                                             <td className="py-3 pr-4">
                                                 <div className="space-y-2">
                                                     <div className="text-xs text-white/60">
-                                                        {
-                                                            org.eligible_applications_count
-                                                        }{' '}
+                                                        {formatNumber(org.eligible_applications_count)}{' '}
                                                         aplikasi aktif
                                                     </div>
                                                     {org.eligible_applications
@@ -124,7 +123,7 @@ export default function Index({ organizations }: OrganizationsIndexProps) {
                                                 </div>
                                             </td>
                                             <td className="py-3 pr-4 text-white/60">
-                                                {org.users_count} pengguna
+                                                {formatNumber(org.users_count)} pengguna
                                             </td>
                                             <td className="py-3 pr-4">
                                                 {org.is_active ? (
