@@ -42,19 +42,19 @@ function CodeBlock({
     return (
         <div className="min-w-0 rounded-xl bg-black/40 p-3 sm:p-4">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/45">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--bps-text)]/45">
                     {label}
                 </p>
                 <button
                     onClick={() => onCopy(value, copyKey)}
-                    className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-white/75 transition hover:bg-slate-800 hover:text-white"
+                    className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-[var(--bps-surface-soft)] px-3 py-1.5 text-xs font-medium text-[var(--bps-muted)] transition hover:brightness-95 hover:text-[var(--bps-text)]"
                 >
                     <Copy className="h-3.5 w-3.5" />
                     {copied === copyKey ? 'Tersalin!' : 'Salin'}
                 </button>
             </div>
             <ScrollArea axis="horizontal" viewportClassName="pb-2">
-                <pre className="whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
+                <pre className="whitespace-pre-wrap break-all text-xs leading-6 text-[var(--bps-text)]/90">
                     <code>{value}</code>
                 </pre>
             </ScrollArea>
@@ -141,14 +141,14 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         <>
                             <Link
                                 href={`/admin/applications/${application.route_key}`}
-                                className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                                className="inline-flex items-center gap-2 rounded-lg border border-[var(--bps-border)] px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-[var(--bps-text)]"
                             >
                                 <ArrowLeft className="h-4 w-4" /> Detail
                                 aplikasi
                             </Link>
                             <a
                                 href={`/admin/applications/${application.route_key}/guide/export-pdf`}
-                                className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                                className="inline-flex items-center gap-2 rounded-lg border border-[var(--bps-border)] px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-[var(--bps-text)]"
                             >
                                 <Download className="h-4 w-4" /> PDF
                             </a>
@@ -159,35 +159,35 @@ export default function Guide({ application, appUrl }: GuideProps) {
                 <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(420px,0.8fr)]">
                     <GlassCard className="space-y-6 p-4 sm:p-6">
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 1. Ringkasan Kontrak Integrasi
                             </h2>
-                            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm leading-7 text-white/80">
+                            <div className="rounded-xl border border-[var(--bps-border)] bg-slate-900/50 p-4 text-sm leading-7 text-[var(--bps-muted)]">
                                 <p>
-                                    <span className="font-semibold text-white">
+                                    <span className="font-semibold text-[var(--bps-text)]">
                                         Authorize endpoint:
                                     </span>{' '}
                                     {authorizeEndpoint}
                                 </p>
                                 <p>
-                                    <span className="font-semibold text-white">
+                                    <span className="font-semibold text-[var(--bps-text)]">
                                         Token endpoint:
                                     </span>{' '}
                                     {tokenEndpoint}
                                 </p>
                                 <p>
-                                    <span className="font-semibold text-white">
+                                    <span className="font-semibold text-[var(--bps-text)]">
                                         Profile endpoint:
                                     </span>{' '}
                                     {profileEndpoint}
                                 </p>
                                 <p>
-                                    <span className="font-semibold text-white">
+                                    <span className="font-semibold text-[var(--bps-text)]">
                                         Allowed organization types:
                                     </span>{' '}
                                     {allowedOrganizationTypes}
                                 </p>
-                                <p className="mt-2 text-white/65">
+                                <p className="mt-2 text-[var(--bps-text)]/65">
                                     Aplikasi client harus memvalidasi organisasi
                                     user saat callback dan menyinkronkan data
                                     lokal setiap kali user login via SSO.
@@ -196,10 +196,10 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 2. Konfigurasi Environment
                             </h2>
-                            <p className="text-sm text-white/70">
+                            <p className="text-sm text-[var(--bps-muted)]">
                                 Simpan kredensial SSO di server aplikasi client.
                                 Sertakan allow-list organisasi di aplikasi agar
                                 guard di client konsisten dengan kebijakan akses
@@ -215,10 +215,10 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 3. Tahap 1: Daftarkan Route Client
                             </h2>
-                            <p className="text-sm text-white/70">
+                            <p className="text-sm text-[var(--bps-muted)]">
                                 Minimal ada endpoint redirect, callback, dan
                                 logout lokal. Endpoint redirect adalah pintu
                                 masuk resmi untuk login SSO.
@@ -233,10 +233,10 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 4. Tahap 2: Buat Redirect ke SSO
                             </h2>
-                            <p className="text-sm text-white/70">
+                            <p className="text-sm text-[var(--bps-muted)]">
                                 Simpan state acak di session, lalu bangun query
                                 OAuth lengkap. Jangan arahkan user ke authorize
                                 URL kosong.
@@ -251,11 +251,11 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 5. Tahap 3: Callback, Token Exchange, dan Fetch
                                 Profile
                             </h2>
-                            <p className="text-sm text-white/70">
+                            <p className="text-sm text-[var(--bps-muted)]">
                                 Verifikasi state, tukar authorization code
                                 menjadi access token, lalu ambil profil user
                                 dari endpoint profile.
@@ -270,10 +270,10 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 6. Tahap 4: Guard Organisasi
                             </h2>
-                            <p className="text-sm text-white/70">
+                            <p className="text-sm text-[var(--bps-muted)]">
                                 SSO sudah memblokir authorize untuk organisasi
                                 yang tidak cocok. Client tetap perlu memvalidasi
                                 ulang agar user tidak bisa masuk jika
@@ -289,11 +289,11 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 7. Tahap 5: Sinkronisasi User Lokal di Setiap
                                 Login
                             </h2>
-                            <p className="text-sm text-white/70">
+                            <p className="text-sm text-[var(--bps-muted)]">
                                 Setelah profil diterima, sinkronkan field lokal
                                 yang dibutuhkan aplikasi. Minimal: nama,
                                 username, email, email verified, dan password
@@ -301,8 +301,8 @@ export default function Guide({ application, appUrl }: GuideProps) {
                                 data 2FA dari payload profile dan enkripsi ulang
                                 dengan key aplikasi client.
                             </p>
-                            <div className="rounded-xl border border-amber-300/35 bg-amber-500/10 p-4 text-sm leading-7 text-amber-50/90">
-                                <p className="font-semibold text-amber-100">
+                            <div className="theme-warning rounded-xl p-4 text-sm leading-7">
+                                <p className="font-semibold text-current">
                                     Warning keamanan role
                                 </p>
                                 <p>
@@ -324,10 +324,10 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 8. Payload Profil dari SSO
                             </h2>
-                            <p className="text-sm text-white/70">
+                            <p className="text-sm text-[var(--bps-muted)]">
                                 Kontrak profile saat ini mendukung sinkronisasi
                                 identity, password hash, organization, dan
                                 two-factor. Gunakan ini sebagai acuan
@@ -343,12 +343,12 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </section>
 
                         <section className="space-y-3">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--bps-text)]">
                                 9. Panduan Sinkronisasi Data Sesuai Kebutuhan
                             </h2>
-                            <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm leading-7 text-white/80">
+                            <div className="space-y-3 rounded-xl border border-[var(--bps-border)] bg-slate-900/50 p-4 text-sm leading-7 text-[var(--bps-muted)]">
                                 <p>
-                                    <span className="font-semibold text-white">
+                                    <span className="font-semibold text-[var(--bps-text)]">
                                         Minimal sync:
                                     </span>{' '}
                                     lakukan sinkronisasi saat login untuk nama,
@@ -356,7 +356,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                                     verified, dan organization type.
                                 </p>
                                 <p>
-                                    <span className="font-semibold text-white">
+                                    <span className="font-semibold text-[var(--bps-text)]">
                                         Extended sync:
                                     </span>{' '}
                                     tambahkan sinkronisasi 2FA lokal jika
@@ -364,7 +364,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                                     mekanisme 2FA serupa.
                                 </p>
                                 <p>
-                                    <span className="font-semibold text-white">
+                                    <span className="font-semibold text-[var(--bps-text)]">
                                         Periodic sync:
                                     </span>{' '}
                                     jika aplikasi perlu mirror user SSO secara
@@ -385,38 +385,38 @@ export default function Guide({ application, appUrl }: GuideProps) {
 
                     <div className="space-y-6">
                         <GlassCard className="p-4 sm:p-6">
-                            <h2 className="text-lg font-bold text-white">
+                            <h2 className="text-lg font-bold text-[var(--bps-text)]">
                                 Checklist Implementasi
                             </h2>
-                            <ul className="mt-3 space-y-2 text-sm text-white/80">
+                            <ul className="mt-3 space-y-2 text-sm text-[var(--bps-muted)]">
                                 <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-[#61a95a]" />{' '}
                                     Callback URL di client sama persis dengan
                                     yang didaftarkan di SSO.
                                 </li>
                                 <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-[#61a95a]" />{' '}
                                     Client ID dan secret disimpan di environment
                                     server.
                                 </li>
                                 <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-[#61a95a]" />{' '}
                                     Client memvalidasi organization type saat
                                     callback.
                                 </li>
                                 <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-[#61a95a]" />{' '}
                                     Sinkronisasi user lokal dijalankan di setiap
                                     login SSO.
                                 </li>
                                 <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-[#61a95a]" />{' '}
                                     User baru tidak langsung diberi role tinggi;
                                     mulai dari Guest/read-only lalu elevasi
                                     manual.
                                 </li>
                                 <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-4 w-4 text-emerald-300" />{' '}
+                                    <CheckCircle className="mt-0.5 h-4 w-4 text-[#61a95a]" />{' '}
                                     Jika 2FA lokal dipakai, secret dan recovery
                                     codes dienkripsi ulang dengan key aplikasi
                                     client.
@@ -425,10 +425,10 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </GlassCard>
 
                         <GlassCard className="p-4 sm:p-6">
-                            <h2 className="text-lg font-bold text-white">
+                            <h2 className="text-lg font-bold text-[var(--bps-text)]">
                                 Aturan Organization
                             </h2>
-                            <div className="mt-3 space-y-3 text-sm leading-7 text-white/75">
+                            <div className="mt-3 space-y-3 text-sm leading-7 text-[var(--bps-muted)]">
                                 <p>
                                     1. SSO admin mengatur allowed organization
                                     types di konfigurasi aplikasi.
@@ -451,13 +451,13 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </GlassCard>
 
                         <GlassCard className="p-4 sm:p-6">
-                            <h2 className="text-lg font-bold text-white">
+                            <h2 className="text-lg font-bold text-[var(--bps-text)]">
                                 Troubleshooting Cepat
                             </h2>
-                            <div className="mt-3 space-y-3 text-sm leading-7 text-white/75">
+                            <div className="mt-3 space-y-3 text-sm leading-7 text-[var(--bps-muted)]">
                                 <p>
                                     Jika mendapat{' '}
-                                    <span className="font-mono text-white">
+                                    <span className="font-mono text-[var(--bps-text)]">
                                         invalid_client
                                     </span>
                                     , sinkronkan ulang client ID/secret setelah
@@ -465,7 +465,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                                 </p>
                                 <p>
                                     Jika mendapat{' '}
-                                    <span className="font-mono text-white">
+                                    <span className="font-mono text-[var(--bps-text)]">
                                         redirect_uri_mismatch
                                     </span>
                                     , cocokkan callback URL di aplikasi client
@@ -474,7 +474,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                                 <p>
                                     Jika user berhasil login di SSO tapi ditolak
                                     di client, cek nilai{' '}
-                                    <span className="font-mono text-white">
+                                    <span className="font-mono text-[var(--bps-text)]">
                                         SSO_ALLOWED_ORGANIZATION_TYPES
                                     </span>{' '}
                                     dan organization type pada profile.
@@ -482,7 +482,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                                 <p>
                                     Jika 2FA lokal tidak ikut aktif, pastikan
                                     aplikasi client membaca payload{' '}
-                                    <span className="font-mono text-white">
+                                    <span className="font-mono text-[var(--bps-text)]">
                                         two_factor.secret
                                     </span>{' '}
                                     dan menyimpannya ulang dengan enkripsi
@@ -490,13 +490,13 @@ export default function Guide({ application, appUrl }: GuideProps) {
                                 </p>
                                 <p>
                                     Jika muncul{' '}
-                                    <span className="font-mono text-white">
+                                    <span className="font-mono text-[var(--bps-text)]">
                                         unsupported_grant_type
                                     </span>
                                     , user membuka authorize endpoint tanpa
                                     parameter OAuth lengkap. Selalu masuk
                                     melalui{' '}
-                                    <span className="font-mono text-white">
+                                    <span className="font-mono text-[var(--bps-text)]">
                                         /auth/sso/redirect
                                     </span>
                                     .
@@ -505,10 +505,10 @@ export default function Guide({ application, appUrl }: GuideProps) {
                         </GlassCard>
 
                         <GlassCard>
-                            <h2 className="text-lg font-bold text-white">
+                            <h2 className="text-lg font-bold text-[var(--bps-text)]">
                                 Catatan Operasional
                             </h2>
-                            <ul className="mt-3 space-y-2 text-sm leading-7 text-white/80">
+                            <ul className="mt-3 space-y-2 text-sm leading-7 text-[var(--bps-muted)]">
                                 <li>
                                     1. Profile sync on-login adalah opsi paling
                                     sederhana dan cukup untuk sebagian besar
@@ -520,7 +520,7 @@ export default function Guide({ application, appUrl }: GuideProps) {
                                 </li>
                                 <li>
                                     3. Password yang disinkronkan adalah{' '}
-                                    <span className="font-mono text-white">
+                                    <span className="font-mono text-[var(--bps-text)]">
                                         hash
                                     </span>
                                     , bukan plaintext.
