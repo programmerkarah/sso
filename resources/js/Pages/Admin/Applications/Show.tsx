@@ -104,7 +104,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                 }
             />
 
-            <div className="mx-auto max-w-5xl space-y-6">
+            <div className="space-y-6">
                 <PageHeader
                     title={application.name}
                     description="Detail aplikasi, endpoint, dan kredensial OAuth yang digunakan."
@@ -120,7 +120,7 @@ export default function Show({ application, appUrl }: ShowProps) {
                     }
                 />
 
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(380px,0.75fr)]">
                         <GlassCard className="p-4 sm:p-6">
                             <h2 className="mb-4 text-lg font-bold text-white sm:text-xl">
                                 Informasi Aplikasi
