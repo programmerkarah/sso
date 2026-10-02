@@ -916,7 +916,14 @@ export default function DatabaseTables({
             {expandedCell && (
                 <ModalPanel
                     title="Full Text"
-                    description={<>Kolom: <span className="font-medium text-[var(--bps-text)]">{expandedCell.column}</span></>}
+                    description={
+                        <>
+                            Kolom:{' '}
+                            <span className="font-medium text-[var(--bps-text)]">
+                                {expandedCell.column}
+                            </span>
+                        </>
+                    }
                     onClose={() => setExpandedCell(null)}
                     maxWidthClassName="max-w-2xl"
                     bodyClassName="max-h-[60dvh]"
@@ -930,190 +937,190 @@ export default function DatabaseTables({
             {editingRow && selectedTable && (
                 <ModalPanel
                     title="Edit Data Baris"
-                    description={<>Tabel: <span className="font-medium text-[var(--bps-text)]">{selectedTable.name}</span></>}
+                    description={
+                        <>
+                            Tabel:{' '}
+                            <span className="font-medium text-[var(--bps-text)]">
+                                {selectedTable.name}
+                            </span>
+                        </>
+                    }
                     onClose={closeEditRowModal}
                     maxWidthClassName="max-w-3xl"
                     bodyClassName="pb-1"
                 >
-                    <form
-                            onSubmit={handleEditRowSubmit}
-                            className="space-y-4"
-                        >
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                {selectedTable.columns
-                                    .filter(
-                                        (column) =>
-                                            column.name !==
-                                            selectedTable.primary_key,
-                                    )
-                                    .map((column) => {
-                                        const fieldValue =
-                                            editRowValues[column.name];
-                                        const stringValue =
-                                            fieldValue === null ||
-                                            fieldValue === undefined
-                                                ? ''
-                                                : String(fieldValue);
-                                        const selectOptions =
-                                            getColumnEditorOptions(column);
-                                        const hasSelectOptions =
-                                            selectOptions.length > 0;
-                                        const selectedSelectOption =
-                                            hasSelectOptions
-                                                ? selectOptions.find(
-                                                      (option) =>
-                                                          option.value ===
-                                                          stringValue,
-                                                  )
-                                                : null;
-                                        const searchableOptions: SearchableSelectOption[] =
-                                            selectOptions.map((option) => ({
-                                                label: option.label,
-                                                description: String(
-                                                    option.value,
-                                                ),
-                                                state_token: option.value,
-                                            }));
-                                        const useTimestampField =
-                                            isTimestampColumn(column);
-                                        const isEditableTimestamp =
-                                            isEditableTimestampColumn(column);
-                                        const useTextarea =
-                                            stringValue.length > 80 ||
-                                            column.type.includes('text') ||
-                                            column.type.includes('json');
+                    <form onSubmit={handleEditRowSubmit} className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            {selectedTable.columns
+                                .filter(
+                                    (column) =>
+                                        column.name !==
+                                        selectedTable.primary_key,
+                                )
+                                .map((column) => {
+                                    const fieldValue =
+                                        editRowValues[column.name];
+                                    const stringValue =
+                                        fieldValue === null ||
+                                        fieldValue === undefined
+                                            ? ''
+                                            : String(fieldValue);
+                                    const selectOptions =
+                                        getColumnEditorOptions(column);
+                                    const hasSelectOptions =
+                                        selectOptions.length > 0;
+                                    const selectedSelectOption =
+                                        hasSelectOptions
+                                            ? selectOptions.find(
+                                                  (option) =>
+                                                      option.value ===
+                                                      stringValue,
+                                              )
+                                            : null;
+                                    const searchableOptions: SearchableSelectOption[] =
+                                        selectOptions.map((option) => ({
+                                            label: option.label,
+                                            description: String(option.value),
+                                            state_token: option.value,
+                                        }));
+                                    const useTimestampField =
+                                        isTimestampColumn(column);
+                                    const isEditableTimestamp =
+                                        isEditableTimestampColumn(column);
+                                    const useTextarea =
+                                        stringValue.length > 80 ||
+                                        column.type.includes('text') ||
+                                        column.type.includes('json');
 
-                                        return (
-                                            <div
-                                                key={column.name}
-                                                className={
-                                                    useTextarea
-                                                        ? 'sm:col-span-2'
-                                                        : ''
-                                                }
-                                            >
-                                                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--bps-muted)]">
-                                                    {column.name}
-                                                </label>
-                                                {hasSelectOptions ? (
-                                                    <SearchableSelect
-                                                        options={
-                                                            searchableOptions
-                                                        }
-                                                        selectedOption={
-                                                            selectedSelectOption
-                                                                ? {
-                                                                      label: selectedSelectOption.label,
-                                                                      description:
-                                                                          String(
-                                                                              selectedSelectOption.value,
-                                                                          ),
-                                                                  }
-                                                                : null
-                                                        }
-                                                        placeholder={`Pilih ${column.name}`}
-                                                        onSelect={(option) =>
-                                                            setEditRowValues({
-                                                                ...editRowValues,
-                                                                [column.name]:
-                                                                    option.state_token,
-                                                            })
-                                                        }
-                                                        onClear={
-                                                            column.nullable
-                                                                ? () =>
-                                                                      setEditRowValues(
-                                                                          {
-                                                                              ...editRowValues,
-                                                                              [column.name]:
-                                                                                  '',
-                                                                          },
-                                                                      )
-                                                                : undefined
-                                                        }
-                                                    />
-                                                ) : useTimestampField ? (
-                                                    <GlassDatePicker
-                                                        value={stringValue}
-                                                        type="datetime-local"
-                                                        valueFormat="database-datetime"
-                                                        disabled={
-                                                            !isEditableTimestamp
-                                                        }
-                                                        onChange={(nextValue) =>
-                                                            setEditRowValues({
-                                                                ...editRowValues,
-                                                                [column.name]:
-                                                                    nextValue,
-                                                            })
-                                                        }
-                                                    />
-                                                ) : useTextarea ? (
-                                                    <textarea
-                                                        rows={4}
-                                                        value={stringValue}
-                                                        onChange={(event) =>
-                                                            setEditRowValues({
-                                                                ...editRowValues,
-                                                                [column.name]:
-                                                                    event.target
-                                                                        .value,
-                                                            })
-                                                        }
-                                                        className="ui-field w-full rounded-lg px-3 py-2 text-sm placeholder:text-[var(--bps-muted)]"
-                                                    />
-                                                ) : (
-                                                    <input
-                                                        type="text"
-                                                        value={stringValue}
-                                                        onChange={(event) =>
-                                                            setEditRowValues({
-                                                                ...editRowValues,
-                                                                [column.name]:
-                                                                    event.target
-                                                                        .value,
-                                                            })
-                                                        }
-                                                        className="ui-field w-full rounded-lg px-3 py-2 text-sm placeholder:text-[var(--bps-muted)]"
-                                                    />
-                                                )}
-                                                <p className="mt-1 text-[11px] text-[var(--bps-muted)]">
-                                                    {column.type}
-                                                    {column.nullable
-                                                        ? ' • nullable'
-                                                        : ''}
-                                                    {column.foreign_key
-                                                        ? ` • referensi ${column.foreign_key.table}.${column.foreign_key.column}`
-                                                        : ''}
-                                                    {useTimestampField
-                                                        ? ` ${!isEditableTimestamp ? ' • read-only' : ''}`
-                                                        : ''}
-                                                </p>
-                                            </div>
-                                        );
-                                    })}
-                            </div>
+                                    return (
+                                        <div
+                                            key={column.name}
+                                            className={
+                                                useTextarea
+                                                    ? 'sm:col-span-2'
+                                                    : ''
+                                            }
+                                        >
+                                            <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--bps-muted)]">
+                                                {column.name}
+                                            </label>
+                                            {hasSelectOptions ? (
+                                                <SearchableSelect
+                                                    options={searchableOptions}
+                                                    selectedOption={
+                                                        selectedSelectOption
+                                                            ? {
+                                                                  label: selectedSelectOption.label,
+                                                                  description:
+                                                                      String(
+                                                                          selectedSelectOption.value,
+                                                                      ),
+                                                              }
+                                                            : null
+                                                    }
+                                                    placeholder={`Pilih ${column.name}`}
+                                                    onSelect={(option) =>
+                                                        setEditRowValues({
+                                                            ...editRowValues,
+                                                            [column.name]:
+                                                                option.state_token,
+                                                        })
+                                                    }
+                                                    onClear={
+                                                        column.nullable
+                                                            ? () =>
+                                                                  setEditRowValues(
+                                                                      {
+                                                                          ...editRowValues,
+                                                                          [column.name]:
+                                                                              '',
+                                                                      },
+                                                                  )
+                                                            : undefined
+                                                    }
+                                                />
+                                            ) : useTimestampField ? (
+                                                <GlassDatePicker
+                                                    value={stringValue}
+                                                    type="datetime-local"
+                                                    valueFormat="database-datetime"
+                                                    disabled={
+                                                        !isEditableTimestamp
+                                                    }
+                                                    onChange={(nextValue) =>
+                                                        setEditRowValues({
+                                                            ...editRowValues,
+                                                            [column.name]:
+                                                                nextValue,
+                                                        })
+                                                    }
+                                                />
+                                            ) : useTextarea ? (
+                                                <textarea
+                                                    rows={4}
+                                                    value={stringValue}
+                                                    onChange={(event) =>
+                                                        setEditRowValues({
+                                                            ...editRowValues,
+                                                            [column.name]:
+                                                                event.target
+                                                                    .value,
+                                                        })
+                                                    }
+                                                    className="ui-field w-full rounded-lg px-3 py-2 text-sm placeholder:text-[var(--bps-muted)]"
+                                                />
+                                            ) : (
+                                                <input
+                                                    type="text"
+                                                    value={stringValue}
+                                                    onChange={(event) =>
+                                                        setEditRowValues({
+                                                            ...editRowValues,
+                                                            [column.name]:
+                                                                event.target
+                                                                    .value,
+                                                        })
+                                                    }
+                                                    className="ui-field w-full rounded-lg px-3 py-2 text-sm placeholder:text-[var(--bps-muted)]"
+                                                />
+                                            )}
+                                            <p className="mt-1 text-[11px] text-[var(--bps-muted)]">
+                                                {column.type}
+                                                {column.nullable
+                                                    ? ' • nullable'
+                                                    : ''}
+                                                {column.foreign_key
+                                                    ? ` • referensi ${column.foreign_key.table}.${column.foreign_key.column}`
+                                                    : ''}
+                                                {useTimestampField
+                                                    ? ` ${!isEditableTimestamp ? ' • read-only' : ''}`
+                                                    : ''}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
+                        </div>
 
-                            <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end">
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={closeEditRowModal}
-                                    className="sm:w-auto"
-                                >
-                                    Batal
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={isSavingRow}
-                                    className="sm:w-auto"
-                                >
-                                    {isSavingRow
-                                        ? 'Menyimpan...'
-                                        : 'Simpan Perubahan'}
-                                </Button>
-                            </div>
-                        </form>
+                        <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={closeEditRowModal}
+                                className="sm:w-auto"
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={isSavingRow}
+                                className="sm:w-auto"
+                            >
+                                {isSavingRow
+                                    ? 'Menyimpan...'
+                                    : 'Simpan Perubahan'}
+                            </Button>
+                        </div>
+                    </form>
                 </ModalPanel>
             )}
         </AppLayout>

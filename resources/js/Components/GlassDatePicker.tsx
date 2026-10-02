@@ -663,7 +663,11 @@ export default function GlassDatePicker({
                     className={`ui-field flex w-full items-center justify-between rounded-xl py-3 pl-10 pr-4 text-left text-sm shadow-sm transition ${disabled ? 'ui-disabled' : ''} ${error ? 'border-red-400 focus:border-red-400' : ''} ${className}`}
                 >
                     <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--bps-muted)]" />
-                    <span className={value ? 'text-white' : 'text-[var(--bps-muted)]'}>
+                    <span
+                        className={
+                            value ? 'text-white' : 'text-[var(--bps-muted)]'
+                        }
+                    >
                         {value
                             ? formatDisplayValue(value, type, valueFormat)
                             : (placeholder ??
