@@ -149,7 +149,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                         <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-4 text-xs text-[#8799a7]">
                             <Link
                                 href="/"
-                                className="inline-flex items-center gap-2 rounded-lg border border-cyan-900/60 bg-[#0b2d46] px-3 py-2 font-medium text-slate-300 transition hover:bg-[#11364f] hover:text-[#18324a]"
+                                className="inline-flex items-center gap-2 rounded-lg border border-[#d5e1e9] bg-[#f8fbfd] px-3 py-2 font-medium text-[#6f8495] transition hover:border-[#b8d9ee] hover:bg-[#eef5f9] hover:text-[#347fae]"
                             >
                                 <span aria-hidden="true">←</span>
                                 Beranda
