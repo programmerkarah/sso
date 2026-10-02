@@ -164,7 +164,7 @@ export default function ScrollArea({
                 <div className="pointer-events-none absolute bottom-1 right-1 top-1 z-30 w-2">
                     <div
                         onPointerDown={(event) => drag(event, 'vertical')}
-                        className="pointer-events-auto absolute right-0 w-1.5 cursor-grab rounded-full bg-slate-500/65 transition hover:bg-slate-400/80 active:cursor-grabbing"
+                        className="react-scroll-thumb pointer-events-auto absolute right-0 w-1.5 cursor-grab rounded-full transition active:cursor-grabbing"
                         style={{
                             height: metrics.vSize,
                             transform: `translateY(${metrics.vOffset}px)`,
@@ -177,7 +177,7 @@ export default function ScrollArea({
                 <div className="pointer-events-none absolute bottom-1 left-1 right-1 z-30 h-2">
                     <div
                         onPointerDown={(event) => drag(event, 'horizontal')}
-                        className="pointer-events-auto absolute bottom-0 h-1.5 cursor-grab rounded-full bg-slate-500/65 transition hover:bg-slate-400/80 active:cursor-grabbing"
+                        className="react-scroll-thumb pointer-events-auto absolute bottom-0 h-1.5 cursor-grab rounded-full transition active:cursor-grabbing"
                         style={{
                             width: metrics.hSize,
                             transform: `translateX(${metrics.hOffset}px)`,
