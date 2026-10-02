@@ -1296,13 +1296,13 @@ export default function Index({
                 </div>
             )}
 
-            <div className="mx-auto max-w-9xl space-y-8">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="mx-auto max-w-7xl space-y-6">
+                <div className="flex flex-col gap-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <h1 className=" text-4xl font-semibold text-white  sm:text-5xl">
+                        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
                             Kelola Pengguna
                         </h1>
-                        <p className="mt-2 max-w-2xl text-white/80">
+                        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
                             Pantau akun terdaftar, reset password, nonaktifkan
                             2FA, dan kelola peran pengguna.
                         </p>
@@ -1315,7 +1315,7 @@ export default function Index({
                                     onClick={() =>
                                         setBatchVerifyModalOpen(true)
                                     }
-                                    className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50   transition hover:bg-emerald-500/25"
+                                    className="inline-flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-100 transition hover:bg-emerald-500/20"
                                 >
                                     <CheckSquare className="h-4 w-4" />
                                     Verifikasi Batch ({selectedUserIds.length})
@@ -1325,7 +1325,7 @@ export default function Index({
                                     onClick={() =>
                                         setBatchAccessModalOpen(true)
                                     }
-                                    className="inline-flex items-center gap-2 rounded-2xl border border-fuchsia-300/25 bg-fuchsia-500/15 px-4 py-2 text-sm font-semibold text-fuchsia-50   transition hover:bg-fuchsia-500/25"
+                                    className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-700"
                                 >
                                     <CheckSquare className="h-4 w-4" />
                                     Atur Akses Batch ({selectedUserIds.length})
@@ -1334,14 +1334,14 @@ export default function Index({
                         )}
                         <a
                             href={excelExportUrl}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50   transition hover:bg-emerald-500/25"
+                            className="inline-flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-100 transition hover:bg-emerald-500/20"
                         >
                             <Download className="h-4 w-4" />
                             Export Excel
                         </a>
                         <a
                             href={pdfExportUrl}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-blue-300/25 bg-blue-500/15 px-4 py-2 text-sm font-semibold text-blue-50   transition hover:bg-blue-500/25"
+                            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
                         >
                             <Download className="h-4 w-4" />
                             Export PDF
@@ -1349,7 +1349,7 @@ export default function Index({
                     </div>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-3">
                     <GlassCard>
                         <div className="flex items-center gap-3">
                             <div className="rounded-full bg-blue-400/20 p-3">
@@ -1399,7 +1399,7 @@ export default function Index({
 
                 <GlassCard className="overflow-hidden p-0">
                     <div className="border-b border-slate-800 px-6 py-5">
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                        <div className="flex flex-col gap-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
                             <div>
                                 <h2 className="text-xl font-bold text-white">
                                     Daftar Pengguna
@@ -1435,7 +1435,7 @@ export default function Index({
                                         : 'border-slate-800 bg-slate-900/80 text-white/75 hover:bg-slate-800'
                                 }`}
                             >
-                                Pending verification only
+                                Menunggu verifikasi
                             </button>
                             <button
                                 type="button"
@@ -1446,7 +1446,7 @@ export default function Index({
                                         : 'border-slate-800 bg-slate-900/80 text-white/75 hover:bg-slate-800'
                                 }`}
                             >
-                                Semua user
+                                Semua pengguna
                             </button>
                         </div>
                     </div>
@@ -1454,7 +1454,7 @@ export default function Index({
                     {/* Table */}
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[900px]">
-                            <thead>
+                            <thead className="sticky top-0 z-10 bg-slate-950">
                                 <tr className="border-b border-slate-800 bg-black/20">
                                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
                                         <input
@@ -1508,7 +1508,7 @@ export default function Index({
                                     users.data.map((user) => (
                                         <tr
                                             key={user.id}
-                                            className="transition-colors hover:bg-slate-900/50"
+                                            className="transition-colors hover:bg-slate-800/40"
                                         >
                                             <td className="px-5 py-4">
                                                 <input
