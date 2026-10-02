@@ -41,13 +41,19 @@ export default function PageWorkspace({
                 <div className="space-y-4">{summary}</div>
             </div>
 
-            <ScrollArea
-                className="min-h-0 flex-1"
-                viewportClassName="pb-6 pr-1"
-                contentClassName={contentClassName}
-            >
-                {children}
-            </ScrollArea>
+            {layout.content_strategy === 'panes' ? (
+                <div className={'min-h-0 flex-1 ' + contentClassName}>
+                    {children}
+                </div>
+            ) : (
+                <ScrollArea
+                    className="min-h-0 flex-1"
+                    viewportClassName="pb-6 pr-1"
+                    contentClassName={contentClassName}
+                >
+                    {children}
+                </ScrollArea>
+            )}
         </div>
     );
 }
