@@ -41,7 +41,7 @@ export default function Index({
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {applications.length === 0 ? (
                         <GlassCard className="md:col-span-2 xl:col-span-3">
-                            <div className="flex items-center gap-3 text-white/80">
+                            <div className="flex items-center gap-3 text-[#49657b]">
                                 <Server className="h-5 w-5" />
                                 Belum ada aplikasi aktif yang dapat ditampilkan.
                             </div>
@@ -54,7 +54,7 @@ export default function Index({
                                 className={`flex flex-col gap-5 ${!application.is_active ? 'opacity-60' : ''}`}
                             >
                                 <div className="flex items-start gap-4">
-                                    <div className="h-14 w-14 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 p-2">
+                                    <div className="h-14 w-14 overflow-hidden rounded-2xl border border-[#dbe5ec] bg-[#f8fbfd] p-2">
                                         {application.logo_url ? (
                                             <img
                                                 src={application.logo_url}
@@ -62,14 +62,14 @@ export default function Index({
                                                 className="h-full w-full object-contain"
                                             />
                                         ) : (
-                                            <div className="flex h-full w-full items-center justify-center rounded-xl bg-slate-900/80 text-white/70">
+                                            <div className="flex h-full w-full items-center justify-center rounded-xl bg-slate-900/80 text-[#6f8495]">
                                                 <Globe className="h-6 w-6" />
                                             </div>
                                         )}
                                     </div>
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <h2 className="text-xl font-bold text-white">
+                                            <h2 className="text-xl font-bold text-[#18324a]">
                                                 {application.name}
                                             </h2>
                                             {isAdmin &&
@@ -79,14 +79,14 @@ export default function Index({
                                                     </span>
                                                 )}
                                         </div>
-                                        <p className="text-sm text-white/70">
+                                        <p className="text-sm text-[#6f8495]">
                                             {application.description ??
                                                 'Tidak ada deskripsi aplikasi.'}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="rounded-xl border border-slate-800 bg-white/8 px-3 py-2 text-sm text-white/80">
+                                <div className="rounded-xl border border-[#dbe5ec] bg-[#f8fbfd] px-3 py-2 text-sm text-[#49657b]">
                                     {application.landing_url}
                                 </div>
 
@@ -96,7 +96,7 @@ export default function Index({
                                             href={application.launch_url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 self-start rounded-xl border border-sky-300/30 bg-sky-500/15 px-4 py-2 text-sm font-semibold text-sky-100 transition hover:bg-sky-500/25"
+                                            className="inline-flex items-center gap-2 self-start rounded-xl border border-[#b8d9ee] bg-[#e7f3fb] px-4 py-2 text-sm font-semibold text-[#347fae] transition hover:bg-[#d9edf9]"
                                         >
                                             Buka Aplikasi
                                             <ExternalLink className="h-4 w-4" />
@@ -113,8 +113,8 @@ export default function Index({
                                                 }
                                                 className={`inline-flex items-center gap-2 self-start rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                                                     application.is_active
-                                                        ? 'border-red-300/30 bg-red-500/15 text-red-100 hover:bg-red-500/25'
-                                                        : 'border-emerald-300/30 bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/25'
+                                                        ? 'border-[#f1c7c1] bg-[#fff0ee] text-[#b85d52] hover:bg-[#fde4e0]'
+                                                        : 'border-[#cce4c7] bg-[#eef7ec] text-[#4f8a49] hover:bg-[#e2f1df]'
                                                 }`}
                                             >
                                                 <Power className="h-4 w-4" />
