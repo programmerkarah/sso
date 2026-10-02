@@ -1,14 +1,18 @@
 import {
     ChevronLeft,
     ChevronRight,
+    KeyRound,
     Monitor,
+    Search,
     ShieldCheck,
     Trash2,
+    UserRound,
 } from 'lucide-react';
-
+import { useMemo, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 
-import GlassCard from '@/Components/GlassCard';
+import PageHeader from '@/Components/PageHeader';
+import SectionTabs from '@/Components/SectionTabs';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -23,7 +27,6 @@ interface UserSummary {
     oauth_count: number;
     state_token?: string;
 }
-
 interface UserListPayload {
     data: UserSummary[];
     current_page: number;
@@ -33,7 +36,6 @@ interface UserListPayload {
     prev_page_token?: string | null;
     next_page_token?: string | null;
 }
-
 interface SelectedUser {
     id: number;
     name: string;
@@ -41,7 +43,6 @@ interface SelectedUser {
     email: string;
     last_login_at?: string | null;
 }
-
 interface SessionEntry {
     id: string;
     ip_address: string | null;
@@ -50,7 +51,6 @@ interface SessionEntry {
     last_activity_at: string;
     is_current: boolean;
 }
-
 interface OauthApplicationEntry {
     id: string;
     client_id: number;
@@ -60,14 +60,12 @@ interface OauthApplicationEntry {
     updated_at: string | null;
     expires_at: string | null;
 }
-
 interface PaginationMeta {
     current_page: number;
     last_page: number;
     per_page: number;
     total: number;
 }
-
 interface SessionsProps extends PageProps {
     users?: UserListPayload;
     selectedUser?: SelectedUser | null;
@@ -83,10 +81,8 @@ interface SessionsProps extends PageProps {
 
 const formatDate = (value?: string | null) => {
     if (!value) return '—';
-
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return value;
-
     return date.toLocaleString('id-ID', {
         day: 'numeric',
         month: 'short',
@@ -96,73 +92,48 @@ const formatDate = (value?: string | null) => {
     });
 };
 
-const parseUserAgent = (userAgent: string | null) => {
-    if (!userAgent) return 'Perangkat tidak diketahui';
-
-    const bits = [
-        /Edg\/([\d.]+)/,
-        /OPR\/([\d.]+)/,
-        /Chrome\/([\d.]+)/,
-        /Safari\/([\d.]+)/,
-        /Firefox\/([\d.]+)/,
-    ];
-
-    let browser = 'Browser tidak diketahui';
-    for (const pattern of bits) {
-        const match = userAgent.match(pattern);
-        if (match) {
-            browser = `${match[0].split('/')[0]} ${match[1]}`;
-            break;
-        }
-    }
-
-    return `${browser} • ${userAgent}`;
+const deviceLabel = (ua: string | null) => {
+    if (!ua) return 'Perangkat tidak diketahui';
+    if (/Edg\//.test(ua)) return 'Microsoft Edge';
+    if (/Chrome\//.test(ua)) return 'Google Chrome';
+    if (/Firefox\//.test(ua)) return 'Mozilla Firefox';
+    if (/Safari\//.test(ua)) return 'Safari';
+    return 'Browser lainnya';
 };
 
-export default function Sessions({
-    users,
-    selectedUser,
-    sessions,
-    sessionMeta,
-    session_prev_page_token,
-    session_next_page_token,
-    oauthApplications,
-    oauthMeta,
-    oauth_prev_page_token,
-    oauth_next_page_token,
-}: SessionsProps) {
+export default function Sessions(props: SessionsProps) {
+    const {
+        users,
+        selectedUser,
+        sessions,
+        sessionMeta,
+        session_prev_page_token,
+        session_next_page_token,
+        oauthApplications,
+        oauthMeta,
+        oauth_prev_page_token,
+        oauth_next_page_token,
+    } = props;
+
+    const [query, setQuery] = useState('');
+    const [activeTab, setActiveTab] = useState<'sessions' | 'oauth'>('sessions');
+
     const currentUserList = users?.data ?? [];
     const selectedUserId = selectedUser?.id ?? null;
 
-    const visitState = (state: string | null | undefined) => {
-        if (!state) {
-            return;
-        }
-
-        router.post(
-            '/settings/sessions',
-            { state },
-            {
-                preserveScroll: true,
-                preserveState: true,
-            },
+    const filteredUsers = useMemo(() => {
+        const needle = query.trim().toLowerCase();
+        if (!needle) return currentUserList;
+        return currentUserList.filter((user) =>
+            [user.name, user.username, user.email].some((value) =>
+                value.toLowerCase().includes(needle),
+            ),
         );
-    };
+    }, [currentUserList, query]);
 
-    const changeUserPage = (token: string | null | undefined) => {
-        visitState(token);
-    };
-
-    const changeSessionPage = (token: string | null | undefined) => {
-        visitState(token);
-    };
-
-    const changeOauthPage = (token: string | null | undefined) => {
-        visitState(token);
-    };
-
-    const selectUser = (user: UserSummary) => {
-        visitState(user.state_token);
+    const visitState = (state?: string | null) => {
+        if (!state) return;
+        router.post('/settings/sessions', { state }, { preserveScroll: true, preserveState: true });
     };
 
     const revokeSession = (sessionId: string) => {
@@ -174,9 +145,7 @@ export default function Sessions({
                 session_page: sessionMeta.current_page,
                 oauth_page: oauthMeta.current_page,
             },
-            {
-                preserveScroll: true,
-            },
+            { preserveScroll: true },
         );
     };
 
@@ -189,351 +158,184 @@ export default function Sessions({
                 session_page: sessionMeta.current_page,
                 oauth_page: oauthMeta.current_page,
             },
-            {
-                preserveScroll: true,
-            },
+            { preserveScroll: true },
         );
     };
 
+    const Pager = ({
+        page,
+        pages,
+        previous,
+        next,
+    }: {
+        page: number;
+        pages: number;
+        previous?: string | null;
+        next?: string | null;
+    }) =>
+        pages > 1 ? (
+            <div className="flex items-center justify-between border-t border-slate-800 pt-4 text-xs text-slate-500">
+                <button type="button" onClick={() => visitState(previous)} disabled={!previous} className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30">
+                    <ChevronLeft className="h-3.5 w-3.5" /> Sebelumnya
+                </button>
+                <span>{page} / {pages}</span>
+                <button type="button" onClick={() => visitState(next)} disabled={!next} className="inline-flex items-center gap-1 rounded-lg border border-slate-800 px-2.5 py-1.5 text-slate-300 disabled:opacity-30">
+                    Berikutnya <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+            </div>
+        ) : null;
+
     return (
         <AppLayout>
-            <Head title="Kelola Sesi" />
+            <Head title="Sesi & Akses" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-white  sm:text-4xl">
-                            Kelola Sesi
-                        </h1>
-                        <p className="mt-2 text-base text-white/80 sm:text-lg">
-                            Pilih pengguna, lalu lihat sesi dan aplikasi OAuth
-                            yang sedang aktif untuk dihapus atau dicabut.
-                        </p>
-                    </div>
+            <div className="space-y-6">
+                <PageHeader />
 
-                    <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
-                        <GlassCard>
-                            <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-xl bg-sky-500/15 p-2">
-                                        <Monitor className="h-5 w-5 text-sky-300" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold text-white">
-                                            Daftar Pengguna
-                                        </h2>
-                                        <p className="text-xs text-white/60">
-                                            {users?.total ??
-                                                currentUserList.length}{' '}
-                                            pengguna
-                                        </p>
-                                    </div>
+                <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
+                    <aside className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 lg:sticky lg:top-24 lg:self-start">
+                        <div className="border-b border-slate-800 p-4">
+                            <div className="flex items-center justify-between gap-3">
+                                <div>
+                                    <h2 className="font-semibold text-white">Pengguna</h2>
+                                    <p className="mt-0.5 text-xs text-slate-500">{users?.total ?? currentUserList.length} akun</p>
                                 </div>
+                                <UserRound className="h-5 w-5 text-slate-500" />
                             </div>
-
-                            <div className="mt-4 space-y-3">
-                                {currentUserList.length === 0 ? (
-                                    <div className="rounded-xl border border-dashed border-slate-800 bg-slate-900/50 p-5 text-sm text-white/70">
-                                        Tidak ada pengguna yang terdaftar.
-                                    </div>
-                                ) : (
-                                    currentUserList.map((user) => (
-                                        <button
-                                            key={user.id}
-                                            type="button"
-                                            onClick={() => selectUser(user)}
-                                            className={`w-full rounded-2xl border px-3 py-3 text-left transition ${
-                                                selectedUserId === user.id
-                                                    ? 'border-sky-400/50 bg-sky-500/10  '
-                                                    : 'border-slate-800 bg-slate-900/50 hover:bg-slate-900/80'
-                                            }`}
-                                        >
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div className="min-w-0">
-                                                    <div className="truncate text-sm font-semibold text-white">
-                                                        {user.name.toUpperCase()}
-                                                    </div>
-                                                </div>
-                                                {selectedUserId === user.id && (
-                                                    <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-200">
-                                                        Terpilih
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            <div className="mt-3 flex gap-2 text-[10px] text-white/55">
-                                                <span className="rounded-full bg-slate-900/50 px-2 py-1">
-                                                    {user.session_count} sesi
-                                                </span>
-                                                <span className="rounded-full bg-slate-900/50 px-2 py-1">
-                                                    {user.oauth_count} OAuth
-                                                </span>
-                                            </div>
-                                        </button>
-                                    ))
-                                )}
+                            <div className="relative mt-3">
+                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600" />
+                                <input
+                                    value={query}
+                                    onChange={(event) => setQuery(event.target.value)}
+                                    placeholder="Cari pengguna…"
+                                    className="h-10 w-full rounded-lg border border-slate-800 bg-slate-950 pl-9 pr-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-slate-600"
+                                />
                             </div>
-
-                            {users && users.last_page > 1 && (
-                                <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-800 pt-4 text-xs text-white/65">
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            changeUserPage(
-                                                users.prev_page_token,
-                                            )
-                                        }
-                                        disabled={!users.prev_page_token}
-                                        className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
-                                    >
-                                        <ChevronLeft className="h-3.5 w-3.5" />
-                                        Prev
-                                    </button>
-                                    <span>
-                                        Hal {users.current_page} /{' '}
-                                        {users.last_page}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            changeUserPage(
-                                                users.next_page_token,
-                                            )
-                                        }
-                                        disabled={!users.next_page_token}
-                                        className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
-                                    >
-                                        Next
-                                        <ChevronRight className="h-3.5 w-3.5" />
-                                    </button>
-                                </div>
-                            )}
-                        </GlassCard>
-
-                        <div className="space-y-6">
-                            <GlassCard>
-                                <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-                                    <div className="rounded-xl bg-sky-500/15 p-2">
-                                        <Monitor className="h-5 w-5 text-sky-300" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold text-white">
-                                            Sesi Web Aktif
-                                        </h2>
-                                        <p className="text-sm text-white/70">
-                                            {selectedUser
-                                                ? `Untuk ${selectedUser.name.toUpperCase()}`
-                                                : 'Pilih pengguna terlebih dahulu'}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4 space-y-3">
-                                    {sessions.length === 0 ? (
-                                        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-900/50 p-6 text-sm text-white/70">
-                                            Tidak ada sesi aktif yang tercatat.
-                                        </div>
-                                    ) : (
-                                        sessions.map((session) => (
-                                            <div
-                                                key={session.id}
-                                                className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4"
-                                            >
-                                                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                                                    <div className="space-y-1">
-                                                        <div className="flex flex-wrap items-center gap-2">
-                                                            <span className="text-sm font-semibold text-white">
-                                                                {session.is_current
-                                                                    ? 'Sesi saat ini'
-                                                                    : 'Sesi lain'}
-                                                            </span>
-                                                            {session.is_current && (
-                                                                <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-200">
-                                                                    Aktif
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <div className="text-sm text-white/75">
-                                                            {parseUserAgent(
-                                                                session.user_agent,
-                                                            )}
-                                                        </div>
-                                                        <div className="text-xs text-white/60">
-                                                            IP:{' '}
-                                                            {session.ip_address ??
-                                                                'Tidak diketahui'}
-                                                        </div>
-                                                        <div className="text-xs text-white/60">
-                                                            Terakhir aktif:{' '}
-                                                            {formatDate(
-                                                                session.last_activity_at,
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    {!session.is_current && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                revokeSession(
-                                                                    session.id,
-                                                                )
-                                                            }
-                                                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100 transition hover:bg-red-500/20"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                            Hapus Sesi
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-
-                                {sessionMeta.last_page > 1 && (
-                                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-800 pt-4 text-xs text-white/65">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                changeSessionPage(
-                                                    session_prev_page_token,
-                                                )
-                                            }
-                                            disabled={!session_prev_page_token}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
-                                        >
-                                            <ChevronLeft className="h-3.5 w-3.5" />
-                                            Prev
-                                        </button>
-                                        <span>
-                                            Hal {sessionMeta.current_page} /{' '}
-                                            {sessionMeta.last_page}
-                                        </span>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                changeSessionPage(
-                                                    session_next_page_token,
-                                                )
-                                            }
-                                            disabled={!session_next_page_token}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
-                                        >
-                                            Next
-                                            <ChevronRight className="h-3.5 w-3.5" />
-                                        </button>
-                                    </div>
-                                )}
-                            </GlassCard>
-
-                            <GlassCard>
-                                <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-                                    <div className="rounded-xl bg-emerald-500/15 p-2">
-                                        <ShieldCheck className="h-5 w-5 text-emerald-300" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold text-white">
-                                            Akses OAuth Terdaftar
-                                        </h2>
-                                        <p className="text-sm text-white/70">
-                                            Aplikasi yang saat ini memiliki
-                                            akses melalui SSO.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4 space-y-3">
-                                    {oauthApplications.length === 0 ? (
-                                        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-900/50 p-6 text-sm text-white/70">
-                                            Tidak ada aplikasi OAuth yang saat
-                                            ini terhubung.
-                                        </div>
-                                    ) : (
-                                        oauthApplications.map((app) => (
-                                            <div
-                                                key={app.id}
-                                                className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4"
-                                            >
-                                                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                                                    <div className="space-y-1">
-                                                        <div className="text-base font-semibold text-white">
-                                                            {app.client_name}
-                                                        </div>
-                                                        <div className="text-xs text-white/60">
-                                                            Token:{' '}
-                                                            {app.token_name ??
-                                                                'Akses SSO'}
-                                                        </div>
-                                                        <div className="text-xs text-white/60">
-                                                            Dibuat:{' '}
-                                                            {formatDate(
-                                                                app.created_at,
-                                                            )}
-                                                        </div>
-                                                        <div className="text-xs text-white/60">
-                                                            Expired:{' '}
-                                                            {formatDate(
-                                                                app.expires_at,
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            revokeOauthAccess(
-                                                                app.id,
-                                                            )
-                                                        }
-                                                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100 transition hover:bg-red-500/20"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                        Cabut Akses
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-
-                                {oauthMeta.last_page > 1 && (
-                                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-800 pt-4 text-xs text-white/65">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                changeOauthPage(
-                                                    oauth_prev_page_token,
-                                                )
-                                            }
-                                            disabled={!oauth_prev_page_token}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
-                                        >
-                                            <ChevronLeft className="h-3.5 w-3.5" />
-                                            Prev
-                                        </button>
-                                        <span>
-                                            Hal {oauthMeta.current_page} /{' '}
-                                            {oauthMeta.last_page}
-                                        </span>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                changeOauthPage(
-                                                    oauth_next_page_token,
-                                                )
-                                            }
-                                            disabled={!oauth_next_page_token}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
-                                        >
-                                            Next
-                                            <ChevronRight className="h-3.5 w-3.5" />
-                                        </button>
-                                    </div>
-                                )}
-                            </GlassCard>
                         </div>
-                    </div>
+
+                        <div className="max-h-[56vh] space-y-1 overflow-y-auto p-2 lg:max-h-[62vh]">
+                            {filteredUsers.map((user) => (
+                                <button
+                                    key={user.id}
+                                    type="button"
+                                    onClick={() => visitState(user.state_token)}
+                                    className={
+                                        'w-full rounded-xl px-3 py-3 text-left transition ' +
+                                        (selectedUserId === user.id
+                                            ? 'bg-slate-800 text-white'
+                                            : 'text-slate-300 hover:bg-slate-800/60')
+                                    }
+                                >
+                                    <div className="truncate text-sm font-medium">{user.name}</div>
+                                    <div className="mt-0.5 truncate text-xs text-slate-500">@{user.username}</div>
+                                    <div className="mt-2 flex gap-3 text-[11px] text-slate-500">
+                                        <span>{user.session_count} sesi</span>
+                                        <span>{user.oauth_count} aplikasi</span>
+                                    </div>
+                                </button>
+                            ))}
+                            {filteredUsers.length === 0 && (
+                                <div className="px-3 py-8 text-center text-sm text-slate-500">Pengguna tidak ditemukan.</div>
+                            )}
+                        </div>
+
+                        {users && users.last_page > 1 && (
+                            <div className="border-t border-slate-800 p-3">
+                                <Pager page={users.current_page} pages={users.last_page} previous={users.prev_page_token} next={users.next_page_token} />
+                            </div>
+                        )}
+                    </aside>
+
+                    <section className="min-w-0 space-y-4">
+                        <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4 sm:p-5">
+                            {selectedUser ? (
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Akun dipilih</p>
+                                        <h2 className="mt-1 truncate text-xl font-semibold text-white">{selectedUser.name}</h2>
+                                        <p className="mt-1 truncate text-sm text-slate-400">{selectedUser.email}</p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="rounded-xl bg-slate-950/70 px-4 py-3">
+                                            <div className="text-xl font-semibold text-white">{sessionMeta.total}</div>
+                                            <div className="text-xs text-slate-500">Sesi web</div>
+                                        </div>
+                                        <div className="rounded-xl bg-slate-950/70 px-4 py-3">
+                                            <div className="text-xl font-semibold text-white">{oauthMeta.total}</div>
+                                            <div className="text-xs text-slate-500">Akses OAuth</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="py-4 text-sm text-slate-500">Pilih pengguna untuk melihat sesi dan akses aplikasinya.</div>
+                            )}
+                        </div>
+
+                        <SectionTabs
+                            active={activeTab}
+                            onChange={setActiveTab}
+                            items={[
+                                { id: 'sessions', label: 'Sesi web', icon: <Monitor className="h-4 w-4" /> },
+                                { id: 'oauth', label: 'Akses OAuth', icon: <ShieldCheck className="h-4 w-4" /> },
+                            ]}
+                        />
+
+                        {activeTab === 'sessions' ? (
+                            <div className="rounded-2xl border border-slate-800 bg-slate-900/50">
+                                <div className="border-b border-slate-800 px-4 py-4 sm:px-5">
+                                    <h3 className="font-semibold text-white">Sesi web aktif</h3>
+                                    <p className="mt-1 text-xs text-slate-500">Perangkat yang memiliki sesi login aktif pada akun ini.</p>
+                                </div>
+                                <div className="space-y-2 p-3 sm:p-4">
+                                    {sessions.length === 0 ? (
+                                        <div className="rounded-xl border border-dashed border-slate-800 px-4 py-10 text-center text-sm text-slate-500">Tidak ada sesi aktif.</div>
+                                    ) : sessions.map((session) => (
+                                        <div key={session.id} className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                            <div className="min-w-0">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <span className="font-medium text-white">{deviceLabel(session.user_agent)}</span>
+                                                    {session.is_current && <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-300">Sesi saat ini</span>}
+                                                </div>
+                                                <p className="mt-1 truncate text-xs text-slate-500">{session.ip_address ?? 'IP tidak diketahui'} · Aktif {formatDate(session.last_activity_at)}</p>
+                                            </div>
+                                            {!session.is_current && (
+                                                <button type="button" onClick={() => revokeSession(session.id)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-500/10">
+                                                    <Trash2 className="h-3.5 w-3.5" /> Akhiri sesi
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                    <Pager page={sessionMeta.current_page} pages={sessionMeta.last_page} previous={session_prev_page_token} next={session_next_page_token} />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="rounded-2xl border border-slate-800 bg-slate-900/50">
+                                <div className="border-b border-slate-800 px-4 py-4 sm:px-5">
+                                    <h3 className="font-semibold text-white">Akses aplikasi OAuth</h3>
+                                    <p className="mt-1 text-xs text-slate-500">Aplikasi yang masih memiliki izin menggunakan akun SSO ini.</p>
+                                </div>
+                                <div className="space-y-2 p-3 sm:p-4">
+                                    {oauthApplications.length === 0 ? (
+                                        <div className="rounded-xl border border-dashed border-slate-800 px-4 py-10 text-center text-sm text-slate-500">Tidak ada aplikasi OAuth aktif.</div>
+                                    ) : oauthApplications.map((app) => (
+                                        <div key={app.id} className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-950/45 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                            <div className="min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <KeyRound className="h-4 w-4 text-slate-500" />
+                                                    <span className="truncate font-medium text-white">{app.client_name}</span>
+                                                </div>
+                                                <p className="mt-1 text-xs text-slate-500">Diberikan {formatDate(app.created_at)} · Kedaluwarsa {formatDate(app.expires_at)}</p>
+                                            </div>
+                                            <button type="button" onClick={() => revokeOauthAccess(app.id)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-500/10">
+                                                <Trash2 className="h-3.5 w-3.5" /> Cabut akses
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <Pager page={oauthMeta.current_page} pages={oauthMeta.last_page} previous={oauth_prev_page_token} next={oauth_next_page_token} />
+                                </div>
+                            </div>
+                        )}
+                    </section>
                 </div>
             </div>
         </AppLayout>
