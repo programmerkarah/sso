@@ -14,22 +14,22 @@ export default function MetricCard({
     hint,
 }: MetricCardProps) {
     return (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5">
+        <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-4 sm:p-5">
             <div className="flex items-center gap-3">
                 {icon && (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-slate-300">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--bps-surface-soft)] text-[var(--bps-muted)]">
                         {icon}
                     </div>
                 )}
                 <div className="min-w-0">
-                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    <p className="text-xs font-medium uppercase tracking-wide text-[var(--bps-muted)]">
                         {label}
                     </p>
-                    <div className="mt-1 text-2xl font-semibold text-white">
+                    <div className="mt-1 text-2xl font-semibold text-[var(--bps-text)]">
                         {value}
                     </div>
                     {hint && (
-                        <p className="mt-1 text-xs text-slate-500">{hint}</p>
+                        <p className="mt-1 text-xs text-[var(--bps-muted)]">{hint}</p>
                     )}
                 </div>
             </div>
