@@ -15,6 +15,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import PageHeader from '@/Components/PageHeader';
+import MetricCard from '@/Components/MetricCard';
 import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application, PageProps } from '@/types';
@@ -90,7 +91,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                     actions={
                         <Link
                             href="/admin/applications/create"
-                            className="inline-flex items-center gap-2 rounded-lg border border-[#b8d9ee] bg-[#e7f3fb] px-3 py-2 text-sm font-medium text-[#347fae] transition hover:bg-[#d9edf9]"
+                            className="ui-selected inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium"
                         >
                             <Plus className="h-4 w-4" />
                             Tambah aplikasi
@@ -99,30 +100,15 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                 />
 
                 <div className="grid gap-3 md:grid-cols-3">
-                    <GlassCard>
-                        <div className="text-sm text-[#6f8495]">
-                            Total aplikasi
-                        </div>
-                        <div className="mt-2 text-4xl font-semibold text-[#18324a]">
-                            {formatNumber(stats.total)}
-                        </div>
-                    </GlassCard>
-                    <GlassCard>
-                        <div className="text-sm text-[#6f8495]">
-                            Aplikasi aktif
-                        </div>
-                        <div className="mt-2 text-4xl font-semibold text-[#18324a]">
-                            {formatNumber(stats.active)}
-                        </div>
-                    </GlassCard>
+                    <MetricCard label="Total aplikasi" value={formatNumber(stats.total)} />
+                    <MetricCard label="Aplikasi aktif" value={formatNumber(stats.active)} />
                     <GlassCard>
                         <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-[#e7f3fb] p-3">
+                            <div className="rounded-full bg-[var(--bps-selected-bg)] p-3">
                                 <Globe className="h-5 w-5 text-[#4a9fd7]" />
                             </div>
-                            <p className="text-sm text-[#49657b]">
-                                Pastikan setiap callback URL mengarah ke
-                                endpoint OAuth yang benar pada aplikasi tujuan.
+                            <p className="text-sm text-[var(--bps-muted)]">
+                                Pastikan setiap callback URL mengarah ke endpoint OAuth yang benar pada aplikasi tujuan.
                             </p>
                         </div>
                     </GlassCard>
@@ -134,32 +120,32 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                         className="w-full"
                         viewportClassName="pb-2"
                     >
-                        <table className="min-w-full divide-y divide-[#e2ebf1]">
-                            <thead className="bg-[#f8fbfd]">
+                        <table className="min-w-full divide-y divide-[var(--bps-border)]">
+                            <thead className="bg-[var(--bps-surface-soft)]">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-[#8799a7]">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-[var(--bps-muted)]">
                                         Aplikasi
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-[#8799a7]">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-[var(--bps-muted)]">
                                         Domain
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-[#8799a7]">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-[var(--bps-muted)]">
                                         Status
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-[#8799a7]">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-[var(--bps-muted)]">
                                         Dibuat
                                     </th>
-                                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.2em] text-[#8799a7]">
+                                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.2em] text-[var(--bps-muted)]">
                                         Aksi
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-[#e2ebf1] bg-transparent">
+                            <tbody className="divide-y divide-[var(--bps-border)] bg-transparent">
                                 {applications.data.length === 0 ? (
                                     <tr>
                                         <td
                                             colSpan={5}
-                                            className="px-6 py-16 text-center text-[#6f8495]"
+                                            className="px-6 py-16 text-center text-[var(--bps-muted)]"
                                         >
                                             Belum ada aplikasi terdaftar
                                         </td>
@@ -168,7 +154,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                     applications.data.map((app) => (
                                         <tr
                                             key={app.id}
-                                            className="transition hover:bg-[#f8fbfd]"
+                                            className="ui-row-hover"
                                         >
                                             <td className="whitespace-nowrap px-6 py-4">
                                                 <div className="flex items-center gap-3">
@@ -179,23 +165,23 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                             className="h-10 w-10 rounded-lg object-cover"
                                                         />
                                                     ) : (
-                                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f8fbfd] text-lg font-bold text-[#18324a]">
+                                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--bps-surface-soft)] text-lg font-bold text-[var(--bps-text)]">
                                                             {app.name
                                                                 .charAt(0)
                                                                 .toUpperCase()}
                                                         </div>
                                                     )}
                                                     <div>
-                                                        <div className="font-medium text-[#18324a]">
+                                                        <div className="font-medium text-[var(--bps-text)]">
                                                             {app.name}
                                                         </div>
-                                                        <div className="text-sm text-[#8799a7]">
+                                                        <div className="text-sm text-[var(--bps-muted)]">
                                                             {app.slug}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-[#6f8495]">
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-[var(--bps-muted)]">
                                                 {app.domain}
                                             </td>
                                             <td className="whitespace-nowrap px-6 py-4">
@@ -211,7 +197,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-[#6f8495]">
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-[var(--bps-muted)]">
                                                 {new Date(
                                                     app.created_at,
                                                 ).toLocaleDateString('id-ID')}
@@ -220,13 +206,13 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                 <div className="flex justify-end gap-2">
                                                     <Link
                                                         href={`/admin/applications/${app.route_key}`}
-                                                        className="rounded-xl bg-slate-900/80 p-2 text-[#4a9fd7] transition hover:bg-slate-800"
+                                                        className="ui-icon-button rounded-xl p-2 text-[#4a9fd7]"
                                                     >
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                     <Link
                                                         href={`/admin/applications/${app.route_key}/edit`}
-                                                        className="rounded-xl bg-[#fff4e8] p-2 text-[#b77a32] transition hover:bg-[#fdebd7]"
+                                                        className="ui-warning rounded-xl border p-2"
                                                     >
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
@@ -239,7 +225,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                                 name: app.name,
                                                             })
                                                         }
-                                                        className="rounded-xl bg-red-500/15 p-2 text-[#b85d52] transition hover:bg-red-500/25"
+                                                        className="ui-danger rounded-xl border p-2"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </button>
@@ -282,7 +268,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                             onClick={() =>
                                                 visitPage(page.token)
                                             }
-                                            className={`rounded-md px-3 py-2 text-sm font-medium ${page.active ? 'bg-[#e7f3fb] text-[#2f6f98]' : 'bg-slate-900/80 text-[#18324a] hover:bg-slate-800'}`}
+                                            className={`rounded-md px-3 py-2 text-sm font-medium ${page.active ? 'bg-[#e7f3fb] text-[#2f6f98]' : 'bg-slate-900/80 text-[var(--bps-text)] hover:bg-slate-800'}`}
                                         >
                                             {page.label}
                                         </button>
