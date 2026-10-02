@@ -608,3 +608,106 @@ html[data-theme='dark'] .ui-icon-button:hover {
     border-color: rgba(126, 197, 239, 0.38);
     color: #b7ddf4;
 }
+
+
+/* Refined semantic states: subtle enough for dense admin UIs. */
+:root {
+    --bps-hover: #f0f6fa;
+    --bps-hover-strong: #e7f1f7;
+    --bps-selected-bg: #e8f4fb;
+    --bps-selected-border: #a8cfe7;
+    --bps-selected-text: #2f7098;
+    --bps-disabled-bg: #eef3f6;
+    --bps-disabled-text: #8da0ae;
+    --bps-overlay: rgba(20, 39, 52, 0.38);
+}
+
+html[data-theme='dark'] {
+    --bps-hover: #243946;
+    --bps-hover-strong: #29424f;
+    --bps-selected-bg: rgba(126, 197, 239, 0.15);
+    --bps-selected-border: rgba(126, 197, 239, 0.42);
+    --bps-selected-text: #b9ddf3;
+    --bps-disabled-bg: #21323d;
+    --bps-disabled-text: #7f949f;
+    --bps-overlay: rgba(3, 12, 18, 0.62);
+}
+
+.ui-hover:hover {
+    background: var(--bps-hover);
+    border-color: color-mix(in srgb, var(--bps-border) 55%, var(--bps-blue));
+    color: var(--bps-text);
+}
+
+.ui-row-hover {
+    transition: background-color 140ms ease;
+}
+
+.ui-row-hover:hover {
+    background: color-mix(in srgb, var(--bps-hover) 62%, transparent);
+}
+
+.ui-selected {
+    background: var(--bps-selected-bg);
+    border-color: var(--bps-selected-border);
+    color: var(--bps-selected-text);
+}
+
+.ui-selected:hover {
+    background: color-mix(in srgb, var(--bps-selected-bg) 82%, var(--bps-hover-strong));
+    border-color: color-mix(in srgb, var(--bps-selected-border) 78%, var(--bps-blue));
+}
+
+.ui-disabled,
+.ui-disabled:disabled {
+    background: var(--bps-disabled-bg);
+    border-color: var(--bps-border);
+    color: var(--bps-disabled-text);
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+.ui-modal-overlay {
+    background: var(--bps-overlay);
+    backdrop-filter: blur(2px);
+}
+
+.ui-modal-surface {
+    background: var(--bps-surface);
+    border: 1px solid var(--bps-border);
+    color: var(--bps-text);
+    box-shadow: 0 24px 64px rgba(37, 63, 81, 0.16);
+}
+
+html[data-theme='dark'] .ui-modal-surface {
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+}
+
+.ui-field {
+    background: var(--bps-surface-soft);
+    border: 1px solid var(--bps-border);
+    color: var(--bps-text);
+}
+
+.ui-field:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--bps-border) 55%, var(--bps-blue));
+}
+
+.ui-field:focus,
+.ui-field:focus-visible {
+    border-color: var(--bps-blue);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--bps-blue) 18%, transparent);
+    outline: none;
+}
+
+.ui-field:disabled {
+    background: var(--bps-disabled-bg);
+    color: var(--bps-disabled-text);
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.workspace-summary {
+    background: var(--bps-bg);
+    border-bottom: 1px solid color-mix(in srgb, var(--bps-border) 65%, transparent);
+}
