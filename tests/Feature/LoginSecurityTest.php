@@ -8,6 +8,8 @@ use App\Services\TrustedDeviceManager;
 use Carbon\CarbonInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class LoginSecurityTest extends TestCase
@@ -89,6 +91,66 @@ class LoginSecurityTest extends TestCase
             ]);
 
         $response->assertRedirect('/dashboard');
+    }
+
+
+    public function test_timed_out_session_on_same_trusted_device_does_not_require_two_factor_again(): void
+    {
+        $user = $this->createTwoFactorUser(lastLoginAt: now()->subHour());
+        [$cookieValue] = $this->createTrustedDeviceCookie($user);
+
+        $expiredSessionId = 'expired-session-a';
+        Cache::forever("auth:active-session:{$user->id}", $expiredSessionId);
+
+        DB::table(config('session.table', 'sessions'))->insert([
+            'id' => $expiredSessionId,
+            'user_id' => $user->id,
+            'ip_address' => '127.0.0.1',
+            'user_agent' => $this->deviceHeaders()['User-Agent'],
+            'payload' => '',
+            'last_activity' => now()
+                ->subMinutes((int) config('session.lifetime', 120) + 1)
+                ->getTimestamp(),
+        ]);
+
+        $response = $this
+            ->withCookie(TrustedDeviceManager::COOKIE_NAME, $cookieValue)
+            ->withHeaders($this->deviceHeaders())
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect('/dashboard');
+        $this->assertNotSame($expiredSessionId, Cache::get("auth:active-session:{$user->id}"));
+    }
+
+    public function test_live_session_on_another_device_still_requires_two_factor(): void
+    {
+        $user = $this->createTwoFactorUser(lastLoginAt: now()->subHour());
+        [$cookieValue] = $this->createTrustedDeviceCookie($user);
+
+        $otherSessionId = 'live-session-b';
+        Cache::forever("auth:active-session:{$user->id}", $otherSessionId);
+
+        DB::table(config('session.table', 'sessions'))->insert([
+            'id' => $otherSessionId,
+            'user_id' => $user->id,
+            'ip_address' => '127.0.0.2',
+            'user_agent' => 'Other browser',
+            'payload' => '',
+            'last_activity' => now()->getTimestamp(),
+        ]);
+
+        $response = $this
+            ->withCookie(TrustedDeviceManager::COOKIE_NAME, $cookieValue)
+            ->withHeaders($this->deviceHeaders())
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect(route('two-factor.login'));
     }
 
     /**
