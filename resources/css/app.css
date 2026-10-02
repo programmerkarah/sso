@@ -19,18 +19,28 @@ body,
     height: 100%;
 }
 
+:root {
+    --bps-blue: #5aaee8;
+    --bps-blue-strong: #2f8fcc;
+    --bps-green: #9bcf95;
+    --bps-orange: #f4bd82;
+    --bps-bg: #f4f7fa;
+    --bps-surface: #ffffff;
+    --bps-surface-soft: #f8fbfd;
+    --bps-border: #dbe5ec;
+    --bps-text: #18324a;
+    --bps-muted: #6f8495;
+}
+
 html {
-    background: #041b2d;
+    background: var(--bps-bg);
 }
 
 body {
     min-height: 100dvh;
     overflow: hidden;
-    background:
-        radial-gradient(circle at 10% 0%, rgba(0, 174, 239, 0.12), transparent 28%),
-        radial-gradient(circle at 92% 8%, rgba(140, 198, 63, 0.08), transparent 24%),
-        linear-gradient(135deg, #041b2d 0%, #08263b 46%, #0b2234 100%);
-    color: #e2e8f0;
+    background: var(--bps-bg);
+    color: var(--bps-text);
 }
 
 button,
@@ -42,8 +52,8 @@ textarea {
 }
 
 ::selection {
-    background: rgba(14, 165, 233, 0.28);
-    color: #f8fafc;
+    background: rgba(90, 174, 232, 0.24);
+    color: #18324a;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -57,7 +67,6 @@ textarea {
     }
 }
 
-
 .react-scroll-area-viewport {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -67,30 +76,57 @@ textarea {
     display: none;
 }
 
-
-:root {
-    --bps-blue: #00aeef;
-    --bps-blue-deep: #005b96;
-    --bps-green: #8cc63f;
-    --bps-orange: #f7941d;
-    --bps-surface-950: #041b2d;
-    --bps-surface-900: #08263b;
-    --bps-surface-850: #0b2d46;
-    --bps-surface-800: #11364f;
-}
-
 .app-background {
     background:
-        radial-gradient(circle at 8% -4%, rgba(0, 174, 239, 0.14), transparent 28%),
-        radial-gradient(circle at 94% 4%, rgba(140, 198, 63, 0.08), transparent 22%),
-        linear-gradient(135deg, var(--bps-surface-950) 0%, var(--bps-surface-900) 48%, #071f31 100%);
+        radial-gradient(circle at 5% 0%, rgba(90, 174, 232, 0.14), transparent 27%),
+        radial-gradient(circle at 96% 6%, rgba(155, 207, 149, 0.13), transparent 24%),
+        radial-gradient(circle at 78% 100%, rgba(244, 189, 130, 0.12), transparent 24%),
+        #f4f7fa;
 }
 
 .app-panel-background {
-    background: linear-gradient(180deg, rgba(11, 45, 70, 0.88), rgba(8, 38, 59, 0.94));
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 10px 30px rgba(48, 77, 99, 0.06);
 }
 
 .app-header-background {
-    background: rgba(4, 27, 45, 0.9);
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(16px);
+}
+
+/* Compatibility layer while legacy pages migrate to semantic palette classes. */
+.app-background .text-white { color: #18324a; }
+.app-background .text-slate-100,
+.app-background .text-slate-200 { color: #29465f; }
+.app-background .text-slate-300 { color: #49657b; }
+.app-background .text-slate-400 { color: #6f8495; }
+.app-background .text-slate-500,
+.app-background .text-slate-600 { color: #8799a7; }
+
+.app-background .border-slate-800,
+.app-background .border-slate-700,
+.app-background .border-cyan-950\/70,
+.app-background .border-cyan-900\/60,
+.app-background .border-cyan-900\/50,
+.app-background .border-cyan-900\/45 {
+    border-color: #dbe5ec;
+}
+
+.app-background .bg-slate-950,
+.app-background .bg-slate-950\/70,
+.app-background .bg-slate-950\/45,
+.app-background .bg-slate-900,
+.app-background .bg-slate-900\/80,
+.app-background .bg-slate-900\/60,
+.app-background .bg-slate-900\/50,
+.app-background .bg-slate-900\/40,
+.app-background .bg-black\/20,
+.app-background .bg-black\/30 {
+    background-color: #f8fbfd;
+}
+
+.app-background .bg-sky-600.text-white,
+.app-background .bg-red-600.text-white,
+.app-background .bg-\[\#0077b6\].text-white {
+    color: #ffffff;
 }
