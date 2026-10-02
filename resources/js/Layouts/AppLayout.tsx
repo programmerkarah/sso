@@ -40,7 +40,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
     useEffect(() => {
         if (!user) return;
 
-        const pusherKey = String(import.meta.env.VITE_PUSHER_APP_KEY ?? '').trim();
+        const pusherKey = String(
+            import.meta.env.VITE_PUSHER_APP_KEY ?? '',
+        ).trim();
         const pusherCluster = String(
             import.meta.env.VITE_PUSHER_APP_CLUSTER ?? '',
         ).trim();
@@ -67,9 +69,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
                 forceTLS: true,
             });
 
-            echo.private('session.' + user.id).listen('.session.displaced', () => {
-                setSessionDisplaced(true);
-            });
+            echo.private('session.' + user.id).listen(
+                '.session.displaced',
+                () => {
+                    setSessionDisplaced(true);
+                },
+            );
 
             disconnect = () => echo.disconnect();
         };
@@ -138,7 +143,8 @@ export default function AppLayout({ children }: PropsWithChildren) {
         };
 
         document.addEventListener('mousedown', handleOutsideClick);
-        return () => document.removeEventListener('mousedown', handleOutsideClick);
+        return () =>
+            document.removeEventListener('mousedown', handleOutsideClick);
     }, []);
 
     useEffect(() => {
@@ -225,7 +231,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                     href="/applications"
                                     className={navLinkClass(
                                         currentUrl === '/applications' ||
-                                            currentUrl.startsWith('/applications?'),
+                                            currentUrl.startsWith(
+                                                '/applications?',
+                                            ),
                                     )}
                                 >
                                     <AppWindow className="h-4 w-4" />
@@ -369,7 +377,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                     <Link
                                         href="/applications"
                                         className={navLinkClass(
-                                            currentUrl.startsWith('/applications'),
+                                            currentUrl.startsWith(
+                                                '/applications',
+                                            ),
                                         )}
                                     >
                                         <AppWindow className="h-4 w-4" />

@@ -55,7 +55,9 @@ function ToastCard({
                 <Icon className="mt-0.5 h-4 w-4 shrink-0" />
                 <div className="min-w-0 flex-1">
                     {item.title && (
-                        <div className="text-sm font-semibold">{item.title}</div>
+                        <div className="text-sm font-semibold">
+                            {item.title}
+                        </div>
                     )}
                     <div className="mt-0.5 text-sm leading-5 text-slate-300">
                         {item.message}
