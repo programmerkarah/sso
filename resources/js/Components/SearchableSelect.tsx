@@ -64,7 +64,7 @@ export default function SearchableSelect({
     return (
         <div ref={containerRef} className="relative">
             <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8799a7]" />
                 <input
                     type="text"
                     value={query}
@@ -78,7 +78,7 @@ export default function SearchableSelect({
                         setHasTypedSinceOpen(true);
                     }}
                     placeholder={placeholder}
-                    className="w-full rounded-lg border border-cyan-900/60 bg-[#041b2d]/85 py-2.5 pl-10 pr-10 text-sm text-slate-100 outline-none transition-colors placeholder:text-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    className="w-full rounded-lg border border-[#d5e1e9] bg-white py-2.5 pl-10 pr-10 text-sm text-[#18324a] outline-none transition-colors placeholder:text-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
                 />
                 {onClear && query && (
                     <button
@@ -89,7 +89,7 @@ export default function SearchableSelect({
                             setHasTypedSinceOpen(false);
                             onClear();
                         }}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 transition hover:bg-[#11364f] hover:text-slate-200"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-[#8799a7] transition hover:bg-[#eef5f9] hover:text-[#18324a]"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -97,9 +97,9 @@ export default function SearchableSelect({
             </div>
 
             {open && (
-                <ScrollArea className="absolute z-[75] mt-1.5 w-full rounded-lg border border-cyan-900/60 bg-[#08263b] shadow-xl" viewportClassName="max-h-72 p-1.5">
+                <ScrollArea className="absolute z-[75] mt-1.5 w-full rounded-lg border border-[#d5e1e9] bg-white shadow-xl" viewportClassName="max-h-72 p-1.5">
                     {filteredOptions.length === 0 ? (
-                        <div className="px-3 py-4 text-sm text-slate-500">
+                        <div className="px-3 py-4 text-sm text-[#8799a7]">
                             Tidak ada hasil.
                         </div>
                     ) : (
@@ -113,13 +113,13 @@ export default function SearchableSelect({
                                     setOpen(false);
                                     setHasTypedSinceOpen(false);
                                 }}
-                                className="flex w-full flex-col rounded-md px-3 py-2.5 text-left transition-colors hover:bg-[#11364f]"
+                                className="flex w-full flex-col rounded-md px-3 py-2.5 text-left transition-colors hover:bg-[#eef5f9]"
                             >
                                 <span className="text-sm font-medium text-slate-100">
                                     {option.label}
                                 </span>
                                 {option.description && (
-                                    <span className="mt-0.5 text-xs text-slate-500">
+                                    <span className="mt-0.5 text-xs text-[#8799a7]">
                                         {option.description}
                                     </span>
                                 )}
