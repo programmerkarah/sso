@@ -1362,7 +1362,7 @@ export default function Index({
                                     2FA aktif (halaman ini)
                                 </div>
                                 <div className="text-3xl font-semibold text-white">
-                                    {twoFactorCount}
+                                    {formatNumber(twoFactorCount)}
                                 </div>
                             </div>
                         </div>
@@ -1377,7 +1377,7 @@ export default function Index({
                                     Admin (halaman ini)
                                 </div>
                                 <div className="text-3xl font-semibold text-white">
-                                    {adminCount}
+                                    {formatNumber(adminCount)}
                                 </div>
                             </div>
                         </div>
@@ -1728,10 +1728,10 @@ export default function Index({
                                     </span>
                                 )}
                             </div>
-            
-            </PageWorkspace>
+                        </div>
                     )}
                 </GlassCard>
+            </PageWorkspace>
 
                 {actionMenu && actionMenuUser && (
                     <div className="fixed inset-0 z-[70]">
