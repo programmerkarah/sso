@@ -202,7 +202,7 @@ export default function Sessions({
             <div className="py-12">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl">
+                        <h1 className="text-3xl font-bold text-white  sm:text-4xl">
                             Kelola Sesi
                         </h1>
                         <p className="mt-2 text-base text-white/80 sm:text-lg">
@@ -213,7 +213,7 @@ export default function Sessions({
 
                     <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
                         <GlassCard>
-                            <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
+                            <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-4">
                                 <div className="flex items-center gap-3">
                                     <div className="rounded-xl bg-sky-500/15 p-2">
                                         <Monitor className="h-5 w-5 text-sky-300" />
@@ -233,7 +233,7 @@ export default function Sessions({
 
                             <div className="mt-4 space-y-3">
                                 {currentUserList.length === 0 ? (
-                                    <div className="rounded-xl border border-dashed border-white/15 bg-white/5 p-5 text-sm text-white/70">
+                                    <div className="rounded-xl border border-dashed border-slate-800 bg-slate-900/50 p-5 text-sm text-white/70">
                                         Tidak ada pengguna yang terdaftar.
                                     </div>
                                 ) : (
@@ -244,8 +244,8 @@ export default function Sessions({
                                             onClick={() => selectUser(user)}
                                             className={`w-full rounded-2xl border px-3 py-3 text-left transition ${
                                                 selectedUserId === user.id
-                                                    ? 'border-sky-400/50 bg-sky-500/10 shadow-lg shadow-sky-500/5'
-                                                    : 'border-white/10 bg-white/5 hover:bg-white/10'
+                                                    ? 'border-sky-400/50 bg-sky-500/10  '
+                                                    : 'border-slate-800 bg-slate-900/50 hover:bg-slate-900/80'
                                             }`}
                                         >
                                             <div className="flex items-start justify-between gap-3">
@@ -262,10 +262,10 @@ export default function Sessions({
                                             </div>
 
                                             <div className="mt-3 flex gap-2 text-[10px] text-white/55">
-                                                <span className="rounded-full bg-white/5 px-2 py-1">
+                                                <span className="rounded-full bg-slate-900/50 px-2 py-1">
                                                     {user.session_count} sesi
                                                 </span>
-                                                <span className="rounded-full bg-white/5 px-2 py-1">
+                                                <span className="rounded-full bg-slate-900/50 px-2 py-1">
                                                     {user.oauth_count} OAuth
                                                 </span>
                                             </div>
@@ -275,7 +275,7 @@ export default function Sessions({
                             </div>
 
                             {users && users.last_page > 1 && (
-                                <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs text-white/65">
+                                <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-800 pt-4 text-xs text-white/65">
                                     <button
                                         type="button"
                                         onClick={() =>
@@ -284,7 +284,7 @@ export default function Sessions({
                                             )
                                         }
                                         disabled={!users.prev_page_token}
-                                        className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                        className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
                                     >
                                         <ChevronLeft className="h-3.5 w-3.5" />
                                         Prev
@@ -301,7 +301,7 @@ export default function Sessions({
                                             )
                                         }
                                         disabled={!users.next_page_token}
-                                        className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                        className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
                                     >
                                         Next
                                         <ChevronRight className="h-3.5 w-3.5" />
@@ -312,7 +312,7 @@ export default function Sessions({
 
                         <div className="space-y-6">
                             <GlassCard>
-                                <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                                <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
                                     <div className="rounded-xl bg-sky-500/15 p-2">
                                         <Monitor className="h-5 w-5 text-sky-300" />
                                     </div>
@@ -330,14 +330,14 @@ export default function Sessions({
 
                                 <div className="mt-4 space-y-3">
                                     {sessions.length === 0 ? (
-                                        <div className="rounded-xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-white/70">
+                                        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-900/50 p-6 text-sm text-white/70">
                                             Tidak ada sesi aktif yang tercatat.
                                         </div>
                                     ) : (
                                         sessions.map((session) => (
                                             <div
                                                 key={session.id}
-                                                className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                                                className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4"
                                             >
                                                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                                     <div className="space-y-1">
@@ -392,7 +392,7 @@ export default function Sessions({
                                 </div>
 
                                 {sessionMeta.last_page > 1 && (
-                                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs text-white/65">
+                                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-800 pt-4 text-xs text-white/65">
                                         <button
                                             type="button"
                                             onClick={() =>
@@ -401,7 +401,7 @@ export default function Sessions({
                                                 )
                                             }
                                             disabled={!session_prev_page_token}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
                                         >
                                             <ChevronLeft className="h-3.5 w-3.5" />
                                             Prev
@@ -418,7 +418,7 @@ export default function Sessions({
                                                 )
                                             }
                                             disabled={!session_next_page_token}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
                                         >
                                             Next
                                             <ChevronRight className="h-3.5 w-3.5" />
@@ -428,7 +428,7 @@ export default function Sessions({
                             </GlassCard>
 
                             <GlassCard>
-                                <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                                <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
                                     <div className="rounded-xl bg-emerald-500/15 p-2">
                                         <ShieldCheck className="h-5 w-5 text-emerald-300" />
                                     </div>
@@ -445,7 +445,7 @@ export default function Sessions({
 
                                 <div className="mt-4 space-y-3">
                                     {oauthApplications.length === 0 ? (
-                                        <div className="rounded-xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-white/70">
+                                        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-900/50 p-6 text-sm text-white/70">
                                             Tidak ada aplikasi OAuth yang saat
                                             ini terhubung.
                                         </div>
@@ -453,7 +453,7 @@ export default function Sessions({
                                         oauthApplications.map((app) => (
                                             <div
                                                 key={app.id}
-                                                className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                                                className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4"
                                             >
                                                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                                     <div className="space-y-1">
@@ -498,7 +498,7 @@ export default function Sessions({
                                 </div>
 
                                 {oauthMeta.last_page > 1 && (
-                                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs text-white/65">
+                                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-800 pt-4 text-xs text-white/65">
                                         <button
                                             type="button"
                                             onClick={() =>
@@ -507,7 +507,7 @@ export default function Sessions({
                                                 )
                                             }
                                             disabled={!oauth_prev_page_token}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
                                         >
                                             <ChevronLeft className="h-3.5 w-3.5" />
                                             Prev
@@ -524,7 +524,7 @@ export default function Sessions({
                                                 )
                                             }
                                             disabled={!oauth_next_page_token}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
                                         >
                                             Next
                                             <ChevronRight className="h-3.5 w-3.5" />

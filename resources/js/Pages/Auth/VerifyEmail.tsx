@@ -20,12 +20,12 @@ export default function VerifyEmail({ status }: { status?: string }) {
             <Head title="Verifikasi Email" />
 
             <div className="space-y-6">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl border border-white/20 bg-white/10 text-white shadow-xl backdrop-blur-xl">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-800 bg-slate-900/80 text-white  ">
                     <MailCheck className="h-8 w-8" />
                 </div>
 
                 <div className="space-y-3 text-center">
-                    <h2 className="text-3xl font-bold text-white drop-shadow-lg">
+                    <h2 className="text-3xl font-bold text-white ">
                         Cek Email Anda Dulu
                     </h2>
                     <p className="text-sm leading-7 text-white/80">
@@ -35,7 +35,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
                     </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/15 bg-white/8 p-5 text-sm leading-7 text-white/75 backdrop-blur-sm">
+                <div className="rounded-2xl border border-slate-800 bg-white/8 p-5 text-sm leading-7 text-white/75 ">
                     <p>
                         Kalau emailnya belum masuk, coba cek folder spam atau
                         promosi. Masih belum ketemu juga? Anda bisa minta kami

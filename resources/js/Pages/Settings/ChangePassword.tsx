@@ -33,12 +33,12 @@ export default function ChangePassword() {
             <Head title="Ganti Password" />
 
             <div className="space-y-6">
-                <h2 className="text-center text-2xl font-bold text-white drop-shadow-lg">
+                <h2 className="text-center text-2xl font-bold text-white ">
                     Ganti Password
                 </h2>
 
                 {/* Warning Banner */}
-                <div className="flex items-start gap-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-amber-200 backdrop-blur-sm">
+                <div className="flex items-start gap-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-amber-200 ">
                     <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                     <p>
                         Password Anda telah direset oleh administrator. Anda

@@ -175,7 +175,7 @@ export default function Security({
             <div className="py-12">
                 <div className="mx-auto max-w-9xl px-4 sm:px-6 lg:px-8">
                     <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl">
+                        <h1 className="text-3xl font-bold text-white  sm:text-4xl">
                             Pengaturan Keamanan
                         </h1>
                         <p className="mt-2 text-base text-white/80 sm:text-lg">
@@ -186,7 +186,7 @@ export default function Security({
                     <div className="space-y-6">
                         <GlassCard>
                             <div className="flex flex-col items-start gap-4 sm:flex-row">
-                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 backdrop-blur-sm">
+                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
                                     <LockKeyhole className="h-8 w-8 text-sky-300" />
                                 </div>
                                 <div className="flex-1 space-y-5">
@@ -309,7 +309,7 @@ export default function Security({
 
                         <GlassCard>
                             <div className="flex flex-col items-start gap-4 sm:flex-row">
-                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 backdrop-blur-sm">
+                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
                                     <Mail className="h-8 w-8 text-blue-300" />
                                 </div>
                                 <div className="flex-1 space-y-5">
@@ -395,7 +395,7 @@ export default function Security({
                         {/* 2FA Status Card */}
                         <GlassCard>
                             <div className="flex flex-col items-start gap-4 sm:flex-row">
-                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 backdrop-blur-sm">
+                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4 ">
                                     <Shield
                                         className={`h-8 w-8 ${
                                             twoFactorConfirmed
@@ -477,7 +477,7 @@ export default function Security({
                                             onClick={() =>
                                                 setShowCodeView((v) => !v)
                                             }
-                                            className="flex shrink-0 items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-sm transition hover:bg-white/20"
+                                            className="flex shrink-0 items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-white  transition hover:bg-slate-800"
                                         >
                                             {showCodeView ? (
                                                 <>
@@ -495,7 +495,7 @@ export default function Security({
 
                                     {showCodeView ? (
                                         <div className="space-y-3">
-                                            <div className="rounded-xl border border-sky-400/30 bg-sky-400/10 p-4 text-sm text-sky-200 backdrop-blur-sm">
+                                            <div className="rounded-xl border border-sky-400/30 bg-sky-400/10 p-4 text-sm text-sky-200 ">
                                                 Buka aplikasi autentikator,
                                                 pilih{' '}
                                                 <strong>
@@ -513,7 +513,7 @@ export default function Security({
                                                     type="button"
                                                     onClick={copySecretKey}
                                                     title="Salin kode"
-                                                    className="shrink-0 rounded-lg border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
+                                                    className="shrink-0 rounded-lg border border-slate-800 bg-slate-900/80 p-2 text-white transition hover:bg-slate-800"
                                                 >
                                                     <Copy className="h-4 w-4" />
                                                 </button>
@@ -540,7 +540,7 @@ export default function Security({
                                             onSubmit={confirmTwoFactor}
                                             className="space-y-4"
                                         >
-                                            <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-sm text-yellow-200 backdrop-blur-sm">
+                                            <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-sm text-yellow-200 ">
                                                 {showCodeView
                                                     ? 'Setelah menambahkan kode ke aplikasi autentikator, masukkan kode 6 digit yang dihasilkan untuk mengonfirmasi setup.'
                                                     : 'Setelah scan QR code, masukkan kode 6 digit dari aplikasi autentikator Anda untuk mengonfirmasi setup.'}
@@ -601,7 +601,7 @@ export default function Security({
                                             </p>
                                         </div>
 
-                                        <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200 backdrop-blur-sm">
+                                        <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200 ">
                                             <strong>Penting:</strong> Simpan
                                             kode ini di password manager atau
                                             tempat aman lainnya. Setiap kode
@@ -613,7 +613,7 @@ export default function Security({
                                                 (code, index) => (
                                                     <div
                                                         key={index}
-                                                        className="rounded bg-white/10 px-4 py-2 text-center text-white backdrop-blur-sm"
+                                                        className="rounded bg-slate-900/80 px-4 py-2 text-center text-white "
                                                     >
                                                         {code}
                                                     </div>

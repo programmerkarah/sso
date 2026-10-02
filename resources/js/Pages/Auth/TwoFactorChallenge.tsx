@@ -154,11 +154,11 @@ export default function TwoFactorChallenge() {
                 ) : (
                     <input type="hidden" name="code" value={code} />
                 )}
-                <h2 className="text-center text-3xl font-bold text-white drop-shadow-lg">
+                <h2 className="text-center text-3xl font-bold text-white ">
                     Autentikasi Dua Faktor
                 </h2>
 
-                <div className="rounded-xl border border-blue-400/30 bg-blue-400/10 p-4 text-sm text-blue-200 backdrop-blur-sm">
+                <div className="rounded-xl border border-blue-400/30 bg-blue-400/10 p-4 text-sm text-blue-200 ">
                     {!recovery ? (
                         <p>
                             Masukkan kode 6 digit dari aplikasi autentikator
@@ -171,7 +171,7 @@ export default function TwoFactorChallenge() {
 
                 {!recovery ? (
                     <div className="space-y-4">
-                        <div className="block text-sm font-semibold text-white drop-shadow-lg">
+                        <div className="block text-sm font-semibold text-white ">
                             <KeyRound className="mr-1.5 inline h-4 w-4 opacity-80" />
                             Kode Autentikasi
                         </div>
@@ -195,7 +195,7 @@ export default function TwoFactorChallenge() {
                                     onFocus={(e) => e.target.select()}
                                     autoFocus={index === 0}
                                     autoComplete="one-time-code"
-                                    className="h-14 w-11 rounded-xl border border-white/30 bg-white/10 text-center text-2xl font-bold text-white backdrop-blur-sm transition-all focus:border-white/70 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 sm:w-12"
+                                    className="h-14 w-11 rounded-xl border border-white/30 bg-slate-900/80 text-center text-2xl font-bold text-white  transition-all focus:border-white/70 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 sm:w-12"
                                 />
                             ))}
                         </div>
