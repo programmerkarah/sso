@@ -147,7 +147,7 @@ export default function Login({ status }: { status?: string }) {
                         type="checkbox"
                         name="remember"
                         value="1"
-                        className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-sky-600 focus:ring-sky-500/30"
+                        className="h-4 w-4 rounded border-cyan-900/60 bg-[#041b2d] text-[#00aeef] focus:ring-sky-500/30"
                     />
                     Ingat saya di perangkat ini
                 </label>
