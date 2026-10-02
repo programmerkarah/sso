@@ -256,7 +256,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                     applications.prev_page_token!,
                                                 )
                                             }
-                                            className="rounded-md bg-white px-3 py-2 text-sm font-medium text-[#49657b] hover:bg-[#eef5f9]"
+                                            className="ui-hover rounded-md border border-[var(--bps-border)] bg-[var(--bps-surface)] px-3 py-2 text-sm font-medium text-[var(--bps-muted)]"
                                         >
                                             Sebelumnya
                                         </button>
@@ -268,7 +268,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                             onClick={() =>
                                                 visitPage(page.token)
                                             }
-                                            className={`rounded-md px-3 py-2 text-sm font-medium ${page.active ? 'bg-[#e7f3fb] text-[#2f6f98]' : 'bg-slate-900/80 text-[var(--bps-text)] hover:bg-slate-800'}`}
+                                            className={`rounded-md border px-3 py-2 text-sm font-medium ${page.active ? 'ui-selected' : 'ui-hover border-[var(--bps-border)] bg-[var(--bps-surface)] text-[var(--bps-text)]'}`}
                                         >
                                             {page.label}
                                         </button>
@@ -281,7 +281,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                     applications.next_page_token!,
                                                 )
                                             }
-                                            className="rounded-md bg-white px-3 py-2 text-sm font-medium text-[#49657b] hover:bg-[#eef5f9]"
+                                            className="ui-hover rounded-md border border-[var(--bps-border)] bg-[var(--bps-surface)] px-3 py-2 text-sm font-medium text-[var(--bps-muted)]"
                                         >
                                             Berikutnya
                                         </button>
