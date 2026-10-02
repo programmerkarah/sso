@@ -942,7 +942,7 @@ export default function DatabaseTables({
                             className="absolute inset-0 bg-slate-950/70 "
                             onClick={closeEditRowModal}
                         />
-                        <div className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
+                        <ScrollArea className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-slate-800 bg-slate-900/80" viewportClassName="p-6">
                             <div className="mb-4 flex items-start justify-between gap-4">
                                 <div>
                                     <h3 className="text-xl font-bold text-white">
@@ -1157,7 +1157,7 @@ export default function DatabaseTables({
                                 </div>
                             </form>
                         </ScrollArea>
-                    </div>
+                    </ScrollArea>
                 )}
             </div>
         </AppLayout>
