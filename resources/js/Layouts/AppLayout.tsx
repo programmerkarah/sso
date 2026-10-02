@@ -252,7 +252,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                         )
                                     }
                                 >
-{navigation.account.map((item) => (
+                                    {navigation.account.map((item) => (
                                         <Link
                                             key={item.href}
                                             href={item.href}
