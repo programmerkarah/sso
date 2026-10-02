@@ -453,7 +453,7 @@ export default function Index({
                             ]}
                         />
 
-                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3 xl:grid-cols-4">
                             <MetricCard
                                 label="Jumlah tabel"
                                 value={formatNumber(database.table_count)}
