@@ -35,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
         Passport::useClientModel(PassportClient::class);
         Passport::authorizationView('passport.authorize');
 
+        // Batasi umur kredensial OAuth agar sesi integrasi tidak hidup terlalu lama.
+        Passport::tokensExpireIn(now()->addDays(7));
+        Passport::refreshTokensExpireIn(now()->addDays(7));
+
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new MailMessage)
                 ->subject('Verifikasi Alamat Email Akun')
