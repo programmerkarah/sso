@@ -9,6 +9,17 @@ import './bootstrap';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+const storedTheme = window.localStorage.getItem('sso-theme');
+const initialTheme =
+    storedTheme === 'light' || storedTheme === 'dark'
+        ? storedTheme
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+
+document.documentElement.dataset.theme = initialTheme;
+document.documentElement.classList.toggle('theme-dark', initialTheme === 'dark');
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) =>
