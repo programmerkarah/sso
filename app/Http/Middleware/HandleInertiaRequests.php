@@ -77,6 +77,8 @@ class HandleInertiaRequests extends Middleware
             $request->routeIs('settings.security') => ['title' => 'Keamanan Akun', 'description' => 'Kelola password, email, dan autentikasi dua faktor.', 'section' => 'account', 'layout' => $pageLayout],
             $request->routeIs('settings.sessions') => ['title' => 'Sesi & Akses', 'description' => 'Kelola sesi web aktif dan akses OAuth yang terhubung.', 'section' => 'account', 'layout' => $pageLayout],
             $request->routeIs('admin.applications.*') => ['title' => 'Aplikasi', 'description' => 'Kelola aplikasi yang terhubung ke SSO.', 'section' => 'admin', 'layout' => $pageLayout],
+            $request->routeIs('admin.organizations.create') => ['title' => 'Tambah Organisasi', 'description' => 'Buat organisasi baru untuk menentukan cakupan pengguna dan akses aplikasi.', 'section' => 'admin', 'layout' => $pageLayout],
+            $request->routeIs('admin.organizations.edit') => ['title' => 'Edit Organisasi', 'description' => 'Perbarui identitas, tipe, dan status organisasi.', 'section' => 'admin', 'layout' => $pageLayout],
             $request->routeIs('admin.organizations.*') => ['title' => 'Organisasi', 'description' => 'Kelola organisasi dan cakupan akses aplikasi.', 'section' => 'admin', 'layout' => $pageLayout],
             $request->routeIs('admin.users.*') => ['title' => 'Pengguna', 'description' => 'Kelola identitas, akses, verifikasi, dan keamanan pengguna.', 'section' => 'admin', 'layout' => $pageLayout],
             $request->routeIs('admin.system.*') => ['title' => 'Sistem', 'description' => 'Pantau layanan, database, backup, dan audit aktivitas.', 'section' => 'admin', 'layout' => $pageLayout],
