@@ -1819,7 +1819,6 @@ export default function Index({
                         </aside>
                     </div>
                 )}
-            </div>
 
             {/* Modal Sesi & Perangkat */}
             {userSecurityModal.isOpen && (
