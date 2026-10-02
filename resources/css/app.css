@@ -730,3 +730,28 @@ html[data-theme='dark'] .ui-modal-surface {
 .react-scroll-thumb:hover {
     background: color-mix(in srgb, var(--bps-muted) 78%, transparent);
 }
+
+
+.ui-inactive-card {
+    background: color-mix(in srgb, var(--bps-surface) 78%, var(--bps-bg));
+    border-color: color-mix(in srgb, var(--bps-border) 72%, transparent);
+    color: var(--bps-disabled-text);
+    box-shadow: none;
+}
+.ui-inactive-card:hover {
+    background: color-mix(in srgb, var(--bps-surface) 82%, var(--bps-bg));
+    border-color: var(--bps-border);
+}
+.ui-inactive-card .inactive-muted {
+    color: var(--bps-disabled-text) !important;
+}
+.workspace-summary {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bps-bg) 82%, transparent) 0%,
+        color-mix(in srgb, var(--bps-bg) 68%, transparent) 74%,
+        transparent 100%
+    );
+    border-bottom: 0;
+    backdrop-filter: blur(12px);
+}
