@@ -354,17 +354,23 @@ export default function DatabaseTables({
                             <MetricCard
                                 label="Total tabel"
                                 value={formatNumber(tables.length)}
-                                icon={<Table2 className="h-5 w-5 text-[#4a9fd7]" />}
+                                icon={
+                                    <Table2 className="h-5 w-5 text-[#4a9fd7]" />
+                                }
                             />
                             <MetricCard
                                 label="Tabel aktif"
                                 value={selectedTable?.name ?? '—'}
-                                icon={<Columns3 className="h-5 w-5 text-[#69a662]" />}
+                                icon={
+                                    <Columns3 className="h-5 w-5 text-[#69a662]" />
+                                }
                             />
                             <MetricCard
                                 label="Koneksi database"
                                 value={database.connection}
-                                icon={<Database className="h-5 w-5 text-[#bd8549]" />}
+                                icon={
+                                    <Database className="h-5 w-5 text-[#bd8549]" />
+                                }
                             />
                         </div>
                     </>
@@ -452,7 +458,11 @@ export default function DatabaseTables({
                         </ScrollArea>
                     </GlassCard>
 
-                    <ScrollArea className="h-full min-h-0 min-w-0" viewportClassName="pr-1" contentClassName="space-y-4 pb-2">
+                    <ScrollArea
+                        className="h-full min-h-0 min-w-0"
+                        viewportClassName="pr-1"
+                        contentClassName="space-y-4 pb-2"
+                    >
                         {selectedTable ? (
                             <>
                                 <GlassCard>
@@ -901,270 +911,253 @@ export default function DatabaseTables({
                         )}
                     </ScrollArea>
                 </div>
-
             </PageWorkspace>
 
-                {expandedCell && (
-                    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
-                        <div
-                            className="absolute inset-0 bg-slate-950/70 "
-                            onClick={() => setExpandedCell(null)}
-                        />
-                        <ScrollArea
-                            className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)]"
-                            viewportClassName="p-6"
-                        >
-                            <div className="mb-4 flex items-start justify-between gap-4">
-                                <div>
-                                    <h3 className="text-xl font-bold text-[var(--bps-text)]">
-                                        Full Text
-                                    </h3>
-                                    <p className="mt-1 text-sm text-[var(--bps-muted)]">
-                                        kolom: {expandedCell.column}
-                                    </p>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setExpandedCell(null)}
-                                    className="ui-icon-button rounded-lg p-2"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
+            {expandedCell && (
+                <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-slate-950/70 "
+                        onClick={() => setExpandedCell(null)}
+                    />
+                    <ScrollArea
+                        className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)]"
+                        viewportClassName="p-6"
+                    >
+                        <div className="mb-4 flex items-start justify-between gap-4">
+                            <div>
+                                <h3 className="text-xl font-bold text-[var(--bps-text)]">
+                                    Full Text
+                                </h3>
+                                <p className="mt-1 text-sm text-[var(--bps-muted)]">
+                                    kolom: {expandedCell.column}
+                                </p>
                             </div>
-
-                            <pre className="max-w-full whitespace-pre-wrap break-all rounded-xl border border-[var(--bps-border)] theme-code p-4 text-xs leading-6 text-[var(--bps-text)]">
-                                {expandedCell.value}
-                            </pre>
-                        </ScrollArea>
-                    </div>
-                )}
-
-                {editingRow && selectedTable && (
-                    <div className="fixed inset-0 z-[95] flex items-center justify-center p-4">
-                        <div
-                            className="absolute inset-0 bg-slate-950/70 "
-                            onClick={closeEditRowModal}
-                        />
-                        <ScrollArea
-                            className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)]"
-                            viewportClassName="p-6"
-                        >
-                            <div className="mb-4 flex items-start justify-between gap-4">
-                                <div>
-                                    <h3 className="text-xl font-bold text-[var(--bps-text)]">
-                                        Edit Data Baris
-                                    </h3>
-                                    <p className="mt-1 text-sm text-[var(--bps-muted)]">
-                                        Tabel: {selectedTable.name}
-                                    </p>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={closeEditRowModal}
-                                    className="ui-icon-button rounded-lg p-2"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
-                            </div>
-
-                            <form
-                                onSubmit={handleEditRowSubmit}
-                                className="space-y-4"
+                            <button
+                                type="button"
+                                onClick={() => setExpandedCell(null)}
+                                className="ui-icon-button rounded-lg p-2"
                             >
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    {selectedTable.columns
-                                        .filter(
-                                            (column) =>
-                                                column.name !==
-                                                selectedTable.primary_key,
-                                        )
-                                        .map((column) => {
-                                            const fieldValue =
-                                                editRowValues[column.name];
-                                            const stringValue =
-                                                fieldValue === null ||
-                                                fieldValue === undefined
-                                                    ? ''
-                                                    : String(fieldValue);
-                                            const selectOptions =
-                                                getColumnEditorOptions(column);
-                                            const hasSelectOptions =
-                                                selectOptions.length > 0;
-                                            const selectedSelectOption =
-                                                hasSelectOptions
-                                                    ? selectOptions.find(
-                                                          (option) =>
-                                                              option.value ===
-                                                              stringValue,
-                                                      )
-                                                    : null;
-                                            const searchableOptions: SearchableSelectOption[] =
-                                                selectOptions.map((option) => ({
-                                                    label: option.label,
-                                                    description: String(
-                                                        option.value,
-                                                    ),
-                                                    state_token: option.value,
-                                                }));
-                                            const useTimestampField =
-                                                isTimestampColumn(column);
-                                            const isEditableTimestamp =
-                                                isEditableTimestampColumn(
-                                                    column,
-                                                );
-                                            const useTextarea =
-                                                stringValue.length > 80 ||
-                                                column.type.includes('text') ||
-                                                column.type.includes('json');
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
 
-                                            return (
-                                                <div
-                                                    key={column.name}
-                                                    className={
-                                                        useTextarea
-                                                            ? 'sm:col-span-2'
-                                                            : ''
-                                                    }
-                                                >
-                                                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--bps-muted)]">
-                                                        {column.name}
-                                                    </label>
-                                                    {hasSelectOptions ? (
-                                                        <SearchableSelect
-                                                            options={
-                                                                searchableOptions
-                                                            }
-                                                            selectedOption={
-                                                                selectedSelectOption
-                                                                    ? {
-                                                                          label: selectedSelectOption.label,
-                                                                          description:
-                                                                              String(
-                                                                                  selectedSelectOption.value,
-                                                                              ),
-                                                                      }
-                                                                    : null
-                                                            }
-                                                            placeholder={`Pilih ${column.name}`}
-                                                            onSelect={(
-                                                                option,
-                                                            ) =>
-                                                                setEditRowValues(
-                                                                    {
-                                                                        ...editRowValues,
-                                                                        [column.name]:
-                                                                            option.state_token,
-                                                                    },
-                                                                )
-                                                            }
-                                                            onClear={
-                                                                column.nullable
-                                                                    ? () =>
-                                                                          setEditRowValues(
-                                                                              {
-                                                                                  ...editRowValues,
-                                                                                  [column.name]:
-                                                                                      '',
-                                                                              },
-                                                                          )
-                                                                    : undefined
-                                                            }
-                                                        />
-                                                    ) : useTimestampField ? (
-                                                        <GlassDatePicker
-                                                            value={stringValue}
-                                                            type="datetime-local"
-                                                            valueFormat="database-datetime"
-                                                            disabled={
-                                                                !isEditableTimestamp
-                                                            }
-                                                            onChange={(
-                                                                nextValue,
-                                                            ) =>
-                                                                setEditRowValues(
-                                                                    {
-                                                                        ...editRowValues,
-                                                                        [column.name]:
-                                                                            nextValue,
-                                                                    },
-                                                                )
-                                                            }
-                                                        />
-                                                    ) : useTextarea ? (
-                                                        <textarea
-                                                            rows={4}
-                                                            value={stringValue}
-                                                            onChange={(event) =>
-                                                                setEditRowValues(
-                                                                    {
-                                                                        ...editRowValues,
-                                                                        [column.name]:
-                                                                            event
-                                                                                .target
-                                                                                .value,
-                                                                    },
-                                                                )
-                                                            }
-                                                            className="w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] px-3 py-2 text-sm text-[var(--bps-text)] placeholder:text-[var(--bps-muted)] focus:border-blue-300/50 focus:outline-none"
-                                                        />
-                                                    ) : (
-                                                        <input
-                                                            type="text"
-                                                            value={stringValue}
-                                                            onChange={(event) =>
-                                                                setEditRowValues(
-                                                                    {
-                                                                        ...editRowValues,
-                                                                        [column.name]:
-                                                                            event
-                                                                                .target
-                                                                                .value,
-                                                                    },
-                                                                )
-                                                            }
-                                                            className="w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] px-3 py-2 text-sm text-[var(--bps-text)] placeholder:text-[var(--bps-muted)] focus:border-blue-300/50 focus:outline-none"
-                                                        />
-                                                    )}
-                                                    <p className="mt-1 text-[11px] text-[var(--bps-muted)]">
-                                                        {column.type}
-                                                        {column.nullable
-                                                            ? ' • nullable'
-                                                            : ''}
-                                                        {column.foreign_key
-                                                            ? ` • referensi ${column.foreign_key.table}.${column.foreign_key.column}`
-                                                            : ''}
-                                                        {useTimestampField
-                                                            ? ` ${!isEditableTimestamp ? ' • read-only' : ''}`
-                                                            : ''}
-                                                    </p>
-                                                </div>
-                                            );
-                                        })}
-                                </div>
+                        <pre className="max-w-full whitespace-pre-wrap break-all rounded-xl border border-[var(--bps-border)] theme-code p-4 text-xs leading-6 text-[var(--bps-text)]">
+                            {expandedCell.value}
+                        </pre>
+                    </ScrollArea>
+                </div>
+            )}
 
-                                <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end">
-                                    <Button
-                                        type="button"
-                                        variant="secondary"
-                                        onClick={closeEditRowModal}
-                                        className="sm:w-auto"
-                                    >
-                                        Batal
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        disabled={isSavingRow}
-                                        className="sm:w-auto"
-                                    >
-                                        {isSavingRow
-                                            ? 'Menyimpan...'
-                                            : 'Simpan Perubahan'}
-                                    </Button>
-                                </div>
-                            </form>
-                        </ScrollArea>
-                    </div>
-                )}
+            {editingRow && selectedTable && (
+                <div className="fixed inset-0 z-[95] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-slate-950/70 "
+                        onClick={closeEditRowModal}
+                    />
+                    <ScrollArea
+                        className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)]"
+                        viewportClassName="p-6"
+                    >
+                        <div className="mb-4 flex items-start justify-between gap-4">
+                            <div>
+                                <h3 className="text-xl font-bold text-[var(--bps-text)]">
+                                    Edit Data Baris
+                                </h3>
+                                <p className="mt-1 text-sm text-[var(--bps-muted)]">
+                                    Tabel: {selectedTable.name}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={closeEditRowModal}
+                                className="ui-icon-button rounded-lg p-2"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+
+                        <form
+                            onSubmit={handleEditRowSubmit}
+                            className="space-y-4"
+                        >
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                {selectedTable.columns
+                                    .filter(
+                                        (column) =>
+                                            column.name !==
+                                            selectedTable.primary_key,
+                                    )
+                                    .map((column) => {
+                                        const fieldValue =
+                                            editRowValues[column.name];
+                                        const stringValue =
+                                            fieldValue === null ||
+                                            fieldValue === undefined
+                                                ? ''
+                                                : String(fieldValue);
+                                        const selectOptions =
+                                            getColumnEditorOptions(column);
+                                        const hasSelectOptions =
+                                            selectOptions.length > 0;
+                                        const selectedSelectOption =
+                                            hasSelectOptions
+                                                ? selectOptions.find(
+                                                      (option) =>
+                                                          option.value ===
+                                                          stringValue,
+                                                  )
+                                                : null;
+                                        const searchableOptions: SearchableSelectOption[] =
+                                            selectOptions.map((option) => ({
+                                                label: option.label,
+                                                description: String(
+                                                    option.value,
+                                                ),
+                                                state_token: option.value,
+                                            }));
+                                        const useTimestampField =
+                                            isTimestampColumn(column);
+                                        const isEditableTimestamp =
+                                            isEditableTimestampColumn(column);
+                                        const useTextarea =
+                                            stringValue.length > 80 ||
+                                            column.type.includes('text') ||
+                                            column.type.includes('json');
+
+                                        return (
+                                            <div
+                                                key={column.name}
+                                                className={
+                                                    useTextarea
+                                                        ? 'sm:col-span-2'
+                                                        : ''
+                                                }
+                                            >
+                                                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--bps-muted)]">
+                                                    {column.name}
+                                                </label>
+                                                {hasSelectOptions ? (
+                                                    <SearchableSelect
+                                                        options={
+                                                            searchableOptions
+                                                        }
+                                                        selectedOption={
+                                                            selectedSelectOption
+                                                                ? {
+                                                                      label: selectedSelectOption.label,
+                                                                      description:
+                                                                          String(
+                                                                              selectedSelectOption.value,
+                                                                          ),
+                                                                  }
+                                                                : null
+                                                        }
+                                                        placeholder={`Pilih ${column.name}`}
+                                                        onSelect={(option) =>
+                                                            setEditRowValues({
+                                                                ...editRowValues,
+                                                                [column.name]:
+                                                                    option.state_token,
+                                                            })
+                                                        }
+                                                        onClear={
+                                                            column.nullable
+                                                                ? () =>
+                                                                      setEditRowValues(
+                                                                          {
+                                                                              ...editRowValues,
+                                                                              [column.name]:
+                                                                                  '',
+                                                                          },
+                                                                      )
+                                                                : undefined
+                                                        }
+                                                    />
+                                                ) : useTimestampField ? (
+                                                    <GlassDatePicker
+                                                        value={stringValue}
+                                                        type="datetime-local"
+                                                        valueFormat="database-datetime"
+                                                        disabled={
+                                                            !isEditableTimestamp
+                                                        }
+                                                        onChange={(nextValue) =>
+                                                            setEditRowValues({
+                                                                ...editRowValues,
+                                                                [column.name]:
+                                                                    nextValue,
+                                                            })
+                                                        }
+                                                    />
+                                                ) : useTextarea ? (
+                                                    <textarea
+                                                        rows={4}
+                                                        value={stringValue}
+                                                        onChange={(event) =>
+                                                            setEditRowValues({
+                                                                ...editRowValues,
+                                                                [column.name]:
+                                                                    event.target
+                                                                        .value,
+                                                            })
+                                                        }
+                                                        className="w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] px-3 py-2 text-sm text-[var(--bps-text)] placeholder:text-[var(--bps-muted)] focus:border-blue-300/50 focus:outline-none"
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={stringValue}
+                                                        onChange={(event) =>
+                                                            setEditRowValues({
+                                                                ...editRowValues,
+                                                                [column.name]:
+                                                                    event.target
+                                                                        .value,
+                                                            })
+                                                        }
+                                                        className="w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] px-3 py-2 text-sm text-[var(--bps-text)] placeholder:text-[var(--bps-muted)] focus:border-blue-300/50 focus:outline-none"
+                                                    />
+                                                )}
+                                                <p className="mt-1 text-[11px] text-[var(--bps-muted)]">
+                                                    {column.type}
+                                                    {column.nullable
+                                                        ? ' • nullable'
+                                                        : ''}
+                                                    {column.foreign_key
+                                                        ? ` • referensi ${column.foreign_key.table}.${column.foreign_key.column}`
+                                                        : ''}
+                                                    {useTimestampField
+                                                        ? ` ${!isEditableTimestamp ? ' • read-only' : ''}`
+                                                        : ''}
+                                                </p>
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+
+                            <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end">
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    onClick={closeEditRowModal}
+                                    className="sm:w-auto"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    disabled={isSavingRow}
+                                    className="sm:w-auto"
+                                >
+                                    {isSavingRow
+                                        ? 'Menyimpan...'
+                                        : 'Simpan Perubahan'}
+                                </Button>
+                            </div>
+                        </form>
+                    </ScrollArea>
+                </div>
+            )}
         </AppLayout>
     );
 }

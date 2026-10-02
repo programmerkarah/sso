@@ -457,22 +457,32 @@ export default function Index({
                             <MetricCard
                                 label="Jumlah tabel"
                                 value={formatNumber(database.table_count)}
-                                icon={<Database className="h-5 w-5 text-[#4a9fd7]" />}
+                                icon={
+                                    <Database className="h-5 w-5 text-[#4a9fd7]" />
+                                }
                             />
                             <MetricCard
                                 label="Total pengguna"
                                 value={formatNumber(database.user_count)}
-                                icon={<User className="h-5 w-5 text-[#69a662]" />}
+                                icon={
+                                    <User className="h-5 w-5 text-[#69a662]" />
+                                }
                             />
                             <MetricCard
                                 label="Total log ditampilkan"
                                 value={formatNumber(logs.total)}
-                                icon={<Activity className="h-5 w-5 text-[#8b76bd]" />}
+                                icon={
+                                    <Activity className="h-5 w-5 text-[#8b76bd]" />
+                                }
                             />
                             <MetricCard
                                 label="Disk bebas"
-                                value={<>{formatNumber(server.disk_free_gb)} GB</>}
-                                icon={<HardDrive className="h-5 w-5 text-[#bd8549]" />}
+                                value={
+                                    <>{formatNumber(server.disk_free_gb)} GB</>
+                                }
+                                icon={
+                                    <HardDrive className="h-5 w-5 text-[#bd8549]" />
+                                }
                             />
                         </div>
                     </>

@@ -1356,17 +1356,23 @@ export default function Index({
                             <MetricCard
                                 label="Total akun"
                                 value={formatNumber(users.total)}
-                                icon={<UserCog className="h-5 w-5 text-[#4a9fd7]" />}
+                                icon={
+                                    <UserCog className="h-5 w-5 text-[#4a9fd7]" />
+                                }
                             />
                             <MetricCard
                                 label="2FA aktif (halaman ini)"
                                 value={formatNumber(twoFactorCount)}
-                                icon={<ShieldCheck className="h-5 w-5 text-[#69a662]" />}
+                                icon={
+                                    <ShieldCheck className="h-5 w-5 text-[#69a662]" />
+                                }
                             />
                             <MetricCard
                                 label="Admin (halaman ini)"
                                 value={formatNumber(adminCount)}
-                                icon={<Shield className="h-5 w-5 text-[#8b76bd]" />}
+                                icon={
+                                    <Shield className="h-5 w-5 text-[#8b76bd]" />
+                                }
                             />
                         </div>
                     </>
