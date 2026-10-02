@@ -457,3 +457,154 @@ html[data-theme='dark'] .theme-warning {
     border-color: rgba(246, 201, 149, 0.34);
     color: #f6d5aa;
 }
+
+
+/* Shared semantic interaction states */
+.ui-surface {
+    background: var(--bps-surface);
+    border-color: var(--bps-border);
+    color: var(--bps-text);
+}
+
+.ui-surface-soft {
+    background: var(--bps-surface-soft);
+    border-color: var(--bps-border);
+    color: var(--bps-text);
+}
+
+.ui-hover {
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.ui-hover:hover {
+    background: #eef5f9;
+    border-color: #b9d4e6;
+    color: #18324a;
+}
+
+.ui-selected {
+    background: #e7f3fb;
+    border-color: #a9d3ec;
+    color: #2f6f98;
+}
+
+.ui-selected:hover {
+    background: #dceef9;
+    border-color: #8fc5e5;
+}
+
+.ui-danger {
+    color: #b85d52;
+    border-color: #efc3bd;
+    background: #fff6f4;
+}
+
+.ui-danger:hover {
+    color: #9f4d43;
+    border-color: #e9aaa2;
+    background: #ffe9e5;
+}
+
+.ui-success {
+    color: #4f8a49;
+    border-color: #cce4c7;
+    background: #eef7ec;
+}
+
+.ui-success:hover {
+    background: #e3f2df;
+    border-color: #b8d9b2;
+}
+
+.ui-warning {
+    color: #94632d;
+    border-color: #efd6ad;
+    background: #fff8ed;
+}
+
+.ui-warning:hover {
+    background: #fff0dc;
+    border-color: #e7c795;
+}
+
+.ui-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--bps-border);
+    background: var(--bps-surface-soft);
+    color: var(--bps-muted);
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.ui-icon-button:hover {
+    background: #eaf4fb;
+    border-color: #b8d9ee;
+    color: #347fae;
+}
+
+.workspace-summary {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bps-bg) 98%, transparent),
+        color-mix(in srgb, var(--bps-bg) 94%, transparent) 88%,
+        transparent
+    );
+}
+
+html[data-theme='dark'] .ui-hover:hover {
+    background: #29404d;
+    border-color: #4b6877;
+    color: #edf5f8;
+}
+
+html[data-theme='dark'] .ui-selected {
+    background: rgba(126, 197, 239, 0.16);
+    border-color: rgba(126, 197, 239, 0.42);
+    color: #b7ddf4;
+}
+
+html[data-theme='dark'] .ui-selected:hover {
+    background: rgba(126, 197, 239, 0.22);
+    border-color: rgba(126, 197, 239, 0.56);
+}
+
+html[data-theme='dark'] .ui-danger {
+    color: #f2aaa1;
+    border-color: rgba(242, 170, 161, 0.3);
+    background: rgba(230, 138, 128, 0.09);
+}
+
+html[data-theme='dark'] .ui-danger:hover {
+    color: #ffc0b8;
+    border-color: rgba(242, 170, 161, 0.5);
+    background: rgba(230, 138, 128, 0.16);
+}
+
+html[data-theme='dark'] .ui-success {
+    color: #b8deb3;
+    border-color: rgba(169, 214, 163, 0.3);
+    background: rgba(169, 214, 163, 0.1);
+}
+
+html[data-theme='dark'] .ui-success:hover {
+    background: rgba(169, 214, 163, 0.16);
+    border-color: rgba(169, 214, 163, 0.46);
+}
+
+html[data-theme='dark'] .ui-warning {
+    color: #f6d5aa;
+    border-color: rgba(246, 201, 149, 0.32);
+    background: rgba(246, 201, 149, 0.1);
+}
+
+html[data-theme='dark'] .ui-warning:hover {
+    background: rgba(246, 201, 149, 0.16);
+    border-color: rgba(246, 201, 149, 0.48);
+}
+
+html[data-theme='dark'] .ui-icon-button:hover {
+    background: rgba(126, 197, 239, 0.14);
+    border-color: rgba(126, 197, 239, 0.38);
+    color: #b7ddf4;
+}
