@@ -62,7 +62,7 @@ export default function Index({
                                                 className="h-full w-full object-contain"
                                             />
                                         ) : (
-                                            <div className="flex h-full w-full items-center justify-center rounded-xl bg-slate-900/80 text-[var(--bps-muted)]">
+                                            <div className="flex h-full w-full items-center justify-center rounded-xl bg-[var(--bps-surface-soft)] text-[var(--bps-muted)]">
                                                 <Globe className="h-6 w-6" />
                                             </div>
                                         )}
