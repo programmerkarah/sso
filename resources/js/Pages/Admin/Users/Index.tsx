@@ -37,6 +37,7 @@ import SearchableSelect, {
 } from '@/Components/SearchableSelect';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
+import { formatNumber } from '@/utils/number';
 
 interface ManagedUser {
     id: number;
@@ -1342,7 +1343,7 @@ export default function Index({
                                     Total akun
                                 </div>
                                 <div className="text-3xl font-semibold text-white">
-                                    {users.total}
+                                    {formatNumber(users.total)}
                                 </div>
                             </div>
                         </div>
@@ -1387,8 +1388,8 @@ export default function Index({
                                     Daftar Pengguna
                                 </h2>
                                 <p className="mt-1 text-sm text-white/60">
-                                    Halaman {users.current_page} dari{' '}
-                                    {users.last_page} — {users.total} pengguna
+                                    Halaman {formatNumber(users.current_page)} dari{' '}
+                                    {formatNumber(users.last_page)} — {formatNumber(users.total)} pengguna
                                     {selectedUser ? ' cocok dengan filter' : ''}
                                 </p>
                             </div>
@@ -1670,8 +1671,8 @@ export default function Index({
                     {users.last_page > 1 && (
                         <div className="flex items-center justify-between border-t border-slate-800 bg-black/10 px-6 py-4">
                             <p className="text-sm text-white/60">
-                                Menampilkan {users.from ?? 0}–{users.to ?? 0}{' '}
-                                dari {users.total} pengguna
+                                Menampilkan {formatNumber(users.from ?? 0)}–{formatNumber(users.to ?? 0)}{' '}
+                                dari {formatNumber(users.total)} pengguna
                             </p>
                             <div className="flex items-center gap-1">
                                 {users.prev_page_token ? (
