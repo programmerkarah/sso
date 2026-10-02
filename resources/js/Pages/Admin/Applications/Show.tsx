@@ -21,6 +21,7 @@ import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
 import PageHeader from '@/Components/PageHeader';
+import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application } from '@/types';
 
@@ -411,11 +412,11 @@ export default function Show({ application, appUrl }: ShowProps) {
                                                 : 'Salin'}
                                         </button>
                                     </div>
-                                    <pre className="overflow-x-auto whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
+                                    <ScrollArea axis="horizontal" viewportClassName="pb-2"><pre className="whitespace-pre-wrap break-all text-xs leading-6 text-white/90">
                                         <code>
                                             {`SSO_CLIENT_ID=${application.oauth_client?.id || 'your-client-id'}\nSSO_CLIENT_SECRET=${application.oauth_client?.secret || 'regenerate-secret-first'}\nSSO_REDIRECT_URI=${application.callback_url}\nSSO_REGISTER_URL=${appUrl}/register\nSSO_BASE_URL=${appUrl}\nSSO_USER_ENDPOINT=/api/user`}
                                         </code>
-                                    </pre>
+                                    </pre></ScrollArea>
                                 </div>
 
                                 <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm leading-7 text-white/70">
