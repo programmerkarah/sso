@@ -1815,7 +1815,7 @@ export default function Index({
 
             {/* Modal Sesi & Perangkat */}
             {userSecurityModal.isOpen && (
-                <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto p-4 pt-12">
+                <div className="fixed inset-0 z-[80] flex items-start justify-center p-4 pt-12">
                     <div
                         className="absolute inset-0 bg-black/60 "
                         onClick={closeUserSecurity}
@@ -1910,7 +1910,7 @@ export default function Index({
                         </div>
 
                         {/* Content */}
-                        <div className="max-h-[60vh] overflow-y-auto p-5">
+                        <ScrollArea className="h-[60vh] max-h-[60vh]" viewportClassName="p-5">
                             {userSecurityModal.loading ? (
                                 <div className="flex flex-col items-center justify-center gap-2 py-12 text-white/40">
                                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-800 border-t-teal-400" />
@@ -2281,7 +2281,7 @@ export default function Index({
                                     )}
                                 </>
                             )}
-                        </div>
+                        </ScrollArea>
                     </div>
                 </div>
             )}
