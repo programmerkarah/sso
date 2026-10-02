@@ -26,7 +26,6 @@ export default function Register() {
     const organizationSelectOptions: SearchableSelectOption[] =
         organizations.map((organization) => ({
             label: organization.name,
-            description: organization.type,
             state_token: String(organization.id),
         }));
 
@@ -146,8 +145,6 @@ export default function Register() {
                                 selectedOrganizationOption
                                     ? {
                                           label: selectedOrganizationOption.label,
-                                          description:
-                                              selectedOrganizationOption.description,
                                       }
                                     : null
                             }
