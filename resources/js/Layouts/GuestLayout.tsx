@@ -62,7 +62,10 @@ export default function GuestLayout({ children }: PropsWithChildren) {
 
             <div className="mx-auto grid min-h-screen max-w-7xl lg:grid-cols-[0.9fr_1.1fr]">
                 <aside className="hidden border-r border-slate-800 px-10 py-9 lg:flex lg:flex-col xl:px-14">
-                    <Link href="/" className="inline-flex w-fit items-center gap-3">
+                    <Link
+                        href="/"
+                        className="inline-flex w-fit items-center gap-3"
+                    >
                         <AppIcon className="h-9 w-9" />
                         <div>
                             <div className="text-sm font-semibold text-slate-100">
@@ -117,7 +120,10 @@ export default function GuestLayout({ children }: PropsWithChildren) {
 
                 <main className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-8 lg:px-12 xl:px-16">
                     <div className="w-full max-w-lg">
-                        <Link href="/" className="mb-8 flex items-center gap-3 lg:hidden">
+                        <Link
+                            href="/"
+                            className="mb-8 flex items-center gap-3 lg:hidden"
+                        >
                             <AppIcon className="h-9 w-9" />
                             <div>
                                 <div className="text-sm font-semibold text-slate-100">
@@ -134,7 +140,10 @@ export default function GuestLayout({ children }: PropsWithChildren) {
                         </div>
 
                         <div className="mt-5 flex items-center justify-between gap-4 text-xs text-slate-600">
-                            <Link href="/" className="transition hover:text-slate-400">
+                            <Link
+                                href="/"
+                                className="transition hover:text-slate-400"
+                            >
                                 Beranda
                             </Link>
                             <span>BPS Kota Sawahlunto</span>

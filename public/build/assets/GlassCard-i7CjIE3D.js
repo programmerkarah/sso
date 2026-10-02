@@ -1,1 +1,0 @@
-import{j as l}from"./app-BkKbndsq.js";function s({children:r,className:e="",hover:o=!1}){return l.jsx("div",{className:`min-w-0 w-full rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 ${o?"lg:hover:scale-[1.02] lg:hover:border-white/30 lg:hover:bg-white/20 lg:hover:shadow-2xl":""} ${e}`,children:r})}export{s as G};

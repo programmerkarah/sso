@@ -1,4 +1,5 @@
 import { Eye, EyeOff } from 'lucide-react';
+
 import { useState } from 'react';
 
 import { Head, Link, usePage } from '@inertiajs/react';
