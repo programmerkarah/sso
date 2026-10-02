@@ -54,7 +54,7 @@ export default function Index({
                                 className={`flex flex-col gap-5 ${!application.is_active ? 'ui-inactive-card' : ''}`}
                             >
                                 <div
-                                    className={`flex items-start gap-4 ${!application.is_active ? 'inactive-muted' : ''}`}
+                                    className={`inactive-content flex items-start gap-4`}
                                 >
                                     <div className="h-14 w-14 overflow-hidden rounded-2xl border border-[#dbe5ec] bg-[#f8fbfd] p-2">
                                         {application.logo_url ? (
@@ -76,7 +76,7 @@ export default function Index({
                                             </h2>
                                             {isAdmin &&
                                                 !application.is_active && (
-                                                    <span className="rounded-full border border-amber-400/30 bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-300">
+                                                    <span className="inactive-badge rounded-full border px-2 py-0.5 text-xs font-semibold">
                                                         Nonaktif
                                                     </span>
                                                 )}
@@ -88,9 +88,7 @@ export default function Index({
                                     </div>
                                 </div>
 
-                                <div
-                                    className={`ui-field rounded-xl px-3 py-2 text-sm ${!application.is_active ? 'inactive-muted' : ''}`}
-                                >
+                                <div className="inactive-content ui-field rounded-xl px-3 py-2 text-sm">
                                     {application.landing_url}
                                 </div>
 
