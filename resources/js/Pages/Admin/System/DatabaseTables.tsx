@@ -8,7 +8,6 @@ import {
     Search,
     SquarePen,
     Table2,
-    X,
 } from 'lucide-react';
 
 import { FormEvent, useEffect, useState } from 'react';
@@ -19,6 +18,7 @@ import Button from '@/Components/Button';
 import GlassCard from '@/Components/GlassCard';
 import GlassDatePicker from '@/Components/GlassDatePicker';
 import MetricCard from '@/Components/MetricCard';
+import ModalPanel from '@/Components/ModalPanel';
 import PageHeader from '@/Components/PageHeader';
 import PageWorkspace from '@/Components/PageWorkspace';
 import ScrollArea from '@/Components/ScrollArea';
@@ -914,69 +914,28 @@ export default function DatabaseTables({
             </PageWorkspace>
 
             {expandedCell && (
-                <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-slate-950/70 "
-                        onClick={() => setExpandedCell(null)}
-                    />
-                    <ScrollArea
-                        className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)]"
-                        viewportClassName="p-6"
-                    >
-                        <div className="mb-4 flex items-start justify-between gap-4">
-                            <div>
-                                <h3 className="text-xl font-bold text-[var(--bps-text)]">
-                                    Full Text
-                                </h3>
-                                <p className="mt-1 text-sm text-[var(--bps-muted)]">
-                                    kolom: {expandedCell.column}
-                                </p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => setExpandedCell(null)}
-                                className="ui-icon-button rounded-lg p-2"
-                            >
-                                <X className="h-4 w-4" />
-                            </button>
-                        </div>
-
-                        <pre className="max-w-full whitespace-pre-wrap break-all rounded-xl border border-[var(--bps-border)] theme-code p-4 text-xs leading-6 text-[var(--bps-text)]">
-                            {expandedCell.value}
-                        </pre>
-                    </ScrollArea>
-                </div>
+                <ModalPanel
+                    title="Full Text"
+                    description={<>Kolom: <span className="font-medium text-[var(--bps-text)]">{expandedCell.column}</span></>}
+                    onClose={() => setExpandedCell(null)}
+                    maxWidthClassName="max-w-2xl"
+                    bodyClassName="max-h-[60dvh]"
+                >
+                    <pre className="theme-code max-w-full whitespace-pre-wrap break-all rounded-xl p-4 text-xs leading-6">
+                        {expandedCell.value}
+                    </pre>
+                </ModalPanel>
             )}
 
             {editingRow && selectedTable && (
-                <div className="fixed inset-0 z-[95] flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-slate-950/70 "
-                        onClick={closeEditRowModal}
-                    />
-                    <ScrollArea
-                        className="relative h-[85vh] max-h-[85vh] w-full max-w-3xl rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface-soft)]"
-                        viewportClassName="p-6"
-                    >
-                        <div className="mb-4 flex items-start justify-between gap-4">
-                            <div>
-                                <h3 className="text-xl font-bold text-[var(--bps-text)]">
-                                    Edit Data Baris
-                                </h3>
-                                <p className="mt-1 text-sm text-[var(--bps-muted)]">
-                                    Tabel: {selectedTable.name}
-                                </p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={closeEditRowModal}
-                                className="ui-icon-button rounded-lg p-2"
-                            >
-                                <X className="h-4 w-4" />
-                            </button>
-                        </div>
-
-                        <form
+                <ModalPanel
+                    title="Edit Data Baris"
+                    description={<>Tabel: <span className="font-medium text-[var(--bps-text)]">{selectedTable.name}</span></>}
+                    onClose={closeEditRowModal}
+                    maxWidthClassName="max-w-3xl"
+                    bodyClassName="pb-1"
+                >
+                    <form
                             onSubmit={handleEditRowSubmit}
                             className="space-y-4"
                         >
@@ -1101,7 +1060,7 @@ export default function DatabaseTables({
                                                                         .value,
                                                             })
                                                         }
-                                                        className="w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] px-3 py-2 text-sm text-[var(--bps-text)] placeholder:text-[var(--bps-muted)] focus:border-blue-300/50 focus:outline-none"
+                                                        className="ui-field w-full rounded-lg px-3 py-2 text-sm placeholder:text-[var(--bps-muted)]"
                                                     />
                                                 ) : (
                                                     <input
@@ -1115,7 +1074,7 @@ export default function DatabaseTables({
                                                                         .value,
                                                             })
                                                         }
-                                                        className="w-full rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface-soft)] px-3 py-2 text-sm text-[var(--bps-text)] placeholder:text-[var(--bps-muted)] focus:border-blue-300/50 focus:outline-none"
+                                                        className="ui-field w-full rounded-lg px-3 py-2 text-sm placeholder:text-[var(--bps-muted)]"
                                                     />
                                                 )}
                                                 <p className="mt-1 text-[11px] text-[var(--bps-muted)]">
@@ -1155,8 +1114,7 @@ export default function DatabaseTables({
                                 </Button>
                             </div>
                         </form>
-                    </ScrollArea>
-                </div>
+                </ModalPanel>
             )}
         </AppLayout>
     );
