@@ -25,7 +25,7 @@ export default function NavDropdown({
                 <button
                     type="button"
                     onClick={onToggle}
-                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-[#49657b]"
+                    className="ui-hover flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-[var(--bps-muted)]"
                 >
                     <span className="inline-flex items-center gap-2">
                         {icon}
@@ -55,8 +55,8 @@ export default function NavDropdown({
                 className={
                     'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ' +
                     (isOpen
-                        ? 'bg-[#e7f3fb] text-[#2f6f98]'
-                        : 'text-[#6f8495] hover:bg-[#eef5f9] hover:text-[#18324a]')
+                        ? 'ui-selected'
+                        : 'ui-hover text-[var(--bps-muted)]')
                 }
             >
                 {icon}
@@ -69,7 +69,7 @@ export default function NavDropdown({
                 />
             </button>
             {isOpen && (
-                <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-lg border border-[#d5e1e9] bg-white p-1.5 shadow-xl">
+                <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-lg border border-[var(--bps-border)] bg-[var(--bps-surface)] p-1.5 shadow-xl">
                     {children}
                 </div>
             )}
