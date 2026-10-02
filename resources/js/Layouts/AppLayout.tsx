@@ -37,7 +37,7 @@ const isActive = (currentUrl: string, href: string) =>
 
 export default function AppLayout({ children }: PropsWithChildren) {
     const page = usePage<PageProps>();
-    const { app, auth, flash, navigation } = page.props;
+    const { app, auth, flash, navigation, ui } = page.props;
     const currentUrl = page.url;
     const user = auth?.user;
 
@@ -273,9 +273,15 @@ export default function AppLayout({ children }: PropsWithChildren) {
                 </header>
             )}
 
-            <ScrollArea className="min-h-0 flex-1" viewportClassName="px-4 py-5 sm:px-6 sm:py-6 lg:px-8 2xl:px-10">
-                <main className="mx-auto w-full max-w-[1680px]">{children}</main>
-            </ScrollArea>
+            {ui.page.layout.content_scroll ? (
+                <main className="mx-auto flex min-h-0 w-full max-w-[1680px] flex-1 flex-col px-4 py-5 sm:px-6 sm:py-6 lg:px-8 2xl:px-10">
+                    {children}
+                </main>
+            ) : (
+                <ScrollArea className="min-h-0 flex-1" viewportClassName="px-4 py-5 sm:px-6 sm:py-6 lg:px-8 2xl:px-10">
+                    <main className="mx-auto w-full max-w-[1680px]">{children}</main>
+                </ScrollArea>
+            )}
         </div>
     );
 }
