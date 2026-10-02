@@ -15,6 +15,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
 import PageHeader from '@/Components/PageHeader';
+import ScrollArea from '@/Components/ScrollArea';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application, PageProps } from '@/types';
 
@@ -127,7 +128,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                 </div>
 
                 <GlassCard className="overflow-hidden p-0">
-                    <div className="overflow-x-auto">
+                    <ScrollArea axis="horizontal" className="w-full" viewportClassName="pb-2">
                         <table className="min-w-full divide-y divide-white/10">
                             <thead className="bg-slate-900/50">
                                 <tr>
@@ -299,7 +300,7 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                                                 Berikutnya
                                             </button>
                                         )}
-                                    </div>
+                                    </ScrollArea>
                                 </div>
                             </div>
                         )}
