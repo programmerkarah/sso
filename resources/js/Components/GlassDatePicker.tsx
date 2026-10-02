@@ -492,6 +492,7 @@ export default function GlassDatePicker({
 
     const popoverContent = open ? (
         <ScrollArea
+            rootRef={popoverRef}
             className="fixed z-[140] h-[min(32rem,calc(100vh-1rem))] max-h-[min(32rem,calc(100vh-1rem))] rounded-xl border border-slate-700 bg-slate-900"
             viewportClassName="p-3"
             style={{
