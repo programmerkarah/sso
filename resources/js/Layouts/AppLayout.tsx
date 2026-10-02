@@ -25,6 +25,7 @@ import AppIcon from '@/Components/AppIcon';
 import NavDropdown from '@/Components/NavDropdown';
 import ScrollArea from '@/Components/ScrollArea';
 import ToastViewport, { ToastItem } from '@/Components/ToastViewport';
+import ThemeToggle from '@/Components/ThemeToggle';
 import { PageProps } from '@/types';
 
 const iconFor = (icon?: string): ReactNode => {
@@ -301,6 +302,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                             </nav>
 
                             <div className="hidden items-center gap-3 md:flex">
+                                <ThemeToggle compact />
                                 <div className="flex items-center gap-2 border-l border-[#dbe5ec] pl-4">
                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#eaf4fb] text-[#4a9fd7]">
                                         <User className="h-4 w-4" />
@@ -388,6 +390,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                     ))}
                                 </div>
 
+                                <div className="mt-3 flex items-center justify-between border-t border-[#dbe5ec] pt-3">
+                                    <ThemeToggle />
+                                </div>
                                 <div className="mt-3 flex items-center justify-between border-t border-[#dbe5ec] pt-3">
                                     <div className="min-w-0">
                                         <p className="truncate text-sm font-medium text-[#29465f]">
