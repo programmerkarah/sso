@@ -136,8 +136,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
 
                     <ScrollArea
                         className="min-h-0"
-                        viewportClassName="px-4 py-16 sm:px-8 sm:py-16 lg:px-12 xl:px-16"
-                        contentClassName="flex min-h-full items-center justify-center"
+                        contentClassName="flex min-h-full items-center justify-center px-4 py-12 sm:px-8 sm:py-14 lg:px-12 xl:px-16"
                     >
                         <main className="w-full max-w-lg">
                             <div className="app-panel-background rounded-2xl border border-cyan-900/50 px-6 py-7 shadow-2xl shadow-black/10 sm:px-8 sm:py-8">
