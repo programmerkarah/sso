@@ -14,6 +14,7 @@ import { Head, Link, router } from '@inertiajs/react';
 
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import GlassCard from '@/Components/GlassCard';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { Application, PageProps } from '@/types';
 
@@ -82,27 +83,20 @@ export default function Index({ applications, stats }: ApplicationsIndexProps) {
                 onConfirm={confirmDelete}
             />
 
-            <div className="mx-auto max-w-9xl space-y-8">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <h1 className=" text-4xl font-semibold text-white  sm:text-5xl">
-                            Daftar Aplikasi
-                        </h1>
-                        <p className="mt-2 max-w-2xl text-white/80">
-                            Kelola seluruh aplikasi yang terhubung ke SSO,
-                            termasuk domain, callback URL, dan status aktifnya.
-                        </p>
-                    </div>
-                    <Link
-                        href="/admin/applications/create"
-                        className="inline-flex items-center gap-2 rounded-2xl border border-white/25 bg-white/15 px-5 py-3 text-sm font-semibold text-white   transition hover:bg-white/25"
-                    >
-                        <Plus className="h-4 w-4" />
-                        Tambah Aplikasi
-                    </Link>
-                </div>
+            <div className="space-y-6">
+                <PageHeader
+                    actions={
+                        <Link
+                            href="/admin/applications/create"
+                            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Tambah aplikasi
+                        </Link>
+                    }
+                />
 
-                <div className="grid gap-6 md:grid-cols-3">
+                <div className="grid gap-3 md:grid-cols-3">
                     <GlassCard>
                         <div className="text-sm text-white/70">
                             Total aplikasi
