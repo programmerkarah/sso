@@ -4,7 +4,6 @@ import {
     ChevronLeft,
     ChevronRight,
     Download,
-    EllipsisVertical,
     KeyRound,
     Laptop,
     Monitor,
