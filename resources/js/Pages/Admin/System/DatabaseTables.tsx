@@ -21,6 +21,7 @@ import GlassDatePicker from '@/Components/GlassDatePicker';
 import SearchableSelect, {
     SearchableSelectOption,
 } from '@/Components/SearchableSelect';
+import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -328,27 +329,22 @@ export default function DatabaseTables({
         <AppLayout>
             <Head title="Tabel Database" />
 
-            <div className="mx-auto max-w-9xl space-y-8 overflow-x-hidden px-1 sm:px-0">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
+            <div className="space-y-6 overflow-x-hidden">
+                <PageHeader
+                    title="Browser Database"
+                    description="Lihat struktur tabel, preview data, dan kelola row database dari panel admin."
+                    actions={
                         <Link
                             href="/admin/system"
-                            className="inline-flex items-center gap-2 text-sm font-semibold text-white/70 transition hover:text-white"
+                            className="inline-flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
                         >
                             <ArrowLeft className="h-4 w-4" />
-                            Kembali ke Sistem
+                            Sistem
                         </Link>
-                        <h1 className="mt-3 bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-3xl font-semibold text-white  sm:text-5xl">
-                            Browser Tabel Database
-                        </h1>
-                        <p className="mt-2 max-w-3xl text-white/80">
-                            Lihat daftar tabel, struktur kolom, preview isi
-                            data, dan edit row langsung dari panel admin.
-                        </p>
-                    </div>
-                </div>
+                    }
+                />
 
-                <div className="grid gap-6 md:grid-cols-3">
+                <div className="grid gap-3 md:grid-cols-3">
                     <GlassCard>
                         <div className="flex items-center gap-3">
                             <div className="rounded-full bg-blue-400/20 p-3">
@@ -398,7 +394,7 @@ export default function DatabaseTables({
                     </GlassCard>
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+                <div className="grid gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
                     <GlassCard>
                         <div className="flex items-center justify-between gap-3">
                             <h2 className="text-xl font-bold text-white">
