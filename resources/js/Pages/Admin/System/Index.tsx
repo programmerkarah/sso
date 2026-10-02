@@ -421,7 +421,7 @@ export default function Index({
             <div className="mx-auto max-w-9xl space-y-8 px-1 sm:px-0">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
-                        <h1 className="bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-3xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                        <h1 className="bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-3xl font-semibold text-white  sm:text-5xl">
                             Sistem Admin
                         </h1>
                         <p className="mt-2 max-w-3xl text-white/80">
@@ -441,7 +441,7 @@ export default function Index({
                                 <div className="text-sm text-white/70">
                                     Jumlah tabel
                                 </div>
-                                <div className="text-3xl font-black text-white">
+                                <div className="text-3xl font-semibold text-white">
                                     {database.table_count}
                                 </div>
                             </div>
@@ -457,7 +457,7 @@ export default function Index({
                                 <div className="text-sm text-white/70">
                                     Total pengguna
                                 </div>
-                                <div className="text-3xl font-black text-white">
+                                <div className="text-3xl font-semibold text-white">
                                     {database.user_count}
                                 </div>
                             </div>
@@ -473,7 +473,7 @@ export default function Index({
                                 <div className="text-sm text-white/70">
                                     Total log ditampilkan
                                 </div>
-                                <div className="text-3xl font-black text-white">
+                                <div className="text-3xl font-semibold text-white">
                                     {logs.total}
                                 </div>
                             </div>
@@ -489,7 +489,7 @@ export default function Index({
                                 <div className="text-sm text-white/70">
                                     Disk bebas
                                 </div>
-                                <div className="text-3xl font-black text-white">
+                                <div className="text-3xl font-semibold text-white">
                                     {server.disk_free_gb} GB
                                 </div>
                             </div>
@@ -628,7 +628,7 @@ export default function Index({
                             onSubmit={handleCreateBackup}
                             className="mt-4 space-y-3"
                         >
-                            <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                 <label
                                     htmlFor="backup_title"
                                     className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60"
@@ -646,7 +646,7 @@ export default function Index({
                                         )
                                     }
                                     placeholder="Contoh: Sebelum update hak akses aplikasi"
-                                    className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                    className="w-full rounded-lg border border-slate-800 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
                                 />
                                 {createBackupForm.errors.backup_title && (
                                     <p className="mt-2 text-xs text-rose-200">
@@ -655,7 +655,7 @@ export default function Index({
                                 )}
                             </div>
 
-                            <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                 <label
                                     htmlFor="backup_description"
                                     className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60"
@@ -675,7 +675,7 @@ export default function Index({
                                         )
                                     }
                                     placeholder="Tuliskan konteks backup ini untuk memudahkan identifikasi saat restore."
-                                    className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                    className="w-full rounded-lg border border-slate-800 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
                                 />
                                 {createBackupForm.errors.backup_description && (
                                     <p className="mt-2 text-xs text-rose-200">
@@ -701,14 +701,14 @@ export default function Index({
 
                         <div className="mt-5 space-y-3 md:hidden">
                             {backups.length === 0 ? (
-                                <div className="rounded-xl border border-white/10 bg-black/20 p-4 text-center text-sm text-white/55">
+                                <div className="rounded-xl border border-slate-800 bg-black/20 p-4 text-center text-sm text-white/55">
                                     Belum ada backup.
                                 </div>
                             ) : (
                                 backups.map((backup) => (
                                     <div
                                         key={`mobile-${backup.name}`}
-                                        className="rounded-xl border border-white/10 bg-black/20 p-4"
+                                        className="rounded-xl border border-slate-800 bg-black/20 p-4"
                                     >
                                         <p className="break-all text-sm font-semibold text-white">
                                             {backup.title || backup.name}
@@ -775,7 +775,7 @@ export default function Index({
                         <div className="mt-5 hidden overflow-x-auto md:block">
                             <table className="w-full min-w-[420px]">
                                 <thead>
-                                    <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wider text-white/55">
+                                    <tr className="border-b border-slate-800 text-left text-xs uppercase tracking-wider text-white/55">
                                         <th className="py-2">Judul / File</th>
                                         <th className="py-2">Keterangan</th>
                                         <th className="py-2">Ukuran</th>
@@ -885,7 +885,7 @@ export default function Index({
                             onSubmit={handleRestoreSubmit}
                             className="mt-4 space-y-4"
                         >
-                            <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                 <GlassSelect
                                     id="backup_name"
                                     label="Pilih Backup dari Storage"
@@ -906,7 +906,7 @@ export default function Index({
                                 atau
                             </div>
 
-                            <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                 <input
                                     type="file"
                                     accept=".sql,.txt"
@@ -941,7 +941,7 @@ export default function Index({
                 </div>
 
                 <GlassCard className="overflow-hidden p-0">
-                    <div className="border-b border-white/10 px-6 py-5">
+                    <div className="border-b border-slate-800 px-6 py-5">
                         <h2 className="flex items-center gap-2 text-xl font-bold text-white">
                             <Server className="h-5 w-5" />
                             Log Aktivitas
@@ -995,7 +995,7 @@ export default function Index({
 
                     <div className="space-y-3 p-4 md:hidden">
                         {logs.data.length === 0 ? (
-                            <div className="rounded-xl border border-white/10 bg-black/20 p-4 text-center text-sm text-white/55">
+                            <div className="rounded-xl border border-slate-800 bg-black/20 p-4 text-center text-sm text-white/55">
                                 Belum ada log aktivitas atau tidak ada data yang
                                 sesuai dengan filter.
                             </div>
@@ -1003,14 +1003,14 @@ export default function Index({
                             logs.data.map((log) => (
                                 <div
                                     key={`mobile-log-${log.id}`}
-                                    className="rounded-xl border border-white/10 bg-black/20 p-4"
+                                    className="rounded-xl border border-slate-800 bg-black/20 p-4"
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <p className="text-sm font-semibold text-white">
                                             {log.event}
                                         </p>
                                         <span
-                                            className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusClasses[log.status] ?? 'border-white/20 bg-white/10 text-white/80'}`}
+                                            className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusClasses[log.status] ?? 'border-slate-800 bg-slate-900/80 text-white/80'}`}
                                         >
                                             {log.status}
                                         </span>
@@ -1030,7 +1030,7 @@ export default function Index({
                                         <button
                                             type="button"
                                             onClick={() => setSelectedLog(log)}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-white/20"
+                                            className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/80 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-slate-800"
                                         >
                                             <Eye className="h-3.5 w-3.5" />
                                             Detail
@@ -1044,7 +1044,7 @@ export default function Index({
                     <div className="hidden overflow-x-auto md:block">
                         <table className="w-full min-w-[1080px]">
                             <thead>
-                                <tr className="border-b border-white/10 bg-black/20 text-left text-xs uppercase tracking-wider text-white/60">
+                                <tr className="border-b border-slate-800 bg-black/20 text-left text-xs uppercase tracking-wider text-white/60">
                                     <th className="px-5 py-3">Waktu</th>
                                     <th className="px-5 py-3">Kategori</th>
                                     <th className="px-5 py-3">Status</th>
@@ -1073,7 +1073,7 @@ export default function Index({
                                     logs.data.map((log) => (
                                         <tr
                                             key={log.id}
-                                            className="align-top transition hover:bg-white/5"
+                                            className="align-top transition hover:bg-slate-900/50"
                                         >
                                             <td className="px-5 py-4">
                                                 {formatDateTime(
@@ -1081,13 +1081,13 @@ export default function Index({
                                                 )}
                                             </td>
                                             <td className="px-5 py-4">
-                                                <span className="rounded-full bg-white/10 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white/85">
+                                                <span className="rounded-full bg-slate-900/80 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white/85">
                                                     {log.category}
                                                 </span>
                                             </td>
                                             <td className="px-5 py-4">
                                                 <span
-                                                    className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${statusClasses[log.status] ?? 'border-white/20 bg-white/10 text-white/80'}`}
+                                                    className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${statusClasses[log.status] ?? 'border-slate-800 bg-slate-900/80 text-white/80'}`}
                                                 >
                                                     {log.status}
                                                 </span>
@@ -1135,7 +1135,7 @@ export default function Index({
                                                     onClick={() =>
                                                         setSelectedLog(log)
                                                     }
-                                                    className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/20"
+                                                    className="inline-flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-800"
                                                 >
                                                     <Eye className="h-3.5 w-3.5" />
                                                     Lihat Detail
@@ -1149,19 +1149,19 @@ export default function Index({
                     </div>
 
                     {logs.last_page > 1 && (
-                        <div className="flex flex-wrap items-center justify-center gap-2 border-t border-white/10 px-6 py-4 sm:justify-end">
+                        <div className="flex flex-wrap items-center justify-center gap-2 border-t border-slate-800 px-6 py-4 sm:justify-end">
                             {logs.prev_page_token ? (
                                 <button
                                     type="button"
                                     onClick={() =>
                                         visitState(logs.prev_page_token!)
                                     }
-                                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 text-white/70 transition hover:bg-white/10 hover:text-white"
+                                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/70 transition hover:bg-slate-900/80 hover:text-white"
                                 >
                                     <ChevronLeft className="h-4 w-4" />
                                 </button>
                             ) : (
-                                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/30">
+                                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/30">
                                     <ChevronLeft className="h-4 w-4" />
                                 </span>
                             )}
@@ -1174,7 +1174,7 @@ export default function Index({
                                     return (
                                         <span
                                             key={item.key}
-                                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/50"
+                                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/50"
                                         >
                                             <MoreHorizontal className="h-4 w-4" />
                                         </span>
@@ -1193,7 +1193,7 @@ export default function Index({
                                         className={`rounded-lg border px-3 py-1.5 text-sm transition ${
                                             paginationLink.active
                                                 ? 'border-white/45 bg-white/20 text-white'
-                                                : 'border-white/20 text-white/70 hover:bg-white/10 hover:text-white'
+                                                : 'border-slate-800 text-white/70 hover:bg-slate-900/80 hover:text-white'
                                         }`}
                                     >
                                         {paginationLink.label}
@@ -1207,12 +1207,12 @@ export default function Index({
                                     onClick={() =>
                                         visitState(logs.next_page_token!)
                                     }
-                                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 text-white/70 transition hover:bg-white/10 hover:text-white"
+                                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/70 transition hover:bg-slate-900/80 hover:text-white"
                                 >
                                     <ChevronRight className="h-4 w-4" />
                                 </button>
                             ) : (
-                                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/30">
+                                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/30">
                                     <ChevronRight className="h-4 w-4" />
                                 </span>
                             )}
@@ -1228,7 +1228,7 @@ export default function Index({
                         })
                     }
                     title="Refresh Data"
-                    className="fixed bottom-6 right-6 z-40 h-[4.5rem] w-[4.5rem] rounded-full p-0 shadow-2xl shadow-blue-700/40 sm:bottom-8 sm:right-8"
+                    className="fixed bottom-6 right-6 z-40 h-[4.5rem] w-[4.5rem] rounded-full p-0   sm:bottom-8 sm:right-8"
                 >
                     <RefreshCw className="h-7 w-7" />
                     <span className="sr-only">Refresh Data</span>
@@ -1237,11 +1237,11 @@ export default function Index({
                 {selectedLog && (
                     <div className="fixed inset-0 z-[90] flex items-end justify-center p-0 sm:items-center sm:p-4">
                         <div
-                            className="absolute inset-0 bg-slate-950/70 backdrop-blur-md"
+                            className="absolute inset-0 bg-slate-950/70 "
                             onClick={() => setSelectedLog(null)}
                         />
-                        <div className="relative h-[100dvh] w-full overflow-y-auto rounded-none border-0 bg-white/10 p-4 shadow-2xl backdrop-blur-2xl sm:h-auto sm:max-h-[85vh] sm:max-w-3xl sm:rounded-2xl sm:border sm:border-white/20 sm:p-6">
-                            <div className="sticky top-0 z-10 -mx-4 mb-4 flex items-start justify-between gap-4 border-b border-white/10 bg-slate-900/45 px-4 py-3 backdrop-blur-md sm:static sm:mx-0 sm:mb-4 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
+                        <div className="relative h-[100dvh] w-full overflow-y-auto rounded-none border-0 bg-slate-900/80 p-4   sm:h-auto sm:max-h-[85vh] sm:max-w-3xl sm:rounded-2xl sm:border sm:border-slate-800 sm:p-6">
+                            <div className="sticky top-0 z-10 -mx-4 mb-4 flex items-start justify-between gap-4 border-b border-slate-800 bg-slate-900/45 px-4 py-3  sm:static sm:mx-0 sm:mb-4 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
                                 <div>
                                     <h3 className="text-lg font-bold text-white sm:text-xl">
                                         Detail Log Aktivitas
@@ -1251,7 +1251,7 @@ export default function Index({
                                             {selectedLog.event}
                                         </p>
                                         <span
-                                            className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${statusClasses[selectedLog.status] ?? 'border-white/20 bg-white/10 text-white/80'}`}
+                                            className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${statusClasses[selectedLog.status] ?? 'border-slate-800 bg-slate-900/80 text-white/80'}`}
                                         >
                                             {selectedLog.status}
                                         </span>
@@ -1260,7 +1260,7 @@ export default function Index({
                                 <button
                                     type="button"
                                     onClick={() => setSelectedLog(null)}
-                                    className="rounded-lg border border-white/20 p-2 text-white/80 transition hover:bg-white/10 hover:text-white"
+                                    className="rounded-lg border border-slate-800 p-2 text-white/80 transition hover:bg-slate-900/80 hover:text-white"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -1282,7 +1282,7 @@ export default function Index({
                             </div>
 
                             <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         Waktu
                                     </div>
@@ -1292,7 +1292,7 @@ export default function Index({
                                         )}
                                     </div>
                                 </div>
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         Kategori
                                     </div>
@@ -1300,7 +1300,7 @@ export default function Index({
                                         {selectedLog.category}
                                     </div>
                                 </div>
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3 sm:col-span-2">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 sm:col-span-2">
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         Deskripsi
                                     </div>
@@ -1308,7 +1308,7 @@ export default function Index({
                                         {selectedLog.description}
                                     </div>
                                 </div>
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         Aktor
                                     </div>
@@ -1318,7 +1318,7 @@ export default function Index({
                                             : 'Sistem'}
                                     </div>
                                 </div>
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         IP Address
                                     </div>
@@ -1326,7 +1326,7 @@ export default function Index({
                                         {selectedLog.ip_address ?? '—'}
                                     </div>
                                 </div>
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         Device ID
                                     </div>
@@ -1334,7 +1334,7 @@ export default function Index({
                                         {selectedLog.device_id ?? '—'}
                                     </div>
                                 </div>
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         User Agent
                                     </div>
@@ -1342,7 +1342,7 @@ export default function Index({
                                         {selectedLog.user_agent ?? '—'}
                                     </div>
                                 </div>
-                                <div className="rounded-xl border border-white/10 bg-white/5 p-3 sm:col-span-2">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 sm:col-span-2">
                                     <div className="text-xs uppercase tracking-wide text-white/50">
                                         Metadata
                                     </div>
@@ -1360,10 +1360,10 @@ export default function Index({
                 {editingBackup && (
                     <div className="fixed inset-0 z-[95] flex items-center justify-center p-4">
                         <div
-                            className="absolute inset-0 bg-slate-950/70 backdrop-blur-md"
+                            className="absolute inset-0 bg-slate-950/70 "
                             onClick={closeEditBackupModal}
                         />
-                        <div className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                        <div className="relative w-full max-w-xl rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
                             <div className="mb-4 flex items-start justify-between gap-4">
                                 <div>
                                     <h3 className="text-xl font-bold text-white">
@@ -1376,7 +1376,7 @@ export default function Index({
                                 <button
                                     type="button"
                                     onClick={closeEditBackupModal}
-                                    className="rounded-lg border border-white/20 p-2 text-white/80 transition hover:bg-white/10 hover:text-white"
+                                    className="rounded-lg border border-slate-800 p-2 text-white/80 transition hover:bg-slate-900/80 hover:text-white"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -1386,7 +1386,7 @@ export default function Index({
                                 onSubmit={handleEditBackupSubmit}
                                 className="space-y-3"
                             >
-                                <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                     <label
                                         htmlFor="edit_backup_title"
                                         className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60"
@@ -1403,7 +1403,7 @@ export default function Index({
                                                 event.target.value,
                                             )
                                         }
-                                        className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                        className="w-full rounded-lg border border-slate-800 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
                                     />
                                     {editBackupForm.errors.backup_title && (
                                         <p className="mt-2 text-xs text-rose-200">
@@ -1412,7 +1412,7 @@ export default function Index({
                                     )}
                                 </div>
 
-                                <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                                <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3">
                                     <label
                                         htmlFor="edit_backup_description"
                                         className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60"
@@ -1432,7 +1432,7 @@ export default function Index({
                                                 event.target.value,
                                             )
                                         }
-                                        className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                        className="w-full rounded-lg border border-slate-800 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
                                     />
                                     {editBackupForm.errors
                                         .backup_description && (

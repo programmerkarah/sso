@@ -954,10 +954,10 @@ export default function Index({
             {editIdentityModal.isOpen && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/60 "
                         onClick={closeEditIdentityModal}
                     />
-                    <div className="relative w-full max-w-lg rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                    <div className="relative w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
                         <h3 className="text-lg font-bold text-white">
                             Ubah Email dan Username
                         </h3>
@@ -1028,10 +1028,10 @@ export default function Index({
             {editAccessModal.isOpen && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/60 "
                         onClick={closeEditAccessModal}
                     />
-                    <div className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                    <div className="relative w-full max-w-xl rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
                         <h3 className="text-lg font-bold text-white">
                             Atur Organisasi & Role
                         </h3>
@@ -1089,7 +1089,7 @@ export default function Index({
                                                 className={`flex cursor-pointer items-start gap-2 rounded-xl border px-3 py-2 text-sm transition ${
                                                     checked
                                                         ? 'border-blue-300/50 bg-blue-500/20 text-white'
-                                                        : 'border-white/20 bg-white/5 text-white/80 hover:bg-white/10'
+                                                        : 'border-slate-800 bg-slate-900/50 text-white/80 hover:bg-slate-900/80'
                                                 }`}
                                             >
                                                 <input
@@ -1148,10 +1148,10 @@ export default function Index({
             {batchAccessModalOpen && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/60 "
                         onClick={() => setBatchAccessModalOpen(false)}
                     />
-                    <div className="relative w-full max-w-2xl rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                    <div className="relative w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
                         <h3 className="text-lg font-bold text-white">
                             Atur Organisasi & Role (Batch)
                         </h3>
@@ -1214,7 +1214,7 @@ export default function Index({
                                                 className={`flex cursor-pointer items-start gap-2 rounded-xl border px-3 py-2 text-sm transition ${
                                                     checked
                                                         ? 'border-blue-300/50 bg-blue-500/20 text-white'
-                                                        : 'border-white/20 bg-white/5 text-white/80 hover:bg-white/10'
+                                                        : 'border-slate-800 bg-slate-900/50 text-white/80 hover:bg-slate-900/80'
                                                 }`}
                                             >
                                                 <input
@@ -1265,10 +1265,10 @@ export default function Index({
             {batchVerifyModalOpen && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/60 "
                         onClick={() => setBatchVerifyModalOpen(false)}
                     />
-                    <div className="relative w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                    <div className="relative w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
                         <h3 className="text-lg font-bold text-white">
                             Verifikasi Pengguna (Batch)
                         </h3>
@@ -1299,7 +1299,7 @@ export default function Index({
             <div className="mx-auto max-w-9xl space-y-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
-                        <h1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                        <h1 className=" text-4xl font-semibold text-white  sm:text-5xl">
                             Kelola Pengguna
                         </h1>
                         <p className="mt-2 max-w-2xl text-white/80">
@@ -1315,7 +1315,7 @@ export default function Index({
                                     onClick={() =>
                                         setBatchVerifyModalOpen(true)
                                     }
-                                    className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg backdrop-blur-xl transition hover:bg-emerald-500/25"
+                                    className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50   transition hover:bg-emerald-500/25"
                                 >
                                     <CheckSquare className="h-4 w-4" />
                                     Verifikasi Batch ({selectedUserIds.length})
@@ -1325,7 +1325,7 @@ export default function Index({
                                     onClick={() =>
                                         setBatchAccessModalOpen(true)
                                     }
-                                    className="inline-flex items-center gap-2 rounded-2xl border border-fuchsia-300/25 bg-fuchsia-500/15 px-4 py-2 text-sm font-semibold text-fuchsia-50 shadow-lg backdrop-blur-xl transition hover:bg-fuchsia-500/25"
+                                    className="inline-flex items-center gap-2 rounded-2xl border border-fuchsia-300/25 bg-fuchsia-500/15 px-4 py-2 text-sm font-semibold text-fuchsia-50   transition hover:bg-fuchsia-500/25"
                                 >
                                     <CheckSquare className="h-4 w-4" />
                                     Atur Akses Batch ({selectedUserIds.length})
@@ -1334,14 +1334,14 @@ export default function Index({
                         )}
                         <a
                             href={excelExportUrl}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg backdrop-blur-xl transition hover:bg-emerald-500/25"
+                            className="inline-flex items-center gap-2 rounded-2xl border border-emerald-300/25 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-50   transition hover:bg-emerald-500/25"
                         >
                             <Download className="h-4 w-4" />
                             Export Excel
                         </a>
                         <a
                             href={pdfExportUrl}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-blue-300/25 bg-blue-500/15 px-4 py-2 text-sm font-semibold text-blue-50 shadow-lg backdrop-blur-xl transition hover:bg-blue-500/25"
+                            className="inline-flex items-center gap-2 rounded-2xl border border-blue-300/25 bg-blue-500/15 px-4 py-2 text-sm font-semibold text-blue-50   transition hover:bg-blue-500/25"
                         >
                             <Download className="h-4 w-4" />
                             Export PDF
@@ -1359,7 +1359,7 @@ export default function Index({
                                 <div className="text-sm text-white/70">
                                     Total akun
                                 </div>
-                                <div className="text-3xl font-black text-white">
+                                <div className="text-3xl font-semibold text-white">
                                     {users.total}
                                 </div>
                             </div>
@@ -1374,7 +1374,7 @@ export default function Index({
                                 <div className="text-sm text-white/70">
                                     2FA aktif (halaman ini)
                                 </div>
-                                <div className="text-3xl font-black text-white">
+                                <div className="text-3xl font-semibold text-white">
                                     {twoFactorCount}
                                 </div>
                             </div>
@@ -1389,7 +1389,7 @@ export default function Index({
                                 <div className="text-sm text-white/70">
                                     Admin (halaman ini)
                                 </div>
-                                <div className="text-3xl font-black text-white">
+                                <div className="text-3xl font-semibold text-white">
                                     {adminCount}
                                 </div>
                             </div>
@@ -1398,7 +1398,7 @@ export default function Index({
                 </div>
 
                 <GlassCard className="overflow-hidden p-0">
-                    <div className="border-b border-white/10 px-6 py-5">
+                    <div className="border-b border-slate-800 px-6 py-5">
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                             <div>
                                 <h2 className="text-xl font-bold text-white">
@@ -1432,7 +1432,7 @@ export default function Index({
                                 className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
                                     pendingOnlyActive
                                         ? 'border-amber-300/40 bg-amber-500/20 text-amber-100'
-                                        : 'border-white/20 bg-white/10 text-white/75 hover:bg-white/20'
+                                        : 'border-slate-800 bg-slate-900/80 text-white/75 hover:bg-slate-800'
                                 }`}
                             >
                                 Pending verification only
@@ -1443,7 +1443,7 @@ export default function Index({
                                 className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
                                     !pendingOnlyActive
                                         ? 'border-blue-300/40 bg-blue-500/20 text-blue-100'
-                                        : 'border-white/20 bg-white/10 text-white/75 hover:bg-white/20'
+                                        : 'border-slate-800 bg-slate-900/80 text-white/75 hover:bg-slate-800'
                                 }`}
                             >
                                 Semua user
@@ -1455,7 +1455,7 @@ export default function Index({
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[900px]">
                             <thead>
-                                <tr className="border-b border-white/10 bg-black/20">
+                                <tr className="border-b border-slate-800 bg-black/20">
                                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white/60">
                                         <input
                                             type="checkbox"
@@ -1508,7 +1508,7 @@ export default function Index({
                                     users.data.map((user) => (
                                         <tr
                                             key={user.id}
-                                            className="transition-colors hover:bg-white/5"
+                                            className="transition-colors hover:bg-slate-900/50"
                                         >
                                             <td className="px-5 py-4">
                                                 <input
@@ -1550,7 +1550,7 @@ export default function Index({
                                                             className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                                                                 role === 'admin'
                                                                     ? 'bg-purple-400/25 text-purple-100'
-                                                                    : 'bg-white/10 text-white/70'
+                                                                    : 'bg-slate-900/80 text-white/70'
                                                             }`}
                                                         >
                                                             {role}
@@ -1638,7 +1638,7 @@ export default function Index({
                                                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
                                                             user.two_factor_confirmed_at
                                                                 ? 'bg-blue-400/20 text-blue-100'
-                                                                : 'bg-white/10 text-white/60'
+                                                                : 'bg-slate-900/80 text-white/60'
                                                         }`}
                                                     >
                                                         {user.two_factor_confirmed_at ? (
@@ -1669,7 +1669,7 @@ export default function Index({
                                                                 user.id,
                                                             )
                                                         }
-                                                        className="inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 p-2 text-white/80 transition hover:bg-white/20 hover:text-white"
+                                                        className="inline-flex items-center justify-center rounded-lg border border-slate-800 bg-slate-900/80 p-2 text-white/80 transition hover:bg-slate-800 hover:text-white"
                                                         title="Buka menu aksi"
                                                     >
                                                         <EllipsisVertical className="h-4 w-4" />
@@ -1685,7 +1685,7 @@ export default function Index({
 
                     {/* Pagination */}
                     {users.last_page > 1 && (
-                        <div className="flex items-center justify-between border-t border-white/10 bg-black/10 px-6 py-4">
+                        <div className="flex items-center justify-between border-t border-slate-800 bg-black/10 px-6 py-4">
                             <p className="text-sm text-white/60">
                                 Menampilkan {users.from ?? 0}–{users.to ?? 0}{' '}
                                 dari {users.total} pengguna
@@ -1697,12 +1697,12 @@ export default function Index({
                                         onClick={() =>
                                             visitState(users.prev_page_token!)
                                         }
-                                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 text-white/70 transition hover:bg-white/10 hover:text-white"
+                                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/70 transition hover:bg-slate-900/80 hover:text-white"
                                     >
                                         <ChevronLeft className="h-4 w-4" />
                                     </button>
                                 ) : (
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/30">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/30">
                                         <ChevronLeft className="h-4 w-4" />
                                     </span>
                                 )}
@@ -1715,7 +1715,7 @@ export default function Index({
                                         className={`flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium transition ${
                                             page.active
                                                 ? 'border-white/40 bg-white/20 text-white'
-                                                : 'border-white/20 text-white/70 hover:bg-white/10 hover:text-white'
+                                                : 'border-slate-800 text-white/70 hover:bg-slate-900/80 hover:text-white'
                                         }`}
                                     >
                                         {page.label}
@@ -1728,12 +1728,12 @@ export default function Index({
                                         onClick={() =>
                                             visitState(users.next_page_token!)
                                         }
-                                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 text-white/70 transition hover:bg-white/10 hover:text-white"
+                                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/70 transition hover:bg-slate-900/80 hover:text-white"
                                     >
                                         <ChevronRight className="h-4 w-4" />
                                     </button>
                                 ) : (
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/30">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 text-white/30">
                                         <ChevronRight className="h-4 w-4" />
                                     </span>
                                 )}
@@ -1746,7 +1746,7 @@ export default function Index({
                     <>
                         <div
                             ref={actionMenuRef}
-                            className="fixed z-40 w-56 overflow-y-auto rounded-xl border border-white/20 bg-slate-950/95 p-2 shadow-2xl backdrop-blur"
+                            className="fixed z-40 w-56 overflow-y-auto rounded-xl border border-slate-800 bg-slate-950/95 p-2  backdrop-blur"
                             style={{
                                 top: actionMenu.top,
                                 left: actionMenu.left,
@@ -1765,7 +1765,7 @@ export default function Index({
                                     );
                                     setActionMenu(null);
                                 }}
-                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-slate-900/80"
                             >
                                 {actionMenuUser.is_admin_verified ? (
                                     <ShieldOff className="h-3.5 w-3.5 text-red-200" />
@@ -1784,7 +1784,7 @@ export default function Index({
                                         handleToggleAdmin(actionMenuUser);
                                         setActionMenu(null);
                                     }}
-                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-slate-900/80"
                                 >
                                     {actionMenuUser.is_admin ? (
                                         <ShieldOff className="h-3.5 w-3.5 text-red-200" />
@@ -1803,7 +1803,7 @@ export default function Index({
                                     openEditAccessModal(actionMenuUser);
                                     setActionMenu(null);
                                 }}
-                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-slate-900/80"
                             >
                                 <Settings2 className="h-3.5 w-3.5 text-indigo-200" />
                                 Atur Akses
@@ -1815,7 +1815,7 @@ export default function Index({
                                     openEditIdentityModal(actionMenuUser);
                                     setActionMenu(null);
                                 }}
-                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-slate-900/80"
                             >
                                 <Pencil className="h-3.5 w-3.5 text-sky-200" />
                                 Ubah Identitas
@@ -1827,7 +1827,7 @@ export default function Index({
                                     handleResetPassword(actionMenuUser);
                                     setActionMenu(null);
                                 }}
-                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-slate-900/80"
                             >
                                 <KeyRound className="h-3.5 w-3.5 text-amber-200" />
                                 Reset Password
@@ -1842,7 +1842,7 @@ export default function Index({
                                         );
                                         setActionMenu(null);
                                     }}
-                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-slate-900/80"
                                 >
                                     <ShieldCheck className="h-3.5 w-3.5 text-emerald-200" />
                                     Kirim Ulang Verifikasi Email
@@ -1855,7 +1855,7 @@ export default function Index({
                                     openUserSecurity(actionMenuUser);
                                     setActionMenu(null);
                                 }}
-                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-slate-900/80"
                             >
                                 <Monitor className="h-3.5 w-3.5 text-teal-200" />
                                 Sesi &amp; Perangkat
@@ -1867,7 +1867,7 @@ export default function Index({
                                     handleResetTwoFactor(actionMenuUser);
                                     setActionMenu(null);
                                 }}
-                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-white/85 transition hover:bg-slate-900/80"
                             >
                                 <RotateCcw className="h-3.5 w-3.5 text-red-200" />
                                 Reset 2FA
@@ -1895,12 +1895,12 @@ export default function Index({
             {userSecurityModal.isOpen && (
                 <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto p-4 pt-12">
                     <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/60 "
                         onClick={closeUserSecurity}
                     />
-                    <div className="relative w-full max-w-xl rounded-2xl border border-white/20 bg-gradient-to-b from-white/15 to-white/8 shadow-2xl backdrop-blur-2xl">
+                    <div className="relative w-full max-w-xl rounded-2xl border border-slate-800 bg-gradient-to-b from-white/15 to-white/8  ">
                         {/* Header */}
-                        <div className="flex items-start justify-between gap-3 border-b border-white/10 px-5 py-4">
+                        <div className="flex items-start justify-between gap-3 border-b border-slate-800 px-5 py-4">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/20">
                                     <Monitor className="h-4.5 w-4.5 text-teal-300" />
@@ -1917,14 +1917,14 @@ export default function Index({
                             <button
                                 type="button"
                                 onClick={closeUserSecurity}
-                                className="mt-0.5 rounded-lg p-1.5 text-white/40 transition hover:bg-white/10 hover:text-white"
+                                className="mt-0.5 rounded-lg p-1.5 text-white/40 transition hover:bg-slate-900/80 hover:text-white"
                             >
                                 <XCircle className="h-4.5 w-4.5" />
                             </button>
                         </div>
 
                         {/* Tabs */}
-                        <div className="flex border-b border-white/10 px-5">
+                        <div className="flex border-b border-slate-800 px-5">
                             <button
                                 type="button"
                                 onClick={() => setSecurityTab('sessions')}
@@ -1939,7 +1939,7 @@ export default function Index({
                                     className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
                                         securityTab === 'sessions'
                                             ? 'bg-teal-500/20 text-teal-300'
-                                            : 'bg-white/10 text-white/40'
+                                            : 'bg-slate-900/80 text-white/40'
                                     }`}
                                 >
                                     {userSecurityModal.sessions.length}
@@ -1959,7 +1959,7 @@ export default function Index({
                                     className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
                                         securityTab === 'oauth'
                                             ? 'bg-teal-500/20 text-teal-300'
-                                            : 'bg-white/10 text-white/40'
+                                            : 'bg-slate-900/80 text-white/40'
                                     }`}
                                 >
                                     {userSecurityModal.oauthTokens.length}
@@ -1979,7 +1979,7 @@ export default function Index({
                                     className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${
                                         securityTab === 'devices'
                                             ? 'bg-teal-500/20 text-teal-300'
-                                            : 'bg-white/10 text-white/40'
+                                            : 'bg-slate-900/80 text-white/40'
                                     }`}
                                 >
                                     {userSecurityModal.trustedDevices.length}
@@ -1991,7 +1991,7 @@ export default function Index({
                         <div className="max-h-[60vh] overflow-y-auto p-5">
                             {userSecurityModal.loading ? (
                                 <div className="flex flex-col items-center justify-center gap-2 py-12 text-white/40">
-                                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-teal-400" />
+                                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-800 border-t-teal-400" />
                                     <span className="text-xs">
                                         Memuat data...
                                     </span>
@@ -2025,14 +2025,14 @@ export default function Index({
                                                         className={`group flex items-center gap-3 rounded-xl border px-4 py-3 transition ${
                                                             session.is_active
                                                                 ? 'border-emerald-500/30 bg-emerald-500/10'
-                                                                : 'border-white/8 bg-white/5 hover:bg-white/8'
+                                                                : 'border-white/8 bg-slate-900/50 hover:bg-white/8'
                                                         }`}
                                                     >
                                                         <div
                                                             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
                                                                 session.is_active
                                                                     ? 'bg-emerald-500/20'
-                                                                    : 'bg-white/10'
+                                                                    : 'bg-slate-900/80'
                                                             }`}
                                                         >
                                                             <DeviceIcon
@@ -2127,7 +2127,7 @@ export default function Index({
                                                         disabled={
                                                             sessionPage === 1
                                                         }
-                                                        className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-40"
+                                                        className="rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-40"
                                                     >
                                                         Sebelumnya
                                                     </button>
@@ -2151,7 +2151,7 @@ export default function Index({
                                                             sessionPage ===
                                                             sessionTotalPages
                                                         }
-                                                        className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-40"
+                                                        className="rounded-lg border border-slate-800 bg-slate-900/50 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-40"
                                                     >
                                                         Berikutnya
                                                     </button>
@@ -2177,7 +2177,7 @@ export default function Index({
                                                 (token) => (
                                                     <div
                                                         key={token.id}
-                                                        className="rounded-xl border border-white/8 bg-white/5 p-3"
+                                                        className="rounded-xl border border-white/8 bg-slate-900/50 p-3"
                                                     >
                                                         <div className="flex items-center justify-between gap-3">
                                                             <div>
@@ -2255,10 +2255,10 @@ export default function Index({
                                                             className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition ${
                                                                 isExpired
                                                                     ? 'border-white/5 bg-white/3 opacity-60'
-                                                                    : 'border-white/8 bg-white/5 hover:bg-white/8'
+                                                                    : 'border-white/8 bg-slate-900/50 hover:bg-white/8'
                                                             }`}
                                                         >
-                                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900/80">
                                                                 <DeviceIcon className="h-4 w-4 text-white/50" />
                                                             </div>
                                                             <div className="min-w-0 flex-1">
@@ -2277,7 +2277,7 @@ export default function Index({
                                                                         }
                                                                     </span>
                                                                     {isExpired && (
-                                                                        <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] text-white/40">
+                                                                        <span className="rounded-full bg-slate-900/80 px-1.5 py-0.5 text-[10px] text-white/40">
                                                                             Kadaluarsa
                                                                         </span>
                                                                     )}

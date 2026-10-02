@@ -338,7 +338,7 @@ export default function DatabaseTables({
                             <ArrowLeft className="h-4 w-4" />
                             Kembali ke Sistem
                         </Link>
-                        <h1 className="mt-3 bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-3xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                        <h1 className="mt-3 bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-3xl font-semibold text-white  sm:text-5xl">
                             Browser Tabel Database
                         </h1>
                         <p className="mt-2 max-w-3xl text-white/80">
@@ -358,7 +358,7 @@ export default function DatabaseTables({
                                 <div className="text-sm text-white/70">
                                     Total tabel
                                 </div>
-                                <div className="text-3xl font-black text-white">
+                                <div className="text-3xl font-semibold text-white">
                                     {tables.length}
                                 </div>
                             </div>
@@ -404,13 +404,13 @@ export default function DatabaseTables({
                             <h2 className="text-xl font-bold text-white">
                                 Daftar Tabel
                             </h2>
-                            <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/75">
+                            <span className="rounded-full bg-slate-900/80 px-3 py-1 text-xs font-semibold text-white/75">
                                 {tables.length} tabel
                             </span>
                         </div>
 
                         <form onSubmit={handleSearchSubmit} className="mt-4">
-                            <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-black/20 px-3 py-2">
+                            <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-black/20 px-3 py-2">
                                 <Search className="h-4 w-4 text-white/50" />
                                 <input
                                     type="text"
@@ -426,7 +426,7 @@ export default function DatabaseTables({
 
                         <div className="mt-4 max-h-[70vh] space-y-2 overflow-y-auto pr-1">
                             {tables.length === 0 ? (
-                                <div className="rounded-xl border border-white/10 bg-black/20 p-4 text-sm text-white/60">
+                                <div className="rounded-xl border border-slate-800 bg-black/20 p-4 text-sm text-white/60">
                                     Tidak ada tabel yang cocok dengan pencarian.
                                 </div>
                             ) : (
@@ -444,7 +444,7 @@ export default function DatabaseTables({
                                             className={`w-full rounded-xl border p-3 text-left transition ${
                                                 isActive
                                                     ? 'border-cyan-300/40 bg-cyan-500/15'
-                                                    : 'border-white/10 bg-black/20 hover:bg-white/10'
+                                                    : 'border-slate-800 bg-black/20 hover:bg-slate-900/80'
                                             }`}
                                         >
                                             <div className="flex items-start justify-between gap-3">
@@ -459,7 +459,7 @@ export default function DatabaseTables({
                                                         {table.row_count} baris
                                                     </div>
                                                 </div>
-                                                <span className="rounded-full bg-white/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white/65">
+                                                <span className="rounded-full bg-slate-900/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white/65">
                                                     {table.engine || 'db'}
                                                 </span>
                                             </div>
@@ -485,7 +485,7 @@ export default function DatabaseTables({
                                             </p>
                                         </div>
                                         <div className="grid min-w-0 gap-3 sm:grid-cols-3">
-                                            <div className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/80">
+                                            <div className="rounded-xl border border-slate-800 bg-black/20 px-4 py-3 text-sm text-white/80">
                                                 <div className="text-xs uppercase tracking-wide text-white/50">
                                                     Kolom
                                                 </div>
@@ -496,7 +496,7 @@ export default function DatabaseTables({
                                                     }
                                                 </div>
                                             </div>
-                                            <div className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/80">
+                                            <div className="rounded-xl border border-slate-800 bg-black/20 px-4 py-3 text-sm text-white/80">
                                                 <div className="text-xs uppercase tracking-wide text-white/50">
                                                     Preview
                                                 </div>
@@ -504,7 +504,7 @@ export default function DatabaseTables({
                                                     {selectedTable.rows.total}
                                                 </div>
                                             </div>
-                                            <div className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/80">
+                                            <div className="rounded-xl border border-slate-800 bg-black/20 px-4 py-3 text-sm text-white/80">
                                                 <div className="text-xs uppercase tracking-wide text-white/50">
                                                     Database
                                                 </div>
@@ -517,7 +517,7 @@ export default function DatabaseTables({
                                 </GlassCard>
 
                                 <GlassCard className="overflow-hidden p-0">
-                                    <div className="border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5">
+                                    <div className="border-b border-slate-800 px-4 py-4 sm:px-6 sm:py-5">
                                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                             <div className="min-w-0">
                                                 <h3 className="text-lg font-bold text-white">
@@ -529,7 +529,7 @@ export default function DatabaseTables({
                                                     data tabel.
                                                 </p>
                                             </div>
-                                            <div className="flex w-full flex-col rounded-xl border border-white/10 bg-black/20 p-1 sm:inline-flex sm:w-auto sm:flex-row">
+                                            <div className="flex w-full flex-col rounded-xl border border-slate-800 bg-black/20 p-1 sm:inline-flex sm:w-auto sm:flex-row">
                                                 <button
                                                     type="button"
                                                     onClick={() =>
@@ -655,7 +655,7 @@ export default function DatabaseTables({
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="border-b border-white/10 px-4 py-3 sm:px-6">
+                                            <div className="border-b border-slate-800 px-4 py-3 sm:px-6">
                                                 <p className="text-sm text-white/65">
                                                     Menampilkan{' '}
                                                     {selectedTable.rows.from ??
@@ -770,7 +770,7 @@ export default function DatabaseTables({
                                                                                                             },
                                                                                                         )
                                                                                                     }
-                                                                                                    className="block w-full rounded-lg border border-white/10 bg-black/20 p-2 text-left transition hover:bg-white/10"
+                                                                                                    className="block w-full rounded-lg border border-slate-800 bg-black/20 p-2 text-left transition hover:bg-slate-900/80"
                                                                                                 >
                                                                                                     <div className="max-h-24 overflow-hidden whitespace-pre-wrap break-all text-xs leading-5 text-white/85">
                                                                                                         {
@@ -830,7 +830,7 @@ export default function DatabaseTables({
 
                                             {selectedTable.rows.last_page >
                                                 1 && (
-                                                <div className="flex flex-col gap-3 border-t border-white/10 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                                                <div className="flex flex-col gap-3 border-t border-slate-800 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
                                                     <p className="text-sm text-white/60">
                                                         Halaman{' '}
                                                         {
@@ -899,7 +899,7 @@ export default function DatabaseTables({
                             </>
                         ) : (
                             <GlassCard>
-                                <div className="rounded-xl border border-white/10 bg-black/20 p-6 text-center text-white/65">
+                                <div className="rounded-xl border border-slate-800 bg-black/20 p-6 text-center text-white/65">
                                     Tidak ada tabel yang bisa ditampilkan.
                                 </div>
                             </GlassCard>
@@ -910,10 +910,10 @@ export default function DatabaseTables({
                 {expandedCell && (
                     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
                         <div
-                            className="absolute inset-0 bg-slate-950/70 backdrop-blur-md"
+                            className="absolute inset-0 bg-slate-950/70 "
                             onClick={() => setExpandedCell(null)}
                         />
-                        <div className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                        <div className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
                             <div className="mb-4 flex items-start justify-between gap-4">
                                 <div>
                                     <h3 className="text-xl font-bold text-white">
@@ -926,13 +926,13 @@ export default function DatabaseTables({
                                 <button
                                     type="button"
                                     onClick={() => setExpandedCell(null)}
-                                    className="rounded-lg border border-white/20 p-2 text-white/80 transition hover:bg-white/10 hover:text-white"
+                                    className="rounded-lg border border-slate-800 p-2 text-white/80 transition hover:bg-slate-900/80 hover:text-white"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
                             </div>
 
-                            <pre className="max-w-full whitespace-pre-wrap break-all rounded-xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-white/85">
+                            <pre className="max-w-full whitespace-pre-wrap break-all rounded-xl border border-slate-800 bg-black/30 p-4 text-xs leading-6 text-white/85">
                                 {expandedCell.value}
                             </pre>
                         </div>
@@ -942,10 +942,10 @@ export default function DatabaseTables({
                 {editingRow && selectedTable && (
                     <div className="fixed inset-0 z-[95] flex items-center justify-center p-4">
                         <div
-                            className="absolute inset-0 bg-slate-950/70 backdrop-blur-md"
+                            className="absolute inset-0 bg-slate-950/70 "
                             onClick={closeEditRowModal}
                         />
-                        <div className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-2xl">
+                        <div className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900/80 p-6  ">
                             <div className="mb-4 flex items-start justify-between gap-4">
                                 <div>
                                     <h3 className="text-xl font-bold text-white">
@@ -958,7 +958,7 @@ export default function DatabaseTables({
                                 <button
                                     type="button"
                                     onClick={closeEditRowModal}
-                                    className="rounded-lg border border-white/20 p-2 text-white/80 transition hover:bg-white/10 hover:text-white"
+                                    className="rounded-lg border border-slate-800 p-2 text-white/80 transition hover:bg-slate-900/80 hover:text-white"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -1102,7 +1102,7 @@ export default function DatabaseTables({
                                                                     },
                                                                 )
                                                             }
-                                                            className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                                            className="w-full rounded-lg border border-slate-800 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
                                                         />
                                                     ) : (
                                                         <input
@@ -1119,7 +1119,7 @@ export default function DatabaseTables({
                                                                     },
                                                                 )
                                                             }
-                                                            className="w-full rounded-lg border border-white/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
+                                                            className="w-full rounded-lg border border-slate-800 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-blue-300/50 focus:outline-none"
                                                         />
                                                     )}
                                                     <p className="mt-1 text-[11px] text-white/40">

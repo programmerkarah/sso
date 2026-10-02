@@ -36,12 +36,12 @@ export default function Edit({ organization }: EditProps) {
                 <div>
                     <Link
                         href="/admin/organizations"
-                        className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-xl transition hover:bg-white/20"
+                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-white   transition hover:bg-slate-800"
                     >
                         <ArrowLeft className="h-4 w-4" />
                         Kembali ke daftar
                     </Link>
-                    <h1 className="mt-5 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-4xl font-black text-transparent drop-shadow-xl sm:text-5xl">
+                    <h1 className="mt-5  text-4xl font-semibold text-white  sm:text-5xl">
                         Edit Organisasi
                     </h1>
                 </div>
@@ -93,7 +93,7 @@ export default function Edit({ organization }: EditProps) {
                                     setData('description', e.target.value)
                                 }
                                 rows={3}
-                                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white shadow-sm backdrop-blur-sm transition focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
+                                className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-white shadow-sm  transition focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
                             />
                             {errors.description && (
                                 <p className="mt-1 text-sm text-red-300">
@@ -110,7 +110,7 @@ export default function Edit({ organization }: EditProps) {
                                     onChange={(e) =>
                                         setData('is_active', e.target.checked)
                                     }
-                                    className="rounded border-white/30 bg-white/10 text-blue-500 focus:ring-white/30"
+                                    className="rounded border-white/30 bg-slate-900/80 text-blue-500 focus:ring-white/30"
                                 />
                                 <span className="text-sm text-white/85">
                                     Aktif
@@ -122,7 +122,7 @@ export default function Edit({ organization }: EditProps) {
                             </p>
                         </div>
 
-                        <div className="flex items-center justify-end gap-3 border-t border-white/10 pt-6">
+                        <div className="flex items-center justify-end gap-3 border-t border-slate-800 pt-6">
                             <Link href="/admin/organizations">
                                 <Button type="button" variant="secondary">
                                     Batal
