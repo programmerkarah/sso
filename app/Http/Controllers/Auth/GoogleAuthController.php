@@ -164,6 +164,17 @@ class GoogleAuthController extends Controller
             ->with('info', 'Masuk dengan username dan password akun SSO Anda untuk membuktikan kepemilikan akun.');
     }
 
+    public function loginLocalWithoutLink(Request $request): RedirectResponse
+    {
+        $request->session()->forget([
+            self::PENDING_SESSION_KEY,
+            'url.intended',
+        ]);
+
+        return redirect()->route('login')
+            ->with('info', 'Silakan masuk menggunakan username dan password akun SSO. Akun Google tidak akan dihubungkan.');
+    }
+
     public function linkPending(Request $request): RedirectResponse
     {
         $identity = $this->pendingIdentity($request);
