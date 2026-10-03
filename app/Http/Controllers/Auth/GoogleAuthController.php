@@ -174,6 +174,10 @@ class GoogleAuthController extends Controller
         }
 
         $request->session()->forget(self::PENDING_SESSION_KEY);
+        $request->session()->flash(
+            'success',
+            'Akun Google berhasil dihubungkan ke akun SSO. Anda sekarang dapat menggunakan Google untuk masuk.',
+        );
 
         return $this->loginLinkedUser($request, $user);
     }
