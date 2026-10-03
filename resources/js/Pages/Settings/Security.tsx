@@ -4,12 +4,14 @@ import {
     EyeOff,
     Key,
     KeyRound,
+    Link2,
     LockKeyhole,
     Mail,
     QrCode,
     RefreshCw,
     Shield,
     Type,
+    Unlink,
     X,
 } from 'lucide-react';
 
@@ -39,6 +41,12 @@ interface SecurityProps extends PageProps {
     qrCodeSvg?: string;
     twoFactorSecretKey?: string;
     recoveryCodes?: string[];
+    googleAuthEnabled?: boolean;
+    googleAccount?: {
+        email: string;
+        linked_at?: string | null;
+        last_login_at?: string | null;
+    } | null;
 }
 
 export default function Security({
@@ -46,6 +54,8 @@ export default function Security({
     qrCodeSvg,
     twoFactorSecretKey,
     recoveryCodes,
+    googleAuthEnabled = false,
+    googleAccount = null,
 }: SecurityProps) {
     const [showingQrCode, setShowingQrCode] = useState(false);
     const [showingRecoveryCodes, setShowingRecoveryCodes] = useState(
@@ -545,6 +555,65 @@ export default function Security({
                             </div>
                         </div>
                     </GlassCard>
+
+                    {googleAuthEnabled && (
+                        <GlassCard>
+                            <div className="flex flex-col items-start gap-4 sm:flex-row">
+                                <div className="rounded-full bg-gradient-to-br from-white/20 to-white/5 p-4">
+                                    <Link2 className="h-8 w-8 text-sky-300" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-white">
+                                                Akun Google
+                                            </h2>
+                                            <p className="mt-2 text-white/80">
+                                                Gunakan Google sebagai metode masuk tambahan. Email Google harus sama dengan email akun SSO.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {googleAccount ? (
+                                        <div className="mt-5 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4">
+                                            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                                                Terhubung
+                                            </p>
+                                            <p className="mt-1 text-sm font-semibold text-white">
+                                                {googleAccount.email}
+                                            </p>
+                                            <div className="mt-4">
+                                                <Button
+                                                    type="button"
+                                                    variant="danger"
+                                                    onClick={() =>
+                                                        router.delete('/auth/google/unlink', {
+                                                            preserveScroll: true,
+                                                        })
+                                                    }
+                                                >
+                                                    <Unlink className="mr-2 h-4 w-4" />
+                                                    Lepas akun Google
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="mt-5">
+                                            <Button
+                                                type="button"
+                                                onClick={() =>
+                                                    router.visit('/auth/google/link')
+                                                }
+                                            >
+                                                <Link2 className="mr-2 h-4 w-4" />
+                                                Hubungkan Google
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </GlassCard>
+                    )}
 
                     {/* 2FA Status Card */}
                     <GlassCard>
