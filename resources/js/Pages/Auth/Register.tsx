@@ -130,12 +130,6 @@ export default function Register() {
                             placeholder="Username"
                             required
                         />
-                        <PasswordRequirements
-                            password={data.password}
-                            name={data.name}
-                            username={data.username}
-                            email={data.email}
-                        />
                     </div>
 
                     <div>
@@ -156,10 +150,6 @@ export default function Register() {
                             error={errors.email}
                             placeholder="Email"
                             required
-                        />
-                        <PasswordMatchHint
-                            password={data.password}
-                            confirmation={data.password_confirmation}
                         />
                     </div>
                 </div>
@@ -217,6 +207,12 @@ export default function Register() {
                             placeholder="Minimal 8 karakter"
                             required
                         />
+                        <PasswordRequirements
+                            password={data.password}
+                            name={data.name}
+                            username={data.username}
+                            email={data.email}
+                        />
                     </div>
 
                     <div>
@@ -239,6 +235,10 @@ export default function Register() {
                             error={errors.password_confirmation}
                             placeholder="Ulangi password"
                             required
+                        />
+                        <PasswordMatchHint
+                            password={data.password}
+                            confirmation={data.password_confirmation}
                         />
                     </div>
                 </div>
