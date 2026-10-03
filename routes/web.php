@@ -125,6 +125,9 @@ Route::get('/settings/security', [SettingsController::class, 'security'])
 
 // Settings Routes
 Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-change-password'])->prefix('settings')->name('settings.')->group(function () {
+    Route::post('/security/password/check-current', [SettingsController::class, 'checkCurrentPassword'])
+        ->middleware('throttle:30,1')
+        ->name('security.password.check-current');
     Route::post('/security/password', [SettingsController::class, 'updatePassword'])->name('security.password.update');
     Route::post('/security/email', [SettingsController::class, 'updateEmail'])->name('security.email.update');
     Route::get('/security/recovery-codes', [SettingsController::class, 'showRecoveryCodes'])->name('security.recovery-codes.show');
