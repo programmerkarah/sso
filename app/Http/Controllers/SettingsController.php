@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Rules\SecurePassword;
 use App\Services\EncryptedStateService;
 use App\Support\ActivityLogger;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -507,6 +508,23 @@ class SettingsController extends Controller
         );
 
         return back()->with('success', 'Kode pemulihan berhasil diregenerasi. Gunakan kode terbaru yang tampil di halaman ini.');
+    }
+
+    public function checkCurrentPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'string', 'max:255'],
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        return response()->json([
+            'matches' => Hash::check(
+                (string) $request->input('current_password'),
+                $user->password,
+            ),
+        ]);
     }
 
     public function updatePassword(Request $request): RedirectResponse
