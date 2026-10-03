@@ -28,21 +28,16 @@ class LoginResponse implements LoginResponseContract
             $user = $request->user();
             $userId = (int) $user->id;
 
-            // Catat apakah login ini menggusur sesi aktif di perangkat lain
-            // sebelum sesi baru diaktifkan (setelah aktivasi, flag ini tidak bisa dibaca).
-            $isDisplacingOtherSession = $this->sessionConcurrencyManager->hasOtherActiveSession($request, $userId);
-
             $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $user);
             $this->sessionConcurrencyManager->activateLatestSession($request, $userId);
 
-            // 1 device, 1 session: hapus semua trusted device milik perangkat lain.
-            // Trusted device perangkat saat ini (baru dibuat/diperbarui di atas) dipertahankan.
-            if ($isDisplacingOtherSession) {
-                $currentFingerprint = $this->trustedDeviceManager->fingerprint($request);
-                $user->trustedDevices()
-                    ->where('device_fingerprint', '!=', $currentFingerprint)
-                    ->delete();
-            }
+            // Model keamanan SSO adalah 1 perangkat tepercaya aktif per akun.
+            // Pertahankan perangkat saat ini dan buang trust lama dari perangkat lain,
+            // termasuk record lama yang sudah tidak memiliki sesi aktif.
+            $currentFingerprint = $this->trustedDeviceManager->fingerprint($request);
+            $user->trustedDevices()
+                ->where('device_fingerprint', '!=', $currentFingerprint)
+                ->delete();
 
             ActivityLogger::logByRequest(
                 request: $request,
