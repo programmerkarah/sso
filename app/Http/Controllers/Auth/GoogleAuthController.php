@@ -158,10 +158,24 @@ class GoogleAuthController extends Controller
                 ->with('error', 'Sesi Google telah kedaluwarsa. Silakan mulai kembali.');
         }
 
-        $request->session()->put('url.intended', route('google.link-pending'));
+        $user = User::query()
+            ->whereRaw('LOWER(email) = ?', [$identity['email']])
+            ->first();
 
-        return redirect()->route('login')
-            ->with('info', 'Masuk dengan username dan password akun SSO Anda untuk membuktikan kepemilikan akun.');
+        if (! $user || ! $this->emailsMatch($user->email, $identity['email'])) {
+            return redirect()->route('login')
+                ->with('error', 'Akun SSO dengan email Google tersebut tidak ditemukan.');
+        }
+
+        $result = $this->persistLink($user, $identity);
+
+        if (! $result['ok']) {
+            return redirect()->route('login')->with('error', $result['message']);
+        }
+
+        $request->session()->forget(self::PENDING_SESSION_KEY);
+
+        return $this->loginLinkedUser($request, $user);
     }
 
     public function loginLocalWithoutLink(Request $request): RedirectResponse
@@ -242,6 +256,11 @@ class GoogleAuthController extends Controller
         $hasMultipleOrganizations = $activeOrganizations->count() > 1;
 
         $rules = [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
             'username' => [
                 'required',
                 'string',
@@ -254,7 +273,7 @@ class GoogleAuthController extends Controller
                 'string',
                 Password::defaults(),
                 'confirmed',
-                new SecurePassword($identity['name'], $request->string('username')->toString(), $identity['email']),
+                new SecurePassword($request->string('name')->toString(), $request->string('username')->toString(), $identity['email']),
             ],
         ];
 
@@ -282,7 +301,7 @@ class GoogleAuthController extends Controller
 
         $user = DB::transaction(function () use ($identity, $validated, $organizationId): User {
             $user = User::create([
-                'name' => $identity['name'],
+                'name' => $validated['name'],
                 'username' => $validated['username'],
                 'email' => $identity['email'],
                 'password' => $validated['password'],
