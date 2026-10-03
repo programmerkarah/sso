@@ -37,6 +37,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'organization_id',
         'admin_verified_at',
         'admin_verified_by',
+        'google_link_prompt_dismissed_at',
     ];
 
     /**
@@ -61,6 +62,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'admin_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'google_link_prompt_dismissed_at' => 'datetime',
             'password' => 'hashed',
             'password_change_required' => 'boolean',
         ];
@@ -88,6 +90,18 @@ class User extends Authenticatable implements MustVerifyEmail
     public function trustedDevices(): HasMany
     {
         return $this->hasMany(TrustedDevice::class);
+    }
+
+    public function socialAccounts(): HasMany
+    {
+        return $this->hasMany(SocialAccount::class);
+    }
+
+    public function googleAccount(): ?SocialAccount
+    {
+        return $this->socialAccounts()
+            ->where('provider', 'google')
+            ->first();
     }
 
     /**
