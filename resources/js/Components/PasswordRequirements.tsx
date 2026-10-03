@@ -1,4 +1,4 @@
-import { Circle, XCircle } from 'lucide-react';
+import { CheckCircle2, Circle, XCircle } from 'lucide-react';
 
 interface PasswordRequirementsProps {
     password: string;
@@ -126,9 +126,11 @@ export function PasswordMatchHint({
 export function CurrentPasswordHint({
     value,
     status,
+    focused = false,
 }: {
     value: string;
     status: 'idle' | 'checking' | 'match' | 'mismatch';
+    focused?: boolean;
 }) {
     if (!value || status === 'idle') return null;
 
@@ -141,7 +143,16 @@ export function CurrentPasswordHint({
         );
     }
 
-    if (status === 'match') return null;
+    if (status === 'match') {
+        if (!focused) return null;
+
+        return (
+            <p className="mt-2 flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                Password sesuai dengan password yang tersimpan.
+            </p>
+        );
+    }
 
     return (
         <p className="mt-2 flex items-center gap-2 text-xs text-rose-600 dark:text-rose-400">
