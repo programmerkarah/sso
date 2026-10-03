@@ -56,6 +56,9 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
 Route::post('/auth/google/use-existing', [GoogleAuthController::class, 'useExistingAccount'])
     ->middleware('guest')
     ->name('google.use-existing');
+Route::post('/auth/google/login-local', [GoogleAuthController::class, 'loginLocalWithoutLink'])
+    ->middleware('guest')
+    ->name('google.login-local');
 Route::get('/auth/google/register', [GoogleAuthController::class, 'registrationForm'])
     ->middleware('guest')
     ->name('google.register');
