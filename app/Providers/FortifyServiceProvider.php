@@ -38,7 +38,11 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorRequired::class);
 
         // Define Inertia views
-        Fortify::loginView(fn () => Inertia::render('Auth/Login'));
+        Fortify::loginView(fn () => Inertia::render('Auth/Login', [
+            'googleAuthEnabled' => filled(config('services.google.client_id'))
+                && filled(config('services.google.client_secret'))
+                && filled(config('services.google.redirect')),
+        ]));
         Fortify::registerView(function () {
             $organizations = Organization::where('is_active', true)
                 ->get(['id', 'name', 'type'])
@@ -47,6 +51,9 @@ class FortifyServiceProvider extends ServiceProvider
 
             return Inertia::render('Auth/Register', [
                 'organizations' => $organizations,
+                'googleAuthEnabled' => filled(config('services.google.client_id'))
+                    && filled(config('services.google.client_secret'))
+                    && filled(config('services.google.redirect')),
             ]);
         });
         Fortify::verifyEmailView(fn () => Inertia::render('Auth/VerifyEmail'));
