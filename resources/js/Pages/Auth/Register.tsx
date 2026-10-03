@@ -3,6 +3,10 @@ import { FormEventHandler } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 
 import Input from '@/Components/Input';
+import PasswordRequirements, {
+    PasswordMatchHint,
+    passwordMeetsRequirements,
+} from '@/Components/PasswordRequirements';
 import Label from '@/Components/Label';
 import SearchableSelect, {
     SearchableSelectOption,
@@ -45,6 +49,25 @@ export default function Register() {
               (option) => option.state_token === data.organization_id,
           )
         : null;
+
+    const passwordValid = passwordMeetsRequirements(data.password, {
+        name: data.name,
+        username: data.username,
+        email: data.email,
+    });
+    const confirmationValid =
+        data.password_confirmation !== '' &&
+        data.password_confirmation === data.password;
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
+    const usernameValid =
+        data.username.trim() !== '' && /^[a-zA-Z0-9_.]+$/.test(data.username);
+    const formValid =
+        data.name.trim() !== '' &&
+        usernameValid &&
+        emailValid &&
+        passwordValid &&
+        confirmationValid &&
+        (!hasMultipleOrganizations || data.organization_id !== '');
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -107,6 +130,12 @@ export default function Register() {
                             placeholder="Username"
                             required
                         />
+                        <PasswordRequirements
+                            password={data.password}
+                            name={data.name}
+                            username={data.username}
+                            email={data.email}
+                        />
                     </div>
 
                     <div>
@@ -127,6 +156,10 @@ export default function Register() {
                             error={errors.email}
                             placeholder="Email"
                             required
+                        />
+                        <PasswordMatchHint
+                            password={data.password}
+                            confirmation={data.password_confirmation}
                         />
                     </div>
                 </div>
@@ -217,8 +250,8 @@ export default function Register() {
 
                 <button
                     type="submit"
-                    disabled={processing}
-                    className="w-full rounded-lg bg-sky-600 px-4 py-2.5 text-sm sm:py-3 font-semibold text-[#18324a] transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={processing || !formValid}
+                    className="w-full rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50 sm:py-3"
                 >
                     {processing ? 'Menyimpan...' : 'Daftar'}
                 </button>
