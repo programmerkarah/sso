@@ -73,19 +73,21 @@ class SessionConcurrencyManager
 
         $activeUserAgent = DB::table(config('session.table', 'sessions'))
             ->where('id', $activeSessionId)
+            ->where('user_id', $userId)
             ->value('user_agent');
 
-        $currentUserAgent = trim((string) $request->userAgent());
-        $activeUserAgent = trim((string) $activeUserAgent);
+        if (! is_string($activeUserAgent) || $activeUserAgent === '') {
+            // Cached session no longer belongs to this authenticated user.
+            // Treat it as stale instead of forcing 2FA.
+            Cache::forget($this->cacheKey($userId));
 
-        // A valid trusted-device cookie is checked separately by TrustedDeviceManager.
-        // Here we only prevent a stale/replaced session ID from masquerading as
-        // "another device" when it belongs to the same browser.
-        if ($currentUserAgent !== '' && $activeUserAgent !== '' && hash_equals($activeUserAgent, $currentUserAgent)) {
             return false;
         }
 
-        return true;
+        return ! $this->isSameBrowserDevice(
+            (string) $activeUserAgent,
+            (string) $request->userAgent(),
+        );
     }
 
     public function hasActiveSessionRecord(int $userId): bool
@@ -142,6 +144,7 @@ class SessionConcurrencyManager
 
         $isAlive = DB::table(config('session.table', 'sessions'))
             ->where('id', $activeSessionId)
+            ->where('user_id', $userId)
             ->where('last_activity', '>=', $oldestAllowedActivity)
             ->exists();
 
@@ -152,6 +155,44 @@ class SessionConcurrencyManager
         }
 
         return $activeSessionId;
+    }
+
+    private function isSameBrowserDevice(string $leftUserAgent, string $rightUserAgent): bool
+    {
+        $left = $this->browserDeviceSignature($leftUserAgent);
+        $right = $this->browserDeviceSignature($rightUserAgent);
+
+        return $left !== null
+            && $right !== null
+            && hash_equals($left, $right);
+    }
+
+    private function browserDeviceSignature(string $userAgent): ?string
+    {
+        $ua = strtolower(trim($userAgent));
+
+        if ($ua === '') {
+            return null;
+        }
+
+        $browser = match (true) {
+            str_contains($ua, 'edg/') => 'edge',
+            str_contains($ua, 'chrome/') => 'chrome',
+            str_contains($ua, 'firefox/') => 'firefox',
+            str_contains($ua, 'safari/') && str_contains($ua, 'version/') => 'safari',
+            default => 'other',
+        };
+
+        $os = match (true) {
+            str_contains($ua, 'windows nt') => 'windows',
+            str_contains($ua, 'iphone') || str_contains($ua, 'ipad') || str_contains($ua, 'cpu os') => 'ios',
+            str_contains($ua, 'android') => 'android',
+            str_contains($ua, 'mac os x') => 'macos',
+            str_contains($ua, 'linux') => 'linux',
+            default => 'other',
+        };
+
+        return hash('sha256', $browser.'|'.$os);
     }
 
     private function getActiveSessionId(int $userId): mixed
