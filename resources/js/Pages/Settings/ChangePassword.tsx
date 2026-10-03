@@ -2,12 +2,17 @@ import { AlertTriangle, KeyRound } from 'lucide-react';
 
 import { FormEventHandler } from 'react';
 
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
+import PasswordRequirements, {
+    PasswordMatchHint,
+    passwordMeetsRequirements,
+} from '@/Components/PasswordRequirements';
 import GuestLayout from '@/Layouts/GuestLayout';
+import { PageProps } from '@/types';
 
 interface ChangePasswordForm {
     password: string;
@@ -15,11 +20,22 @@ interface ChangePasswordForm {
 }
 
 export default function ChangePassword() {
+    const currentUser = usePage<PageProps>().props.auth.user;
     const { data, setData, post, processing, errors, reset } =
         useForm<ChangePasswordForm>({
             password: '',
             password_confirmation: '',
         });
+
+    const passwordValid = passwordMeetsRequirements(data.password, {
+        name: currentUser?.name,
+        username: currentUser?.username,
+        email: currentUser?.email,
+    });
+    const confirmationValid =
+        data.password_confirmation !== '' &&
+        data.password_confirmation === data.password;
+    const formValid = passwordValid && confirmationValid;
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -70,6 +86,12 @@ export default function ChangePassword() {
                                 autoComplete="new-password"
                             />
                         </div>
+                        <PasswordRequirements
+                            password={data.password}
+                            name={currentUser?.name}
+                            username={currentUser?.username}
+                            email={currentUser?.email}
+                        />
                         {errors.password && (
                             <p className="text-sm text-red-300">
                                 {errors.password}
@@ -103,6 +125,10 @@ export default function ChangePassword() {
                                 autoComplete="new-password"
                             />
                         </div>
+                        <PasswordMatchHint
+                            password={data.password}
+                            confirmation={data.password_confirmation}
+                        />
                         {errors.password_confirmation && (
                             <p className="text-sm text-red-300">
                                 {errors.password_confirmation}
@@ -112,7 +138,7 @@ export default function ChangePassword() {
 
                     <Button
                         type="submit"
-                        disabled={processing}
+                        disabled={processing || !formValid}
                         className="w-full"
                     >
                         {processing ? 'Menyimpan...' : 'Simpan Password Baru'}
