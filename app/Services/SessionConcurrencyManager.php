@@ -174,7 +174,7 @@ class SessionConcurrencyManager
             ->exists();
 
         if (! $isAlive) {
-            Cache::forget($this->cacheKey($userId));
+            $this->forgetActiveSession($userId);
 
             return null;
         }
