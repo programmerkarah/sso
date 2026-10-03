@@ -21,18 +21,46 @@ class TrustedDeviceManager
      */
     public function shouldChallenge(Request $request, User $user): bool
     {
-        // 1 device, 1 session: jika ada sesi aktif di perangkat lain, wajib 2FA
-        // bahkan jika perangkat ini sudah pernah dipercaya.
-        if ($this->sessionConcurrencyManager->hasOtherActiveSession($request, (int) $user->id)) {
-            return true;
+        return $this->twoFactorDecision($request, $user)['required'];
+    }
+
+    /**
+     * Return an auditable 2FA decision for the current credentialed login.
+     *
+     * @return array{required:bool, reason:string, trusted_device_id:?int}
+     */
+    public function twoFactorDecision(Request $request, User $user): array
+    {
+        $device = $this->currentTrustedDevice($request, $user);
+
+        if (! $device) {
+            return ['required' => true, 'reason' => 'trusted_device_invalid', 'trusted_device_id' => null];
         }
 
-        if ($this->sessionConcurrencyManager->consumeForceTwoFactorFlag($user->id)) {
-            return true;
+        if ($this->requiresFreshTwoFactorConfirmation($user)) {
+            return ['required' => true, 'reason' => 'trust_window_expired', 'trusted_device_id' => (int) $device->id];
         }
 
-        return ! $this->hasValidTrustedDevice($request, $user)
-            || $this->requiresFreshTwoFactorConfirmation($user);
+        if ($this->sessionConcurrencyManager->hasOtherActiveSession(
+            $request,
+            (int) $user->id,
+            (int) $device->id,
+        )) {
+            return ['required' => true, 'reason' => 'another_device_active', 'trusted_device_id' => (int) $device->id];
+        }
+
+        return ['required' => false, 'reason' => 'same_trusted_device', 'trusted_device_id' => (int) $device->id];
+    }
+
+    public function currentTrustedDevice(Request $request, User $user): ?TrustedDevice
+    {
+        $cookie = $this->getCookiePayload($request);
+
+        if (! $cookie || (int) $cookie['user_id'] !== (int) $user->id || blank($cookie['token'])) {
+            return null;
+        }
+
+        return $this->resolveTrustedDevice($request, $user, (string) $cookie['token']);
     }
 
     /**
@@ -62,13 +90,7 @@ class TrustedDeviceManager
      */
     public function hasValidTrustedDevice(Request $request, User $user): bool
     {
-        $cookie = $this->getCookiePayload($request);
-
-        if (! $cookie || (int) $cookie['user_id'] !== $user->id || blank($cookie['token'])) {
-            return false;
-        }
-
-        return ! is_null($this->resolveTrustedDevice($request, $user, (string) $cookie['token']));
+        return ! is_null($this->currentTrustedDevice($request, $user));
     }
 
     /**
