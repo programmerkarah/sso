@@ -1,6 +1,6 @@
-import { AlertTriangle, KeyRound } from 'lucide-react';
+import { AlertTriangle, Eye, EyeOff, KeyRound } from 'lucide-react';
 
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useState } from 'react';
 
 import { Head, useForm, usePage } from '@inertiajs/react';
 
@@ -21,6 +21,9 @@ interface ChangePasswordForm {
 
 export default function ChangePassword() {
     const currentUser = usePage<PageProps>().props.auth.user;
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirmation, setShowPasswordConfirmation] =
+        useState(false);
     const { data, setData, post, processing, errors, reset } =
         useForm<ChangePasswordForm>({
             password: '',
@@ -77,17 +80,30 @@ export default function ChangePassword() {
                             <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
                             <Input
                                 id="password"
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 value={data.password}
                                 onChange={(e) =>
                                     setData('password', e.target.value)
                                 }
-                                className="pl-10"
+                                className="pl-10 pr-11"
                                 placeholder="Masukkan password baru"
                                 required
                                 autoFocus
                                 autoComplete="new-password"
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((value) => !value)}
+                                aria-label={showPassword ? 'Sembunyikan password baru' : 'Lihat password baru'}
+                                title={showPassword ? 'Sembunyikan password baru' : 'Lihat password baru'}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/45 transition hover:text-white"
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
                         </div>
                         <PasswordRequirements
                             password={data.password}
@@ -114,7 +130,7 @@ export default function ChangePassword() {
                             <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
                             <Input
                                 id="password_confirmation"
-                                type="password"
+                                type={showPasswordConfirmation ? 'text' : 'password'}
                                 value={data.password_confirmation}
                                 onChange={(e) =>
                                     setData(
@@ -122,11 +138,26 @@ export default function ChangePassword() {
                                         e.target.value,
                                     )
                                 }
-                                className="pl-10"
+                                className="pl-10 pr-11"
                                 placeholder="Ulangi password baru"
                                 required
                                 autoComplete="new-password"
                             />
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setShowPasswordConfirmation((value) => !value)
+                                }
+                                aria-label={showPasswordConfirmation ? 'Sembunyikan konfirmasi password' : 'Lihat konfirmasi password'}
+                                title={showPasswordConfirmation ? 'Sembunyikan konfirmasi password' : 'Lihat konfirmasi password'}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/45 transition hover:text-white"
+                            >
+                                {showPasswordConfirmation ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
                         </div>
                         <PasswordMatchHint
                             password={data.password}
