@@ -11,12 +11,22 @@ class SessionConcurrencyManager
 {
     public const FORCE_2FA_CACHE_PREFIX = 'auth:force-2fa:';
 
-    public function activateLatestSession(Request $request, int $userId, bool $forceTwoFactorOnNextLogin = false): void
+    private const ACTIVE_DEVICE_CACHE_PREFIX = 'auth:active-device:';
+
+    public function activateLatestSession(Request $request, int $userId, ?int $trustedDeviceId = null): void
     {
         $currentSessionId = $request->session()->getId();
         $previousSessionId = $this->getLiveActiveSessionId($userId);
 
         Cache::forever($this->cacheKey($userId), $currentSessionId);
+
+        if ($trustedDeviceId !== null) {
+            Cache::forever($this->deviceCacheKey($userId), $trustedDeviceId);
+        } else {
+            Cache::forget($this->deviceCacheKey($userId));
+        }
+
+        $this->clearForceTwoFactorFlag($userId);
 
         if (
             is_string($previousSessionId)
@@ -30,9 +40,6 @@ class SessionConcurrencyManager
             // Beritahu sesi lama secara real-time via Pusher bahwa mereka telah digusur.
             SessionDisplaced::dispatch($userId);
 
-            if ($forceTwoFactorOnNextLogin) {
-                Cache::forever(self::FORCE_2FA_CACHE_PREFIX.$userId, true);
-            }
         }
     }
 
@@ -59,7 +66,7 @@ class SessionConcurrencyManager
      * a new session ID while the previous database row is still inside Laravel's
      * lifetime window for a short period.
      */
-    public function hasOtherActiveSession(Request $request, int $userId): bool
+    public function hasOtherActiveSession(Request $request, int $userId, ?int $currentTrustedDeviceId = null): bool
     {
         $activeSessionId = $this->getLiveActiveSessionId($userId);
 
@@ -71,20 +78,28 @@ class SessionConcurrencyManager
             return false;
         }
 
+        $activeTrustedDeviceId = $this->getActiveTrustedDeviceId($userId);
+
+        if ($activeTrustedDeviceId !== null && $currentTrustedDeviceId !== null) {
+            return $activeTrustedDeviceId !== $currentTrustedDeviceId;
+        }
+
+        if ($activeTrustedDeviceId !== null) {
+            return true;
+        }
+
         $activeUserAgent = DB::table(config('session.table', 'sessions'))
             ->where('id', $activeSessionId)
             ->where('user_id', $userId)
             ->value('user_agent');
 
         if (! is_string($activeUserAgent) || $activeUserAgent === '') {
-            // Cached session no longer belongs to this authenticated user.
-            // Treat it as stale instead of forcing 2FA.
-            Cache::forget($this->cacheKey($userId));
+            $this->forgetActiveSession($userId);
 
             return false;
         }
 
-        return ! $this->isSameBrowserDevice(
+        return $currentTrustedDeviceId === null || ! $this->isSameBrowserDevice(
             (string) $activeUserAgent,
             (string) $request->userAgent(),
         );
@@ -108,6 +123,14 @@ class SessionConcurrencyManager
     public function forgetActiveSession(int $userId): void
     {
         Cache::forget($this->cacheKey($userId));
+        Cache::forget($this->deviceCacheKey($userId));
+    }
+
+    public function getActiveTrustedDeviceId(int $userId): ?int
+    {
+        $value = Cache::get($this->deviceCacheKey($userId));
+
+        return is_numeric($value) ? (int) $value : null;
     }
 
     public function consumeForceTwoFactorFlag(int $userId): bool
@@ -203,5 +226,10 @@ class SessionConcurrencyManager
     private function cacheKey(int $userId): string
     {
         return "auth:active-session:{$userId}";
+    }
+
+    private function deviceCacheKey(int $userId): string
+    {
+        return self::ACTIVE_DEVICE_CACHE_PREFIX.$userId;
     }
 }
