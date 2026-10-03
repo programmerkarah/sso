@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\ApplicationCatalogController;
 use App\Http\Controllers\Auth\CustomAuthorizationController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Settings\ChangePasswordController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Middleware\EnsureSingleActiveSession;
@@ -46,6 +47,32 @@ Route::get('/debug-auth', function () {
 Route::get('/oauth/authorize', [CustomAuthorizationController::class, 'authorize'])
     ->middleware(['web'])
     ->name('passport.authorizations.authorize.debug');
+
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])
+    ->middleware('guest')
+    ->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
+    ->name('google.callback');
+Route::post('/auth/google/use-existing', [GoogleAuthController::class, 'useExistingAccount'])
+    ->middleware('guest')
+    ->name('google.use-existing');
+Route::get('/auth/google/register', [GoogleAuthController::class, 'registrationForm'])
+    ->middleware('guest')
+    ->name('google.register');
+Route::post('/auth/google/register', [GoogleAuthController::class, 'register'])
+    ->middleware('guest')
+    ->name('google.register.store');
+
+Route::middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-change-password'])->group(function () {
+    Route::get('/auth/google/link', [GoogleAuthController::class, 'redirectForLink'])
+        ->name('google.link');
+    Route::get('/auth/google/link-pending', [GoogleAuthController::class, 'linkPending'])
+        ->name('google.link-pending');
+    Route::delete('/auth/google/unlink', [GoogleAuthController::class, 'unlink'])
+        ->name('google.unlink');
+    Route::post('/auth/google/dismiss-prompt', [GoogleAuthController::class, 'dismissPrompt'])
+        ->name('google.dismiss-prompt');
+});
 
 Route::get('/', function () {
     if (Auth::check()) {
