@@ -52,15 +52,40 @@ class SessionConcurrencyManager
     }
 
     /**
-     * Determine if there is a registered active session for the user that differs
-     * from the current request's session (i.e. the user is logged in on another device).
+     * Determine if there is a registered live session on a different device.
+     *
+     * A changed session ID alone must not be treated as a different device:
+     * after session expiry/regeneration the same browser can legitimately receive
+     * a new session ID while the previous database row is still inside Laravel's
+     * lifetime window for a short period.
      */
     public function hasOtherActiveSession(Request $request, int $userId): bool
     {
         $activeSessionId = $this->getLiveActiveSessionId($userId);
 
-        return is_string($activeSessionId)
-            && $activeSessionId !== $request->session()->getId();
+        if (! is_string($activeSessionId) || $activeSessionId === '') {
+            return false;
+        }
+
+        if (hash_equals($activeSessionId, $request->session()->getId())) {
+            return false;
+        }
+
+        $activeUserAgent = DB::table(config('session.table', 'sessions'))
+            ->where('id', $activeSessionId)
+            ->value('user_agent');
+
+        $currentUserAgent = trim((string) $request->userAgent());
+        $activeUserAgent = trim((string) $activeUserAgent);
+
+        // A valid trusted-device cookie is checked separately by TrustedDeviceManager.
+        // Here we only prevent a stale/replaced session ID from masquerading as
+        // "another device" when it belongs to the same browser.
+        if ($currentUserAgent !== '' && $activeUserAgent !== '' && hash_equals($activeUserAgent, $currentUserAgent)) {
+            return false;
+        }
+
+        return true;
     }
 
     public function hasActiveSessionRecord(int $userId): bool
