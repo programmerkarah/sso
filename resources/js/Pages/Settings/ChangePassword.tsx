@@ -39,6 +39,9 @@ export default function ChangePassword() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+
+        if (!formValid || processing) return;
+
         post('/settings/change-password', {
             onError: () => reset('password', 'password_confirmation'),
         });
