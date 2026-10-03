@@ -131,11 +131,20 @@ Route::get('/dashboard', function () {
             ->all()
         : [];
 
+    $googleAuthEnabled = filled(config('services.google.client_id'))
+        && filled(config('services.google.client_secret'))
+        && filled(config('services.google.redirect'));
+
+    $googleLinkPrompt = $googleAuthEnabled
+        && ! $user->socialAccounts()->where('provider', 'google')->exists()
+        && is_null($user->google_link_prompt_dismissed_at);
+
     return Inertia::render('Dashboard', [
         'applicationsCount' => $applicationsCount,
         'availableApplications' => $availableApplications,
         'organizationType' => $organizationType,
         'pendingVerificationUsers' => $pendingVerificationUsers,
+        'googleLinkPrompt' => $googleLinkPrompt,
     ]);
 })->middleware(['auth', 'admin-verified', 'verified', 'two-factor', 'must-change-password'])->name('dashboard');
 
