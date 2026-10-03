@@ -1,1 +1,0 @@
-import{j as e}from"./app-DxPwpoDd.js";function r({children:s,required:t=!1,className:a="",...l}){return e.jsxs("label",{...l,className:"mb-1.5 block text-sm font-medium text-slate-300 "+a,children:[s,t&&e.jsx("span",{className:"ml-1 text-red-400",children:"*"})]})}export{r as L};
