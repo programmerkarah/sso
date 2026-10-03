@@ -96,12 +96,12 @@ export default function Dashboard({
                             </div>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
-                            <Link
+                            <a
                                 href="/auth/google/link"
                                 className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-500"
                             >
                                 Hubungkan
-                            </Link>
+                            </a>
                             <button
                                 type="button"
                                 onClick={() =>
