@@ -71,6 +71,9 @@ export default function Register() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+
+        if (!formValid || processing) return;
+
         post('/register');
     };
 
