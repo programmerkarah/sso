@@ -585,6 +585,20 @@ class SettingsController extends Controller
         $user = $request->user();
         $newEmail = strtolower((string) $request->string('email'));
 
+        $googleAccount = $user->socialAccounts()
+            ->where('provider', 'google')
+            ->first();
+
+        if (
+            $googleAccount
+            && strtolower(trim((string) $googleAccount->provider_email)) !== $newEmail
+        ) {
+            return back()->with(
+                'error',
+                'Email baru berbeda dengan akun Google yang sedang terhubung. Lepas akun Google terlebih dahulu jika Anda ingin menggunakan email yang berbeda.',
+            );
+        }
+
         if ($newEmail === strtolower($user->email)) {
             ActivityLogger::logByRequest(
                 request: $request,
