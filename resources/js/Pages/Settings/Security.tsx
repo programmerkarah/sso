@@ -13,7 +13,9 @@ import {
 
 import { FormEventHandler, useEffect, useState } from 'react';
 
-import { Head, router, useForm } from '@inertiajs/react';
+import axios from 'axios';
+
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 
 import Button from '@/Components/Button';
 import ConfirmationModal from '@/Components/ConfirmationModal';
@@ -21,6 +23,11 @@ import GlassCard from '@/Components/GlassCard';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
 import PageHeader from '@/Components/PageHeader';
+import PasswordRequirements, {
+    CurrentPasswordHint,
+    PasswordMatchHint,
+    passwordMeetsRequirements,
+} from '@/Components/PasswordRequirements';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 
@@ -46,6 +53,10 @@ export default function Security({
     const [showCodeView, setShowCodeView] = useState(false);
     const [copiedSecret, setCopiedSecret] = useState(false);
     const [showDisable2FAModal, setShowDisable2FAModal] = useState(false);
+    const [currentPasswordStatus, setCurrentPasswordStatus] = useState<
+        'idle' | 'checking' | 'match' | 'mismatch'
+    >('idle');
+    const currentUser = usePage<PageProps>().props.auth.user;
 
     const copySecretKey = () => {
         if (twoFactorSecretKey) {
@@ -71,6 +82,54 @@ export default function Security({
     useEffect(() => {
         setShowingRecoveryCodes(Boolean(recoveryCodes?.length));
     }, [recoveryCodes]);
+
+    useEffect(() => {
+        const currentPassword = passwordForm.data.current_password;
+
+        if (!currentPassword) {
+            setCurrentPasswordStatus('idle');
+            return;
+        }
+
+        setCurrentPasswordStatus('checking');
+
+        const timeout = window.setTimeout(async () => {
+            try {
+                const response = await axios.post(
+                    '/settings/security/password/check-current',
+                    { current_password: currentPassword },
+                );
+
+                setCurrentPasswordStatus(
+                    response.data?.matches ? 'match' : 'mismatch',
+                );
+            } catch {
+                setCurrentPasswordStatus('idle');
+            }
+        }, 450);
+
+        return () => window.clearTimeout(timeout);
+    }, [passwordForm.data.current_password]);
+
+    const passwordRequirementsValid = passwordMeetsRequirements(
+        passwordForm.data.password,
+        {
+            name: currentUser?.name,
+            username: currentUser?.username,
+            email: currentUser?.email,
+        },
+    );
+    const passwordConfirmationValid =
+        passwordForm.data.password_confirmation !== '' &&
+        passwordForm.data.password_confirmation === passwordForm.data.password;
+    const passwordChanged =
+        passwordForm.data.password !== '' &&
+        passwordForm.data.password !== passwordForm.data.current_password;
+    const passwordFormValid =
+        currentPasswordStatus === 'match' &&
+        passwordRequirementsValid &&
+        passwordConfirmationValid &&
+        passwordChanged;
 
     const enable2FA = () => {
         router.post(
@@ -225,6 +284,10 @@ export default function Security({
                                             placeholder="Masukkan password Anda saat ini"
                                             required
                                         />
+                                        <CurrentPasswordHint
+                                            value={passwordForm.data.current_password}
+                                            status={currentPasswordStatus}
+                                        />
                                     </div>
 
                                     <div>
@@ -246,6 +309,26 @@ export default function Security({
                                             placeholder="Minimal 8 karakter"
                                             required
                                         />
+                                        <PasswordRequirements
+                                            password={passwordForm.data.password}
+                                            name={currentUser?.name}
+                                            username={currentUser?.username}
+                                            email={currentUser?.email}
+                                            compact
+                                        />
+                                        {passwordForm.data.password && (
+                                            <p
+                                                className={
+                                                    passwordChanged
+                                                        ? 'mt-2 text-xs text-emerald-600 dark:text-emerald-400'
+                                                        : 'mt-2 text-xs text-rose-600 dark:text-rose-400'
+                                                }
+                                            >
+                                                {passwordChanged
+                                                    ? 'Password baru berbeda dari password saat ini.'
+                                                    : 'Password baru tidak boleh sama dengan password saat ini.'}
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div>
@@ -276,12 +359,22 @@ export default function Security({
                                             placeholder="Ketik ulang password baru"
                                             required
                                         />
+                                        <PasswordMatchHint
+                                            password={passwordForm.data.password}
+                                            confirmation={
+                                                passwordForm.data
+                                                    .password_confirmation
+                                            }
+                                        />
                                     </div>
 
                                     <div className="md:col-span-2 flex justify-end">
                                         <Button
                                             type="submit"
-                                            disabled={passwordForm.processing}
+                                            disabled={
+                                                passwordForm.processing ||
+                                                !passwordFormValid
+                                            }
                                         >
                                             {passwordForm.processing
                                                 ? 'Memperbarui...'
