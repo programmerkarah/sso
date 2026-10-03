@@ -60,7 +60,10 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(Logout::class, function (Logout $event): void {
             if ($event->user) {
                 $sessionConcurrencyManager = app(SessionConcurrencyManager::class);
-                $sessionConcurrencyManager->forgetActiveSession((int) $event->user->id);
+                $sessionConcurrencyManager->forgetIfCurrentSession(
+                    request(),
+                    (int) $event->user->id,
+                );
                 $sessionConcurrencyManager->clearForceTwoFactorFlag((int) $event->user->id);
 
                 ActivityLogger::log(
