@@ -31,14 +31,15 @@ class TrustedDeviceManager
      */
     public function twoFactorDecision(Request $request, User $user): array
     {
-        $device = $this->currentTrustedDevice($request, $user);
+        $resolution = $this->resolveTrustedDeviceForDecision($request, $user);
+        $device = $resolution['device'];
 
         if (! $device) {
-            return ['required' => true, 'reason' => 'trusted_device_invalid', 'trusted_device_id' => null];
-        }
-
-        if ($this->requiresFreshTwoFactorConfirmation($user)) {
-            return ['required' => true, 'reason' => 'trust_window_expired', 'trusted_device_id' => (int) $device->id];
+            return [
+                'required' => true,
+                'reason' => $resolution['reason'],
+                'trusted_device_id' => null,
+            ];
         }
 
         if ($this->sessionConcurrencyManager->hasOtherActiveSession(
@@ -54,13 +55,7 @@ class TrustedDeviceManager
 
     public function currentTrustedDevice(Request $request, User $user): ?TrustedDevice
     {
-        $cookie = $this->getCookiePayload($request);
-
-        if (! $cookie || (int) $cookie['user_id'] !== (int) $user->id || blank($cookie['token'])) {
-            return null;
-        }
-
-        return $this->resolveTrustedDevice($request, $user, (string) $cookie['token']);
+        return $this->resolveTrustedDeviceForDecision($request, $user)['device'];
     }
 
     /**
@@ -186,6 +181,53 @@ class TrustedDeviceManager
         $this->queueTrustedDeviceCookie($request, $user->id, $cookie['token']);
 
         return $device->refresh();
+    }
+
+    /**
+     * Resolve the trusted device and retain a precise reason when validation fails.
+     *
+     * @return array{device:?TrustedDevice, reason:string}
+     */
+    private function resolveTrustedDeviceForDecision(Request $request, User $user): array
+    {
+        $cookie = $this->getCookiePayload($request);
+
+        if (! $cookie) {
+            return ['device' => null, 'reason' => 'trusted_cookie_missing'];
+        }
+
+        if ((int) $cookie['user_id'] !== (int) $user->id) {
+            return ['device' => null, 'reason' => 'trusted_cookie_user_mismatch'];
+        }
+
+        if (blank($cookie['token'])) {
+            return ['device' => null, 'reason' => 'trusted_cookie_token_missing'];
+        }
+
+        $tokenHash = hash('sha256', (string) $cookie['token']);
+        $device = $user->trustedDevices()
+            ->where('token_hash', $tokenHash)
+            ->first();
+
+        if (! $device) {
+            return ['device' => null, 'reason' => 'trusted_token_not_found'];
+        }
+
+        if (is_null($device->expires_at) || $device->expires_at->lte(now())) {
+            return ['device' => null, 'reason' => 'trusted_device_expired'];
+        }
+
+        if (is_null($device->last_used_at) || $device->last_used_at->lte(now()->subDays(self::TRUST_DAYS))) {
+            return ['device' => null, 'reason' => 'trusted_device_inactive'];
+        }
+
+        $resolved = $this->resolveTrustedDevice($request, $user, (string) $cookie['token']);
+
+        if (! $resolved) {
+            return ['device' => null, 'reason' => 'trusted_device_fingerprint_mismatch'];
+        }
+
+        return ['device' => $resolved, 'reason' => 'same_trusted_device'];
     }
 
     private function resolveTrustedDevice(Request $request, User $user, string $token): ?TrustedDevice
