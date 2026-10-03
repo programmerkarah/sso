@@ -1,6 +1,8 @@
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useState } from 'react';
 
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
+
+import { Eye, EyeOff } from 'lucide-react';
 
 import Input from '@/Components/Input';
 import PasswordRequirements, {
@@ -26,6 +28,9 @@ interface RegisterProps extends PageProps {
 
 export default function Register() {
     const { organizations } = usePage<RegisterProps>().props;
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirmation, setShowPasswordConfirmation] =
+        useState(false);
     const hasMultipleOrganizations = organizations.length > 1;
     const organizationSelectOptions: SearchableSelectOption[] =
         organizations.map((organization) => ({
@@ -197,9 +202,10 @@ export default function Register() {
                         >
                             Password
                         </Label>
-                        <Input
+                        <div className="relative">
+                            <Input
                             id="password"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             name="password"
                             value={data.password}
                             autoComplete="new-password"
@@ -208,8 +214,23 @@ export default function Register() {
                             }
                             error={errors.password}
                             placeholder="Minimal 8 karakter"
+                            className="pr-11"
                             required
                         />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((value) => !value)}
+                                aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                                title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-700 dark:hover:text-slate-200"
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
                         <PasswordRequirements
                             password={data.password}
                             name={data.name}
@@ -226,9 +247,10 @@ export default function Register() {
                         >
                             Konfirmasi password
                         </Label>
-                        <Input
+                        <div className="relative">
+                            <Input
                             id="password_confirmation"
-                            type="password"
+                            type={showPasswordConfirmation ? 'text' : 'password'}
                             name="password_confirmation"
                             value={data.password_confirmation}
                             autoComplete="new-password"
@@ -237,8 +259,33 @@ export default function Register() {
                             }
                             error={errors.password_confirmation}
                             placeholder="Ulangi password"
+                            className="pr-11"
                             required
                         />
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setShowPasswordConfirmation((value) => !value)
+                                }
+                                aria-label={
+                                    showPasswordConfirmation
+                                        ? 'Sembunyikan konfirmasi password'
+                                        : 'Lihat konfirmasi password'
+                                }
+                                title={
+                                    showPasswordConfirmation
+                                        ? 'Sembunyikan konfirmasi password'
+                                        : 'Lihat konfirmasi password'
+                                }
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-700 dark:hover:text-slate-200"
+                            >
+                                {showPasswordConfirmation ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
                         <PasswordMatchHint
                             password={data.password}
                             confirmation={data.password_confirmation}
