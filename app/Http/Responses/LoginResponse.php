@@ -29,15 +29,19 @@ class LoginResponse implements LoginResponseContract
             $userId = (int) $user->id;
 
             $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $user);
-            $this->sessionConcurrencyManager->activateLatestSession($request, $userId);
+            $currentTrustedDevice = $this->trustedDeviceManager->currentTrustedDevice($request, $user);
 
-            // Model keamanan SSO adalah 1 perangkat tepercaya aktif per akun.
-            // Pertahankan perangkat saat ini dan buang trust lama dari perangkat lain,
-            // termasuk record lama yang sudah tidak memiliki sesi aktif.
-            $currentFingerprint = $this->trustedDeviceManager->fingerprint($request);
-            $user->trustedDevices()
-                ->where('device_fingerprint', '!=', $currentFingerprint)
-                ->delete();
+            $this->sessionConcurrencyManager->activateLatestSession(
+                $request,
+                $userId,
+                $currentTrustedDevice?->id,
+            );
+
+            if ($currentTrustedDevice) {
+                $user->trustedDevices()
+                    ->whereKeyNot($currentTrustedDevice->id)
+                    ->delete();
+            }
 
             ActivityLogger::logByRequest(
                 request: $request,
