@@ -1,1 +1,0 @@
-import{j as a}from"./app-SAC8OZXC.js";function d({children:r,className:o="",hover:s=!1}){return a.jsx("div",{className:"app-panel-background min-w-0 w-full rounded-2xl border border-[var(--bps-border)] p-4 sm:p-6 "+(s?"ui-hover transition-colors hover:shadow-md ":"")+o,children:r})}export{d as G};
