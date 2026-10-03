@@ -42,6 +42,7 @@ export default function GoogleRegister({
     const [showConfirmation, setShowConfirmation] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
+        name: google.name,
         username: '',
         organization_id: hasMultipleOrganizations
             ? ''
@@ -55,7 +56,7 @@ export default function GoogleRegister({
     );
 
     const passwordValid = passwordMeetsRequirements(data.password, {
-        name: google.name,
+        name: data.name,
         username: data.username,
         email: google.email,
     });
@@ -65,6 +66,7 @@ export default function GoogleRegister({
     const usernameValid =
         data.username.trim() !== '' && /^[a-zA-Z0-9_.]+$/.test(data.username);
     const formValid =
+        data.name.trim() !== '' &&
         usernameValid &&
         passwordValid &&
         confirmationValid &&
@@ -84,31 +86,42 @@ export default function GoogleRegister({
 
             <div className="space-y-5">
                 <div>
-                    <h2 className="text-xl font-semibold tracking-tight text-[#18324a] sm:text-2xl">
+                    <h2 className="text-xl font-semibold tracking-tight text-[var(--bps-text)] sm:text-2xl">
                         Lengkapi profil SSO
                     </h2>
-                    <p className="mt-2 text-sm leading-6 text-[#6f8495]">
+                    <p className="mt-2 text-sm leading-6 text-[var(--bps-muted)]">
                         Identitas Google sudah diverifikasi. Lengkapi data yang
                         tetap dibutuhkan oleh SSO.
                     </p>
                 </div>
 
-                <div className="grid gap-3 rounded-xl border border-[#dbe5ec] bg-white/70 p-4 sm:grid-cols-2 dark:border-slate-700 dark:bg-slate-900/40">
-                    <div>
-                        <p className="text-xs font-medium text-[#8799a7]">Nama</p>
-                        <p className="mt-1 text-sm font-semibold text-[#29465f] dark:text-slate-100">
-                            {google.name}
-                        </p>
-                    </div>
-                    <div>
-                        <p className="text-xs font-medium text-[#8799a7]">Email</p>
-                        <p className="mt-1 truncate text-sm font-semibold text-[#29465f] dark:text-slate-100">
-                            {google.email}
-                        </p>
-                    </div>
+                <div className="ui-surface-soft rounded-xl border p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-[var(--bps-muted)]">
+                        Email Google
+                    </p>
+                    <p className="mt-1 break-all text-sm font-semibold text-[var(--bps-text)]">
+                        {google.email}
+                    </p>
                 </div>
 
                 <form onSubmit={submit} className="space-y-4">
+                    <div>
+                        <Label htmlFor="name" required>
+                            Nama
+                        </Label>
+                        <Input
+                            id="name"
+                            value={data.name}
+                            onChange={(event) =>
+                                setData('name', event.target.value)
+                            }
+                            error={errors.name}
+                            placeholder="Nama lengkap"
+                            autoComplete="name"
+                            required
+                        />
+                    </div>
+
                     <div>
                         <Label htmlFor="username" required>
                             Username
@@ -143,7 +156,7 @@ export default function GoogleRegister({
                                 onClear={() => setData('organization_id', '')}
                             />
                             {errors.organization_id && (
-                                <p className="mt-2 text-sm text-rose-600">
+                                <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">
                                     {errors.organization_id}
                                 </p>
                             )}
@@ -171,7 +184,7 @@ export default function GoogleRegister({
                             <button
                                 type="button"
                                 onClick={() => setShowPassword((value) => !value)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8799a7] transition hover:text-[#29465f]"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--bps-muted)] transition hover:text-[var(--bps-text)]"
                                 aria-label={
                                     showPassword
                                         ? 'Sembunyikan password'
@@ -187,7 +200,7 @@ export default function GoogleRegister({
                         </div>
                         <PasswordRequirements
                             password={data.password}
-                            name={google.name}
+                            name={data.name}
                             username={data.username}
                             email={google.email}
                         />
@@ -219,7 +232,7 @@ export default function GoogleRegister({
                                 onClick={() =>
                                     setShowConfirmation((value) => !value)
                                 }
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8799a7] transition hover:text-[#29465f]"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--bps-muted)] transition hover:text-[var(--bps-text)]"
                                 aria-label={
                                     showConfirmation
                                         ? 'Sembunyikan konfirmasi password'
@@ -239,7 +252,7 @@ export default function GoogleRegister({
                         />
                     </div>
 
-                    <p className="text-xs leading-5 text-[#8799a7]">
+                    <p className="text-xs leading-5 text-[var(--bps-muted)]">
                         Setelah pendaftaran, akun tetap mengikuti verifikasi
                         email, verifikasi administrator, dan aktivasi 2FA seperti
                         akun SSO lainnya.
@@ -248,7 +261,7 @@ export default function GoogleRegister({
                     <button
                         type="submit"
                         disabled={processing || !formValid}
-                        className="w-full rounded-lg bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="w-full rounded-lg bg-[var(--bps-blue-strong)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:bg-[var(--bps-disabled-bg)] disabled:text-[var(--bps-disabled-text)]"
                     >
                         {processing ? 'Membuat akun...' : 'Buat akun SSO'}
                     </button>
