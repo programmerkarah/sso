@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Services\TrustedDeviceManager;
+use App\Support\ActivityLogger;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\LoginRateLimiter;
@@ -32,8 +33,35 @@ class RedirectIfTwoFactorRequired extends RedirectIfTwoFactorAuthenticatable
     {
         $user = $this->validateCredentials($request);
 
-        if ($this->shouldChallengeTwoFactor($request, $user)) {
-            return $this->twoFactorChallengeResponse($request, $user);
+        if (
+            optional($user)->two_factor_secret
+            && ! is_null(optional($user)->two_factor_confirmed_at)
+            && in_array(TwoFactorAuthenticatable::class, class_uses_recursive($user))
+        ) {
+            $decision = $this->trustedDeviceManager->twoFactorDecision($request, $user);
+
+            ActivityLogger::logByRequest(
+                request: $request,
+                event: 'auth.two_factor.decision',
+                category: 'authentication',
+                description: $decision['required']
+                    ? 'Login memerlukan verifikasi dua faktor.'
+                    : 'Login menggunakan perangkat tepercaya tanpa challenge dua faktor.',
+                user: null,
+                metadata: [
+                    'credential_user_id' => (int) $user->id,
+                    'trusted_device_id' => $decision['trusted_device_id'],
+                    'two_factor_required' => $decision['required'],
+                    'two_factor_reason' => $decision['reason'],
+                ],
+                status: $decision['required'] ? 'warning' : 'success',
+            );
+
+            if ($decision['required']) {
+                return $this->twoFactorChallengeResponse($request, $user);
+            }
+
+            return $next($request);
         }
 
         return $next($request);
