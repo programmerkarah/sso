@@ -28,8 +28,7 @@ class LoginResponse implements LoginResponseContract
             $user = $request->user();
             $userId = (int) $user->id;
 
-            $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $user);
-            $currentTrustedDevice = $this->trustedDeviceManager->currentTrustedDevice($request, $user);
+            $currentTrustedDevice = $this->trustedDeviceManager->finalizeSuccessfulLogin($request, $user);
 
             $this->sessionConcurrencyManager->activateLatestSession(
                 $request,
