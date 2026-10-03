@@ -206,6 +206,9 @@ export default function Security({
 
     const updatePassword: FormEventHandler = (e) => {
         e.preventDefault();
+
+        if (!passwordFormValid || passwordForm.processing) return;
+
         passwordForm.post('/settings/security/password', {
             preserveScroll: true,
             onSuccess: () => {
