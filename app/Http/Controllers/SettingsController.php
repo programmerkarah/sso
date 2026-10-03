@@ -24,6 +24,10 @@ class SettingsController extends Controller
     {
         $user = $request->user();
 
+        $googleAccount = $user->socialAccounts()
+            ->where('provider', 'google')
+            ->first();
+
         return Inertia::render('Settings/Security', [
             'twoFactorEnabled' => ! is_null($user->two_factor_secret),
             'twoFactorConfirmed' => ! is_null($user->two_factor_confirmed_at),
@@ -36,6 +40,14 @@ class SettingsController extends Controller
             'recoveryCodes' => $user->two_factor_confirmed_at && $request->session()->has('two-factor-recovery-codes')
                 ? $request->session()->get('two-factor-recovery-codes')
                 : [],
+            'googleAuthEnabled' => filled(config('services.google.client_id'))
+                && filled(config('services.google.client_secret'))
+                && filled(config('services.google.redirect')),
+            'googleAccount' => $googleAccount ? [
+                'email' => $googleAccount->provider_email,
+                'linked_at' => $googleAccount->linked_at,
+                'last_login_at' => $googleAccount->last_login_at,
+            ] : null,
         ]);
     }
 
