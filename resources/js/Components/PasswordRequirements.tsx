@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, XCircle } from 'lucide-react';
+import { Circle, XCircle } from 'lucide-react';
 
 interface PasswordRequirementsProps {
     password: string;
@@ -86,31 +86,22 @@ export default function PasswordRequirements({
         },
     ];
 
+    const nextRule = rules.find((rule) => !rule.valid);
+
+    if (!nextRule) return null;
+
     return (
         <div
             className={
                 compact
-                    ? 'mt-2 grid gap-1'
-                    : 'mt-2 grid gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50/70 p-3 dark:border-slate-700/70 dark:bg-slate-900/30'
+                    ? 'mt-2'
+                    : 'mt-2 rounded-lg border border-rose-200/70 bg-rose-50/60 px-3 py-2 dark:border-rose-900/50 dark:bg-rose-950/20'
             }
         >
-            {rules.map((rule) => {
-                const Icon = rule.valid ? CheckCircle2 : XCircle;
-
-                return (
-                    <div
-                        key={rule.label}
-                        className={
-                            rule.valid
-                                ? 'flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400'
-                                : 'flex items-center gap-2 text-xs text-rose-600 dark:text-rose-400'
-                        }
-                    >
-                        <Icon className="h-3.5 w-3.5 shrink-0" />
-                        <span>{rule.label}</span>
-                    </div>
-                );
-            })}
+            <div className="flex items-center gap-2 text-xs text-rose-600 dark:text-rose-400">
+                <XCircle className="h-3.5 w-3.5 shrink-0" />
+                <span>{nextRule.label}</span>
+            </div>
         </div>
     );
 }
@@ -122,21 +113,12 @@ export function PasswordMatchHint({
     password: string;
     confirmation: string;
 }) {
-    if (!confirmation) return null;
-
-    const matches = password === confirmation;
-    const Icon = matches ? CheckCircle2 : XCircle;
+    if (!confirmation || password === confirmation) return null;
 
     return (
-        <p
-            className={
-                matches
-                    ? 'mt-2 flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400'
-                    : 'mt-2 flex items-center gap-2 text-xs text-rose-600 dark:text-rose-400'
-            }
-        >
-            <Icon className="h-3.5 w-3.5 shrink-0" />
-            {matches ? 'Password sudah sama.' : 'Password belum sama.'}
+        <p className="mt-2 flex items-center gap-2 text-xs text-rose-600 dark:text-rose-400">
+            <XCircle className="h-3.5 w-3.5 shrink-0" />
+            Password belum sama.
         </p>
     );
 }
@@ -159,21 +141,12 @@ export function CurrentPasswordHint({
         );
     }
 
-    const matches = status === 'match';
-    const Icon = matches ? CheckCircle2 : XCircle;
+    if (status === 'match') return null;
 
     return (
-        <p
-            className={
-                matches
-                    ? 'mt-2 flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400'
-                    : 'mt-2 flex items-center gap-2 text-xs text-rose-600 dark:text-rose-400'
-            }
-        >
-            <Icon className="h-3.5 w-3.5 shrink-0" />
-            {matches
-                ? 'Password sama dengan password yang tersimpan.'
-                : 'Password berbeda dengan password yang tersimpan.'}
+        <p className="mt-2 flex items-center gap-2 text-xs text-rose-600 dark:text-rose-400">
+            <XCircle className="h-3.5 w-3.5 shrink-0" />
+            Password berbeda dengan password yang tersimpan.
         </p>
     );
 }
