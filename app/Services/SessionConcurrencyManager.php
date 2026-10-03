@@ -28,18 +28,20 @@ class SessionConcurrencyManager
 
         $this->clearForceTwoFactorFlag($userId);
 
+        $deletedOtherSessions = DB::table(config('session.table', 'sessions'))
+            ->where('user_id', $userId)
+            ->where('id', '!=', $currentSessionId)
+            ->delete();
+
         if (
-            is_string($previousSessionId)
-            && $previousSessionId !== ''
-            && $previousSessionId !== $currentSessionId
+            $deletedOtherSessions > 0
+            || (
+                is_string($previousSessionId)
+                && $previousSessionId !== ''
+                && $previousSessionId !== $currentSessionId
+            )
         ) {
-            DB::table(config('session.table', 'sessions'))
-                ->where('id', $previousSessionId)
-                ->delete();
-
-            // Beritahu sesi lama secara real-time via Pusher bahwa mereka telah digusur.
             SessionDisplaced::dispatch($userId);
-
         }
     }
 
