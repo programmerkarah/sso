@@ -2,12 +2,14 @@ import {
     ArrowRight,
     ExternalLink,
     Globe,
+    Link2,
     Plus,
     ShieldCheck,
     UserCog,
+    X,
 } from 'lucide-react';
 
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 
 import PageHeader from '@/Components/PageHeader';
 import AppLayout from '@/Layouts/AppLayout';
@@ -26,6 +28,7 @@ interface DashboardProps extends PageProps {
         logo_url: string | null;
         is_active: boolean;
     }>;
+    googleLinkPrompt?: boolean;
     pendingVerificationUsers: Array<{
         id: number;
         name: string;
@@ -41,6 +44,7 @@ export default function Dashboard({
     organizationType,
     availableApplications,
     pendingVerificationUsers,
+    googleLinkPrompt = false,
 }: DashboardProps) {
     const canManageApplications = auth.can.manageApplications;
     const canManageUsers = auth.can.manageUsers;
@@ -75,6 +79,47 @@ export default function Dashboard({
                         </Link>
                     }
                 />
+
+                {googleLinkPrompt && (
+                    <div className="flex flex-col gap-3 rounded-2xl border border-sky-300/30 bg-sky-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-start gap-3">
+                            <div className="mt-0.5 rounded-lg bg-sky-500/15 p-2">
+                                <Link2 className="h-4 w-4 text-sky-300" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-[var(--bps-text)]">
+                                    Hubungkan Google untuk login lebih praktis
+                                </p>
+                                <p className="mt-1 text-sm leading-6 text-[var(--bps-muted)]">
+                                    Opsional. Email Google harus sama dengan email akun SSO Anda.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                            <Link
+                                href="/auth/google/link"
+                                className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-500"
+                            >
+                                Hubungkan
+                            </Link>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    router.post(
+                                        '/auth/google/dismiss-prompt',
+                                        {},
+                                        { preserveScroll: true },
+                                    )
+                                }
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--bps-border)] text-[var(--bps-muted)] transition hover:bg-black/5 hover:text-[var(--bps-text)] dark:hover:bg-white/5"
+                                aria-label="Jangan tampilkan lagi"
+                                title="Jangan tampilkan lagi"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
                     <div className="rounded-2xl border border-[var(--bps-border)] bg-[var(--bps-surface)] p-3 sm:p-5">
