@@ -1,5 +1,7 @@
 import {
     Copy,
+    Eye,
+    EyeOff,
     Key,
     KeyRound,
     LockKeyhole,
@@ -53,6 +55,10 @@ export default function Security({
     const [showCodeView, setShowCodeView] = useState(false);
     const [copiedSecret, setCopiedSecret] = useState(false);
     const [showDisable2FAModal, setShowDisable2FAModal] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+    const [currentPasswordFocused, setCurrentPasswordFocused] = useState(false);
     const [currentPasswordStatus, setCurrentPasswordStatus] = useState<
         'idle' | 'checking' | 'match' | 'mismatch'
     >('idle');
