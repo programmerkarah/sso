@@ -601,9 +601,9 @@ export default function Security({
                                         <div className="mt-5">
                                             <Button
                                                 type="button"
-                                                onClick={() =>
-                                                    router.visit('/auth/google/link')
-                                                }
+                                                onClick={() => {
+                                                    window.location.href = '/auth/google/link';
+                                                }}
                                             >
                                                 <Link2 className="mr-2 h-4 w-4" />
                                                 Hubungkan Google
