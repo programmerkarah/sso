@@ -1,5 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowRight, Link2, UserPlus } from 'lucide-react';
+import { Head, router } from '@inertiajs/react';
+import { ArrowRight, Link2, LogIn, UserPlus } from 'lucide-react';
 
 import GuestLayout from '@/Layouts/GuestLayout';
 
@@ -29,27 +29,28 @@ export default function GoogleContinue({
 
             <div className="space-y-5">
                 <div>
-                    <h2 className="text-xl font-semibold tracking-tight text-[#18324a] sm:text-2xl">
+                    <h2 className="text-xl font-semibold tracking-tight text-[var(--bps-text)] sm:text-2xl">
                         Lanjutkan dengan Google
                     </h2>
-                    <p className="mt-2 text-sm leading-6 text-[#6f8495]">
-                        Akun Google ini belum terhubung ke akun SSO.
+                    <p className="mt-2 text-sm leading-6 text-[var(--bps-muted)]">
+                        {existingEmailAccount
+                            ? 'Kami menemukan akun SSO dengan email yang sama.'
+                            : 'Akun Google ini belum terdaftar di SSO.'}
                     </p>
                 </div>
 
-                <div className="rounded-xl border border-[#dbe5ec] bg-white/70 p-4 dark:border-slate-700 dark:bg-slate-900/40">
-                    <p className="text-sm font-semibold text-[#18324a] dark:text-slate-100">
-                        {google.name}
+                <div className="ui-surface-soft rounded-xl border p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-[var(--bps-muted)]">
+                        Email Google
                     </p>
-                    <p className="mt-1 text-sm text-[#6f8495] dark:text-slate-400">
+                    <p className="mt-1 break-all text-sm font-semibold text-[var(--bps-text)]">
                         {google.email}
                     </p>
+
                     {existingEmailAccount && (
-                        <p className="mt-3 text-xs leading-5 text-amber-700 dark:text-amber-300">
-                            Kami menemukan akun SSO dengan email yang sama.
-                            Anda dapat menghubungkan Google sebagai metode login
-                            tambahan, atau tetap masuk menggunakan akun lokal
-                            tanpa menghubungkannya.
+                        <p className="mt-3 text-xs leading-5 text-[var(--bps-muted)]">
+                            Google dapat dihubungkan sebagai metode login tambahan,
+                            atau Anda tetap dapat masuk menggunakan akun lokal.
                         </p>
                     )}
                 </div>
@@ -60,7 +61,7 @@ export default function GoogleContinue({
                             <button
                                 type="button"
                                 onClick={linkExisting}
-                                className="inline-flex items-center justify-between rounded-xl bg-sky-600 px-4 py-3 text-left text-sm font-semibold text-white transition hover:bg-sky-500"
+                                className="inline-flex items-center justify-between rounded-xl bg-[var(--bps-blue-strong)] px-4 py-3 text-left text-sm font-semibold text-white transition hover:brightness-95"
                             >
                                 <span className="inline-flex items-center gap-2">
                                     <Link2 className="h-4 w-4" />
@@ -72,33 +73,36 @@ export default function GoogleContinue({
                             <button
                                 type="button"
                                 onClick={loginLocal}
-                                className="inline-flex items-center justify-between rounded-xl border border-[#d5e1e9] bg-white px-4 py-3 text-left text-sm font-semibold text-[#29465f] transition hover:bg-[#eef5f9] dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:bg-slate-800"
+                                className="ui-surface ui-hover inline-flex items-center justify-between rounded-xl border px-4 py-3 text-left text-sm font-semibold"
                             >
-                                <span>Login menggunakan akun lokal</span>
+                                <span className="inline-flex items-center gap-2">
+                                    <LogIn className="h-4 w-4" />
+                                    Login menggunakan akun lokal
+                                </span>
                                 <ArrowRight className="h-4 w-4" />
                             </button>
                         </>
                     ) : (
                         <>
-                            <Link
+                            <a
                                 href="/auth/google/register"
-                                className="inline-flex items-center justify-between rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-500"
+                                className="inline-flex items-center justify-between rounded-xl bg-[var(--bps-blue-strong)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-95"
                             >
                                 <span className="inline-flex items-center gap-2">
                                     <UserPlus className="h-4 w-4" />
                                     Lanjutkan pendaftaran
                                 </span>
                                 <ArrowRight className="h-4 w-4" />
-                            </Link>
+                            </a>
 
                             <button
                                 type="button"
-                                onClick={linkExisting}
-                                className="inline-flex items-center justify-between rounded-xl border border-[#d5e1e9] bg-white px-4 py-3 text-left text-sm font-semibold text-[#29465f] transition hover:bg-[#eef5f9] dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:bg-slate-800"
+                                onClick={loginLocal}
+                                className="ui-surface ui-hover inline-flex items-center justify-between rounded-xl border px-4 py-3 text-left text-sm font-semibold"
                             >
                                 <span className="inline-flex items-center gap-2">
-                                    <Link2 className="h-4 w-4" />
-                                    Saya sudah punya akun SSO
+                                    <LogIn className="h-4 w-4" />
+                                    Sudah punya akun SSO? Lanjutkan dengan akun SSO
                                 </span>
                                 <ArrowRight className="h-4 w-4" />
                             </button>
@@ -106,10 +110,10 @@ export default function GoogleContinue({
                     )}
                 </div>
 
-                <p className="text-xs leading-5 text-[#8799a7]">
+                <p className="text-xs leading-5 text-[var(--bps-muted)]">
                     {existingEmailAccount
                         ? 'Menghubungkan Google bersifat opsional. Login lokal tetap dapat digunakan seperti biasa.'
-                        : 'Untuk menghubungkan Google ke akun existing, email Google harus sama dengan email yang terdaftar di akun SSO.'}
+                        : 'Pendaftaran Google tetap mengikuti verifikasi email, verifikasi administrator, dan setup 2FA.'}
                 </p>
             </div>
         </GuestLayout>
