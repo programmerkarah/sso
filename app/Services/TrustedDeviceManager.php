@@ -66,23 +66,23 @@ class TrustedDeviceManager
     /**
      * Finalize a successful login by updating login timestamps and device trust.
      */
-    public function finalizeSuccessfulLogin(Request $request, User $user): void
+    public function finalizeSuccessfulLogin(Request $request, User $user): ?TrustedDevice
     {
         $user->forceFill([
             'last_login_at' => now(),
         ])->save();
 
         if (! $user->two_factor_confirmed_at) {
-            return;
+            return null;
         }
 
-        if ($this->hasValidTrustedDevice($request, $user)) {
-            $this->refreshTrustedDevice($request, $user);
+        $device = $this->currentTrustedDevice($request, $user);
 
-            return;
+        if ($device) {
+            return $this->refreshTrustedDevice($request, $user, $device);
         }
 
-        $this->rememberDevice($request, $user);
+        return $this->rememberDevice($request, $user);
     }
 
     /**
@@ -141,7 +141,7 @@ class TrustedDeviceManager
     /**
      * Trust the current device for the configured trust window.
      */
-    protected function rememberDevice(Request $request, User $user): void
+    protected function rememberDevice(Request $request, User $user): TrustedDevice
     {
         $token = Str::random(80);
         $fingerprint = $this->fingerprint($request);
@@ -150,7 +150,7 @@ class TrustedDeviceManager
             ->where('device_fingerprint', $fingerprint)
             ->delete();
 
-        $user->trustedDevices()->create([
+        $device = $user->trustedDevices()->create([
             'device_fingerprint' => $fingerprint,
             'token_hash' => hash('sha256', $token),
             'user_agent' => $request->userAgent(),
@@ -160,23 +160,19 @@ class TrustedDeviceManager
         ]);
 
         $this->queueTrustedDeviceCookie($request, $user->id, $token);
+
+        return $device;
     }
 
     /**
      * Refresh the trust window for the current device.
      */
-    protected function refreshTrustedDevice(Request $request, User $user): void
+    protected function refreshTrustedDevice(Request $request, User $user, TrustedDevice $device): TrustedDevice
     {
         $cookie = $this->getCookiePayload($request);
 
         if (! $cookie) {
-            return;
-        }
-
-        $device = $this->resolveTrustedDevice($request, $user, (string) $cookie['token']);
-
-        if (! $device) {
-            return;
+            return $device;
         }
 
         $device->forceFill([
@@ -188,6 +184,8 @@ class TrustedDeviceManager
         ])->save();
 
         $this->queueTrustedDeviceCookie($request, $user->id, $cookie['token']);
+
+        return $device->refresh();
     }
 
     private function resolveTrustedDevice(Request $request, User $user, string $token): ?TrustedDevice
