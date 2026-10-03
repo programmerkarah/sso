@@ -212,6 +212,49 @@ class LoginSecurityTest extends TestCase
         $response->assertRedirect('/dashboard');
     }
 
+    public function test_different_trusted_device_id_requires_two_factor_even_with_same_user_agent(): void
+    {
+        $user = $this->createTwoFactorUser(lastLoginAt: now()->subHour());
+        [$cookieValue, $token] = $this->createTrustedDeviceCookie($user);
+
+        $currentDevice = TrustedDevice::query()
+            ->where('user_id', $user->id)
+            ->where('token_hash', hash('sha256', $token))
+            ->firstOrFail();
+
+        $otherDevice = TrustedDevice::create([
+            'user_id' => $user->id,
+            'device_fingerprint' => $currentDevice->device_fingerprint,
+            'token_hash' => hash('sha256', str_repeat('z', 80)),
+            'user_agent' => $this->deviceHeaders()['User-Agent'],
+            'last_used_at' => now(),
+            'expires_at' => now()->addDays(TrustedDeviceManager::TRUST_DAYS),
+        ]);
+
+        $otherSessionId = 'same-browser-other-device';
+        Cache::forever("auth:active-session:{$user->id}", $otherSessionId);
+        Cache::forever("auth:active-device:{$user->id}", $otherDevice->id);
+
+        DB::table(config('session.table', 'sessions'))->insert([
+            'id' => $otherSessionId,
+            'user_id' => $user->id,
+            'ip_address' => '127.0.0.2',
+            'user_agent' => $this->deviceHeaders()['User-Agent'],
+            'payload' => '',
+            'last_activity' => now()->getTimestamp(),
+        ]);
+
+        $response = $this
+            ->withCookie(TrustedDeviceManager::COOKIE_NAME, $cookieValue)
+            ->withHeaders($this->deviceHeaders())
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect(route('two-factor.login'));
+    }
+
     public function test_live_session_on_another_device_still_requires_two_factor(): void
     {
         $user = $this->createTwoFactorUser(lastLoginAt: now()->subHour());
