@@ -319,19 +319,12 @@ export default function Security({
                                             email={currentUser?.email}
                                             compact
                                         />
-                                        {passwordForm.data.password && (
-                                            <p
-                                                className={
-                                                    passwordChanged
-                                                        ? 'mt-2 text-xs text-emerald-600 dark:text-emerald-400'
-                                                        : 'mt-2 text-xs text-rose-600 dark:text-rose-400'
-                                                }
-                                            >
-                                                {passwordChanged
-                                                    ? 'Password baru berbeda dari password saat ini.'
-                                                    : 'Password baru tidak boleh sama dengan password saat ini.'}
-                                            </p>
-                                        )}
+                                        {passwordForm.data.password &&
+                                            !passwordChanged && (
+                                                <p className="mt-2 text-xs text-rose-600 dark:text-rose-400">
+                                                    Password baru tidak boleh sama dengan password saat ini.
+                                                </p>
+                                            )}
                                     </div>
 
                                     <div>
