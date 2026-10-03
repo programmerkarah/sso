@@ -4,6 +4,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/react';
 
 import { Eye, EyeOff } from 'lucide-react';
 
+import GoogleAuthButton from '@/Components/GoogleAuthButton';
 import Input from '@/Components/Input';
 import PasswordRequirements, {
     PasswordMatchHint,
@@ -24,10 +25,12 @@ interface Organization {
 
 interface RegisterProps extends PageProps {
     organizations: Organization[];
+    googleAuthEnabled?: boolean;
 }
 
 export default function Register() {
-    const { organizations } = usePage<RegisterProps>().props;
+    const { organizations, googleAuthEnabled = false } =
+        usePage<RegisterProps>().props;
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirmation, setShowPasswordConfirmation] =
         useState(false);
@@ -94,6 +97,17 @@ export default function Register() {
                     Isi data berikut untuk membuat akun SSO.
                 </p>
             </div>
+
+            {googleAuthEnabled && (
+                <div className="mb-5 space-y-3">
+                    <GoogleAuthButton label="Daftar dengan Google" />
+                    <div className="flex items-center gap-3 text-xs text-[#9aabb7]">
+                        <span className="h-px flex-1 bg-[#dbe5ec]" />
+                        <span>atau daftar dengan akun lokal</span>
+                        <span className="h-px flex-1 bg-[#dbe5ec]" />
+                    </div>
+                </div>
+            )}
 
             <form onSubmit={submit} className="space-y-4 sm:space-y-5">
                 <div>
