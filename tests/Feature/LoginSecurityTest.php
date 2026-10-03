@@ -125,6 +125,37 @@ class LoginSecurityTest extends TestCase
         $this->assertNotSame($expiredSessionId, Cache::get("auth:active-session:{$user->id}"));
     }
 
+    public function test_renewed_session_id_on_same_trusted_browser_does_not_require_two_factor(): void
+    {
+        $user = $this->createTwoFactorUser(lastLoginAt: now()->subHour());
+        [$cookieValue] = $this->createTrustedDeviceCookie($user);
+
+        // Simulate the previous SSO session row still being inside Laravel's
+        // lifetime window while the browser has already received a new session ID.
+        $previousSessionId = 'previous-live-session-same-browser';
+        Cache::forever("auth:active-session:{$user->id}", $previousSessionId);
+
+        DB::table(config('session.table', 'sessions'))->insert([
+            'id' => $previousSessionId,
+            'user_id' => $user->id,
+            'ip_address' => '127.0.0.1',
+            'user_agent' => $this->deviceHeaders()['User-Agent'],
+            'payload' => '',
+            'last_activity' => now()->getTimestamp(),
+        ]);
+
+        $response = $this
+            ->withCookie(TrustedDeviceManager::COOKIE_NAME, $cookieValue)
+            ->withHeaders($this->deviceHeaders())
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect('/dashboard');
+        $this->assertNotSame($previousSessionId, Cache::get("auth:active-session:{$user->id}"));
+    }
+
     public function test_live_session_on_another_device_still_requires_two_factor(): void
     {
         $user = $this->createTwoFactorUser(lastLoginAt: now()->subHour());
