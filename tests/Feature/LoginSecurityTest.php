@@ -156,6 +156,62 @@ class LoginSecurityTest extends TestCase
         $this->assertNotSame($previousSessionId, Cache::get("auth:active-session:{$user->id}"));
     }
 
+    public function test_stale_cached_session_without_user_id_does_not_force_two_factor(): void
+    {
+        $user = $this->createTwoFactorUser(lastLoginAt: now()->subHour());
+        [$cookieValue] = $this->createTrustedDeviceCookie($user);
+
+        $staleSessionId = 'stale-unauthenticated-session';
+        Cache::forever("auth:active-session:{$user->id}", $staleSessionId);
+
+        DB::table(config('session.table', 'sessions'))->insert([
+            'id' => $staleSessionId,
+            'user_id' => null,
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/151.0.0.0',
+            'payload' => '',
+            'last_activity' => now()->getTimestamp(),
+        ]);
+
+        $response = $this
+            ->withCookie(TrustedDeviceManager::COOKIE_NAME, $cookieValue)
+            ->withHeaders($this->deviceHeaders())
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect('/dashboard');
+    }
+
+    public function test_same_browser_device_with_version_drift_does_not_force_two_factor(): void
+    {
+        $user = $this->createTwoFactorUser(lastLoginAt: now()->subHour());
+        [$cookieValue] = $this->createTrustedDeviceCookie($user);
+
+        $previousSessionId = 'previous-version-session';
+        Cache::forever("auth:active-session:{$user->id}", $previousSessionId);
+
+        DB::table(config('session.table', 'sessions'))->insert([
+            'id' => $previousSessionId,
+            'user_id' => $user->id,
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/151.0.0.0 Safari/537.36',
+            'payload' => '',
+            'last_activity' => now()->getTimestamp(),
+        ]);
+
+        $response = $this
+            ->withCookie(TrustedDeviceManager::COOKIE_NAME, $cookieValue)
+            ->withHeaders($this->deviceHeaders())
+            ->post('/login', [
+                'username' => $user->username,
+                'password' => 'password',
+            ]);
+
+        $response->assertRedirect('/dashboard');
+    }
+
     public function test_live_session_on_another_device_still_requires_two_factor(): void
     {
         $user = $this->createTwoFactorUser(lastLoginAt: now()->subHour());
