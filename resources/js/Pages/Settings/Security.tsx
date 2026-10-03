@@ -58,6 +58,7 @@ export default function Security({
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+    const [showEmailCurrentPassword, setShowEmailCurrentPassword] = useState(false);
     const [currentPasswordFocused, setCurrentPasswordFocused] = useState(false);
     const [currentPasswordStatus, setCurrentPasswordStatus] = useState<
         'idle' | 'checking' | 'match' | 'mismatch'
@@ -491,25 +492,43 @@ export default function Security({
                                         >
                                             Password Saat Ini
                                         </Label>
-                                        <Input
-                                            id="email_current_password"
-                                            type="password"
-                                            value={
-                                                emailForm.data.current_password
-                                            }
-                                            onChange={(e) =>
-                                                emailForm.setData(
-                                                    'current_password',
-                                                    e.target.value,
-                                                )
-                                            }
-                                            error={
-                                                emailForm.errors
-                                                    .current_password
-                                            }
-                                            placeholder="Masukkan password saat ini"
-                                            required
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                id="email_current_password"
+                                                type={showEmailCurrentPassword ? 'text' : 'password'}
+                                                value={
+                                                    emailForm.data.current_password
+                                                }
+                                                onChange={(e) =>
+                                                    emailForm.setData(
+                                                        'current_password',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                error={
+                                                    emailForm.errors
+                                                        .current_password
+                                                }
+                                                placeholder="Masukkan password saat ini"
+                                                className="pr-11"
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setShowEmailCurrentPassword((value) => !value)
+                                                }
+                                                aria-label={showEmailCurrentPassword ? 'Sembunyikan password saat ini' : 'Lihat password saat ini'}
+                                                title={showEmailCurrentPassword ? 'Sembunyikan password saat ini' : 'Lihat password saat ini'}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-200"
+                                            >
+                                                {showEmailCurrentPassword ? (
+                                                    <EyeOff className="h-4 w-4" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4" />
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div className="md:col-span-2 flex justify-end">
