@@ -272,30 +272,51 @@ export default function Security({
                                         >
                                             Password Saat Ini
                                         </Label>
-                                        <Input
-                                            id="current_password"
-                                            type="password"
-                                            value={
-                                                passwordForm.data
-                                                    .current_password
-                                            }
-                                            onChange={(e) =>
-                                                passwordForm.setData(
-                                                    'current_password',
-                                                    e.target.value,
-                                                )
-                                            }
-                                            error={
-                                                passwordForm.errors
-                                                    .current_password
-                                            }
-                                            autoComplete="current-password"
-                                            placeholder="Masukkan password Anda saat ini"
-                                            required
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                id="current_password"
+                                                type={showCurrentPassword ? 'text' : 'password'}
+                                                value={
+                                                    passwordForm.data
+                                                        .current_password
+                                                }
+                                                onChange={(e) =>
+                                                    passwordForm.setData(
+                                                        'current_password',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                onFocus={() => setCurrentPasswordFocused(true)}
+                                                onBlur={() => setCurrentPasswordFocused(false)}
+                                                error={
+                                                    passwordForm.errors
+                                                        .current_password
+                                                }
+                                                autoComplete="current-password"
+                                                placeholder="Masukkan password Anda saat ini"
+                                                className="pr-11"
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setShowCurrentPassword((value) => !value)
+                                                }
+                                                aria-label={showCurrentPassword ? 'Sembunyikan password saat ini' : 'Lihat password saat ini'}
+                                                title={showCurrentPassword ? 'Sembunyikan password saat ini' : 'Lihat password saat ini'}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-200"
+                                            >
+                                                {showCurrentPassword ? (
+                                                    <EyeOff className="h-4 w-4" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4" />
+                                                )}
+                                            </button>
+                                        </div>
                                         <CurrentPasswordHint
                                             value={passwordForm.data.current_password}
                                             status={currentPasswordStatus}
+                                            focused={currentPasswordFocused}
                                         />
                                     </div>
 
@@ -303,21 +324,37 @@ export default function Security({
                                         <Label htmlFor="password" required>
                                             Password Baru
                                         </Label>
-                                        <Input
-                                            id="password"
-                                            type="password"
-                                            value={passwordForm.data.password}
-                                            onChange={(e) =>
-                                                passwordForm.setData(
-                                                    'password',
-                                                    e.target.value,
-                                                )
-                                            }
-                                            error={passwordForm.errors.password}
-                                            autoComplete="new-password"
-                                            placeholder="Minimal 8 karakter"
-                                            required
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                id="password"
+                                                type={showNewPassword ? 'text' : 'password'}
+                                                value={passwordForm.data.password}
+                                                onChange={(e) =>
+                                                    passwordForm.setData(
+                                                        'password',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                error={passwordForm.errors.password}
+                                                autoComplete="new-password"
+                                                placeholder="Minimal 8 karakter"
+                                                className="pr-11"
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowNewPassword((value) => !value)}
+                                                aria-label={showNewPassword ? 'Sembunyikan password baru' : 'Lihat password baru'}
+                                                title={showNewPassword ? 'Sembunyikan password baru' : 'Lihat password baru'}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-200"
+                                            >
+                                                {showNewPassword ? (
+                                                    <EyeOff className="h-4 w-4" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4" />
+                                                )}
+                                            </button>
+                                        </div>
                                         <PasswordRequirements
                                             password={passwordForm.data.password}
                                             name={currentUser?.name}
@@ -340,27 +377,45 @@ export default function Security({
                                         >
                                             Konfirmasi Password Baru
                                         </Label>
-                                        <Input
-                                            id="password_confirmation"
-                                            type="password"
-                                            value={
-                                                passwordForm.data
-                                                    .password_confirmation
-                                            }
-                                            onChange={(e) =>
-                                                passwordForm.setData(
-                                                    'password_confirmation',
-                                                    e.target.value,
-                                                )
-                                            }
-                                            error={
-                                                passwordForm.errors
-                                                    .password_confirmation
-                                            }
-                                            autoComplete="new-password"
-                                            placeholder="Ketik ulang password baru"
-                                            required
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                id="password_confirmation"
+                                                type={showPasswordConfirmation ? 'text' : 'password'}
+                                                value={
+                                                    passwordForm.data
+                                                        .password_confirmation
+                                                }
+                                                onChange={(e) =>
+                                                    passwordForm.setData(
+                                                        'password_confirmation',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                error={
+                                                    passwordForm.errors
+                                                        .password_confirmation
+                                                }
+                                                autoComplete="new-password"
+                                                placeholder="Ketik ulang password baru"
+                                                className="pr-11"
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setShowPasswordConfirmation((value) => !value)
+                                                }
+                                                aria-label={showPasswordConfirmation ? 'Sembunyikan konfirmasi password' : 'Lihat konfirmasi password'}
+                                                title={showPasswordConfirmation ? 'Sembunyikan konfirmasi password' : 'Lihat konfirmasi password'}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-200"
+                                            >
+                                                {showPasswordConfirmation ? (
+                                                    <EyeOff className="h-4 w-4" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4" />
+                                                )}
+                                            </button>
+                                        </div>
                                         <PasswordMatchHint
                                             password={passwordForm.data.password}
                                             confirmation={
